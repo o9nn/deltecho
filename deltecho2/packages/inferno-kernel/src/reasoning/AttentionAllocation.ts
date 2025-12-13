@@ -174,13 +174,20 @@ export class AttentionAllocation {
 
   /**
    * Rent collection - remove low-importance atoms
+   * Default threshold for removal is when STI < -100 and LTI < 0
    */
-  collectRent(threshold: number = -100): number {
+  collectRent(
+    stiThreshold: number = -100,
+    ltiThreshold: number = 0
+  ): number {
     const atoms = this.atomSpace.getAllAtoms()
     let removed = 0
 
     for (const atom of atoms) {
-      if (atom.attentionValue.sti < threshold && atom.attentionValue.lti < 0) {
+      if (
+        atom.attentionValue.sti < stiThreshold &&
+        atom.attentionValue.lti < ltiThreshold
+      ) {
         this.atomSpace.removeAtom(atom.id)
         removed++
       }

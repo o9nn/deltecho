@@ -97,7 +97,8 @@ export class PLNEngine {
     if (!ab.outgoing || !bc.outgoing) return null
     if (ab.outgoing.length !== 2 || bc.outgoing.length !== 2) return null
 
-    if (ab.outgoing[1] !== bc.outgoing[0]) return null
+    // Use string comparison for atom IDs (IDs are always strings)
+    if (String(ab.outgoing[1]) !== String(bc.outgoing[0])) return null
 
     // Create A->C with combined truth value
     const tv = this.deductionFormula(ab.truthValue, bc.truthValue)

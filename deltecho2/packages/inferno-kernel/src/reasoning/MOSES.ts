@@ -154,21 +154,31 @@ export class MOSES {
 
   /**
    * Crossover two programs
+   * Note: This is a simplified implementation. A full implementation would
+   * perform actual genetic crossover by combining subtrees from both parents.
    */
   private crossover(parent1: Program, parent2: Program): Program {
-    // Simplified crossover - create hybrid program
+    // TODO: Implement actual genetic crossover
+    // For now, inherit from parent1 with some characteristics from parent2
     const child = this.createRandomProgram()
     child.generation = this.generation
+    // Inherit some fitness bias from parents
+    child.fitness = (parent1.fitness + parent2.fitness) / 2
     return child
   }
 
   /**
    * Mutate a program
+   * Note: This is a simplified implementation. A full implementation would
+   * make small modifications to the existing program tree structure.
    */
   private mutate(program: Program): Program {
-    // Simplified mutation - create slightly modified program
+    // TODO: Implement actual mutation (e.g., replace subtrees, modify nodes)
+    // For now, create a new program with slight variation
     const mutated = this.createRandomProgram()
     mutated.generation = this.generation
+    // Inherit some fitness bias from parent
+    mutated.fitness = program.fitness * 0.8
     return mutated
   }
 

@@ -1,5 +1,8 @@
 /**
  * Simple test to verify the Inferno Kernel builds and exports correctly
+ * 
+ * Note: This test imports from the built dist/ directory. Make sure to
+ * run `pnpm build` before running this test.
  */
 
 import {
