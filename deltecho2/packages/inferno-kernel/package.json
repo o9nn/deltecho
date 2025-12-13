@@ -1,0 +1,26 @@
+{
+  "name": "@deltachat-desktop/inferno-kernel",
+  "version": "0.1.0",
+  "description": "Inferno kernel-based distributed AGI operating system with OpenCog cognitive architecture",
+  "type": "module",
+  "main": "./src/index.ts",
+  "types": "./src/index.ts",
+  "scripts": {
+    "build": "tsc",
+    "check:types": "tsc --noEmit",
+    "test": "echo 'Tests not yet implemented'"
+  },
+  "keywords": [
+    "inferno",
+    "kernel",
+    "agi",
+    "opencog",
+    "cognitive-architecture",
+    "distributed-systems"
+  ],
+  "license": "GPL-3.0-or-later",
+  "dependencies": {},
+  "devDependencies": {
+    "typescript": "catalog:"
+  }
+}
