@@ -173,10 +173,13 @@ export class PatternMatcher {
         const matches = this.match(nextPattern)
         for (const match of matches) {
           // Merge bindings
-          const mergedBindings = new Map([
-            ...result.bindings,
-            ...match.bindings,
-          ])
+          const mergedBindings = new Map<string, Atom>()
+          for (const [k, v] of result.bindings) {
+            mergedBindings.set(k, v)
+          }
+          for (const [k, v] of match.bindings) {
+            mergedBindings.set(k, v)
+          }
           newResults.push({
             bindings: mergedBindings,
             matches: [...result.matches, ...match.matches],

@@ -54,6 +54,8 @@ export type {
   CoordinatorConfig,
 } from './distributed/DistributedCoordinator'
 
+import { InfernoKernel } from './core/InfernoKernel'
+
 /**
  * Create a fully initialized Inferno AGI kernel
  */
