@@ -1,0 +1,158 @@
+name: Release Browser Version
+
+on:
+  release:
+    types: [published]
+  push:
+    tags:
+      - 'v*.*.*'
+  workflow_dispatch:
+    inputs:
+      version:
+        description: 'Version to build (e.g., v1.58.2)'
+        required: true
+        default: 'v1.58.2'
+
+jobs:
+  build-browser:
+    runs-on: ubuntu-latest
+    
+    permissions:
+      contents: write
+      issues: write
+    
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+    
+    - name: Setup Node.js
+      uses: actions/setup-node@v4
+      with:
+        node-version: 20.x
+    
+    - name: Get version
+      id: version
+      run: |
+        if [ "${{ github.event_name }}" == "workflow_dispatch" ]; then
+          echo "version=${{ github.event.inputs.version }}" >> $GITHUB_OUTPUT
+        elif [ "${{ github.event_name }}" == "release" ]; then
+          echo "version=${{ github.event.release.tag_name }}" >> $GITHUB_OUTPUT
+        else
+          echo "version=${GITHUB_REF#refs/tags/}" >> $GITHUB_OUTPUT
+        fi
+      shell: bash
+    
+    - name: Install dependencies
+      run: |
+        npm i -g pnpm
+        pnpm install --frozen-lockfile
+    
+    - name: Build and package browser version
+      run: |
+        pnpm package:browser
+      env:
+        NODE_ENV: production
+        VERSION_INFO_GIT_REF: ${{ github.ref }}
+    
+    - name: Create release archive
+      run: |
+        cd browser-dist
+        tar -czf ../deltachat-desktop-browser-${{ steps.version.outputs.version }}.tar.gz .
+        cd ..
+        zip -r deltachat-desktop-browser-${{ steps.version.outputs.version }}.zip browser-dist/
+    
+    - name: Prepare release artifacts
+      run: |
+        mkdir -p release
+        mv deltachat-desktop-browser-${{ steps.version.outputs.version }}.tar.gz release/
+        mv deltachat-desktop-browser-${{ steps.version.outputs.version }}.zip release/
+        
+        # Create checksums
+        cd release
+        sha256sum *.tar.gz *.zip > checksums.txt
+        cd ..
+        
+        ls -la release/
+    
+    - name: Upload artifacts to release
+      if: github.event_name == 'release'
+      uses: softprops/action-gh-release@v1
+      with:
+        files: release/*
+        tag_name: ${{ steps.version.outputs.version }}
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+    
+    - name: Upload artifacts
+      if: github.event_name != 'release'
+      uses: actions/upload-artifact@v4
+      with:
+        name: browser-${{ steps.version.outputs.version }}
+        path: release/*
+        retention-days: 7
+
+    - name: Create issue on build failure
+      if: failure()
+      run: |
+        # Create GitHub issue with build failure details
+        ISSUE_TITLE="Build failed: Release Browser Version"
+        
+        # Create issue body with error details
+        cat > issue_body.md << 'EOF'
+        ## Build Failure Report
+        
+        **Workflow:** Release Browser Version  
+        **Version:** ${{ steps.version.outputs.version }}  
+        **Run ID:** ${{ github.run_id }}  
+        **Triggered by:** ${{ github.event_name }}  
+        **Commit:** ${{ github.sha }}  
+        **Branch/Tag:** ${{ github.ref }}  
+        
+        ### Failure Details
+        
+        The build process failed during the browser release workflow. This is an automated issue created when the build fails.
+        
+        **Workflow Run:** [View failed run](${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }})
+        
+        ### Common Causes
+        
+        Based on the workflow steps, common failure causes include:
+        
+        - **Build Issues**: Browser build script (`pnpm build:browser:robust`) failure
+        - **Package Issues**: Browser packaging script (`pnpm package:browser`) failure
+        - **Dependency Installation**: pnpm install or dependency resolution failures
+        - **Git/Version Issues**: Git tag or version detection problems
+        - **Environment Issues**: Node.js version or environment setup problems
+        
+        ### Troubleshooting Steps
+        
+        1. **Check the [workflow run logs](${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }})** for detailed error messages
+        2. **For build errors**: Check if `pnpm build:browser:robust` works locally
+        3. **For packaging errors**: Check if `pnpm package:browser` works locally
+        4. **For dependency issues**: Check if `pnpm-lock.yaml` is up to date
+        5. **Test locally**: Run the full package process locally to identify issues
+        
+        ### Browser Build Notes
+        
+        **Browser Build Process:**
+        - Uses `bin/build-browser.js` for robust building
+        - Uses `bin/package-browser.js` for creating distributable packages
+        - Creates standalone Node.js server package
+        - Includes all necessary dependencies and documentation
+        
+        ---
+        
+        *This issue was automatically created by the release-browser.yml workflow on failure.*  
+        *To prevent duplicate issues, this workflow only creates issues when builds fail.*
+        EOF
+        
+        # Create the issue using GitHub CLI
+        gh issue create \
+          --title "$ISSUE_TITLE" \
+          --body-file issue_body.md \
+          --label "bug,build-failure,automated,ci/cd,browser" \
+          --repo "${{ github.repository }}"
+        
+        echo "Created issue: $ISSUE_TITLE"
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}

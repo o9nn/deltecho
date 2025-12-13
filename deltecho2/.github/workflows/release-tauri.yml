@@ -1,0 +1,169 @@
+name: Release Tauri Binaries
+
+on:
+  release:
+    types: [published]
+  push:
+    tags:
+      - 'v*.*.*'
+  workflow_dispatch:
+    inputs:
+      version:
+        description: 'Version to build (e.g., v1.58.2)'
+        required: true
+        default: 'v1.58.2'
+
+jobs:
+  build-tauri:
+    permissions:
+      contents: write
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - platform: 'macos-latest'
+            label: 'aarch64'
+            args: '--target aarch64-apple-darwin'
+          - platform: 'macos-latest'
+            label: 'x86_64'
+            args: '--target x86_64-apple-darwin'
+          - platform: 'ubuntu-22.04'
+            label: 'x86_64'
+            args: ''
+          - platform: 'windows-latest'
+            label: 'x86_64'
+            args: ''
+
+    runs-on: ${{ matrix.platform }}
+    
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+      
+      - name: Setup Rust cache
+        uses: actions/cache@v4
+        with:
+          path: |
+            ~/.cargo/bin/
+            ~/.cargo/registry/index/
+            ~/.cargo/registry/cache/
+            ~/.cargo/git/db/
+            packages/target-tauri/src-tauri/target/
+          key: ${{ runner.os }}-cargo-${{ hashFiles('**/Cargo.lock') }}
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 'lts/*'
+
+      - name: Install Rust stable
+        uses: dtolnay/rust-toolchain@stable
+        with:
+          targets: ${{ matrix.platform == 'macos-latest' && 'aarch64-apple-darwin,x86_64-apple-darwin' || '' }}
+
+      - name: Install Linux dependencies
+        if: matrix.platform == 'ubuntu-22.04'
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y libwebkit2gtk-4.1-dev libappindicator3-dev librsvg2-dev patchelf
+
+      - name: Get version
+        id: version
+        run: |
+          if [ "${{ github.event_name }}" == "workflow_dispatch" ]; then
+            echo "version=${{ github.event.inputs.version }}" >> $GITHUB_OUTPUT
+          elif [ "${{ github.event_name }}" == "release" ]; then
+            echo "version=${{ github.event.release.tag_name }}" >> $GITHUB_OUTPUT
+          else
+            echo "version=${GITHUB_REF#refs/tags/}" >> $GITHUB_OUTPUT
+          fi
+        shell: bash
+
+      - name: Install frontend dependencies
+        run: |
+          npm i -g pnpm
+          pnpm install --frozen-lockfile
+
+      - name: Build Tauri app
+        uses: tauri-apps/tauri-action@v0
+        id: build
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          VERSION_INFO_GIT_REF: ${{ github.ref }}
+        with:
+          projectPath: packages/target-tauri
+          args: ${{ matrix.args }}
+          tagName: ${{ steps.version.outputs.version }}
+          releaseName: 'DeltaChat Desktop ${{ steps.version.outputs.version }}'
+          releaseBody: 'See the assets to download this version and install.'
+          releaseDraft: false
+          prerelease: false
+          includeDebug: false
+
+      - name: Prepare artifacts (Unix)
+        if: matrix.platform != 'windows-latest'
+        id: paths
+        run: |
+          mkdir -p release
+          paths=$(echo '${{ steps.build.outputs.artifactPaths }}' | jq -c '.[]' | sed 's/"//g')
+          for fn in $paths; do
+            if [[ -f $fn ]]; then
+              echo "Processing: $fn"
+              filename=$(basename "$fn")
+              # Add platform and architecture info to filename
+              name_without_ext="${filename%.*}"
+              extension="${filename##*.}"
+              platform_name=""
+              case "${{ matrix.platform }}" in
+                "macos-latest")
+                  platform_name="macos-${{ matrix.label }}"
+                  ;;
+                "ubuntu-22.04")
+                  platform_name="linux-${{ matrix.label }}"
+                  ;;
+              esac
+              new_filename="${name_without_ext}-${platform_name}-${{ steps.version.outputs.version }}.${extension}"
+              cp "$fn" "release/$new_filename"
+              echo "Copied to: release/$new_filename"
+            fi
+          done
+          ls -la release/
+
+      - name: Prepare artifacts (Windows)
+        if: matrix.platform == 'windows-latest'
+        id: pathsWin
+        run: |
+          mkdir release
+          $jsonString = '${{ steps.build.outputs.artifactPaths }}'
+          $filePaths = ConvertFrom-Json $jsonString
+          foreach ($path in $filePaths) {
+            if (Test-Path $path -PathType Leaf) {
+              Write-Host "Processing: $path"
+              $filename = Split-Path $path -Leaf
+              $nameWithoutExt = [System.IO.Path]::GetFileNameWithoutExtension($filename)
+              $extension = [System.IO.Path]::GetExtension($filename)
+              $platformName = "windows-${{ matrix.label }}"
+              $newFilename = "$nameWithoutExt-$platformName-${{ steps.version.outputs.version }}$extension"
+              Copy-Item $path -Destination "release/$newFilename"
+              Write-Host "Copied to: release/$newFilename"
+            }
+          }
+          Get-ChildItem release/
+        shell: pwsh
+
+      - name: Upload artifacts to release
+        if: github.event_name == 'release'
+        uses: softprops/action-gh-release@v1
+        with:
+          files: release/*
+          tag_name: ${{ steps.version.outputs.version }}
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Upload artifacts
+        if: github.event_name != 'release'
+        uses: actions/upload-artifact@v4
+        with:
+          name: tauri-${{ matrix.platform }}-${{ matrix.label }}-${{ steps.version.outputs.version }}
+          path: release/*
+          retention-days: 7

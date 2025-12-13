@@ -1,0 +1,7 @@
+// Import Deep Tree Echo component styles
+@use 'components/deep-tree-echo';
+
+// No need to import the same component styles twice
+
+// Add Deep Tree Echo Bot component styles
+@import 'components/deep-tree-echo';

@@ -1,0 +1,247 @@
+name: Release Electron Binaries
+
+on:
+  release:
+    types: [published]
+  push:
+    tags:
+      - 'v*.*.*'
+  workflow_dispatch:
+    inputs:
+      version:
+        description: 'Version to build (e.g., v1.58.2)'
+        required: true
+        default: 'v1.58.2'
+
+jobs:
+  build-electron:
+    runs-on: ${{ matrix.os }}
+    strategy:
+      matrix:
+        os: [ubuntu-latest, macos-latest, windows-latest]
+      fail-fast: false
+    
+    permissions:
+      contents: write
+      issues: write
+    
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+    
+    - name: Setup Node.js
+      uses: actions/setup-node@v4
+      with:
+        node-version: 20.x
+    
+    - name: Get version
+      id: version
+      run: |
+        if [ "${{ github.event_name }}" == "workflow_dispatch" ]; then
+          echo "version=${{ github.event.inputs.version }}" >> $GITHUB_OUTPUT
+        elif [ "${{ github.event_name }}" == "release" ]; then
+          echo "version=${{ github.event.release.tag_name }}" >> $GITHUB_OUTPUT
+        else
+          echo "version=${GITHUB_REF#refs/tags/}" >> $GITHUB_OUTPUT
+        fi
+      shell: bash
+    
+    - name: Install dependencies
+      run: |
+        npm i -g pnpm
+        pnpm install --frozen-lockfile
+    
+    - name: Build Electron app
+      run: |
+        cd packages/target-electron
+        pnpm build4production
+        pnpm run pack:generate_config
+        pnpm run pack:patch-node-modules
+      env:
+        NODE_ENV: production
+        VERSION_INFO_GIT_REF: ${{ github.ref }}
+    
+    - name: Build Linux AppImage
+      if: runner.os == 'Linux'
+      run: |
+        cd packages/target-electron
+        pnpm electron-builder --publish never --linux AppImage
+      env:
+        DEBUG: electron-builder
+    
+    - name: Build macOS binaries
+      if: runner.os == 'macOS'
+      run: |
+        cd packages/target-electron
+        echo "module.exports=()=>Promise.resolve()" > stub.cjs
+        export CSC_IDENTITY_AUTO_DISCOVERY=false
+        pnpm i dmg-license
+        pnpm electron-builder --publish never --mac mas dmg -c.mac.identity=null --universal --config.afterSign="stub.cjs"
+      env:
+        DEBUG: electron-builder
+    
+    - name: Build Windows binaries
+      if: runner.os == 'Windows'
+      run: |
+        cd packages/target-electron
+        pnpm electron-builder --publish never --win nsis portable
+      env:
+        DEBUG: electron-builder
+    
+    - name: Prepare Linux artifacts
+      if: runner.os == 'Linux'
+      working-directory: packages/target-electron/dist
+      run: |
+        mkdir -p release
+        if [ -f *.AppImage ]; then
+          mv *.AppImage release/deltachat-desktop-${{ steps.version.outputs.version }}-linux.AppImage
+        fi
+        if [ -f *.deb ]; then
+          mv *.deb release/deltachat-desktop-${{ steps.version.outputs.version }}-linux.deb
+        fi
+        ls -la release/
+    
+    - name: Prepare macOS artifacts
+      if: runner.os == 'macOS'
+      working-directory: packages/target-electron/dist
+      run: |
+        mkdir -p release
+        if [ -f *.dmg ]; then
+          mv *.dmg release/deltachat-desktop-${{ steps.version.outputs.version }}-macos.dmg
+        fi
+        if [ -d mas-universal ]; then
+          zip -r release/deltachat-desktop-${{ steps.version.outputs.version }}-macos-mas.zip mas-universal
+        fi
+        ls -la release/
+    
+    - name: Prepare Windows artifacts
+      if: runner.os == 'Windows'
+      working-directory: packages/target-electron/dist
+      run: |
+        mkdir release
+        if (Test-Path "*.exe") {
+          Get-ChildItem -Name "*.exe" | ForEach-Object {
+            if ($_ -match "Setup") {
+              Copy-Item $_ "release/deltachat-desktop-${{ steps.version.outputs.version }}-windows-setup.exe"
+            } elseif ($_ -match "portable") {
+              Copy-Item $_ "release/deltachat-desktop-${{ steps.version.outputs.version }}-windows-portable.exe"
+            }
+          }
+        }
+        Get-ChildItem release/
+      shell: pwsh
+    
+    - name: Upload artifacts to release
+      if: github.event_name == 'release'
+      uses: softprops/action-gh-release@v1
+      with:
+        files: packages/target-electron/dist/release/*
+        tag_name: ${{ steps.version.outputs.version }}
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+    
+    - name: Upload artifacts
+      if: github.event_name != 'release'
+      uses: actions/upload-artifact@v4
+      with:
+        name: electron-${{ matrix.os }}-${{ steps.version.outputs.version }}
+        path: packages/target-electron/dist/release/*
+        retention-days: 7
+
+    - name: Create issue on build failure
+      if: failure()
+      run: |
+        # Create GitHub issue with build failure details
+        ISSUE_TITLE="Build failed: Release Electron Binaries (${{ matrix.os }})"
+        
+        # Try to capture recent error information from the log
+        echo "Checking for recent build errors..."
+        
+        # Create issue body with error details
+        cat > issue_body.md << 'EOF'
+        ## Build Failure Report
+        
+        **Workflow:** Release Electron Binaries  
+        **Platform:** ${{ matrix.os }}  
+        **Version:** ${{ steps.version.outputs.version }}  
+        **Run ID:** ${{ github.run_id }}  
+        **Triggered by:** ${{ github.event_name }}  
+        **Commit:** ${{ github.sha }}  
+        **Branch/Tag:** ${{ github.ref }}  
+        
+        ### Failure Details
+        
+        The build process failed during the electron release workflow. This is an automated issue created when the build fails.
+        
+        **Workflow Run:** [View failed run](${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }})
+        
+        ### Common Causes
+        
+        Based on the workflow steps, common failure causes include:
+        
+        - **SCSS Build Issues**: Missing SCSS import files (e.g., `Can't find stylesheet to import`)
+        - **Dependency Installation**: pnpm install or dependency resolution failures
+        - **Electron Builder**: Platform-specific packaging errors
+        - **Build Environment**: Node.js version or environment setup issues
+        - **Git/Version Issues**: Git tag or version detection problems
+        
+        ### Troubleshooting Steps
+        
+        1. **Check the [workflow run logs](${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }})** for detailed error messages
+        2. **For SCSS errors**: Verify all SCSS files referenced in `scss/manifest.scss` exist
+        3. **For dependency issues**: Check if `pnpm-lock.yaml` is up to date
+        4. **For platform-specific issues**: Test the build locally on ${{ matrix.os }}
+        5. **For electron-builder errors**: Verify the electron-builder configuration
+        
+        ### Platform-Specific Notes
+        
+        EOF
+        
+        # Add platform-specific troubleshooting
+        case "${{ matrix.os }}" in
+          "ubuntu-latest")
+            cat >> issue_body.md << 'EOF'
+        **Linux Build Issues:**
+        - Check AppImage build dependencies
+        - Verify electron-builder Linux configuration
+        - Ensure all required system libraries are available
+        EOF
+            ;;
+          "macos-latest")
+            cat >> issue_body.md << 'EOF'
+        **macOS Build Issues:**
+        - Check code signing configuration (CSC_IDENTITY_AUTO_DISCOVERY)
+        - Verify DMG creation process
+        - Check if dmg-license installation succeeded
+        - Ensure universal binary build works correctly
+        EOF
+            ;;
+          "windows-latest")
+            cat >> issue_body.md << 'EOF'
+        **Windows Build Issues:**
+        - Check NSIS installer configuration
+        - Verify portable executable creation
+        - Check Windows-specific build environment
+        - Ensure PowerShell scripts execute correctly
+        EOF
+            ;;
+        esac
+        
+        cat >> issue_body.md << 'EOF'
+        
+        ---
+        
+        *This issue was automatically created by the release-electron.yml workflow on failure.*  
+        *To prevent duplicate issues, this workflow only creates issues when builds fail.*
+        EOF
+        
+        # Create the issue using GitHub CLI
+        gh issue create \
+          --title "$ISSUE_TITLE" \
+          --body-file issue_body.md \
+          --label "bug,build-failure,automated,ci/cd" \
+          --repo "${{ github.repository }}"
+        
+        echo "Created issue: $ISSUE_TITLE"
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
