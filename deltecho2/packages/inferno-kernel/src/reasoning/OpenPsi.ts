@@ -5,7 +5,7 @@
  * It manages goals, drives, and emotions as kernel-level cognitive states.
  */
 
-import { Atom, AtomSpace } from '../atomspace/AtomSpace'
+import { Atom, AtomSpace } from '../atomspace/AtomSpace.js'
 
 export interface Goal {
   id: string

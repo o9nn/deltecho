@@ -6,8 +6,8 @@
  * architecture, implemented here as a kernel service.
  */
 
-import { Atom, AtomSpace, TruthValue } from '../atomspace/AtomSpace'
-import { PatternMatcher } from '../atomspace/PatternMatcher'
+import { Atom, AtomSpace, TruthValue } from '../atomspace/AtomSpace.js'
+import { PatternMatcher } from '../atomspace/PatternMatcher.js'
 
 export interface InferenceRule {
   name: string

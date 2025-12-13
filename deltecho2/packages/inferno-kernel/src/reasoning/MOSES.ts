@@ -6,7 +6,7 @@
  * function. This is implemented as a kernel service for AGI learning.
  */
 
-import { Atom, AtomSpace } from '../atomspace/AtomSpace'
+import { Atom, AtomSpace } from '../atomspace/AtomSpace.js'
 
 export interface Program {
   id: string

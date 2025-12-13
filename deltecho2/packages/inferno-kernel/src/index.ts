@@ -9,52 +9,52 @@
  */
 
 // Core kernel
-export { InfernoKernel } from './core/InfernoKernel'
+export { InfernoKernel } from './core/InfernoKernel.js'
 export type {
   KernelConfig,
   CognitiveProcess,
   KernelStats,
-} from './core/InfernoKernel'
+} from './core/InfernoKernel.js'
 
 // AtomSpace - Hypergraph knowledge representation
-export { AtomSpace } from './atomspace/AtomSpace'
+export { AtomSpace } from './atomspace/AtomSpace.js'
 export type {
   Atom,
   AtomType,
   TruthValue,
   AttentionValue,
-} from './atomspace/AtomSpace'
+} from './atomspace/AtomSpace.js'
 
 // Pattern Matcher
-export { PatternMatcher } from './atomspace/PatternMatcher'
-export type { Pattern, MatchResult } from './atomspace/PatternMatcher'
+export { PatternMatcher } from './atomspace/PatternMatcher.js'
+export type { Pattern, MatchResult } from './atomspace/PatternMatcher.js'
 
 // Reasoning engines
-export { PLNEngine } from './reasoning/PLNEngine'
-export type { InferenceRule } from './reasoning/PLNEngine'
+export { PLNEngine } from './reasoning/PLNEngine.js'
+export type { InferenceRule } from './reasoning/PLNEngine.js'
 
-export { AttentionAllocation } from './reasoning/AttentionAllocation'
-export type { AttentionConfig } from './reasoning/AttentionAllocation'
+export { AttentionAllocation } from './reasoning/AttentionAllocation.js'
+export type { AttentionConfig } from './reasoning/AttentionAllocation.js'
 
-export { MOSES } from './reasoning/MOSES'
+export { MOSES } from './reasoning/MOSES.js'
 export type {
   Program,
   MOSESConfig,
   FitnessFunction,
-} from './reasoning/MOSES'
+} from './reasoning/MOSES.js'
 
-export { OpenPsi } from './reasoning/OpenPsi'
-export type { Goal, Drive, Emotion } from './reasoning/OpenPsi'
+export { OpenPsi } from './reasoning/OpenPsi.js'
+export type { Goal, Drive, Emotion } from './reasoning/OpenPsi.js'
 
 // Distributed coordination
-export { DistributedCoordinator } from './distributed/DistributedCoordinator'
+export { DistributedCoordinator } from './distributed/DistributedCoordinator.js'
 export type {
   NodeInfo,
   DistributedTask,
   CoordinatorConfig,
-} from './distributed/DistributedCoordinator'
+} from './distributed/DistributedCoordinator.js'
 
-import { InfernoKernel } from './core/InfernoKernel'
+import { InfernoKernel } from './core/InfernoKernel.js'
 
 /**
  * Create a fully initialized Inferno AGI kernel

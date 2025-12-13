@@ -6,7 +6,7 @@
  * kernel scheduler for cognitive processes.
  */
 
-import { Atom, AtomSpace, AttentionValue } from '../atomspace/AtomSpace'
+import { Atom, AtomSpace, AttentionValue } from '../atomspace/AtomSpace.js'
 
 export interface AttentionConfig {
   maxSTI: number

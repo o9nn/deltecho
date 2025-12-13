@@ -6,7 +6,7 @@
  * and knowledge discovery.
  */
 
-import { Atom, AtomSpace, AtomType } from './AtomSpace'
+import { Atom, AtomSpace, AtomType } from './AtomSpace.js'
 
 export interface Pattern {
   type: AtomType

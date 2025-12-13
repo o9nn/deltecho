@@ -6,7 +6,7 @@
  * kernel nodes working in concert.
  */
 
-import { Atom, AtomSpace } from '../atomspace/AtomSpace'
+import { Atom, AtomSpace } from '../atomspace/AtomSpace.js'
 
 export interface NodeInfo {
   nodeId: string
