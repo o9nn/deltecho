@@ -8,14 +8,19 @@
  * - Inference: Recognition of patterns across conversation history
  */
 export class HyperDimensionalMemory {
-    DIMENSIONS = 10000; // High-dimensional representation vector size
-    MEMORY_DECAY = 0.98; // Memory decay coefficient for natural forgetting
-    CONTEXT_WINDOW = 128; // Size of context window for memory binding
+    DIMENSIONS;
+    MEMORY_DECAY;
+    CONTEXT_WINDOW;
     memoryVectors = new Map();
     conversationHypergraph = new Map();
     temporalIndex = new Map();
     associativeNetwork = new Map();
     emotionalWeighting = new Map();
+    constructor(options) {
+        this.DIMENSIONS = options?.dimensions || 10000;
+        this.MEMORY_DECAY = options?.memoryDecay || 0.98;
+        this.CONTEXT_WINDOW = options?.contextWindow || 128;
+    }
     /**
      * Creates a hypervector encoding of input text with emotional context
      */

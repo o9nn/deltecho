@@ -3,6 +3,10 @@ import { MemoryStorage, InMemoryStorage } from './storage'
 
 const log = getLogger('deep-tree-echo-core/memory/RAGMemoryStore')
 
+// Default configuration
+const DEFAULT_MEMORY_LIMIT = 1000
+const DEFAULT_REFLECTION_LIMIT = 100
+
 /**
  * Structure for a conversation memory
  */
@@ -36,9 +40,16 @@ export class RAGMemoryStore {
   private reflections: ReflectionMemory[] = []
   private enabled: boolean = false
   private storage: MemoryStorage
+  private memoryLimit: number
+  private reflectionLimit: number
 
-  constructor(storage?: MemoryStorage) {
+  constructor(
+    storage?: MemoryStorage,
+    options?: { memoryLimit?: number; reflectionLimit?: number }
+  ) {
     this.storage = storage || new InMemoryStorage()
+    this.memoryLimit = options?.memoryLimit || DEFAULT_MEMORY_LIMIT
+    this.reflectionLimit = options?.reflectionLimit || DEFAULT_REFLECTION_LIMIT
     this.loadMemories()
   }
 
@@ -103,15 +114,15 @@ export class RAGMemoryStore {
    */
   private async saveMemories(): Promise<void> {
     try {
-      // Save conversation memories - limit to last 1000 to prevent excessive storage
-      const trimmedMemories = this.memories.slice(-1000)
+      // Save conversation memories - limit to configured max to prevent excessive storage
+      const trimmedMemories = this.memories.slice(-this.memoryLimit)
       await this.storage.save(
         'deepTreeEchoBotMemories',
         JSON.stringify(trimmedMemories)
       )
 
-      // Save reflection memories - limit to last 100
-      const trimmedReflections = this.reflections.slice(-100)
+      // Save reflection memories - limit to configured max
+      const trimmedReflections = this.reflections.slice(-this.reflectionLimit)
       await this.storage.save(
         'deepTreeEchoBotReflections',
         JSON.stringify(trimmedReflections)

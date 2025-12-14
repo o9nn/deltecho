@@ -212,7 +212,9 @@ export class LLMService {
             // Update usage stats
             cognitiveFunction.usage.lastUsed = Date.now();
             cognitiveFunction.usage.requestCount++;
-            cognitiveFunction.usage.totalTokens += input.length + 100; // Approximate token count for demo
+            // Note: This is a rough approximation. In production, use a proper
+            // tokenization library (e.g., tiktoken) for accurate token counting
+            cognitiveFunction.usage.totalTokens += input.length + 100;
             // Return a specific response for each cognitive function type to simulate different perspectives
             let functionResponse;
             switch (functionType) {

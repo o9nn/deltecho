@@ -16,6 +16,11 @@ export declare class HyperDimensionalMemory {
     private temporalIndex;
     private associativeNetwork;
     private emotionalWeighting;
+    constructor(options?: {
+        dimensions?: number;
+        memoryDecay?: number;
+        contextWindow?: number;
+    });
     /**
      * Creates a hypervector encoding of input text with emotional context
      */

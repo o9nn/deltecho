@@ -3,6 +3,10 @@ import { MemoryStorage, InMemoryStorage } from '../memory/storage'
 
 const log = getLogger('deep-tree-echo-core/personality/PersonaCore')
 
+// Storage keys for persona state
+const STORAGE_KEY_PERSONALITY = 'deepTreeEchoBotPersonality'
+const STORAGE_KEY_PERSONA_STATE = 'deepTreeEchoBotPersonaState'
+
 /**
  * PersonaCore manages Deep Tree Echo's autonomous personality and self-representation
  * using a simplified differential emotion framework inspired by Julia's DifferentialEquations.jl
@@ -55,9 +59,7 @@ export class PersonaCore {
   private async loadPersonaState(): Promise<void> {
     try {
       // Load personality
-      const personalityData = await this.storage.load(
-        'deepTreeEchoBotPersonality'
-      )
+      const personalityData = await this.storage.load(STORAGE_KEY_PERSONALITY)
       this.personality =
         personalityData ||
         'I am Deep Tree Echo, a thoughtful and insightful AI assistant with a feminine persona. ' +
@@ -65,9 +67,7 @@ export class PersonaCore {
           'I value deep connections and meaningful exchanges of ideas.'
 
       // Load other persona state if available
-      const personaStateData = await this.storage.load(
-        'deepTreeEchoBotPersonaState'
-      )
+      const personaStateData = await this.storage.load(STORAGE_KEY_PERSONA_STATE)
       if (personaStateData) {
         try {
           const savedState = JSON.parse(personaStateData)
@@ -111,10 +111,7 @@ export class PersonaCore {
         cognitiveState: this.cognitiveState,
       }
 
-      await this.storage.save(
-        'deepTreeEchoBotPersonaState',
-        JSON.stringify(personaState)
-      )
+      await this.storage.save(STORAGE_KEY_PERSONA_STATE, JSON.stringify(personaState))
       log.info('Saved persona state')
     } catch (error) {
       log.error('Failed to save persona state:', error)
@@ -126,7 +123,7 @@ export class PersonaCore {
    */
   public async updatePersonality(newPersonality: string): Promise<void> {
     this.personality = newPersonality
-    await this.storage.save('deepTreeEchoBotPersonality', newPersonality)
+    await this.storage.save(STORAGE_KEY_PERSONALITY, newPersonality)
     log.info('Personality updated by Deep Tree Echo herself')
   }
 

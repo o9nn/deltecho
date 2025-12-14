@@ -30,7 +30,12 @@ export declare class RAGMemoryStore {
     private reflections;
     private enabled;
     private storage;
-    constructor(storage?: MemoryStorage);
+    private memoryLimit;
+    private reflectionLimit;
+    constructor(storage?: MemoryStorage, options?: {
+        memoryLimit?: number;
+        reflectionLimit?: number;
+    });
     /**
      * Enable or disable the memory storage
      */
