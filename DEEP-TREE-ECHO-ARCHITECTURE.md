@@ -362,6 +362,19 @@ deltecho/
 │   └── package.json
 ```
 
+### Phase 2.5: Dovecot Integration (Complete)
+
+```
+deep-tree-echo-orchestrator/
+├── src/
+│   └── dovecot-interface/
+│       ├── index.ts              # Main DovecotInterface class
+│       ├── milter-server.ts      # Milter protocol implementation
+│       ├── lmtp-server.ts        # LMTP protocol implementation
+│       ├── email-processor.ts    # Email → cognitive processing
+│       └── README.md             # Configuration guide
+```
+
 ### Phase 3: Desktop Integration
 
 ```
@@ -374,6 +387,11 @@ packages/
 │           └── DeepTreeEchoBot/
 │               ├── OrchestratorClient.ts  # NEW: IPC client
 │               └── ...existing files...   # Refactored to use core
+
+# Avatar assets (deployed):
+images/
+└── deep-tree-echo/
+    └── deep-tree-echo-avatar.svg  # Bot identity avatar
 ```
 
 ---
@@ -390,7 +408,7 @@ packages/
 | Scheduling | None | Cron-like tasks | Scheduled check-ins, reminders |
 | Multi-App Coordination | Isolated | Unified | Single brain across apps |
 | External Integration | Limited | Webhooks/APIs | Connect to other services |
-| Mail Server Integration | None | Milter/plugin | Process emails at server level |
+| Mail Server Integration | None | ✅ Milter/LMTP | Process emails at server level |
 | Database Access | Via RPC only | Direct SQLite | Full message history |
 | Protocol Control | None | IMAP/SMTP | Email transport control |
 
@@ -450,7 +468,7 @@ packages/
 | **Autonomy** | Reactive to user messages | Proactive + scheduled + reactive |
 | **Persistence** | Desktop settings (JSON) | Dedicated database + settings |
 | **Cognitive Modules** | Split between repos | Unified core package |
-| **dovecot Integration** | None | Milter plugin for email processing |
+| **dovecot Integration** | None | ✅ Milter + LMTP for email processing |
 
 ---
 
