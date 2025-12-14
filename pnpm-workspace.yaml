@@ -1,0 +1,5 @@
+packages:
+  - 'delta-echo-desk'
+  - 'deltecho2'
+  - 'deep-tree-echo-core'
+  - 'deep-tree-echo-orchestrator'
