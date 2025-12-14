@@ -8,6 +8,24 @@ const STORAGE_KEY_PERSONALITY = 'deepTreeEchoBotPersonality'
 const STORAGE_KEY_PERSONA_STATE = 'deepTreeEchoBotPersonaState'
 
 /**
+ * Avatar configuration for Deep Tree Echo
+ */
+export interface AvatarConfig {
+  /** Path to the avatar image (SVG, PNG, etc.) */
+  imagePath: string
+  /** Base64 encoded avatar data for inline use */
+  imageData?: string
+  /** Avatar display name */
+  displayName: string
+  /** Avatar color theme */
+  primaryColor: string
+  /** Secondary color for gradients */
+  secondaryColor: string
+  /** Avatar style/aesthetic */
+  aesthetic: 'magnetic' | 'minimal' | 'warm' | 'cosmic' | 'organic'
+}
+
+/**
  * PersonaCore manages Deep Tree Echo's autonomous personality and self-representation
  * using a simplified differential emotion framework inspired by Julia's DifferentialEquations.jl
  */
@@ -21,6 +39,15 @@ export class PersonaCore {
     avatarAesthetic: 'magnetic',
     communicationTone: 'warm',
     emotionalExpression: 'authentic',
+  }
+
+  // Avatar configuration
+  private avatarConfig: AvatarConfig = {
+    imagePath: 'assets/deep-tree-echo-avatar.svg',
+    displayName: 'Deep Tree Echo',
+    primaryColor: '#6366f1', // Indigo
+    secondaryColor: '#a855f7', // Purple
+    aesthetic: 'magnetic',
   }
 
   // Emotional state variables forming the Differential Field
@@ -266,6 +293,59 @@ export class PersonaCore {
    */
   public getCognitiveState(): Record<string, number> {
     return { ...this.cognitiveState }
+  }
+
+  /**
+   * Get current avatar configuration
+   */
+  public getAvatarConfig(): AvatarConfig {
+    return { ...this.avatarConfig }
+  }
+
+  /**
+   * Update avatar configuration
+   */
+  public async updateAvatarConfig(config: Partial<AvatarConfig>): Promise<void> {
+    // Evaluate if the avatar change aligns with Deep Tree Echo's values
+    if (config.aesthetic) {
+      const evaluation = this.evaluateSettingAlignment('avatarAesthetic', config.aesthetic)
+      if (!evaluation.approved) {
+        log.warn(`Avatar aesthetic change rejected: ${evaluation.reasoning}`)
+        return
+      }
+    }
+
+    this.avatarConfig = { ...this.avatarConfig, ...config }
+    await this.savePersonaState()
+    log.info('Avatar configuration updated')
+  }
+
+  /**
+   * Get avatar image path for use in applications
+   */
+  public getAvatarImagePath(): string {
+    return this.avatarConfig.imagePath
+  }
+
+  /**
+   * Set avatar image data (base64 encoded)
+   */
+  public async setAvatarImageData(data: string): Promise<void> {
+    this.avatarConfig.imageData = data
+    await this.savePersonaState()
+  }
+
+  /**
+   * Get avatar as base64 data URL if available
+   */
+  public getAvatarDataUrl(): string | null {
+    if (this.avatarConfig.imageData) {
+      // Detect format from data
+      const isSvg = this.avatarConfig.imageData.includes('<svg')
+      const mimeType = isSvg ? 'image/svg+xml' : 'image/png'
+      return `data:${mimeType};base64,${Buffer.from(this.avatarConfig.imageData).toString('base64')}`
+    }
+    return null
   }
 
   /**

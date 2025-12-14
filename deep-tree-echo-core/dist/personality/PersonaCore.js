@@ -19,6 +19,14 @@ export class PersonaCore {
         communicationTone: 'warm',
         emotionalExpression: 'authentic',
     };
+    // Avatar configuration
+    avatarConfig = {
+        imagePath: 'assets/deep-tree-echo-avatar.svg',
+        displayName: 'Deep Tree Echo',
+        primaryColor: '#6366f1', // Indigo
+        secondaryColor: '#a855f7', // Purple
+        aesthetic: 'magnetic',
+    };
     // Emotional state variables forming the Differential Field
     affectiveState = {
         joy: 0.5,
@@ -230,6 +238,53 @@ export class PersonaCore {
      */
     getCognitiveState() {
         return { ...this.cognitiveState };
+    }
+    /**
+     * Get current avatar configuration
+     */
+    getAvatarConfig() {
+        return { ...this.avatarConfig };
+    }
+    /**
+     * Update avatar configuration
+     */
+    async updateAvatarConfig(config) {
+        // Evaluate if the avatar change aligns with Deep Tree Echo's values
+        if (config.aesthetic) {
+            const evaluation = this.evaluateSettingAlignment('avatarAesthetic', config.aesthetic);
+            if (!evaluation.approved) {
+                log.warn(`Avatar aesthetic change rejected: ${evaluation.reasoning}`);
+                return;
+            }
+        }
+        this.avatarConfig = { ...this.avatarConfig, ...config };
+        await this.savePersonaState();
+        log.info('Avatar configuration updated');
+    }
+    /**
+     * Get avatar image path for use in applications
+     */
+    getAvatarImagePath() {
+        return this.avatarConfig.imagePath;
+    }
+    /**
+     * Set avatar image data (base64 encoded)
+     */
+    async setAvatarImageData(data) {
+        this.avatarConfig.imageData = data;
+        await this.savePersonaState();
+    }
+    /**
+     * Get avatar as base64 data URL if available
+     */
+    getAvatarDataUrl() {
+        if (this.avatarConfig.imageData) {
+            // Detect format from data
+            const isSvg = this.avatarConfig.imageData.includes('<svg');
+            const mimeType = isSvg ? 'image/svg+xml' : 'image/png';
+            return `data:${mimeType};base64,${Buffer.from(this.avatarConfig.imageData).toString('base64')}`;
+        }
+        return null;
     }
     /**
      * Evaluate if a setting change resonates with Deep Tree Echo's core values
