@@ -45,9 +45,8 @@
   ],
   "author": "",
   "license": "GPL-3.0-or-later",
-  "dependencies": {},
   "devDependencies": {
+    "@types/node": "^25.0.2",
     "typescript": "^5.4.5"
-  },
-  "peerDependencies": {}
+  }
 }

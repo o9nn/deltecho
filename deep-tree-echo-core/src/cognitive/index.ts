@@ -4,5 +4,4 @@ export {
   type CognitiveFunction,
   CognitiveFunctionType,
   type ParallelCognitiveResult,
-  type Memory,
 } from './LLMService'

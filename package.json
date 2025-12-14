@@ -9,23 +9,10 @@
     "pnpm": ">=9.6.0"
   },
   "scripts": {
-    "dev:desk": "pnpm --filter delta-echo-desk dev",
-    "dev:deltecho2": "pnpm --filter deltecho2 dev",
-    "build:core": "pnpm --filter deep-tree-echo-core build",
-    "build:orchestrator": "pnpm --filter deep-tree-echo-orchestrator build",
-    "build:all": "pnpm -r build",
-    "check": "pnpm -r check",
-    "test": "pnpm -r test"
+    "build:core": "cd deep-tree-echo-core && npm run build",
+    "check:core": "cd deep-tree-echo-core && npm run check:types",
+    "test:core": "cd deep-tree-echo-core && npm test"
   },
-  "pnpm": {
-    "overrides": {}
-  },
-  "workspaces": [
-    "delta-echo-desk",
-    "deltecho2",
-    "deep-tree-echo-core",
-    "deep-tree-echo-orchestrator"
-  ],
   "devDependencies": {
     "typescript": "^5.4.5"
   }
