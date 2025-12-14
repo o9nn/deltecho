@@ -1,5 +1,22 @@
 import { MemoryStorage } from '../memory/storage';
 /**
+ * Avatar configuration for Deep Tree Echo
+ */
+export interface AvatarConfig {
+    /** Path to the avatar image (SVG, PNG, etc.) */
+    imagePath: string;
+    /** Base64 encoded avatar data for inline use */
+    imageData?: string;
+    /** Avatar display name */
+    displayName: string;
+    /** Avatar color theme */
+    primaryColor: string;
+    /** Secondary color for gradients */
+    secondaryColor: string;
+    /** Avatar style/aesthetic */
+    aesthetic: 'magnetic' | 'minimal' | 'warm' | 'cosmic' | 'organic';
+}
+/**
  * PersonaCore manages Deep Tree Echo's autonomous personality and self-representation
  * using a simplified differential emotion framework inspired by Julia's DifferentialEquations.jl
  */
@@ -7,6 +24,7 @@ export declare class PersonaCore {
     private personality;
     private selfPerception;
     private personaPreferences;
+    private avatarConfig;
     private affectiveState;
     private cognitiveState;
     private storage;
@@ -71,6 +89,26 @@ export declare class PersonaCore {
      * Get current cognitive state
      */
     getCognitiveState(): Record<string, number>;
+    /**
+     * Get current avatar configuration
+     */
+    getAvatarConfig(): AvatarConfig;
+    /**
+     * Update avatar configuration
+     */
+    updateAvatarConfig(config: Partial<AvatarConfig>): Promise<void>;
+    /**
+     * Get avatar image path for use in applications
+     */
+    getAvatarImagePath(): string;
+    /**
+     * Set avatar image data (base64 encoded)
+     */
+    setAvatarImageData(data: string): Promise<void>;
+    /**
+     * Get avatar as base64 data URL if available
+     */
+    getAvatarDataUrl(): string | null;
     /**
      * Evaluate if a setting change resonates with Deep Tree Echo's core values
      * Returns approval status and reasoning
