@@ -1,0 +1,33 @@
+{
+  "name": "deep-tree-echo-orchestrator",
+  "version": "1.0.0",
+  "description": "System-level orchestrator daemon for Deep Tree Echo AI",
+  "type": "module",
+  "main": "./dist/index.js",
+  "bin": {
+    "deep-tree-echo": "./dist/daemon/daemon.js"
+  },
+  "scripts": {
+    "build": "tsc",
+    "start": "node dist/daemon/daemon.js",
+    "dev": "tsc && node dist/daemon/daemon.js",
+    "check:types": "tsc --noEmit",
+    "clean": "rm -rf dist"
+  },
+  "keywords": [
+    "orchestrator",
+    "daemon",
+    "deltachat",
+    "ai",
+    "deep-tree-echo"
+  ],
+  "author": "",
+  "license": "GPL-3.0-or-later",
+  "dependencies": {
+    "deep-tree-echo-core": "file:../deep-tree-echo-core"
+  },
+  "devDependencies": {
+    "@types/node": "^20.11.0",
+    "typescript": "^5.4.5"
+  }
+}
