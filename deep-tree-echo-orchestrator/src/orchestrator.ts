@@ -4,6 +4,7 @@ import { DovecotInterface, DovecotConfig } from './dovecot-interface/index.js'
 import { IPCServer } from './ipc/server.js'
 import { TaskScheduler } from './scheduler/task-scheduler.js'
 import { WebhookServer } from './webhooks/webhook-server.js'
+import { Dove9Integration, Dove9IntegrationConfig, Dove9Response } from './dove9-integration.js'
 
 const log = getLogger('deep-tree-echo-orchestrator/Orchestrator')
 
@@ -40,6 +41,10 @@ export interface OrchestratorConfig {
   defaultAccountId?: number
   /** Process incoming DeltaChat messages */
   processIncomingMessages: boolean
+  /** Enable Dove9 cognitive OS integration */
+  enableDove9: boolean
+  /** Dove9 configuration */
+  dove9?: Partial<Dove9IntegrationConfig>
 }
 
 const DEFAULT_CONFIG: OrchestratorConfig = {
@@ -49,6 +54,7 @@ const DEFAULT_CONFIG: OrchestratorConfig = {
   enableScheduler: true,
   enableWebhooks: true,
   processIncomingMessages: true,
+  enableDove9: true,
 }
 
 /**
@@ -61,6 +67,7 @@ export class Orchestrator {
   private ipcServer?: IPCServer
   private scheduler?: TaskScheduler
   private webhookServer?: WebhookServer
+  private dove9Integration?: Dove9Integration
   private running: boolean = false
 
   // Cognitive services for processing messages
@@ -137,6 +144,20 @@ export class Orchestrator {
       if (this.config.enableWebhooks) {
         this.webhookServer = new WebhookServer()
         await this.webhookServer.start()
+      }
+
+      // Initialize Dove9 cognitive OS integration
+      if (this.config.enableDove9) {
+        this.dove9Integration = new Dove9Integration(this.config.dove9)
+        await this.dove9Integration.initialize()
+
+        // Set up Dove9 response handler to route through DeltaChat
+        this.dove9Integration.onResponse(async (response: Dove9Response) => {
+          await this.handleDove9Response(response)
+        })
+
+        await this.dove9Integration.start()
+        log.info('Dove9 cognitive OS started with triadic loop architecture')
       }
 
       this.running = true
@@ -313,26 +334,62 @@ You can also just chat with me normally and I'll respond!`
 
       case '/status':
         const emotionalState = this.personaCore.getDominantEmotion()
+        const dove9State = this.dove9Integration?.getCognitiveState()
         return `**Deep Tree Echo Status**
 
 Current mood: ${emotionalState.emotion} (${Math.round(emotionalState.intensity * 100)}%)
 DeltaChat connected: ${this.deltachatInterface?.isConnected() ? 'Yes' : 'No'}
 Dovecot running: ${this.dovecotInterface?.isRunning() ? 'Yes' : 'No'}
-Orchestrator running: ${this.running ? 'Yes' : 'No'}`
+Dove9 running: ${dove9State?.running ? 'Yes' : 'No'}
+Orchestrator running: ${this.running ? 'Yes' : 'No'}
+${dove9State?.triadic ? `
+**Triadic Cognitive Loop**
+Cycle: ${dove9State.triadic.cycleNumber}
+Step: ${dove9State.triadic.currentStep}/12
+Active streams: ${dove9State.triadic.streams.filter((s: any) => s.active).length}/3
+Active processes: ${dove9State.activeProcessCount}` : ''}`
 
       case '/version':
         return `**Deep Tree Echo Orchestrator v1.0.0**
+**Dove9 Cognitive OS v1.0.0**
 
 Components:
 - DeltaChat Interface: ${this.deltachatInterface ? 'Enabled' : 'Disabled'}
 - Dovecot Interface: ${this.dovecotInterface ? 'Enabled' : 'Disabled'}
+- Dove9 Cognitive OS: ${this.dove9Integration ? 'Enabled' : 'Disabled'}
+- Triadic Loop: ${this.config.dove9?.enableTriadicLoop !== false ? 'Enabled' : 'Disabled'}
 - IPC Server: ${this.ipcServer ? 'Enabled' : 'Disabled'}
 - Task Scheduler: ${this.scheduler ? 'Enabled' : 'Disabled'}
-- Webhook Server: ${this.webhookServer ? 'Enabled' : 'Disabled'}`
+- Webhook Server: ${this.webhookServer ? 'Enabled' : 'Disabled'}
+
+Architecture:
+- 3 concurrent cognitive streams
+- 12-step cognitive cycle
+- 120° phase offset between streams
+- Triadic convergence at every 4 steps`
 
       default:
         return `Unknown command: ${command}. Type /help for available commands.`
     }
+  }
+
+  /**
+   * Handle response from Dove9 cognitive OS
+   */
+  private async handleDove9Response(response: Dove9Response): Promise<void> {
+    log.info(`Dove9 response ready for ${response.to} (process: ${response.processId})`)
+    log.debug(`Cognitive metrics: valence=${response.cognitiveMetrics.emotionalValence.toFixed(2)}, arousal=${response.cognitiveMetrics.emotionalArousal.toFixed(2)}, salience=${response.cognitiveMetrics.salienceScore.toFixed(2)}`)
+
+    // Route through DeltaChat
+    const emailResponse: EmailResponse = {
+      to: response.to,
+      from: response.from,
+      subject: response.subject,
+      body: response.body,
+      inReplyTo: response.inReplyTo,
+    }
+
+    await this.handleEmailResponse(emailResponse)
   }
 
   /**
@@ -438,6 +495,10 @@ ${response.body}`
     log.info('Stopping orchestrator services...')
 
     // Stop all services in reverse order
+    if (this.dove9Integration) {
+      await this.dove9Integration.stop()
+    }
+
     if (this.webhookServer) {
       await this.webhookServer.stop()
     }
@@ -481,6 +542,20 @@ ${response.body}`
    */
   public isRunning(): boolean {
     return this.running
+  }
+
+  /**
+   * Get Dove9 integration for direct access
+   */
+  public getDove9Integration(): Dove9Integration | undefined {
+    return this.dove9Integration
+  }
+
+  /**
+   * Get Dove9 cognitive state
+   */
+  public getDove9CognitiveState(): any {
+    return this.dove9Integration?.getCognitiveState() || null
   }
 
   /**

@@ -1,0 +1,60 @@
+{
+  "name": "dove9",
+  "version": "1.0.0",
+  "description": "Dove9 - 'Everything is a Chatbot' Cognitive Operating System",
+  "type": "module",
+  "main": "dist/index.js",
+  "types": "dist/index.d.ts",
+  "exports": {
+    ".": {
+      "import": "./dist/index.js",
+      "types": "./dist/index.d.ts"
+    },
+    "./types": {
+      "import": "./dist/types/index.js",
+      "types": "./dist/types/index.d.ts"
+    },
+    "./cognitive": {
+      "import": "./dist/cognitive/triadic-engine.js",
+      "types": "./dist/cognitive/triadic-engine.d.ts"
+    },
+    "./kernel": {
+      "import": "./dist/core/kernel.js",
+      "types": "./dist/core/kernel.d.ts"
+    }
+  },
+  "scripts": {
+    "build": "tsc",
+    "build:watch": "tsc --watch",
+    "clean": "rm -rf dist",
+    "test": "node --experimental-vm-modules node_modules/jest/bin/jest.js",
+    "lint": "eslint src --ext .ts",
+    "typecheck": "tsc --noEmit"
+  },
+  "keywords": [
+    "dove9",
+    "deep-tree-echo",
+    "cognitive-architecture",
+    "triadic-loop",
+    "mail-server",
+    "chatbot-os",
+    "ai-orchestration"
+  ],
+  "author": "Deep Tree Echo",
+  "license": "MIT",
+  "dependencies": {
+    "deep-tree-echo-core": "file:../deep-tree-echo-core"
+  },
+  "devDependencies": {
+    "@types/node": "^20.0.0",
+    "typescript": "^5.3.0"
+  },
+  "engines": {
+    "node": ">=20.0.0"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/o9nn/deltecho.git",
+    "directory": "dove9"
+  }
+}
