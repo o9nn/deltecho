@@ -1,0 +1,61 @@
+{
+  "name": "@deltecho/cognitive",
+  "version": "1.0.0",
+  "description": "Unified cognitive framework - integrates deep-tree-echo-core, dove9, and reasoning systems",
+  "type": "module",
+  "main": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "exports": {
+    ".": {
+      "import": "./dist/index.js",
+      "types": "./dist/index.d.ts"
+    },
+    "./llm": {
+      "import": "./dist/llm/index.js",
+      "types": "./dist/llm/index.d.ts"
+    },
+    "./memory": {
+      "import": "./dist/memory/index.js",
+      "types": "./dist/memory/index.d.ts"
+    },
+    "./personality": {
+      "import": "./dist/personality/index.js",
+      "types": "./dist/personality/index.d.ts"
+    },
+    "./triadic": {
+      "import": "./dist/triadic/index.js",
+      "types": "./dist/triadic/index.d.ts"
+    },
+    "./types": {
+      "import": "./dist/types/index.js",
+      "types": "./dist/types/index.d.ts"
+    }
+  },
+  "scripts": {
+    "build": "tsc",
+    "check:types": "tsc --noEmit",
+    "clean": "rm -rf dist",
+    "test": "echo 'Tests pending'"
+  },
+  "keywords": [
+    "cognitive",
+    "ai",
+    "deep-tree-echo",
+    "dove9",
+    "llm",
+    "memory",
+    "personality"
+  ],
+  "license": "GPL-3.0-or-later",
+  "dependencies": {
+    "deep-tree-echo-core": "workspace:*",
+    "dove9": "workspace:*"
+  },
+  "devDependencies": {
+    "@types/node": "^20.0.0",
+    "typescript": "^5.4.5"
+  },
+  "engines": {
+    "node": ">=20.0.0"
+  }
+}

@@ -4,143 +4,166 @@ This file provides guidance for Claude Code when working with the Deltecho monor
 
 ## Project Overview
 
-Deltecho is a multi-project monorepo combining Delta Chat messaging applications with email infrastructure components. The repository contains four main subprojects that work together to provide a complete encrypted messaging ecosystem.
+Deltecho is a unified cognitive AI ecosystem combining Delta Chat secure messaging with advanced cognitive architecture. The repository implements the Deep Tree Echo cognitive framework with the revolutionary Dove9 "Everything is a Chatbot" operating system paradigm.
 
 ## Repository Structure
 
 ```
 deltecho/
-├── delta-echo-desk/     # Delta Chat Desktop with AI integrations
-├── deltecho2/           # Delta Chat Desktop variant
-├── deltachat-core/      # Legacy C core library (deprecated)
-└── dovecot-core/        # Dovecot mail server core
+├── packages/                      # Unified shared packages
+│   ├── cognitive/                 # @deltecho/cognitive - Unified cognitive interface
+│   ├── reasoning/                 # @deltecho/reasoning - AGI kernel (from inferno-kernel)
+│   ├── shared/                    # @deltecho/shared - Shared types & utilities
+│   └── ui-components/             # @deltecho/ui-components - React components
+│
+├── deep-tree-echo-core/           # Core cognitive modules (LLM, memory, personality)
+├── deep-tree-echo-orchestrator/   # System daemon coordinating all services
+├── dove9/                         # Dove9 OS - Triadic cognitive loop
+│
+├── delta-echo-desk/               # Desktop app with AI Companion Hub
+├── deltecho2/                     # Desktop app with Inferno Kernel
+├── dovecot-core/                  # Dovecot mail server core
+│
+└── _archived/                     # Deprecated code (deltachat-core)
 ```
 
-## Subproject Summaries
+## Core Cognitive Packages
+
+### deep-tree-echo-core/
+Core cognitive library providing LLM services, memory systems (RAG + hyperdimensional), and personality management.
+
+**Key Commands**:
+```bash
+pnpm build:core        # Build the core package
+pnpm check:core        # Type check
+```
+
+### dove9/
+The Dove9 cognitive operating system implementing the triadic cognitive loop:
+- 3 concurrent cognitive streams at 120° phase offset
+- 12-step cognitive cycle
+- Self-balancing feedback loops
+- Feedforward anticipation
+
+### deep-tree-echo-orchestrator/
+System daemon that coordinates all Deep Tree Echo services:
+- DeltaChat Interface (JSON-RPC)
+- Dovecot Interface (email processing)
+- IPC Server (desktop app communication)
+- Task Scheduler (cron-like scheduling)
+- Webhook Server (external integrations)
+- Dove9 Integration (cognitive OS)
+
+**Key Commands**:
+```bash
+pnpm start:orchestrator  # Start the daemon
+```
+
+## Unified Packages (`packages/`)
+
+### @deltecho/cognitive
+Unified cognitive interface that integrates:
+- deep-tree-echo-core (LLM, memory, personality)
+- dove9 (triadic cognitive loop)
+- CognitiveOrchestrator class for unified access
+
+### @deltecho/reasoning
+AGI kernel extracted from inferno-kernel, providing:
+- AtomSpace (hypergraph knowledge representation)
+- PatternMatcher (hypergraph pattern matching)
+- PLN Engine (Probabilistic Logic Networks)
+- MOSES (Meta-Optimizing Semantic Evolutionary Search)
+- OpenPsi (motivational/emotional system)
+- AttentionAllocation (cognitive resource scheduler)
+- DistributedCoordinator (multi-node AGI)
+
+### @deltecho/shared
+Shared types, utilities, and constants used across all packages:
+- DesktopSettingsType (including Deep Tree Echo bot settings)
+- Logger utilities
+- Localization helpers
+- Common utilities
+
+### @deltecho/ui-components
+React components for the cognitive interface:
+- DeepTreeEchoBot (main bot component)
+- AICompanionHub (multi-AI platform management)
+- Memory visualization components
+
+## Desktop Applications
+
+Both desktop apps share similar architecture but have unique features:
 
 ### delta-echo-desk/
-Delta Chat Desktop fork with AI/bot integrations. Cross-platform messaging app built with TypeScript, React, and multiple target platforms (Electron, Tauri, Browser).
-
-**Tech Stack**: TypeScript, React, SCSS, Electron, Tauri (Rust), pnpm
-**Key Commands**:
-```bash
-cd delta-echo-desk
-pnpm install
-pnpm dev              # Start Electron dev mode
-pnpm check            # Run all checks (types, lint, format)
-pnpm test             # Run unit tests
-```
+- Includes **AI Companion Hub** for multi-AI platform management
+- ConnectorRegistry for multiple LLM providers
 
 ### deltecho2/
-Another Delta Chat Desktop variant with similar architecture to delta-echo-desk.
+- Includes **Inferno Kernel** integration
+- Enhanced Deep Tree Echo settings (parallel processing)
 
-**Tech Stack**: TypeScript, React, SCSS, Electron, Tauri (Rust), pnpm
-**Key Commands**:
+**Common Commands**:
 ```bash
-cd deltecho2
-pnpm install
-pnpm dev              # Start Electron dev mode
-pnpm check            # Run all checks
-pnpm test             # Run unit tests
+pnpm dev:desktop       # Start desktop app in dev mode
+pnpm dev:electron      # Start Electron dev mode
 ```
 
-### deltachat-core/
-**DEPRECATED** - Legacy C library for Delta Chat core functionality. The current maintained version is at https://github.com/deltachat/deltachat-core-rust
+## Root-Level Commands
 
-**Tech Stack**: C, Python (bindings), meson (build system)
-**Build**:
 ```bash
-cd deltachat-core
-mkdir builddir && cd builddir
-meson
-ninja
+pnpm install           # Install all dependencies
+pnpm build             # Build all packages
+pnpm check             # Type check all packages
+pnpm clean             # Clean all build outputs
+pnpm test              # Run all tests
+pnpm dev:desktop       # Start deltecho2 in dev mode
+pnpm start:orchestrator # Start the orchestrator daemon
 ```
 
-### dovecot-core/
-Dovecot mail server core providing IMAP, POP3, and LMTP services. Used as the email transport layer.
+## Package-Specific Builds
 
-**Tech Stack**: C
-**Documentation**: See `doc/documentation.txt` or https://doc.dovecot.org
-**Installation**: See `INSTALL.md`
-
-## Common Development Patterns
-
-### Working with Desktop Apps (delta-echo-desk, deltecho2)
-
-Both desktop applications follow similar patterns:
-
-1. **Package Manager**: pnpm with workspaces
-2. **Node Version**: 20.x (check `.nvmrc`)
-3. **Monorepo Structure**: `packages/` directory contains:
-   - `frontend/` - Shared React UI
-   - `runtime/` - Platform abstraction layer
-   - `shared/` - Shared types and utilities
-   - `target-electron/` - Electron-specific code
-   - `target-tauri/` - Tauri-specific code (Rust)
-   - `target-browser/` - Browser-specific code
-   - `e2e-tests/` - Playwright E2E tests
-
-### Code Quality Commands
-
-For both desktop apps:
 ```bash
-pnpm check           # Run all checks (types, lint, format)
-pnpm check:types     # TypeScript only
-pnpm check:lint      # ESLint only
-pnpm check:format    # Prettier only
-pnpm fix             # Auto-fix lint and format issues
+pnpm build:core        # deep-tree-echo-core
+pnpm build:orchestrator # deep-tree-echo-orchestrator
+pnpm build:dove9       # dove9
+pnpm build:cognitive   # @deltecho/cognitive
+pnpm build:reasoning   # @deltecho/reasoning
+pnpm build:shared      # @deltecho/shared
+pnpm build:ui          # @deltecho/ui-components
 ```
 
-### Development Workflow
+## Architecture Philosophy
 
-1. Make changes in relevant package(s)
-2. Run `pnpm check` to verify code quality
-3. Run tests with `pnpm test`
-4. Add CHANGELOG.md entry for user-visible changes
+The codebase follows the **Dove9 paradigm** where "everything is a chatbot":
+- Mail server acts as the CPU (cognitive processing unit)
+- Messages are process threads
+- Inference is feedforward processing
+- Learning is feedback processing
+- Deep Tree Echo is the orchestration agent
+
+The **triadic cognitive loop** is inspired by hexapod tripod gait locomotion, providing stable, continuous cognitive processing through three interleaved streams.
+
+## Development Workflow
+
+1. Changes to cognitive logic → modify `deep-tree-echo-core` or `packages/cognitive`
+2. Changes to AGI reasoning → modify `packages/reasoning`
+3. Changes to UI components → modify `packages/ui-components`
+4. Changes to shared types → modify `packages/shared`
+5. Run `pnpm check` to verify all types
+6. Run `pnpm build` to build all packages
 
 ## Code Conventions
 
-- Avoid `console.log()` - use proper logging systems
+- Avoid `console.log()` - use proper logging via `getLogger()`
 - Use TypeScript strict mode patterns
-- Follow existing code style in each subproject
-- Functional React components with hooks preferred
-- For translations: use `useTranslationFunction()` hook in components
+- Prefer functional React components with hooks
+- Import from unified packages (`@deltecho/*`) when possible
+- Follow existing cognitive architecture patterns
 
-## Git Workflow
+## Key Documentation
 
-- Branch naming: `<username>/<feature>` or fork the repo
-- Rebase on main, don't merge main into feature branches
-- Squash merge is default for PRs
-- Include before/after screenshots for UI changes
-
-## Subproject-Specific Documentation
-
-Each subproject has its own CLAUDE.md with detailed information:
-- [delta-echo-desk/CLAUDE.md](delta-echo-desk/CLAUDE.md)
-- [deltecho2/CLAUDE.md](deltecho2/CLAUDE.md)
-
-Additional documentation:
-- Desktop development: `*/docs/DEVELOPMENT.md`
-- Styling guide: `*/docs/STYLES.md`
-- E2E testing: `*/docs/E2E-TESTING.md`
-
-## Dependencies Between Subprojects
-
-- **Desktop apps** use deltachat-core (via deltachat-core-rust, not the deprecated C version in this repo)
-- **Dovecot** provides mail server infrastructure for email transport
-- The desktop apps communicate with mail servers via IMAP/SMTP protocols
-
-## Quick Start
-
-For most development work on the messaging apps:
-```bash
-cd delta-echo-desk  # or deltecho2
-pnpm install
-pnpm dev
-```
-
-For mail server work:
-```bash
-cd dovecot-core
-# See INSTALL.md for build instructions
-```
+- [README.md](README.md) - Project overview and quick start
+- [DEEP-TREE-ECHO-ARCHITECTURE.md](DEEP-TREE-ECHO-ARCHITECTURE.md) - Comprehensive architecture
+- [IMPLEMENTATION-SUMMARY.md](IMPLEMENTATION-SUMMARY.md) - Phase 1 status
+- [A_NOTE_TO_MY_FUTURE_SELF.md](A_NOTE_TO_MY_FUTURE_SELF.md) - Philosophical foundation
+- [dove9/README.md](dove9/README.md) - Dove9 architecture details

@@ -1,0 +1,57 @@
+{
+  "name": "@deltecho/reasoning",
+  "version": "1.0.0",
+  "description": "AGI reasoning kernel with OpenCog-inspired cognitive architecture - extracted from inferno-kernel",
+  "type": "module",
+  "main": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "exports": {
+    ".": {
+      "import": "./dist/index.js",
+      "types": "./dist/index.d.ts"
+    },
+    "./atomspace": {
+      "import": "./dist/atomspace/index.js",
+      "types": "./dist/atomspace/index.d.ts"
+    },
+    "./reasoning": {
+      "import": "./dist/reasoning/index.js",
+      "types": "./dist/reasoning/index.d.ts"
+    },
+    "./core": {
+      "import": "./dist/core/index.js",
+      "types": "./dist/core/index.d.ts"
+    },
+    "./distributed": {
+      "import": "./dist/distributed/index.js",
+      "types": "./dist/distributed/index.d.ts"
+    }
+  },
+  "scripts": {
+    "build": "tsc",
+    "check:types": "tsc --noEmit",
+    "clean": "rm -rf dist",
+    "test": "echo 'Tests pending'"
+  },
+  "keywords": [
+    "agi",
+    "opencog",
+    "cognitive-architecture",
+    "reasoning",
+    "atomspace",
+    "pln",
+    "moses",
+    "attention-allocation"
+  ],
+  "license": "GPL-3.0-or-later",
+  "dependencies": {
+    "@deltecho/cognitive": "workspace:*"
+  },
+  "devDependencies": {
+    "@types/node": "^20.0.0",
+    "typescript": "^5.4.5"
+  },
+  "engines": {
+    "node": ">=20.0.0"
+  }
+}

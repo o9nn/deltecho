@@ -1,0 +1,50 @@
+{
+  "name": "@deltecho/ui-components",
+  "version": "1.0.0",
+  "description": "Unified UI components for Deep Tree Echo bot interface",
+  "type": "module",
+  "main": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "exports": {
+    ".": {
+      "import": "./dist/index.js",
+      "types": "./dist/index.d.ts"
+    },
+    "./DeepTreeEchoBot": {
+      "import": "./dist/DeepTreeEchoBot/index.js",
+      "types": "./dist/DeepTreeEchoBot/index.d.ts"
+    },
+    "./AICompanionHub": {
+      "import": "./dist/AICompanionHub/index.js",
+      "types": "./dist/AICompanionHub/index.d.ts"
+    }
+  },
+  "scripts": {
+    "build": "tsc",
+    "check:types": "tsc --noEmit",
+    "clean": "rm -rf dist"
+  },
+  "keywords": [
+    "deltecho",
+    "ui",
+    "components",
+    "react",
+    "deep-tree-echo"
+  ],
+  "license": "GPL-3.0-or-later",
+  "peerDependencies": {
+    "react": "^18.0.0"
+  },
+  "dependencies": {
+    "@deltecho/cognitive": "workspace:*",
+    "@deltecho/shared": "workspace:*"
+  },
+  "devDependencies": {
+    "@types/node": "^20.0.0",
+    "@types/react": "^18.0.0",
+    "typescript": "^5.4.5"
+  },
+  "engines": {
+    "node": ">=20.0.0"
+  }
+}
