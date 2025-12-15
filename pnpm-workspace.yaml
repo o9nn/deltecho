@@ -1,3 +1,17 @@
 packages:
+  # Core cognitive packages
   - 'deep-tree-echo-core'
   - 'deep-tree-echo-orchestrator'
+  - 'dove9'
+
+  # Unified packages (extracted and consolidated)
+  - 'packages/cognitive'
+  - 'packages/reasoning'
+  - 'packages/shared'
+  - 'packages/ui-components'
+
+  # Desktop applications (to be unified)
+  - 'delta-echo-desk'
+  - 'delta-echo-desk/packages/*'
+  - 'deltecho2'
+  - 'deltecho2/packages/*'

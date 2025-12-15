@@ -1,17 +1,31 @@
 {
   "name": "deltecho-monorepo",
-  "version": "1.0.0",
+  "version": "2.0.0",
   "private": true,
-  "description": "Deltecho monorepo with Deep Tree Echo orchestrator",
+  "description": "Deltecho monorepo - Unified Deep Tree Echo cognitive ecosystem",
   "type": "module",
   "engines": {
     "node": "^20",
     "pnpm": ">=9.6.0"
   },
   "scripts": {
-    "build:core": "cd deep-tree-echo-core && npm run build",
-    "check:core": "cd deep-tree-echo-core && npm run check:types",
-    "test:core": "cd deep-tree-echo-core && npm test"
+    "build": "pnpm -r build",
+    "build:core": "pnpm --filter deep-tree-echo-core build",
+    "build:orchestrator": "pnpm --filter deep-tree-echo-orchestrator build",
+    "build:dove9": "pnpm --filter dove9 build",
+    "build:cognitive": "pnpm --filter @deltecho/cognitive build",
+    "build:reasoning": "pnpm --filter @deltecho/reasoning build",
+    "build:shared": "pnpm --filter @deltecho/shared build",
+    "build:ui": "pnpm --filter @deltecho/ui-components build",
+    "check": "pnpm -r check:types",
+    "check:core": "pnpm --filter deep-tree-echo-core check:types",
+    "check:orchestrator": "pnpm --filter deep-tree-echo-orchestrator check:types",
+    "clean": "pnpm -r clean",
+    "test": "pnpm -r test",
+    "test:core": "pnpm --filter deep-tree-echo-core test",
+    "dev:desktop": "pnpm --filter deltecho2 dev",
+    "dev:electron": "pnpm --filter deltecho2 dev:electron",
+    "start:orchestrator": "pnpm --filter deep-tree-echo-orchestrator start"
   },
   "devDependencies": {
     "typescript": "^5.4.5"
