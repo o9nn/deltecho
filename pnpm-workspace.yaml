@@ -1,0 +1,3 @@
+packages:
+  - 'deep-tree-echo-core'
+  - 'deep-tree-echo-orchestrator'

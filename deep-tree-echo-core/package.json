@@ -1,0 +1,52 @@
+{
+  "name": "deep-tree-echo-core",
+  "version": "1.0.0",
+  "description": "Core cognitive and memory modules for Deep Tree Echo AI system",
+  "type": "module",
+  "main": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "exports": {
+    ".": {
+      "import": "./dist/index.js",
+      "types": "./dist/index.d.ts"
+    },
+    "./cognitive": {
+      "import": "./dist/cognitive/index.js",
+      "types": "./dist/cognitive/index.d.ts"
+    },
+    "./memory": {
+      "import": "./dist/memory/index.js",
+      "types": "./dist/memory/index.d.ts"
+    },
+    "./personality": {
+      "import": "./dist/personality/index.js",
+      "types": "./dist/personality/index.d.ts"
+    },
+    "./security": {
+      "import": "./dist/security/index.js",
+      "types": "./dist/security/index.d.ts"
+    },
+    "./embodiment": {
+      "import": "./dist/embodiment/index.js",
+      "types": "./dist/embodiment/index.d.ts"
+    }
+  },
+  "scripts": {
+    "build": "tsc",
+    "check:types": "tsc --noEmit",
+    "clean": "rm -rf dist"
+  },
+  "keywords": [
+    "ai",
+    "cognitive-architecture",
+    "memory-systems",
+    "personality",
+    "deltachat"
+  ],
+  "author": "",
+  "license": "GPL-3.0-or-later",
+  "devDependencies": {
+    "@types/node": "^25.0.2",
+    "typescript": "^5.4.5"
+  }
+}

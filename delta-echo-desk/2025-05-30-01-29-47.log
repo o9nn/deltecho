@@ -1,0 +1,757 @@
+2025-05-29T23:29:47.096Z	main/index            	INFO	""	"Deltachat Version 1.58.2 v1.48.0-667-g9bf1a82b5 1748561365744"
+2025-05-29T23:29:47.368Z	load-translations     	DEBUG	""	{"message":"Select a chat or create a new chat"}
+2025-05-29T23:29:47.385Z	main/index            	INFO	""	"cwd C:\\Users\\Ewok\\AppData\\Local\\DeltaChat\\accounts"
+2025-05-29T23:29:47.412Z	main/deltachat        	DEBUG	""	"Check if legacy accounts need migration"
+2025-05-29T23:29:47.452Z	migration             	DEBUG	""	"migration not needed: accounts.toml already exists"
+2025-05-29T23:29:47.544Z	main/deltachat        	DEBUG	""	"Initiating DeltaChatNode"
+2025-05-29T23:29:47.590Z	main/deltachat        	INFO	""	"using deltachat-rpc-server at"	{"serverPath":"D:\\curso\\deltachat-desktop\\node_modules\\.pnpm\\@deltachat+stdio-rpc-server-win32-x64@1.159.4\\node_modules\\@deltachat\\stdio-rpc-server-win32-x64\\deltachat-rpc-server.exe"}
+2025-05-29T23:29:48.449Z	main/deltachat        	INFO	""	"HI"
+2025-05-29T23:29:48.450Z	main/deltachat        	INFO	""	"Ready, starting accounts io..."
+2025-05-29T23:29:48.452Z	main/deltachat        	INFO	""	"Started accounts io."
+2025-05-29T23:29:49.526Z	main/menu             	INFO	""	"rebuilding menu with locale en"
+2025-05-29T23:29:49.539Z	/mainWindow           	INFO	""	"toggleDevTools"
+2025-05-29T23:29:49.546Z	/mainWindow           	INFO	""	"preq"	"media"
+2025-05-29T23:29:49.548Z	/mainWindow           	INFO	""	"preq"	"media"
+2025-05-29T23:29:49.551Z	/mainWindow           	INFO	""	"preq"	"geolocation"
+2025-05-29T23:29:49.552Z	/mainWindow           	INFO	""	"main window requested \"geolocation\" permission, but we denied it, because it is not in the list of allowed permissions."
+2025-05-29T23:29:49.571Z	main/cleanup_temp_dir 	INFO	""	"Deleted 0 internal tmp directories"
+2025-05-29T23:29:49.655Z	logger/log-cleanup    	INFO	""	"Successfuly deleted 1 old logfiles"
+2025-05-29T23:29:50.925Z	/mainWindow           	INFO	""	"preq"	"background-sync"
+2025-05-29T23:29:50.950Z	/mainWindow           	INFO	""	"main window requested \"background-sync\" permission, but we denied it, because it is not in the list of allowed permissions."
+2025-05-29T23:29:52.183Z	main/menu             	INFO	""	"rebuilding menu with locale en"
+2025-05-29T23:29:53.184Z	main/state            	INFO	""	"Saving state to C:\\Users\\Ewok\\AppData\\Local\\DeltaChat\\config.json"
+2025-05-29T23:29:54.074Z	core/event            	INFO	""	1	"src/scheduler.rs:66: starting IO"
+2025-05-29T23:29:54.258Z	/mainWindow           	INFO	""	"preq"	"background-sync"
+2025-05-29T23:29:54.282Z	/mainWindow           	INFO	""	"main window requested \"background-sync\" permission, but we denied it, because it is not in the list of allowed permissions."
+2025-05-29T23:29:54.297Z	render/components/DeepTreeEchoBot/DeepTreeEchoIntegration	INFO	""	"Deep Tree Echo Bot is disabled in settings"
+2025-05-29T23:29:54.351Z	core/event            	INFO	""	1	"src/scheduler.rs:389: starting inbox loop"
+2025-05-29T23:29:54.464Z	core/event            	INFO	""	1	"src/scheduler.rs:755: Starting SMTP loop."
+2025-05-29T23:29:54.483Z	core/event            	INFO	""	1	"src/scheduler.rs:917: scheduler is running"
+2025-05-29T23:29:54.492Z	load-translations     	DEBUG	""	{"message":"Select a chat or create a new chat"}
+2025-05-29T23:29:54.496Z	main/tray             	INFO	""	"add icon tray"
+2025-05-29T23:29:54.653Z	renderer/stockstrings 	INFO	""	"loading core translations"
+2025-05-29T23:29:54.657Z	core/event            	DEBUG	""	1	"ConnectivityChanged"	{"kind":"ConnectivityChanged"}
+2025-05-29T23:29:54.688Z	main/themes           	DEBUG	""	"theme"	"system"
+2025-05-29T23:29:54.697Z	main/themes           	DEBUG	""	"load theme file"	"system"	"D:\\curso\\deltachat-desktop\\packages\\target-electron\\html-dist\\themes\\dark.css"
+2025-05-29T23:29:54.732Z	main/themes           	DEBUG	""	"render theme data"
+2025-05-29T23:29:54.735Z	main/themes           	DEBUG	""	"render theme data for theme:"	{"name":"Dark Theme","description":"Our default dark theme."}
+2025-05-29T23:29:54.739Z	core/event            	INFO	""	1	"src/imap.rs:329: Connecting to IMAP server"
+2025-05-29T23:29:55.094Z	core/event            	DEBUG	""	1	"ConnectivityChanged"	{"kind":"ConnectivityChanged"}
+2025-05-29T23:29:55.121Z	renderer/stores/AccountNotificationStore	DEBUG	""	"set changed the state"
+2025-05-29T23:29:55.124Z	core/event            	INFO	""	1	"src/location.rs:739: Location loop is waiting for 24h 0m 0s or interrupt"
+2025-05-29T23:29:55.150Z	core/event            	INFO	""	2	"src/scheduler.rs:66: starting IO"
+2025-05-29T23:29:55.201Z	core/event            	INFO	""	1	"src/contact.rs:1971: Recently seen loop waiting for 24h 0m 0s or interrupt"
+2025-05-29T23:29:55.305Z	core/event            	INFO	""	1	"src/ephemeral.rs:609: Ephemeral loop waiting for deletion in 24h 0m 0s or interrupt"
+2025-05-29T23:29:55.328Z	renderer/ScreenController	DEBUG	""	"Changing screen to:"	"main"
+2025-05-29T23:29:55.331Z	core/event            	INFO	""	2	"src/scheduler.rs:389: starting inbox loop"
+2025-05-29T23:29:55.360Z	renderer/helpers/ChatList	DEBUG	""	"useChatList: query params are initial, we'll use the cached version of the chat list"
+2025-05-29T23:29:55.388Z	renderer/helpers/ChatList	DEBUG	""	"useChatListNoDebounce: fetching chat list"
+2025-05-29T23:29:55.391Z	renderer/helpers/ChatList	DEBUG	""	"useChatList: listFlags, queryStr or queryContactId changed, refetching chatlistids"
+2025-05-29T23:29:55.393Z	renderer/components/ConnectivityToast	DEBUG	""	"Browser knows we're offline"
+2025-05-29T23:29:55.609Z	renderer/stores/SettingsStore	DEBUG	""	"set changed the state"
+2025-05-29T23:29:55.616Z	renderer/helpers/ChatList	DEBUG	""	"useChatList: query params are initial, we'll use the cached version of the chat list"
+2025-05-29T23:29:55.631Z	renderer/helpers/ChatList	DEBUG	""	"useChatList: query params are initial, we'll use the cached version of the chat list"
+2025-05-29T23:29:55.635Z	core/event            	INFO	""	2	"src/imap.rs:329: Connecting to IMAP server"
+2025-05-29T23:29:55.725Z	renderer/helpers/ChatList	DEBUG	""	"useChatList: query params are initial, we'll use the cached version of the chat list"
+2025-05-29T23:29:55.725Z	renderer/helpers/ChatList	DEBUG	""	"useChatList: query params are initial, we'll use the cached version of the chat list"
+2025-05-29T23:29:55.728Z	core/event            	DEBUG	""	2	"ConnectivityChanged"	{"kind":"ConnectivityChanged"}
+2025-05-29T23:29:55.744Z	renderer/helpers/ChatList	DEBUG	""	"useChatList: query params are initial, we'll use the cached version of the chat list"
+2025-05-29T23:29:55.747Z	core/event            	INFO	""	2	"src/scheduler.rs:755: Starting SMTP loop."
+2025-05-29T23:29:55.769Z	core/event            	INFO	""	2	"src/scheduler.rs:917: scheduler is running"
+2025-05-29T23:29:55.784Z	renderer/ScreenController	INFO	""	"system_info"	{"arch":"64","deltachat_core_version":"v1.159.4","level":"awesome","num_cpus":"4","sqlite_version":"3.45.3"}
+2025-05-29T23:29:55.787Z	core/event            	DEBUG	""	2	"ConnectivityChanged"	{"kind":"ConnectivityChanged"}
+2025-05-29T23:29:55.816Z	renderer/helpers/ChatList	DEBUG	""	"useChatList: query params are initial, we'll use the cached version of the chat list"
+2025-05-29T23:29:55.817Z	core/event            	INFO	""	3	"src/scheduler.rs:66: starting IO"
+2025-05-29T23:29:55.862Z	renderer/stores/SettingsStore	DEBUG	""	"set changed the state"
+2025-05-29T23:29:55.877Z	renderer/helpers/ChatList	DEBUG	""	"useChatList: query params are initial, we'll use the cached version of the chat list"
+2025-05-29T23:29:55.891Z	core/event            	INFO	""	3	"src/scheduler.rs:389: starting inbox loop"
+2025-05-29T23:29:55.896Z	renderer/notifications	DEBUG	""	"clearNotificationsForChat"	7	11
+2025-05-29T23:29:55.896Z	main/notifications    	DEBUG	""	"clearNotificationsForChat"	{"accountId":7,"chatId":11,"notifications":{}}
+2025-05-29T23:29:55.897Z	main/notifications    	DEBUG	""	"after cleared Notifications"	{"accountId":7,"chatId":11,"notifications":{}}
+2025-05-29T23:29:55.935Z	renderer/helpers/ChatList	DEBUG	""	"useChatList: query params are initial, we'll use the cached version of the chat list"
+2025-05-29T23:29:55.942Z	core/event            	INFO	""	3	"src/imap.rs:329: Connecting to IMAP server"
+2025-05-29T23:29:55.959Z	renderer/ScreenController	INFO	""	"account_info"	{"arch":"64","authserv_id_candidates":"","bcc_self":"0","blobdir":"C:\\Users\\Ewok\\AppData\\Local\\DeltaChat\\accounts\\dff4c387-1735-4f24-8dc3-0559567335b1\\dc.db-blobs","bot":"0","configured_inbox_folder":"INBOX","configured_mvbox_folder":"<unset>","configured_sentbox_folder":"<unset>","configured_trash_folder":"<unset>","database_dir":"C:\\Users\\Ewok\\AppData\\Local\\DeltaChat\\accounts\\dff4c387-1735-4f24-8dc3-0559567335b1\\dc.db","database_encrypted":"false","database_version":"131","debug_logging":"0","delete_device_after":"0","delete_server_after":"1","delete_to_trash":"<unset>","deltachat_core_version":"v1.159.4","disable_idle":"false","displayname":"deep-tree-echo","download_limit":"0","e2ee_enabled":"1","entered_account_settings":"gg41300za@nine.testrun.org imap:unset:***:unset:0:Automatic:AUTH_NORMAL smtp:unset:0:unset:0:Automatic:AUTH_NORMAL cert_automatic","fetched_existing_msgs":"true","fingerprint":"B041255891B974D23AEBE3C0E7289961FF5DB67B","fix_is_chatmail":"false","folders_configured":"5","gossip_period":"172800","imap_server_admin":"\"mailto:root@nine.testrun.org\"","imap_server_comment":"\"Chatmail server\"","imap_server_id":"{\"name\": \"Dovecot\"}","is_chatmail":"true","is_configured":"1","is_muted":"false","journal_mode":"wal","last_cant_decrypt_outgoing_msgs":"0","last_housekeeping":"1748561391","last_msg_id":"11","level":"awesome","mdns_enabled":"1","media_quality":"0","messages_in_contact_requests":"0","mvbox_move":"0","num_cpus":"4","number_of_chat_messages":"2","number_of_chats":"2","number_of_contacts":"0","only_fetch_mvbox":"0","private_key_count":"1","private_tag":"<unset>","protect_autocrypt":"0","proxy_enabled":"0","public_key_count":"0","quota_exceeding":"0","scan_all_folders_debounce_secs":"60","secondary_addrs":"","selfavatar":"<unset>","sentbox_watch":"0","show_emails":"2","sign_unencrypted":"0","sqlite_version":"3.45.3","sync_msgs":"1","uptime":"0h 0m 7s","used_account_settings":"gg41300za@nine.testrun.org imap:[nine.testrun.org:443:tls:gg41300za@nine.testrun.org, nine.testrun.org:993:tls:gg41300za@nine.testrun.org, nine.testrun.org:143:starttls:gg41300za@nine.testrun.org] smtp:[nine.testrun.org:443:tls:gg41300za@nine.testrun.org, nine.testrun.org:465:tls:gg41300za@nine.testrun.org, nine.testrun.org:587:starttls:gg41300za@nine.testrun.org] provider:nine.testrun.org cert_automatic","verified_one_on_one_chats":"true","webrtc_instance":"<unset>","webxdc_realtime_enabled":"true"}
+2025-05-29T23:29:55.966Z	core/event            	DEBUG	""	3	"ConnectivityChanged"	{"kind":"ConnectivityChanged"}
+2025-05-29T23:29:56.031Z	renderer/keybindings  	DEBUG	""	"fire action"	"chatlist:switch-to-normal-view"	"handlers:"	[null]
+2025-05-29T23:29:56.032Z	renderer/helpers/ChatList	DEBUG	""	"useChatList: query params are initial, we'll use the cached version of the chat list"
+2025-05-29T23:29:56.049Z	renderer/composer     	DEBUG	""	"reloading chat because id changed"	11
+2025-05-29T23:29:56.116Z	core/event            	INFO	""	3	"src/scheduler.rs:755: Starting SMTP loop."
+2025-05-29T23:29:56.164Z	core/event            	INFO	""	3	"src/scheduler.rs:917: scheduler is running"
+2025-05-29T23:29:56.172Z	core/event            	DEBUG	""	3	"ConnectivityChanged"	{"kind":"ConnectivityChanged"}
+2025-05-29T23:29:56.179Z	renderer/notifications	DEBUG	""	"clearNotificationsForChat"	1	11
+2025-05-29T23:29:56.179Z	main/notifications    	DEBUG	""	"clearNotificationsForChat"	{"accountId":1,"chatId":11,"notifications":{}}
+2025-05-29T23:29:56.184Z	main/notifications    	DEBUG	""	"after cleared Notifications"	{"accountId":1,"chatId":11,"notifications":{}}
+2025-05-29T23:29:56.190Z	core/event            	INFO	""	4	"src/scheduler.rs:66: starting IO"
+2025-05-29T23:29:56.276Z	renderer/stores/MessageListStore	DEBUG	""	"loadChat took"	267.6000000014901
+2025-05-29T23:29:56.276Z	renderer/stores/MessageListStore	DEBUG	""	"selectedChat changed the state"
+2025-05-29T23:29:56.277Z	renderer/stores/chat/scheduler	DEBUG	""	"lockedQueuedEffect: selectChat: unlocked"
+2025-05-29T23:29:56.277Z	renderer/stores/chat/scheduler	DEBUG	""	"lockedQueuedEffect: selectChat: done"
+2025-05-29T23:29:56.333Z	render/components/message/MessageList	DEBUG	""	"scrollTo: scrollToBottom"	"scrollTop:"	0	"scrollHeight:"	569	"reactionsBar:"	false
+2025-05-29T23:29:56.334Z	render/components/message/MessageList	DEBUG	""	"scrollToBottom"	0	569
+2025-05-29T23:29:56.347Z	renderer/stores/MessageListStore	DEBUG	""	"unlockScroll"
+2025-05-29T23:29:56.348Z	renderer/stores/MessageListStore	DEBUG	""	"unlockScroll changed the state"
+2025-05-29T23:29:56.360Z	render/components/message/MessageList	DEBUG	""	"onScroll: Scrolled to top, fetching more messages!"
+2025-05-29T23:29:56.361Z	render/components/message/MessageList	DEBUG	""	"onScroll: Scrolled to bottom, fetching more messages!"
+2025-05-29T23:29:56.363Z	renderer/stores/MessageListStore	DEBUG	""	"fetchMoreMessagesTop"
+2025-05-29T23:29:56.364Z	renderer/stores/MessageListStore	DEBUG	""	"FETCH_MORE_MESSAGES: lastMessageIndexOnLastPage is zero, returning"
+2025-05-29T23:29:56.417Z	core/event            	INFO	""	4	"src/scheduler.rs:389: starting inbox loop"
+2025-05-29T23:29:56.606Z	core/event            	INFO	""	4	"src/imap.rs:329: Connecting to IMAP server"
+2025-05-29T23:29:56.711Z	core/event            	DEBUG	""	4	"ConnectivityChanged"	{"kind":"ConnectivityChanged"}
+2025-05-29T23:29:56.726Z	renderer/notifications	DEBUG	""	"clearNotificationsForChat"	2	11
+2025-05-29T23:29:56.726Z	main/notifications    	DEBUG	""	"clearNotificationsForChat"	{"accountId":2,"chatId":11,"notifications":{}}
+2025-05-29T23:29:56.732Z	main/notifications    	DEBUG	""	"after cleared Notifications"	{"accountId":2,"chatId":11,"notifications":{}}
+2025-05-29T23:29:56.733Z	core/event            	INFO	""	4	"src/scheduler.rs:755: Starting SMTP loop."
+2025-05-29T23:29:56.793Z	core/event            	INFO	""	4	"src/scheduler.rs:917: scheduler is running"
+2025-05-29T23:29:56.808Z	core/event            	DEBUG	""	4	"ConnectivityChanged"	{"kind":"ConnectivityChanged"}
+2025-05-29T23:29:56.813Z	core/event            	INFO	""	5	"src/scheduler.rs:66: starting IO"
+2025-05-29T23:29:56.817Z	core/event            	INFO	""	5	"src/scheduler.rs:389: starting inbox loop"
+2025-05-29T23:29:56.833Z	core/event            	INFO	""	5	"src/imap.rs:329: Connecting to IMAP server"
+2025-05-29T23:29:56.842Z	renderer/notifications	DEBUG	""	"clearNotificationsForChat"	3	11
+2025-05-29T23:29:56.842Z	main/notifications    	DEBUG	""	"clearNotificationsForChat"	{"accountId":3,"chatId":11,"notifications":{}}
+2025-05-29T23:29:56.844Z	main/notifications    	DEBUG	""	"after cleared Notifications"	{"accountId":3,"chatId":11,"notifications":{}}
+2025-05-29T23:29:56.850Z	core/event            	DEBUG	""	5	"ConnectivityChanged"	{"kind":"ConnectivityChanged"}
+2025-05-29T23:29:56.859Z	core/event            	INFO	""	5	"src/scheduler.rs:755: Starting SMTP loop."
+2025-05-29T23:29:56.864Z	core/event            	INFO	""	5	"src/scheduler.rs:917: scheduler is running"
+2025-05-29T23:29:56.868Z	renderer/notifications	DEBUG	""	"clearNotificationsForChat"	4	11
+2025-05-29T23:29:56.868Z	main/notifications    	DEBUG	""	"clearNotificationsForChat"	{"accountId":4,"chatId":11,"notifications":{}}
+2025-05-29T23:29:56.869Z	main/notifications    	DEBUG	""	"after cleared Notifications"	{"accountId":4,"chatId":11,"notifications":{}}
+2025-05-29T23:29:56.878Z	core/event            	DEBUG	""	5	"ConnectivityChanged"	{"kind":"ConnectivityChanged"}
+2025-05-29T23:29:56.881Z	core/event            	INFO	""	7	"src/scheduler.rs:66: starting IO"
+2025-05-29T23:29:56.891Z	core/event            	INFO	""	7	"src/scheduler.rs:389: starting inbox loop"
+2025-05-29T23:29:56.896Z	core/event            	INFO	""	7	"src/imap.rs:329: Connecting to IMAP server"
+2025-05-29T23:29:56.898Z	core/event            	DEBUG	""	7	"ConnectivityChanged"	{"kind":"ConnectivityChanged"}
+2025-05-29T23:29:56.902Z	renderer/notifications	DEBUG	""	"clearNotificationsForChat"	5	11
+2025-05-29T23:29:56.902Z	main/notifications    	DEBUG	""	"clearNotificationsForChat"	{"accountId":5,"chatId":11,"notifications":{}}
+2025-05-29T23:29:56.907Z	main/notifications    	DEBUG	""	"after cleared Notifications"	{"accountId":5,"chatId":11,"notifications":{}}
+2025-05-29T23:29:56.912Z	core/event            	INFO	""	7	"src/scheduler.rs:755: Starting SMTP loop."
+2025-05-29T23:29:56.917Z	core/event            	INFO	""	7	"src/scheduler.rs:917: scheduler is running"
+2025-05-29T23:29:56.919Z	renderer/components/ConnectivityToast	DEBUG	""	"Core thinks we're back online and connected"
+2025-05-29T23:29:56.925Z	core/event            	DEBUG	""	7	"ConnectivityChanged"	{"kind":"ConnectivityChanged"}
+2025-05-29T23:29:56.958Z	core/event            	INFO	""	2	"src/location.rs:739: Location loop is waiting for 24h 0m 0s or interrupt"
+2025-05-29T23:29:56.983Z	core/event            	INFO	""	2	"src/contact.rs:1971: Recently seen loop waiting for 24h 0m 0s or interrupt"
+2025-05-29T23:29:56.991Z	core/event            	INFO	""	2	"src/ephemeral.rs:609: Ephemeral loop waiting for deletion in 24h 0m 0s or interrupt"
+2025-05-29T23:29:56.996Z	core/event            	INFO	""	3	"src/location.rs:739: Location loop is waiting for 24h 0m 0s or interrupt"
+2025-05-29T23:29:57.000Z	core/event            	INFO	""	5	"src/location.rs:739: Location loop is waiting for 24h 0m 0s or interrupt"
+2025-05-29T23:29:57.002Z	core/event            	INFO	""	4	"src/contact.rs:1971: Recently seen loop waiting for 24h 0m 0s or interrupt"
+2025-05-29T23:29:57.016Z	core/event            	INFO	""	1	"src/smtp.rs:513: Selected rows from SMTP queue: []."
+2025-05-29T23:29:57.031Z	core/event            	INFO	""	2	"src/smtp.rs:513: Selected rows from SMTP queue: []."
+2025-05-29T23:29:57.048Z	core/event            	INFO	""	7	"src/contact.rs:1971: Recently seen loop waiting for 24h 0m 0s or interrupt"
+2025-05-29T23:29:57.050Z	core/event            	INFO	""	3	"src/contact.rs:1971: Recently seen loop waiting for 24h 0m 0s or interrupt"
+2025-05-29T23:29:57.052Z	core/event            	INFO	""	4	"src/ephemeral.rs:609: Ephemeral loop waiting for deletion in 24h 0m 0s or interrupt"
+2025-05-29T23:29:57.058Z	core/event            	INFO	""	5	"src/ephemeral.rs:609: Ephemeral loop waiting for deletion in 24h 0m 0s or interrupt"
+2025-05-29T23:29:57.061Z	core/event            	INFO	""	7	"src/ephemeral.rs:609: Ephemeral loop waiting for deletion in 24h 0m 0s or interrupt"
+2025-05-29T23:29:57.094Z	core/event            	INFO	""	4	"src/imap.rs:344: IMAP trying to connect to nine.testrun.org:443:tls."
+2025-05-29T23:29:57.105Z	core/event            	INFO	""	2	"src/imap.rs:344: IMAP trying to connect to nine.testrun.org:443:tls."
+2025-05-29T23:29:57.112Z	core/event            	INFO	""	1	"src/imap.rs:344: IMAP trying to connect to nine.testrun.org:443:tls."
+2025-05-29T23:29:57.115Z	core/event            	INFO	""	3	"src/imap.rs:344: IMAP trying to connect to nine.testrun.org:443:tls."
+2025-05-29T23:29:57.118Z	core/event            	INFO	""	4	"src/smtp.rs:513: Selected rows from SMTP queue: []."
+2025-05-29T23:29:57.124Z	core/event            	INFO	""	2	"src/net/dns.rs:139: No memory-cached DNS resolution for nine.testrun.org available, waiting for the resolver."
+2025-05-29T23:29:57.130Z	core/event            	INFO	""	4	"src/location.rs:739: Location loop is waiting for 24h 0m 0s or interrupt"
+2025-05-29T23:29:57.133Z	core/event            	INFO	""	4	"src/smtp.rs:618: Sending MDNs."
+2025-05-29T23:29:57.144Z	core/event            	INFO	""	3	"src/smtp.rs:513: Selected rows from SMTP queue: []."
+2025-05-29T23:29:57.150Z	core/event            	INFO	""	1	"src/smtp.rs:618: Sending MDNs."
+2025-05-29T23:29:57.155Z	core/event            	INFO	""	7	"src/imap.rs:344: IMAP trying to connect to nine.testrun.org:443:tls."
+2025-05-29T23:29:57.160Z	core/event            	INFO	""	7	"src/net/dns.rs:139: No memory-cached DNS resolution for nine.testrun.org available, waiting for the resolver."
+2025-05-29T23:29:57.166Z	core/event            	INFO	""	3	"src/net/dns.rs:139: No memory-cached DNS resolution for nine.testrun.org available, waiting for the resolver."
+2025-05-29T23:29:57.177Z	core/event            	INFO	""	2	"src/smtp.rs:618: Sending MDNs."
+2025-05-29T23:29:57.183Z	core/event            	INFO	""	1	"src/net/dns.rs:139: No memory-cached DNS resolution for nine.testrun.org available, waiting for the resolver."
+2025-05-29T23:29:57.189Z	core/event            	INFO	""	4	"src/net/dns.rs:139: No memory-cached DNS resolution for nine.testrun.org available, waiting for the resolver."
+2025-05-29T23:29:57.198Z	core/event            	INFO	""	5	"src/imap.rs:344: IMAP trying to connect to nine.testrun.org:443:tls."
+2025-05-29T23:29:57.201Z	core/event            	INFO	""	5	"src/net/dns.rs:139: No memory-cached DNS resolution for nine.testrun.org available, waiting for the resolver."
+2025-05-29T23:29:57.208Z	core/event            	INFO	""	3	"src/smtp.rs:618: Sending MDNs."
+2025-05-29T23:29:57.215Z	core/event            	INFO	""	3	"src/ephemeral.rs:609: Ephemeral loop waiting for deletion in 24h 0m 0s or interrupt"
+2025-05-29T23:29:57.218Z	core/event            	INFO	""	5	"src/smtp.rs:513: Selected rows from SMTP queue: []."
+2025-05-29T23:29:57.226Z	core/event            	INFO	""	4	"src/scheduler.rs:790: SMTP fake idle started."
+2025-05-29T23:29:57.232Z	core/event            	DEBUG	""	4	"ConnectivityChanged"	{"kind":"ConnectivityChanged"}
+2025-05-29T23:29:57.238Z	renderer/components/ConnectivityToast	DEBUG	""	"Core thinks we're back online and connected"
+2025-05-29T23:29:57.247Z	core/event            	INFO	""	4	"src/scheduler.rs:818: SMTP has no messages to retry, waiting for interrupt."
+2025-05-29T23:29:57.267Z	core/event            	INFO	""	5	"src/smtp.rs:618: Sending MDNs."
+2025-05-29T23:29:57.270Z	core/event            	INFO	""	1	"src/scheduler.rs:790: SMTP fake idle started."
+2025-05-29T23:29:57.283Z	core/event            	DEBUG	""	1	"ConnectivityChanged"	{"kind":"ConnectivityChanged"}
+2025-05-29T23:29:57.292Z	core/event            	INFO	""	1	"src/scheduler.rs:818: SMTP has no messages to retry, waiting for interrupt."
+2025-05-29T23:29:57.296Z	core/event            	INFO	""	7	"src/location.rs:739: Location loop is waiting for 24h 0m 0s or interrupt"
+2025-05-29T23:29:57.300Z	core/event            	INFO	""	2	"src/scheduler.rs:790: SMTP fake idle started."
+2025-05-29T23:29:57.305Z	core/event            	DEBUG	""	2	"ConnectivityChanged"	{"kind":"ConnectivityChanged"}
+2025-05-29T23:29:57.312Z	core/event            	INFO	""	2	"src/scheduler.rs:818: SMTP has no messages to retry, waiting for interrupt."
+2025-05-29T23:29:57.314Z	core/event            	INFO	""	3	"src/scheduler.rs:790: SMTP fake idle started."
+2025-05-29T23:29:57.317Z	core/event            	DEBUG	""	3	"ConnectivityChanged"	{"kind":"ConnectivityChanged"}
+2025-05-29T23:29:57.324Z	core/event            	INFO	""	3	"src/scheduler.rs:818: SMTP has no messages to retry, waiting for interrupt."
+2025-05-29T23:29:57.327Z	core/event            	INFO	""	5	"src/scheduler.rs:790: SMTP fake idle started."
+2025-05-29T23:29:57.331Z	core/event            	DEBUG	""	5	"ConnectivityChanged"	{"kind":"ConnectivityChanged"}
+2025-05-29T23:29:57.369Z	core/event            	INFO	""	5	"src/scheduler.rs:818: SMTP has no messages to retry, waiting for interrupt."
+2025-05-29T23:29:57.390Z	core/event            	INFO	""	5	"src/contact.rs:1971: Recently seen loop waiting for 24h 0m 0s or interrupt"
+2025-05-29T23:29:57.398Z	core/event            	INFO	""	7	"src/smtp.rs:513: Selected rows from SMTP queue: []."
+2025-05-29T23:29:57.401Z	core/event            	INFO	""	7	"src/smtp.rs:618: Sending MDNs."
+2025-05-29T23:29:57.407Z	core/event            	INFO	""	7	"src/scheduler.rs:790: SMTP fake idle started."
+2025-05-29T23:29:57.412Z	core/event            	DEBUG	""	7	"ConnectivityChanged"	{"kind":"ConnectivityChanged"}
+2025-05-29T23:29:57.416Z	core/event            	INFO	""	7	"src/scheduler.rs:818: SMTP has no messages to retry, waiting for interrupt."
+2025-05-29T23:29:57.424Z	core/event            	INFO	""	7	"src/net/dns.rs:179: Resolved nine.testrun.org into 37.218.247.14."
+2025-05-29T23:29:57.428Z	core/event            	INFO	""	5	"src/net/dns.rs:179: Resolved nine.testrun.org into 37.218.247.14."
+2025-05-29T23:29:57.430Z	core/event            	INFO	""	7	"src/net/dns.rs:179: Resolved nine.testrun.org into 116.202.233.236."
+2025-05-29T23:29:57.432Z	core/event            	INFO	""	5	"src/net/dns.rs:179: Resolved nine.testrun.org into 116.202.233.236."
+2025-05-29T23:29:57.434Z	core/event            	INFO	""	5	"src/imap/client.rs:122: Attempting IMAP connection to nine.testrun.org (116.202.233.236:443)."
+2025-05-29T23:29:57.438Z	core/event            	INFO	""	4	"src/net/dns.rs:179: Resolved nine.testrun.org into 37.218.247.14."
+2025-05-29T23:29:57.441Z	core/event            	INFO	""	2	"src/net/dns.rs:179: Resolved nine.testrun.org into 37.218.247.14."
+2025-05-29T23:29:57.445Z	core/event            	INFO	""	4	"src/net/dns.rs:179: Resolved nine.testrun.org into 116.202.233.236."
+2025-05-29T23:29:57.447Z	core/event            	INFO	""	2	"src/net/dns.rs:179: Resolved nine.testrun.org into 116.202.233.236."
+2025-05-29T23:29:57.449Z	core/event            	INFO	""	2	"src/imap/client.rs:122: Attempting IMAP connection to nine.testrun.org (116.202.233.236:443)."
+2025-05-29T23:29:57.451Z	core/event            	INFO	""	4	"src/imap/client.rs:122: Attempting IMAP connection to nine.testrun.org (116.202.233.236:443)."
+2025-05-29T23:29:57.456Z	core/event            	INFO	""	7	"src/imap/client.rs:122: Attempting IMAP connection to nine.testrun.org (116.202.233.236:443)."
+2025-05-29T23:29:57.461Z	core/event            	INFO	""	1	"src/net/dns.rs:179: Resolved nine.testrun.org into 37.218.247.14."
+2025-05-29T23:29:57.464Z	core/event            	INFO	""	3	"src/net/dns.rs:179: Resolved nine.testrun.org into 37.218.247.14."
+2025-05-29T23:29:57.472Z	core/event            	INFO	""	1	"src/net/dns.rs:179: Resolved nine.testrun.org into 116.202.233.236."
+2025-05-29T23:29:57.476Z	core/event            	INFO	""	3	"src/net/dns.rs:179: Resolved nine.testrun.org into 116.202.233.236."
+2025-05-29T23:29:57.478Z	core/event            	INFO	""	1	"src/imap/client.rs:122: Attempting IMAP connection to nine.testrun.org (37.218.247.14:443)."
+2025-05-29T23:29:57.480Z	core/event            	INFO	""	3	"src/imap/client.rs:122: Attempting IMAP connection to nine.testrun.org (116.202.233.236:443)."
+2025-05-29T23:29:57.482Z	core/event            	INFO	""	5	"src/imap/client.rs:122: Attempting IMAP connection to nine.testrun.org (37.218.247.14:443)."
+2025-05-29T23:29:57.484Z	core/event            	INFO	""	2	"src/imap/client.rs:122: Attempting IMAP connection to nine.testrun.org (37.218.247.14:443)."
+2025-05-29T23:29:57.487Z	core/event            	INFO	""	4	"src/imap/client.rs:122: Attempting IMAP connection to nine.testrun.org (37.218.247.14:443)."
+2025-05-29T23:29:57.495Z	core/event            	INFO	""	7	"src/imap/client.rs:122: Attempting IMAP connection to nine.testrun.org (37.218.247.14:443)."
+2025-05-29T23:29:57.500Z	core/event            	INFO	""	3	"src/imap/client.rs:122: Attempting IMAP connection to nine.testrun.org (37.218.247.14:443)."
+2025-05-29T23:29:57.506Z	core/event            	INFO	""	1	"src/imap/client.rs:122: Attempting IMAP connection to nine.testrun.org (116.202.233.236:443)."
+2025-05-29T23:29:57.510Z	core/event            	INFO	""	2	"src/imap.rs:382: Logging into IMAP server with LOGIN."
+2025-05-29T23:29:57.513Z	core/event            	INFO	""	3	"src/imap.rs:382: Logging into IMAP server with LOGIN."
+2025-05-29T23:29:57.520Z	core/event            	INFO	""	5	"src/imap.rs:382: Logging into IMAP server with LOGIN."
+2025-05-29T23:29:57.524Z	core/event            	INFO	""	7	"src/imap.rs:382: Logging into IMAP server with LOGIN."
+2025-05-29T23:29:57.534Z	core/event            	INFO	""	4	"src/imap.rs:382: Logging into IMAP server with LOGIN."
+2025-05-29T23:29:57.544Z	core/event            	INFO	""	1	"src/imap.rs:382: Logging into IMAP server with LOGIN."
+2025-05-29T23:29:57.554Z	core/event            	INFO	""	2	"src/imap.rs:391: Enabling IMAP compression."
+2025-05-29T23:29:57.561Z	core/event            	INFO	""	3	"src/imap.rs:391: Enabling IMAP compression."
+2025-05-29T23:29:57.567Z	core/event            	INFO	""	7	"src/imap.rs:391: Enabling IMAP compression."
+2025-05-29T23:29:57.572Z	core/event            	INFO	""	5	"src/imap.rs:391: Enabling IMAP compression."
+2025-05-29T23:29:57.575Z	core/event            	INFO	""	4	"src/imap.rs:391: Enabling IMAP compression."
+2025-05-29T23:29:57.578Z	core/event            	INFO	""	1	"src/imap.rs:391: Enabling IMAP compression."
+2025-05-29T23:29:57.582Z	core/event            	DEBUG	""	2	"ImapConnected"	{"kind":"ImapConnected","msg":"IMAP-LOGIN as bt2lj93m8@nine.testrun.org"}
+2025-05-29T23:29:57.585Z	core/event            	DEBUG	""	2	"ConnectivityChanged"	{"kind":"ConnectivityChanged"}
+2025-05-29T23:29:57.588Z	core/event            	INFO	""	2	"src/imap.rs:414: Successfully logged into IMAP server"
+2025-05-29T23:29:57.590Z	core/event            	DEBUG	""	3	"ImapConnected"	{"kind":"ImapConnected","msg":"IMAP-LOGIN as 4gyftby11@nine.testrun.org"}
+2025-05-29T23:29:57.592Z	core/event            	DEBUG	""	3	"ConnectivityChanged"	{"kind":"ConnectivityChanged"}
+2025-05-29T23:29:57.594Z	core/event            	INFO	""	3	"src/imap.rs:414: Successfully logged into IMAP server"
+2025-05-29T23:29:57.597Z	core/event            	DEBUG	""	5	"ImapConnected"	{"kind":"ImapConnected","msg":"IMAP-LOGIN as 11lmq9jmo@nine.testrun.org"}
+2025-05-29T23:29:57.599Z	core/event            	DEBUG	""	5	"ConnectivityChanged"	{"kind":"ConnectivityChanged"}
+2025-05-29T23:29:57.601Z	core/event            	INFO	""	5	"src/imap.rs:414: Successfully logged into IMAP server"
+2025-05-29T23:29:57.604Z	core/event            	DEBUG	""	7	"ImapConnected"	{"kind":"ImapConnected","msg":"IMAP-LOGIN as gg41300za@nine.testrun.org"}
+2025-05-29T23:29:57.607Z	core/event            	DEBUG	""	7	"ConnectivityChanged"	{"kind":"ConnectivityChanged"}
+2025-05-29T23:29:57.609Z	core/event            	INFO	""	7	"src/imap.rs:414: Successfully logged into IMAP server"
+2025-05-29T23:29:57.611Z	core/event            	DEBUG	""	4	"ImapConnected"	{"kind":"ImapConnected","msg":"IMAP-LOGIN as g423q7mq0@nine.testrun.org"}
+2025-05-29T23:29:57.613Z	core/event            	DEBUG	""	4	"ConnectivityChanged"	{"kind":"ConnectivityChanged"}
+2025-05-29T23:29:57.616Z	core/event            	INFO	""	4	"src/imap.rs:414: Successfully logged into IMAP server"
+2025-05-29T23:29:57.618Z	core/event            	DEBUG	""	1	"ImapConnected"	{"kind":"ImapConnected","msg":"IMAP-LOGIN as fi8ub1efy@nine.testrun.org"}
+2025-05-29T23:29:57.622Z	core/event            	DEBUG	""	1	"ConnectivityChanged"	{"kind":"ConnectivityChanged"}
+2025-05-29T23:29:57.624Z	core/event            	INFO	""	1	"src/imap.rs:414: Successfully logged into IMAP server"
+2025-05-29T23:29:57.626Z	core/event            	DEBUG	""	2	"ConnectivityChanged"	{"kind":"ConnectivityChanged"}
+2025-05-29T23:29:57.628Z	core/event            	INFO	""	2	"src/sql.rs:838: Start housekeeping..."
+2025-05-29T23:29:57.632Z	core/event            	INFO	""	2	"src/sql.rs:893: 3 files in use."
+2025-05-29T23:29:57.635Z	core/event            	INFO	""	2	"src/sql.rs:728: Incremental vacuum freed 0 pages."
+2025-05-29T23:29:57.639Z	core/event            	INFO	""	2	"src/sql.rs:819: Housekeeping done."
+2025-05-29T23:29:57.641Z	core/event            	INFO	""	2	"src/imap.rs:1501: Server supports metadata, retrieving server comment and admin contact."
+2025-05-29T23:29:57.644Z	core/event            	DEBUG	""	3	"ConnectivityChanged"	{"kind":"ConnectivityChanged"}
+2025-05-29T23:29:57.648Z	core/event            	INFO	""	3	"src/sql.rs:838: Start housekeeping..."
+2025-05-29T23:29:57.651Z	core/event            	INFO	""	3	"src/sql.rs:893: 4 files in use."
+2025-05-29T23:29:57.654Z	core/event            	DEBUG	""	5	"ConnectivityChanged"	{"kind":"ConnectivityChanged"}
+2025-05-29T23:29:57.656Z	core/event            	INFO	""	5	"src/sql.rs:838: Start housekeeping..."
+2025-05-29T23:29:57.659Z	core/event            	INFO	""	5	"src/sql.rs:893: 3 files in use."
+2025-05-29T23:29:57.662Z	core/event            	DEBUG	""	4	"ConnectivityChanged"	{"kind":"ConnectivityChanged"}
+2025-05-29T23:29:57.666Z	core/event            	DEBUG	""	1	"ConnectivityChanged"	{"kind":"ConnectivityChanged"}
+2025-05-29T23:29:57.669Z	core/event            	INFO	""	4	"src/sql.rs:838: Start housekeeping..."
+2025-05-29T23:29:57.673Z	core/event            	INFO	""	5	"src/sql.rs:728: Incremental vacuum freed 0 pages."
+2025-05-29T23:29:57.676Z	core/event            	INFO	""	4	"src/sql.rs:893: 3 files in use."
+2025-05-29T23:29:57.680Z	core/event            	INFO	""	1	"src/sql.rs:838: Start housekeeping..."
+2025-05-29T23:29:57.683Z	core/event            	INFO	""	1	"src/sql.rs:893: 16 files in use."
+2025-05-29T23:29:57.686Z	core/event            	INFO	""	5	"src/sql.rs:819: Housekeeping done."
+2025-05-29T23:29:57.689Z	core/event            	INFO	""	5	"src/imap.rs:1501: Server supports metadata, retrieving server comment and admin contact."
+2025-05-29T23:29:57.831Z	core/event            	DEBUG	""	7	"ConnectivityChanged"	{"kind":"ConnectivityChanged"}
+2025-05-29T23:29:57.862Z	core/event            	INFO	""	7	"src/sql.rs:838: Start housekeeping..."
+2025-05-29T23:29:57.890Z	core/event            	INFO	""	3	"src/sql.rs:728: Incremental vacuum freed 0 pages."
+2025-05-29T23:29:57.894Z	core/event            	INFO	""	4	"src/sql.rs:728: Incremental vacuum freed 0 pages."
+2025-05-29T23:29:57.961Z	core/event            	INFO	""	7	"src/sql.rs:893: 3 files in use."
+2025-05-29T23:29:58.024Z	core/event            	INFO	""	3	"src/sql.rs:819: Housekeeping done."
+2025-05-29T23:29:58.028Z	core/event            	INFO	""	4	"src/sql.rs:819: Housekeeping done."
+2025-05-29T23:29:58.031Z	core/event            	INFO	""	3	"src/imap.rs:1501: Server supports metadata, retrieving server comment and admin contact."
+2025-05-29T23:29:58.075Z	core/event            	INFO	""	4	"src/imap.rs:1501: Server supports metadata, retrieving server comment and admin contact."
+2025-05-29T23:29:58.114Z	core/event            	INFO	""	7	"src/sql.rs:728: Incremental vacuum freed 0 pages."
+2025-05-29T23:29:58.149Z	core/event            	INFO	""	1	"src/sql.rs:728: Incremental vacuum freed 0 pages."
+2025-05-29T23:29:58.161Z	renderer/components/ConnectivityToast	DEBUG	""	"Core thinks we're back online and connected"
+2025-05-29T23:29:58.163Z	core/event            	INFO	""	7	"src/sql.rs:819: Housekeeping done."
+2025-05-29T23:29:58.166Z	core/event            	INFO	""	7	"src/imap.rs:1501: Server supports metadata, retrieving server comment and admin contact."
+2025-05-29T23:29:58.177Z	core/event            	INFO	""	1	"src/sql.rs:819: Housekeeping done."
+2025-05-29T23:29:58.182Z	core/event            	INFO	""	1	"src/imap.rs:1501: Server supports metadata, retrieving server comment and admin contact."
+2025-05-29T23:29:58.188Z	core/event            	INFO	""	2	"src/imap.rs:555: No new emails in folder \"INBOX\"."
+2025-05-29T23:29:58.197Z	core/event            	INFO	""	2	"src/imap/scan_folders.rs:31: Starting full folder scan"
+2025-05-29T23:29:58.214Z	core/event            	INFO	""	5	"src/imap.rs:555: No new emails in folder \"INBOX\"."
+2025-05-29T23:29:58.223Z	core/event            	INFO	""	5	"src/imap/scan_folders.rs:31: Starting full folder scan"
+2025-05-29T23:29:58.231Z	core/event            	INFO	""	2	"src/imap/scan_folders.rs:96: Found folders: [\"INBOX\"]."
+2025-05-29T23:29:58.240Z	core/event            	INFO	""	2	"src/imap.rs:555: No new emails in folder \"INBOX\"."
+2025-05-29T23:29:58.248Z	core/event            	INFO	""	1	"src/imap.rs:555: No new emails in folder \"INBOX\"."
+2025-05-29T23:29:58.251Z	core/event            	INFO	""	1	"src/imap/scan_folders.rs:31: Starting full folder scan"
+2025-05-29T23:29:58.260Z	core/event            	INFO	""	4	"src/imap.rs:555: No new emails in folder \"INBOX\"."
+2025-05-29T23:29:58.264Z	core/event            	INFO	""	4	"src/imap/scan_folders.rs:31: Starting full folder scan"
+2025-05-29T23:29:58.267Z	core/event            	INFO	""	5	"src/imap/scan_folders.rs:96: Found folders: [\"INBOX\"]."
+2025-05-29T23:29:58.271Z	core/event            	INFO	""	5	"src/imap.rs:555: No new emails in folder \"INBOX\"."
+2025-05-29T23:29:58.298Z	core/event            	DEBUG	""	2	"ConnectivityChanged"	{"kind":"ConnectivityChanged"}
+2025-05-29T23:29:58.309Z	core/event            	DEBUG	""	2	"ImapInboxIdle"	{"kind":"ImapInboxIdle"}
+2025-05-29T23:29:58.317Z	core/event            	INFO	""	2	"src/scheduler.rs:674: IMAP session in folder \"INBOX\" supports IDLE, using it."
+2025-05-29T23:29:58.322Z	core/event            	INFO	""	3	"src/imap.rs:555: No new emails in folder \"INBOX\"."
+2025-05-29T23:29:58.331Z	core/event            	INFO	""	3	"src/imap/scan_folders.rs:31: Starting full folder scan"
+2025-05-29T23:29:58.334Z	core/event            	INFO	""	7	"src/imap.rs:555: No new emails in folder \"INBOX\"."
+2025-05-29T23:29:58.339Z	core/event            	INFO	""	7	"src/imap/scan_folders.rs:31: Starting full folder scan"
+2025-05-29T23:29:58.344Z	core/event            	INFO	""	1	"src/imap/scan_folders.rs:96: Found folders: [\"INBOX\"]."
+2025-05-29T23:29:58.348Z	core/event            	INFO	""	1	"src/imap.rs:555: No new emails in folder \"INBOX\"."
+2025-05-29T23:29:58.351Z	core/event            	INFO	""	2	"src/imap/idle.rs:63: IDLE entering wait-on-remote state in folder \"INBOX\"."
+2025-05-29T23:29:58.355Z	core/event            	DEBUG	""	5	"ConnectivityChanged"	{"kind":"ConnectivityChanged"}
+2025-05-29T23:29:58.359Z	core/event            	DEBUG	""	5	"ImapInboxIdle"	{"kind":"ImapInboxIdle"}
+2025-05-29T23:29:58.364Z	core/event            	INFO	""	5	"src/scheduler.rs:674: IMAP session in folder \"INBOX\" supports IDLE, using it."
+2025-05-29T23:29:58.369Z	core/event            	INFO	""	4	"src/imap/scan_folders.rs:96: Found folders: [\"INBOX\"]."
+2025-05-29T23:29:58.377Z	core/event            	INFO	""	4	"src/imap.rs:555: No new emails in folder \"INBOX\"."
+2025-05-29T23:29:58.380Z	core/event            	INFO	""	3	"src/imap/scan_folders.rs:96: Found folders: [\"INBOX\"]."
+2025-05-29T23:29:58.382Z	core/event            	INFO	""	3	"src/imap.rs:555: No new emails in folder \"INBOX\"."
+2025-05-29T23:29:58.384Z	core/event            	INFO	""	7	"src/imap/scan_folders.rs:96: Found folders: [\"INBOX\"]."
+2025-05-29T23:29:58.388Z	core/event            	INFO	""	7	"src/imap.rs:555: No new emails in folder \"INBOX\"."
+2025-05-29T23:29:58.393Z	core/event            	INFO	""	5	"src/imap/idle.rs:63: IDLE entering wait-on-remote state in folder \"INBOX\"."
+2025-05-29T23:29:58.397Z	core/event            	DEBUG	""	1	"ConnectivityChanged"	{"kind":"ConnectivityChanged"}
+2025-05-29T23:29:58.399Z	core/event            	DEBUG	""	1	"ImapInboxIdle"	{"kind":"ImapInboxIdle"}
+2025-05-29T23:29:58.402Z	core/event            	INFO	""	1	"src/scheduler.rs:674: IMAP session in folder \"INBOX\" supports IDLE, using it."
+2025-05-29T23:29:58.406Z	core/event            	DEBUG	""	4	"ConnectivityChanged"	{"kind":"ConnectivityChanged"}
+2025-05-29T23:29:58.409Z	core/event            	DEBUG	""	4	"ImapInboxIdle"	{"kind":"ImapInboxIdle"}
+2025-05-29T23:29:58.413Z	core/event            	INFO	""	4	"src/scheduler.rs:674: IMAP session in folder \"INBOX\" supports IDLE, using it."
+2025-05-29T23:29:58.432Z	core/event            	DEBUG	""	3	"ConnectivityChanged"	{"kind":"ConnectivityChanged"}
+2025-05-29T23:29:58.444Z	core/event            	DEBUG	""	3	"ImapInboxIdle"	{"kind":"ImapInboxIdle"}
+2025-05-29T23:29:58.451Z	core/event            	DEBUG	""	7	"ConnectivityChanged"	{"kind":"ConnectivityChanged"}
+2025-05-29T23:29:58.459Z	core/event            	DEBUG	""	7	"ImapInboxIdle"	{"kind":"ImapInboxIdle"}
+2025-05-29T23:29:58.463Z	core/event            	INFO	""	7	"src/scheduler.rs:674: IMAP session in folder \"INBOX\" supports IDLE, using it."
+2025-05-29T23:29:58.466Z	core/event            	INFO	""	3	"src/scheduler.rs:674: IMAP session in folder \"INBOX\" supports IDLE, using it."
+2025-05-29T23:29:58.476Z	core/event            	INFO	""	1	"src/imap/idle.rs:63: IDLE entering wait-on-remote state in folder \"INBOX\"."
+2025-05-29T23:29:58.479Z	core/event            	INFO	""	4	"src/imap/idle.rs:63: IDLE entering wait-on-remote state in folder \"INBOX\"."
+2025-05-29T23:29:58.482Z	core/event            	INFO	""	7	"src/imap/idle.rs:63: IDLE entering wait-on-remote state in folder \"INBOX\"."
+2025-05-29T23:29:58.486Z	core/event            	INFO	""	3	"src/imap/idle.rs:63: IDLE entering wait-on-remote state in folder \"INBOX\"."
+2025-05-29T23:29:58.494Z	core/event            	INFO	""	1	"src/chat.rs:4585: Device-message changelog-version-1.58.0 already added."
+2025-05-29T23:29:58.498Z	core/event            	INFO	""	2	"src/chat.rs:4585: Device-message changelog-version-1.58.0 already added."
+2025-05-29T23:29:58.506Z	core/event            	INFO	""	3	"src/chat.rs:4585: Device-message changelog-version-1.58.0 already added."
+2025-05-29T23:29:58.510Z	core/event            	INFO	""	4	"src/chat.rs:4585: Device-message changelog-version-1.58.0 already added."
+2025-05-29T23:29:58.512Z	core/event            	INFO	""	5	"src/chat.rs:4585: Device-message changelog-version-1.58.0 already added."
+2025-05-29T23:29:58.514Z	core/event            	INFO	""	7	"src/chat.rs:4585: Device-message changelog-version-1.58.0 already added."
+2025-05-29T23:29:58.770Z	renderer/components/ConnectivityToast	DEBUG	""	"Core thinks we're back online and connected"
+2025-05-29T23:30:17.591Z	renderer/ScreenController	DEBUG	""	"Changing screen to:"	"aiNeighborhood"
+2025-05-29T23:30:17.622Z	/mainWindow           	INFO	""	"preq"	"media"
+2025-05-29T23:30:17.626Z	/mainWindow           	INFO	""	"preq"	"media"
+2025-05-29T23:30:17.627Z	/mainWindow           	INFO	""	"preq"	"geolocation"
+2025-05-29T23:30:17.628Z	/mainWindow           	INFO	""	"main window requested \"geolocation\" permission, but we denied it, because it is not in the list of allowed permissions."
+2025-05-29T23:30:17.647Z	/mainWindow           	INFO	""	"preq"	"media"
+2025-05-29T23:30:17.648Z	/mainWindow           	INFO	""	"preq"	"media"
+2025-05-29T23:30:17.648Z	/mainWindow           	INFO	""	"preq"	"geolocation"
+2025-05-29T23:30:17.649Z	/mainWindow           	INFO	""	"main window requested \"geolocation\" permission, but we denied it, because it is not in the list of allowed permissions."
+2025-05-29T23:30:17.676Z	/mainWindow           	INFO	""	"preq"	"media"
+2025-05-29T23:30:17.686Z	/mainWindow           	INFO	""	"preq"	"media"
+2025-05-29T23:30:17.687Z	/mainWindow           	INFO	""	"preq"	"geolocation"
+2025-05-29T23:30:17.688Z	/mainWindow           	INFO	""	"main window requested \"geolocation\" permission, but we denied it, because it is not in the list of allowed permissions."
+2025-05-29T23:30:17.714Z	/mainWindow           	INFO	""	"preq"	"media"
+2025-05-29T23:30:17.717Z	/mainWindow           	INFO	""	"preq"	"media"
+2025-05-29T23:30:17.720Z	/mainWindow           	INFO	""	"preq"	"geolocation"
+2025-05-29T23:30:17.720Z	/mainWindow           	INFO	""	"main window requested \"geolocation\" permission, but we denied it, because it is not in the list of allowed permissions."
+2025-05-29T23:30:17.743Z	/mainWindow           	INFO	""	"preq"	"media"
+2025-05-29T23:30:17.744Z	/mainWindow           	INFO	""	"preq"	"media"
+2025-05-29T23:30:17.745Z	/mainWindow           	INFO	""	"preq"	"geolocation"
+2025-05-29T23:30:17.747Z	/mainWindow           	INFO	""	"main window requested \"geolocation\" permission, but we denied it, because it is not in the list of allowed permissions."
+2025-05-29T23:30:54.114Z	renderer/Component/Timestamp	DEBUG	""	"updateTS:"	{"updateRefs":{}}
+2025-05-29T23:31:03.083Z	renderer/ScreenController	DEBUG	""	"Changing screen to:"	"aiNeighborhood"
+2025-05-29T23:31:11.451Z	renderer/ScreenController	DEBUG	""	"Changing screen to:"	"aiNeighborhood"
+2025-05-29T23:31:23.555Z	renderer/ScreenController	DEBUG	""	"Changing screen to:"	"aiNeighborhood"
+2025-05-29T23:31:26.603Z	renderer/keybindings  	DEBUG	""	"fire action"	"chatlist:exit-search"	"handlers:"	[null]
+2025-05-29T23:31:26.604Z	renderer/keybindings  	DEBUG	""	"fire action"	"chatlist:clear-search"	"handlers:"	[]
+2025-05-29T23:31:28.580Z	renderer/stores/SettingsStore	DEBUG	""	"set changed the state"
+2025-05-29T23:31:28.581Z	renderer/stores/SettingsStore	INFO	""	"cleared settings store"
+2025-05-29T23:31:28.587Z	renderer/ScreenController	DEBUG	""	"Changing screen to:"	"main"
+2025-05-29T23:31:28.598Z	renderer/helpers/ChatList	DEBUG	""	"useChatList: query params are initial, we'll use the cached version of the chat list"
+2025-05-29T23:31:28.656Z	renderer/helpers/ChatList	DEBUG	""	"useChatListNoDebounce: fetching chat list"
+2025-05-29T23:31:28.656Z	renderer/helpers/ChatList	DEBUG	""	"useChatList: listFlags, queryStr or queryContactId changed, refetching chatlistids"
+2025-05-29T23:31:28.656Z	renderer/components/ConnectivityToast	DEBUG	""	"Browser knows we're offline"
+2025-05-29T23:31:28.788Z	renderer/helpers/ChatList	DEBUG	""	"useChatList: query params are initial, we'll use the cached version of the chat list"
+2025-05-29T23:31:28.797Z	renderer/helpers/ChatList	DEBUG	""	"useChatList: query params are initial, we'll use the cached version of the chat list"
+2025-05-29T23:31:28.806Z	renderer/ScreenController	INFO	""	"system_info"	{"arch":"64","deltachat_core_version":"v1.159.4","level":"awesome","num_cpus":"4","sqlite_version":"3.45.3"}
+2025-05-29T23:31:28.809Z	renderer/helpers/ChatList	DEBUG	""	"useChatList: query params are initial, we'll use the cached version of the chat list"
+2025-05-29T23:31:28.816Z	renderer/notifications	DEBUG	""	"clearNotificationsForChat"	5	11
+2025-05-29T23:31:28.816Z	main/notifications    	DEBUG	""	"clearNotificationsForChat"	{"accountId":5,"chatId":11,"notifications":{}}
+2025-05-29T23:31:28.830Z	main/notifications    	DEBUG	""	"after cleared Notifications"	{"accountId":5,"chatId":11,"notifications":{}}
+2025-05-29T23:31:28.832Z	renderer/stores/SettingsStore	DEBUG	""	"set changed the state"
+2025-05-29T23:31:28.832Z	renderer/helpers/ChatList	DEBUG	""	"useChatList: query params are initial, we'll use the cached version of the chat list"
+2025-05-29T23:31:28.833Z	renderer/stores/SettingsStore	DEBUG	""	"set changed the state"
+2025-05-29T23:31:28.836Z	renderer/helpers/ChatList	DEBUG	""	"useChatList: query params are initial, we'll use the cached version of the chat list"
+2025-05-29T23:31:28.874Z	renderer/helpers/ChatList	DEBUG	""	"useChatList: query params are initial, we'll use the cached version of the chat list"
+2025-05-29T23:31:28.951Z	renderer/helpers/ChatList	DEBUG	""	"useChatList: query params are initial, we'll use the cached version of the chat list"
+2025-05-29T23:31:28.957Z	renderer/keybindings  	DEBUG	""	"fire action"	"chatlist:switch-to-normal-view"	"handlers:"	[null]
+2025-05-29T23:31:28.962Z	renderer/helpers/ChatList	DEBUG	""	"useChatList: query params are initial, we'll use the cached version of the chat list"
+2025-05-29T23:31:28.999Z	renderer/ScreenController	INFO	""	"account_info"	{"arch":"64","authserv_id_candidates":"","bcc_self":"0","blobdir":"C:\\Users\\Ewok\\AppData\\Local\\DeltaChat\\accounts\\431501ac-f4ef-4982-bb9a-60b89ccb03ef\\dc.db-blobs","bot":"0","configured_inbox_folder":"INBOX","configured_mvbox_folder":"<unset>","configured_sentbox_folder":"<unset>","configured_trash_folder":"<unset>","database_dir":"C:\\Users\\Ewok\\AppData\\Local\\DeltaChat\\accounts\\431501ac-f4ef-4982-bb9a-60b89ccb03ef\\dc.db","database_encrypted":"false","database_version":"131","debug_logging":"0","delete_device_after":"0","delete_server_after":"1","delete_to_trash":"<unset>","deltachat_core_version":"v1.159.4","disable_idle":"false","displayname":"zon","download_limit":"0","e2ee_enabled":"1","entered_account_settings":"11lmq9jmo@nine.testrun.org imap:unset:***:unset:0:Automatic:AUTH_NORMAL smtp:unset:0:unset:0:Automatic:AUTH_NORMAL cert_automatic","fetched_existing_msgs":"true","fingerprint":"734570DCFA4C3F568D08CBBC2FE7FB7E0593FA57","fix_is_chatmail":"false","folders_configured":"5","gossip_period":"172800","imap_server_admin":"\"mailto:root@nine.testrun.org\"","imap_server_comment":"\"Chatmail server\"","imap_server_id":"{\"name\": \"Dovecot\"}","is_chatmail":"true","is_configured":"1","is_muted":"false","journal_mode":"wal","last_cant_decrypt_outgoing_msgs":"0","last_housekeeping":"1748561391","last_msg_id":"11","level":"awesome","mdns_enabled":"1","media_quality":"0","messages_in_contact_requests":"0","mvbox_move":"0","num_cpus":"4","number_of_chat_messages":"5","number_of_chats":"3","number_of_contacts":"1","only_fetch_mvbox":"0","private_key_count":"1","private_tag":"<unset>","protect_autocrypt":"0","proxy_enabled":"0","public_key_count":"2","quota_exceeding":"0","scan_all_folders_debounce_secs":"60","secondary_addrs":"","selfavatar":"<unset>","sentbox_watch":"0","show_emails":"2","sign_unencrypted":"0","sqlite_version":"3.45.3","sync_msgs":"1","uptime":"0h 1m 40s","used_account_settings":"11lmq9jmo@nine.testrun.org imap:[nine.testrun.org:443:tls:11lmq9jmo@nine.testrun.org, nine.testrun.org:993:tls:11lmq9jmo@nine.testrun.org, nine.testrun.org:143:starttls:11lmq9jmo@nine.testrun.org] smtp:[nine.testrun.org:443:tls:11lmq9jmo@nine.testrun.org, nine.testrun.org:465:tls:11lmq9jmo@nine.testrun.org, nine.testrun.org:587:starttls:11lmq9jmo@nine.testrun.org] provider:nine.testrun.org cert_automatic","verified_one_on_one_chats":"true","webrtc_instance":"<unset>","webxdc_realtime_enabled":"true"}
+2025-05-29T23:31:29.001Z	renderer/composer     	DEBUG	""	"reloading chat because id changed"	11
+2025-05-29T23:31:29.051Z	renderer/stores/MessageListStore	DEBUG	""	"loadChat took"	72.30000000074506
+2025-05-29T23:31:29.052Z	renderer/stores/MessageListStore	DEBUG	""	"selectedChat changed the state"
+2025-05-29T23:31:29.052Z	renderer/stores/chat/scheduler	DEBUG	""	"lockedQueuedEffect: selectChat: unlocked"
+2025-05-29T23:31:29.053Z	renderer/stores/chat/scheduler	DEBUG	""	"lockedQueuedEffect: selectChat: done"
+2025-05-29T23:31:29.082Z	render/components/message/MessageList	DEBUG	""	"scrollTo: scrollToBottom"	"scrollTop:"	0	"scrollHeight:"	569	"reactionsBar:"	false
+2025-05-29T23:31:29.083Z	render/components/message/MessageList	DEBUG	""	"scrollToBottom"	0	569
+2025-05-29T23:31:29.110Z	renderer/stores/MessageListStore	DEBUG	""	"unlockScroll"
+2025-05-29T23:31:29.111Z	renderer/stores/MessageListStore	DEBUG	""	"unlockScroll changed the state"
+2025-05-29T23:31:29.124Z	render/components/message/MessageList	DEBUG	""	"onScroll: Scrolled to top, fetching more messages!"
+2025-05-29T23:31:29.124Z	render/components/message/MessageList	DEBUG	""	"onScroll: Scrolled to bottom, fetching more messages!"
+2025-05-29T23:31:29.127Z	renderer/stores/MessageListStore	DEBUG	""	"fetchMoreMessagesTop"
+2025-05-29T23:31:29.127Z	renderer/stores/MessageListStore	DEBUG	""	"FETCH_MORE_MESSAGES: lastMessageIndexOnLastPage is zero, returning"
+2025-05-29T23:31:29.283Z	renderer/stores/SettingsStore	DEBUG	""	"set changed the state"
+2025-05-29T23:31:29.284Z	renderer/stores/SettingsStore	INFO	""	"cleared settings store"
+2025-05-29T23:31:29.287Z	renderer/helpers/ChatList	DEBUG	""	"useChatList: query params are initial, we'll use the cached version of the chat list"
+2025-05-29T23:31:29.301Z	renderer/ScreenController	DEBUG	""	"Changing screen to:"	"main"
+2025-05-29T23:31:29.307Z	renderer/helpers/ChatList	DEBUG	""	"useChatList: query params are initial, we'll use the cached version of the chat list"
+2025-05-29T23:31:29.323Z	renderer/helpers/ChatList	DEBUG	""	"useChatListNoDebounce: fetching chat list"
+2025-05-29T23:31:29.328Z	renderer/helpers/ChatList	DEBUG	""	"useChatList: listFlags, queryStr or queryContactId changed, refetching chatlistids"
+2025-05-29T23:31:29.329Z	renderer/components/ConnectivityToast	DEBUG	""	"Browser knows we're offline"
+2025-05-29T23:31:29.357Z	renderer/stores/SettingsStore	DEBUG	""	"set changed the state"
+2025-05-29T23:31:29.362Z	renderer/ScreenController	INFO	""	"system_info"	{"arch":"64","deltachat_core_version":"v1.159.4","level":"awesome","num_cpus":"4","sqlite_version":"3.45.3"}
+2025-05-29T23:31:29.366Z	renderer/helpers/ChatList	DEBUG	""	"useChatList: query params are initial, we'll use the cached version of the chat list"
+2025-05-29T23:31:29.374Z	renderer/helpers/ChatList	DEBUG	""	"useChatList: query params are initial, we'll use the cached version of the chat list"
+2025-05-29T23:31:29.386Z	renderer/helpers/ChatList	DEBUG	""	"useChatList: query params are initial, we'll use the cached version of the chat list"
+2025-05-29T23:31:29.390Z	renderer/ScreenController	INFO	""	"account_info"	{"arch":"64","authserv_id_candidates":"","bcc_self":"0","blobdir":"C:\\Users\\Ewok\\AppData\\Local\\DeltaChat\\accounts\\dff4c387-1735-4f24-8dc3-0559567335b1\\dc.db-blobs","bot":"0","configured_inbox_folder":"INBOX","configured_mvbox_folder":"<unset>","configured_sentbox_folder":"<unset>","configured_trash_folder":"<unset>","database_dir":"C:\\Users\\Ewok\\AppData\\Local\\DeltaChat\\accounts\\dff4c387-1735-4f24-8dc3-0559567335b1\\dc.db","database_encrypted":"false","database_version":"131","debug_logging":"0","delete_device_after":"0","delete_server_after":"1","delete_to_trash":"<unset>","deltachat_core_version":"v1.159.4","disable_idle":"false","displayname":"deep-tree-echo","download_limit":"0","e2ee_enabled":"1","entered_account_settings":"gg41300za@nine.testrun.org imap:unset:***:unset:0:Automatic:AUTH_NORMAL smtp:unset:0:unset:0:Automatic:AUTH_NORMAL cert_automatic","fetched_existing_msgs":"true","fingerprint":"B041255891B974D23AEBE3C0E7289961FF5DB67B","fix_is_chatmail":"false","folders_configured":"5","gossip_period":"172800","imap_server_admin":"\"mailto:root@nine.testrun.org\"","imap_server_comment":"\"Chatmail server\"","imap_server_id":"{\"name\": \"Dovecot\"}","is_chatmail":"true","is_configured":"1","is_muted":"false","journal_mode":"wal","last_cant_decrypt_outgoing_msgs":"0","last_housekeeping":"1748561391","last_msg_id":"11","level":"awesome","mdns_enabled":"1","media_quality":"0","messages_in_contact_requests":"0","mvbox_move":"0","num_cpus":"4","number_of_chat_messages":"2","number_of_chats":"2","number_of_contacts":"0","only_fetch_mvbox":"0","private_key_count":"1","private_tag":"<unset>","protect_autocrypt":"0","proxy_enabled":"0","public_key_count":"0","quota_exceeding":"0","scan_all_folders_debounce_secs":"60","secondary_addrs":"","selfavatar":"<unset>","sentbox_watch":"0","show_emails":"2","sign_unencrypted":"0","sqlite_version":"3.45.3","sync_msgs":"1","uptime":"0h 1m 40s","used_account_settings":"gg41300za@nine.testrun.org imap:[nine.testrun.org:443:tls:gg41300za@nine.testrun.org, nine.testrun.org:993:tls:gg41300za@nine.testrun.org, nine.testrun.org:143:starttls:gg41300za@nine.testrun.org] smtp:[nine.testrun.org:443:tls:gg41300za@nine.testrun.org, nine.testrun.org:465:tls:gg41300za@nine.testrun.org, nine.testrun.org:587:starttls:gg41300za@nine.testrun.org] provider:nine.testrun.org cert_automatic","verified_one_on_one_chats":"true","webrtc_instance":"<unset>","webxdc_realtime_enabled":"true"}
+2025-05-29T23:31:29.437Z	renderer/notifications	DEBUG	""	"clearNotificationsForChat"	7	11
+2025-05-29T23:31:29.437Z	main/notifications    	DEBUG	""	"clearNotificationsForChat"	{"accountId":7,"chatId":11,"notifications":{}}
+2025-05-29T23:31:29.451Z	main/notifications    	DEBUG	""	"after cleared Notifications"	{"accountId":7,"chatId":11,"notifications":{}}
+2025-05-29T23:31:29.455Z	renderer/helpers/ChatList	DEBUG	""	"useChatList: query params are initial, we'll use the cached version of the chat list"
+2025-05-29T23:31:29.457Z	renderer/helpers/ChatList	DEBUG	""	"useChatList: query params are initial, we'll use the cached version of the chat list"
+2025-05-29T23:31:29.473Z	renderer/stores/SettingsStore	DEBUG	""	"set changed the state"
+2025-05-29T23:31:29.479Z	renderer/helpers/ChatList	DEBUG	""	"useChatList: query params are initial, we'll use the cached version of the chat list"
+2025-05-29T23:31:29.485Z	renderer/keybindings  	DEBUG	""	"fire action"	"chatlist:switch-to-normal-view"	"handlers:"	[null]
+2025-05-29T23:31:29.494Z	renderer/helpers/ChatList	DEBUG	""	"useChatList: query params are initial, we'll use the cached version of the chat list"
+2025-05-29T23:31:29.514Z	renderer/composer     	DEBUG	""	"reloading chat because id changed"	11
+2025-05-29T23:31:29.523Z	renderer/stores/MessageListStore	DEBUG	""	"loadChat took"	22.199999999254942
+2025-05-29T23:31:29.524Z	renderer/stores/MessageListStore	DEBUG	""	"selectedChat changed the state"
+2025-05-29T23:31:29.524Z	renderer/stores/chat/scheduler	DEBUG	""	"lockedQueuedEffect: selectChat: unlocked"
+2025-05-29T23:31:29.525Z	renderer/stores/chat/scheduler	DEBUG	""	"lockedQueuedEffect: selectChat: done"
+2025-05-29T23:31:29.540Z	render/components/message/MessageList	DEBUG	""	"scrollTo: scrollToBottom"	"scrollTop:"	0	"scrollHeight:"	569	"reactionsBar:"	false
+2025-05-29T23:31:29.541Z	render/components/message/MessageList	DEBUG	""	"scrollToBottom"	0	569
+2025-05-29T23:31:29.547Z	renderer/stores/MessageListStore	DEBUG	""	"unlockScroll"
+2025-05-29T23:31:29.548Z	renderer/stores/MessageListStore	DEBUG	""	"unlockScroll changed the state"
+2025-05-29T23:31:29.606Z	render/components/message/MessageList	DEBUG	""	"onScroll: Scrolled to top, fetching more messages!"
+2025-05-29T23:31:29.606Z	render/components/message/MessageList	DEBUG	""	"onScroll: Scrolled to bottom, fetching more messages!"
+2025-05-29T23:31:29.608Z	renderer/stores/MessageListStore	DEBUG	""	"fetchMoreMessagesTop"
+2025-05-29T23:31:29.609Z	renderer/stores/MessageListStore	DEBUG	""	"FETCH_MORE_MESSAGES: lastMessageIndexOnLastPage is zero, returning"
+2025-05-29T23:31:30.307Z	main/state            	INFO	""	"Saving state to C:\\Users\\Ewok\\AppData\\Local\\DeltaChat\\config.json"
+2025-05-29T23:31:38.000Z	core/event            	INFO	""	1	"src/imap/idle.rs:77: \"INBOX\": Received interrupt, stopping IDLE."
+2025-05-29T23:31:38.053Z	core/event            	INFO	""	1	"src/imap/idle.rs:92: \"INBOX\": Idle wait was interrupted manually."
+2025-05-29T23:31:38.055Z	core/event            	INFO	""	1	"src/scheduler.rs:822: SMTP fake idle interrupted."
+2025-05-29T23:31:38.056Z	core/event            	INFO	""	2	"src/imap/idle.rs:77: \"INBOX\": Received interrupt, stopping IDLE."
+2025-05-29T23:31:38.058Z	core/event            	INFO	""	2	"src/imap/idle.rs:92: \"INBOX\": Idle wait was interrupted manually."
+2025-05-29T23:31:38.061Z	core/event            	INFO	""	2	"src/scheduler.rs:822: SMTP fake idle interrupted."
+2025-05-29T23:31:38.064Z	core/event            	INFO	""	4	"src/scheduler.rs:822: SMTP fake idle interrupted."
+2025-05-29T23:31:38.067Z	core/event            	INFO	""	5	"src/scheduler.rs:822: SMTP fake idle interrupted."
+2025-05-29T23:31:38.069Z	core/event            	INFO	""	3	"src/imap/idle.rs:77: \"INBOX\": Received interrupt, stopping IDLE."
+2025-05-29T23:31:38.072Z	core/event            	INFO	""	3	"src/imap/idle.rs:92: \"INBOX\": Idle wait was interrupted manually."
+2025-05-29T23:31:38.075Z	core/event            	INFO	""	3	"src/scheduler.rs:822: SMTP fake idle interrupted."
+2025-05-29T23:31:38.079Z	core/event            	INFO	""	4	"src/imap/idle.rs:77: \"INBOX\": Received interrupt, stopping IDLE."
+2025-05-29T23:31:38.084Z	core/event            	INFO	""	4	"src/imap/idle.rs:92: \"INBOX\": Idle wait was interrupted manually."
+2025-05-29T23:31:38.090Z	core/event            	INFO	""	3	"src/smtp.rs:513: Selected rows from SMTP queue: []."
+2025-05-29T23:31:38.092Z	core/event            	INFO	""	3	"src/smtp.rs:618: Sending MDNs."
+2025-05-29T23:31:38.095Z	core/event            	INFO	""	5	"src/imap/idle.rs:77: \"INBOX\": Received interrupt, stopping IDLE."
+2025-05-29T23:31:38.097Z	core/event            	INFO	""	5	"src/imap/idle.rs:92: \"INBOX\": Idle wait was interrupted manually."
+2025-05-29T23:31:38.100Z	core/event            	INFO	""	3	"src/scheduler.rs:790: SMTP fake idle started."
+2025-05-29T23:31:38.129Z	core/event            	DEBUG	""	3	"ConnectivityChanged"	{"kind":"ConnectivityChanged"}
+2025-05-29T23:31:38.135Z	core/event            	INFO	""	3	"src/scheduler.rs:818: SMTP has no messages to retry, waiting for interrupt."
+2025-05-29T23:31:38.151Z	core/event            	INFO	""	7	"src/imap/idle.rs:77: \"INBOX\": Received interrupt, stopping IDLE."
+2025-05-29T23:31:38.159Z	core/event            	INFO	""	7	"src/imap/idle.rs:92: \"INBOX\": Idle wait was interrupted manually."
+2025-05-29T23:31:38.173Z	core/event            	INFO	""	7	"src/scheduler.rs:822: SMTP fake idle interrupted."
+2025-05-29T23:31:38.177Z	core/event            	INFO	""	7	"src/smtp.rs:513: Selected rows from SMTP queue: []."
+2025-05-29T23:31:38.179Z	core/event            	INFO	""	7	"src/smtp.rs:618: Sending MDNs."
+2025-05-29T23:31:38.181Z	core/event            	INFO	""	7	"src/scheduler.rs:790: SMTP fake idle started."
+2025-05-29T23:31:38.184Z	core/event            	DEBUG	""	7	"ConnectivityChanged"	{"kind":"ConnectivityChanged"}
+2025-05-29T23:31:38.189Z	renderer/components/ConnectivityToast	DEBUG	""	"Core thinks we're back online and connected"
+2025-05-29T23:31:38.196Z	core/event            	INFO	""	7	"src/scheduler.rs:818: SMTP has no messages to retry, waiting for interrupt."
+2025-05-29T23:31:38.199Z	core/event            	INFO	""	1	"src/smtp.rs:513: Selected rows from SMTP queue: []."
+2025-05-29T23:31:38.201Z	core/event            	INFO	""	1	"src/smtp.rs:618: Sending MDNs."
+2025-05-29T23:31:38.208Z	core/event            	INFO	""	1	"src/scheduler.rs:790: SMTP fake idle started."
+2025-05-29T23:31:38.212Z	core/event            	DEBUG	""	1	"ConnectivityChanged"	{"kind":"ConnectivityChanged"}
+2025-05-29T23:31:38.215Z	core/event            	INFO	""	1	"src/scheduler.rs:818: SMTP has no messages to retry, waiting for interrupt."
+2025-05-29T23:31:38.216Z	core/event            	INFO	""	4	"src/smtp.rs:513: Selected rows from SMTP queue: []."
+2025-05-29T23:31:38.220Z	core/event            	INFO	""	4	"src/smtp.rs:618: Sending MDNs."
+2025-05-29T23:31:38.233Z	core/event            	INFO	""	4	"src/scheduler.rs:790: SMTP fake idle started."
+2025-05-29T23:31:38.241Z	core/event            	DEBUG	""	4	"ConnectivityChanged"	{"kind":"ConnectivityChanged"}
+2025-05-29T23:31:38.244Z	core/event            	INFO	""	4	"src/scheduler.rs:818: SMTP has no messages to retry, waiting for interrupt."
+2025-05-29T23:31:38.246Z	core/event            	INFO	""	2	"src/smtp.rs:513: Selected rows from SMTP queue: []."
+2025-05-29T23:31:38.248Z	core/event            	INFO	""	2	"src/smtp.rs:618: Sending MDNs."
+2025-05-29T23:31:38.249Z	core/event            	INFO	""	2	"src/scheduler.rs:790: SMTP fake idle started."
+2025-05-29T23:31:38.250Z	core/event            	DEBUG	""	2	"ConnectivityChanged"	{"kind":"ConnectivityChanged"}
+2025-05-29T23:31:38.251Z	core/event            	INFO	""	2	"src/scheduler.rs:818: SMTP has no messages to retry, waiting for interrupt."
+2025-05-29T23:31:38.258Z	core/event            	INFO	""	5	"src/smtp.rs:513: Selected rows from SMTP queue: []."
+2025-05-29T23:31:38.261Z	core/event            	INFO	""	5	"src/smtp.rs:618: Sending MDNs."
+2025-05-29T23:31:38.263Z	core/event            	INFO	""	5	"src/scheduler.rs:790: SMTP fake idle started."
+2025-05-29T23:31:38.266Z	core/event            	DEBUG	""	5	"ConnectivityChanged"	{"kind":"ConnectivityChanged"}
+2025-05-29T23:31:38.272Z	core/event            	INFO	""	5	"src/scheduler.rs:818: SMTP has no messages to retry, waiting for interrupt."
+2025-05-29T23:31:38.376Z	core/event            	DEBUG	""	2	"ConnectivityChanged"	{"kind":"ConnectivityChanged"}
+2025-05-29T23:31:38.379Z	core/event            	DEBUG	""	3	"ConnectivityChanged"	{"kind":"ConnectivityChanged"}
+2025-05-29T23:31:38.384Z	core/event            	DEBUG	""	5	"ConnectivityChanged"	{"kind":"ConnectivityChanged"}
+2025-05-29T23:31:38.389Z	core/event            	DEBUG	""	1	"ConnectivityChanged"	{"kind":"ConnectivityChanged"}
+2025-05-29T23:31:38.390Z	core/event            	DEBUG	""	4	"ConnectivityChanged"	{"kind":"ConnectivityChanged"}
+2025-05-29T23:31:38.392Z	core/event            	DEBUG	""	7	"ConnectivityChanged"	{"kind":"ConnectivityChanged"}
+2025-05-29T23:31:38.564Z	core/event            	INFO	""	2	"src/imap.rs:749: 0 mails read from \"INBOX\"."
+2025-05-29T23:31:38.568Z	core/event            	INFO	""	2	"src/imap/scan_folders.rs:31: Starting full folder scan"
+2025-05-29T23:31:38.581Z	core/event            	INFO	""	3	"src/imap.rs:749: 0 mails read from \"INBOX\"."
+2025-05-29T23:31:38.590Z	core/event            	INFO	""	1	"src/imap.rs:749: 0 mails read from \"INBOX\"."
+2025-05-29T23:31:38.595Z	core/event            	INFO	""	5	"src/imap.rs:749: 0 mails read from \"INBOX\"."
+2025-05-29T23:31:38.615Z	core/event            	INFO	""	4	"src/imap.rs:749: 0 mails read from \"INBOX\"."
+2025-05-29T23:31:38.625Z	core/event            	INFO	""	7	"src/imap.rs:749: 0 mails read from \"INBOX\"."
+2025-05-29T23:31:38.635Z	core/event            	INFO	""	7	"src/imap/scan_folders.rs:31: Starting full folder scan"
+2025-05-29T23:31:38.639Z	core/event            	INFO	""	3	"src/imap/scan_folders.rs:31: Starting full folder scan"
+2025-05-29T23:31:38.645Z	core/event            	INFO	""	1	"src/imap/scan_folders.rs:31: Starting full folder scan"
+2025-05-29T23:31:38.647Z	core/event            	INFO	""	5	"src/imap/scan_folders.rs:31: Starting full folder scan"
+2025-05-29T23:31:38.650Z	core/event            	INFO	""	4	"src/imap/scan_folders.rs:31: Starting full folder scan"
+2025-05-29T23:31:38.699Z	renderer/components/ConnectivityToast	DEBUG	""	"Core thinks we're back online and connected"
+2025-05-29T23:31:38.752Z	core/event            	INFO	""	2	"src/imap/scan_folders.rs:96: Found folders: [\"INBOX\"]."
+2025-05-29T23:31:38.754Z	core/event            	INFO	""	2	"src/imap.rs:555: No new emails in folder \"INBOX\"."
+2025-05-29T23:31:38.775Z	core/event            	INFO	""	7	"src/imap/scan_folders.rs:96: Found folders: [\"INBOX\"]."
+2025-05-29T23:31:38.817Z	core/event            	INFO	""	7	"src/imap.rs:555: No new emails in folder \"INBOX\"."
+2025-05-29T23:31:38.819Z	core/event            	INFO	""	3	"src/imap/scan_folders.rs:96: Found folders: [\"INBOX\"]."
+2025-05-29T23:31:38.822Z	core/event            	INFO	""	3	"src/imap.rs:555: No new emails in folder \"INBOX\"."
+2025-05-29T23:31:38.824Z	core/event            	INFO	""	5	"src/imap/scan_folders.rs:96: Found folders: [\"INBOX\"]."
+2025-05-29T23:31:38.828Z	core/event            	INFO	""	5	"src/imap.rs:555: No new emails in folder \"INBOX\"."
+2025-05-29T23:31:38.831Z	core/event            	INFO	""	4	"src/imap/scan_folders.rs:96: Found folders: [\"INBOX\"]."
+2025-05-29T23:31:38.836Z	core/event            	INFO	""	4	"src/imap.rs:555: No new emails in folder \"INBOX\"."
+2025-05-29T23:31:38.839Z	core/event            	INFO	""	1	"src/imap/scan_folders.rs:96: Found folders: [\"INBOX\"]."
+2025-05-29T23:31:38.843Z	core/event            	INFO	""	1	"src/imap.rs:555: No new emails in folder \"INBOX\"."
+2025-05-29T23:31:38.943Z	core/event            	DEBUG	""	2	"ConnectivityChanged"	{"kind":"ConnectivityChanged"}
+2025-05-29T23:31:38.991Z	core/event            	DEBUG	""	2	"ImapInboxIdle"	{"kind":"ImapInboxIdle"}
+2025-05-29T23:31:39.076Z	core/event            	INFO	""	2	"src/scheduler.rs:674: IMAP session in folder \"INBOX\" supports IDLE, using it."
+2025-05-29T23:31:39.203Z	core/event            	DEBUG	""	7	"ConnectivityChanged"	{"kind":"ConnectivityChanged"}
+2025-05-29T23:31:39.252Z	core/event            	DEBUG	""	7	"ImapInboxIdle"	{"kind":"ImapInboxIdle"}
+2025-05-29T23:31:39.293Z	core/event            	INFO	""	7	"src/scheduler.rs:674: IMAP session in folder \"INBOX\" supports IDLE, using it."
+2025-05-29T23:31:39.296Z	core/event            	DEBUG	""	3	"ConnectivityChanged"	{"kind":"ConnectivityChanged"}
+2025-05-29T23:31:39.302Z	core/event            	DEBUG	""	3	"ImapInboxIdle"	{"kind":"ImapInboxIdle"}
+2025-05-29T23:31:39.307Z	core/event            	INFO	""	3	"src/scheduler.rs:674: IMAP session in folder \"INBOX\" supports IDLE, using it."
+2025-05-29T23:31:39.310Z	core/event            	DEBUG	""	5	"ConnectivityChanged"	{"kind":"ConnectivityChanged"}
+2025-05-29T23:31:39.312Z	core/event            	DEBUG	""	5	"ImapInboxIdle"	{"kind":"ImapInboxIdle"}
+2025-05-29T23:31:39.317Z	core/event            	INFO	""	5	"src/scheduler.rs:674: IMAP session in folder \"INBOX\" supports IDLE, using it."
+2025-05-29T23:31:39.324Z	core/event            	DEBUG	""	4	"ConnectivityChanged"	{"kind":"ConnectivityChanged"}
+2025-05-29T23:31:39.326Z	core/event            	DEBUG	""	4	"ImapInboxIdle"	{"kind":"ImapInboxIdle"}
+2025-05-29T23:31:39.329Z	core/event            	INFO	""	4	"src/scheduler.rs:674: IMAP session in folder \"INBOX\" supports IDLE, using it."
+2025-05-29T23:31:39.332Z	core/event            	DEBUG	""	1	"ConnectivityChanged"	{"kind":"ConnectivityChanged"}
+2025-05-29T23:31:39.337Z	core/event            	DEBUG	""	1	"ImapInboxIdle"	{"kind":"ImapInboxIdle"}
+2025-05-29T23:31:39.343Z	core/event            	INFO	""	1	"src/scheduler.rs:674: IMAP session in folder \"INBOX\" supports IDLE, using it."
+2025-05-29T23:31:39.346Z	core/event            	INFO	""	5	"src/imap/idle.rs:63: IDLE entering wait-on-remote state in folder \"INBOX\"."
+2025-05-29T23:31:39.350Z	core/event            	INFO	""	2	"src/imap/idle.rs:63: IDLE entering wait-on-remote state in folder \"INBOX\"."
+2025-05-29T23:31:39.356Z	core/event            	INFO	""	4	"src/imap/idle.rs:63: IDLE entering wait-on-remote state in folder \"INBOX\"."
+2025-05-29T23:31:39.358Z	core/event            	INFO	""	3	"src/imap/idle.rs:63: IDLE entering wait-on-remote state in folder \"INBOX\"."
+2025-05-29T23:31:39.360Z	core/event            	INFO	""	7	"src/imap/idle.rs:63: IDLE entering wait-on-remote state in folder \"INBOX\"."
+2025-05-29T23:31:39.363Z	core/event            	INFO	""	1	"src/imap/idle.rs:63: IDLE entering wait-on-remote state in folder \"INBOX\"."
+2025-05-29T23:31:39.508Z	renderer/components/ConnectivityToast	DEBUG	""	"Core thinks we're back online and connected"
+2025-05-29T23:31:49.854Z	renderer/helpers/ChatList	DEBUG	""	"useChatList: query params are initial, we'll use the cached version of the chat list"
+2025-05-29T23:31:51.253Z	renderer/helpers/ChatList	DEBUG	""	"useChatList: query params are initial, we'll use the cached version of the chat list"
+2025-05-29T23:31:51.265Z	renderer/composer     	DEBUG	""	"reloading chat because id changed"	11
+2025-05-29T23:31:51.280Z	renderer/stores/MessageListStore	DEBUG	""	"loadChat took"	22.099999997764826
+2025-05-29T23:31:51.280Z	renderer/stores/MessageListStore	DEBUG	""	"selectedChat changed the state"
+2025-05-29T23:31:51.281Z	renderer/stores/chat/scheduler	DEBUG	""	"lockedQueuedEffect: selectChat: unlocked"
+2025-05-29T23:31:51.281Z	renderer/stores/chat/scheduler	DEBUG	""	"lockedQueuedEffect: selectChat: done"
+2025-05-29T23:31:51.295Z	render/components/message/MessageList	DEBUG	""	"scrollTo: scrollToBottom"	"scrollTop:"	0	"scrollHeight:"	569	"reactionsBar:"	false
+2025-05-29T23:31:51.296Z	render/components/message/MessageList	DEBUG	""	"scrollToBottom"	0	569
+2025-05-29T23:31:51.299Z	renderer/stores/MessageListStore	DEBUG	""	"unlockScroll"
+2025-05-29T23:31:51.300Z	renderer/stores/MessageListStore	DEBUG	""	"unlockScroll changed the state"
+2025-05-29T23:31:51.304Z	render/components/message/MessageList	DEBUG	""	"onScroll: Scrolled to top, fetching more messages!"
+2025-05-29T23:31:51.305Z	render/components/message/MessageList	DEBUG	""	"onScroll: Scrolled to bottom, fetching more messages!"
+2025-05-29T23:31:51.305Z	renderer/stores/MessageListStore	DEBUG	""	"fetchMoreMessagesTop"
+2025-05-29T23:31:51.306Z	renderer/stores/MessageListStore	DEBUG	""	"FETCH_MORE_MESSAGES: lastMessageIndexOnLastPage is zero, returning"
+2025-05-29T23:31:54.116Z	renderer/Component/Timestamp	DEBUG	""	"updateTS:"	{"updateRefs":{}}
+2025-05-29T23:31:54.705Z	renderer/helpers/ChatList	DEBUG	""	"useChatList: query params are initial, we'll use the cached version of the chat list"
+2025-05-29T23:32:00.176Z	renderer/helpers/ChatList	DEBUG	""	"useChatList: query params are initial, we'll use the cached version of the chat list"
+2025-05-29T23:32:11.353Z	renderer/helpers/ChatList	DEBUG	""	"useChatList: query params are initial, we'll use the cached version of the chat list"
+2025-05-29T23:32:11.360Z	renderer/helpers/ChatList	DEBUG	""	"useChatList: query params are initial, we'll use the cached version of the chat list"
+2025-05-29T23:32:11.363Z	renderer/helpers/ChatList	DEBUG	""	"useChatListNoDebounce: fetching chat list"
+2025-05-29T23:32:11.365Z	renderer/helpers/ChatList	DEBUG	""	"useChatList: listFlags, queryStr or queryContactId changed, refetching chatlistids"
+2025-05-29T23:32:11.411Z	renderer/helpers/ChatList	DEBUG	""	"useChatList: query params are initial, we'll use the cached version of the chat list"
+2025-05-29T23:32:17.125Z	renderer/helpers/ChatList	DEBUG	""	"useChatList: query params are initial, we'll use the cached version of the chat list"
+2025-05-29T23:32:19.276Z	renderer/ScreenController	DEBUG	""	"Changing screen to:"	"aiNeighborhood"
+2025-05-29T23:32:19.301Z	/mainWindow           	INFO	""	"preq"	"media"
+2025-05-29T23:32:19.302Z	/mainWindow           	INFO	""	"preq"	"media"
+2025-05-29T23:32:19.303Z	/mainWindow           	INFO	""	"preq"	"geolocation"
+2025-05-29T23:32:19.303Z	/mainWindow           	INFO	""	"main window requested \"geolocation\" permission, but we denied it, because it is not in the list of allowed permissions."
+2025-05-29T23:32:19.322Z	/mainWindow           	INFO	""	"preq"	"media"
+2025-05-29T23:32:19.322Z	/mainWindow           	INFO	""	"preq"	"media"
+2025-05-29T23:32:19.334Z	/mainWindow           	INFO	""	"preq"	"geolocation"
+2025-05-29T23:32:19.335Z	/mainWindow           	INFO	""	"main window requested \"geolocation\" permission, but we denied it, because it is not in the list of allowed permissions."
+2025-05-29T23:32:19.352Z	/mainWindow           	INFO	""	"preq"	"media"
+2025-05-29T23:32:19.357Z	/mainWindow           	INFO	""	"preq"	"media"
+2025-05-29T23:32:19.358Z	/mainWindow           	INFO	""	"preq"	"geolocation"
+2025-05-29T23:32:19.366Z	/mainWindow           	INFO	""	"main window requested \"geolocation\" permission, but we denied it, because it is not in the list of allowed permissions."
+2025-05-29T23:32:19.380Z	/mainWindow           	INFO	""	"preq"	"media"
+2025-05-29T23:32:19.383Z	/mainWindow           	INFO	""	"preq"	"media"
+2025-05-29T23:32:19.384Z	/mainWindow           	INFO	""	"preq"	"geolocation"
+2025-05-29T23:32:19.384Z	/mainWindow           	INFO	""	"main window requested \"geolocation\" permission, but we denied it, because it is not in the list of allowed permissions."
+2025-05-29T23:32:19.402Z	/mainWindow           	INFO	""	"preq"	"media"
+2025-05-29T23:32:19.403Z	/mainWindow           	INFO	""	"preq"	"media"
+2025-05-29T23:32:19.428Z	/mainWindow           	INFO	""	"preq"	"geolocation"
+2025-05-29T23:32:19.429Z	/mainWindow           	INFO	""	"main window requested \"geolocation\" permission, but we denied it, because it is not in the list of allowed permissions."
+2025-05-29T23:32:27.205Z	renderer/keybindings  	DEBUG	""	"fire action"	"chatlist:exit-search"	"handlers:"	[null]
+2025-05-29T23:32:27.206Z	renderer/keybindings  	DEBUG	""	"fire action"	"chatlist:clear-search"	"handlers:"	[]
+2025-05-29T23:32:37.734Z	renderer/stores/SettingsStore	DEBUG	""	"set changed the state"
+2025-05-29T23:32:37.734Z	renderer/stores/SettingsStore	INFO	""	"cleared settings store"
+2025-05-29T23:32:37.740Z	renderer/ScreenController	DEBUG	""	"Changing screen to:"	"main"
+2025-05-29T23:32:37.746Z	renderer/helpers/ChatList	DEBUG	""	"useChatList: query params are initial, we'll use the cached version of the chat list"
+2025-05-29T23:32:37.783Z	renderer/helpers/ChatList	DEBUG	""	"useChatListNoDebounce: fetching chat list"
+2025-05-29T23:32:37.785Z	renderer/helpers/ChatList	DEBUG	""	"useChatList: listFlags, queryStr or queryContactId changed, refetching chatlistids"
+2025-05-29T23:32:37.786Z	renderer/components/ConnectivityToast	DEBUG	""	"Browser knows we're offline"
+2025-05-29T23:32:37.828Z	renderer/helpers/ChatList	DEBUG	""	"useChatList: query params are initial, we'll use the cached version of the chat list"
+2025-05-29T23:32:37.835Z	renderer/helpers/ChatList	DEBUG	""	"useChatList: query params are initial, we'll use the cached version of the chat list"
+2025-05-29T23:32:37.840Z	renderer/helpers/ChatList	DEBUG	""	"useChatList: query params are initial, we'll use the cached version of the chat list"
+2025-05-29T23:32:37.870Z	renderer/ScreenController	INFO	""	"system_info"	{"arch":"64","deltachat_core_version":"v1.159.4","level":"awesome","num_cpus":"4","sqlite_version":"3.45.3"}
+2025-05-29T23:32:37.877Z	renderer/notifications	DEBUG	""	"clearNotificationsForChat"	5	11
+2025-05-29T23:32:37.877Z	main/notifications    	DEBUG	""	"clearNotificationsForChat"	{"accountId":5,"chatId":11,"notifications":{}}
+2025-05-29T23:32:37.882Z	main/notifications    	DEBUG	""	"after cleared Notifications"	{"accountId":5,"chatId":11,"notifications":{}}
+2025-05-29T23:32:37.886Z	renderer/ScreenController	INFO	""	"account_info"	{"arch":"64","authserv_id_candidates":"","bcc_self":"0","blobdir":"C:\\Users\\Ewok\\AppData\\Local\\DeltaChat\\accounts\\431501ac-f4ef-4982-bb9a-60b89ccb03ef\\dc.db-blobs","bot":"0","configured_inbox_folder":"INBOX","configured_mvbox_folder":"<unset>","configured_sentbox_folder":"<unset>","configured_trash_folder":"<unset>","database_dir":"C:\\Users\\Ewok\\AppData\\Local\\DeltaChat\\accounts\\431501ac-f4ef-4982-bb9a-60b89ccb03ef\\dc.db","database_encrypted":"false","database_version":"131","debug_logging":"0","delete_device_after":"0","delete_server_after":"1","delete_to_trash":"<unset>","deltachat_core_version":"v1.159.4","disable_idle":"false","displayname":"zon","download_limit":"0","e2ee_enabled":"1","entered_account_settings":"11lmq9jmo@nine.testrun.org imap:unset:***:unset:0:Automatic:AUTH_NORMAL smtp:unset:0:unset:0:Automatic:AUTH_NORMAL cert_automatic","fetched_existing_msgs":"true","fingerprint":"734570DCFA4C3F568D08CBBC2FE7FB7E0593FA57","fix_is_chatmail":"false","folders_configured":"5","gossip_period":"172800","imap_server_admin":"\"mailto:root@nine.testrun.org\"","imap_server_comment":"\"Chatmail server\"","imap_server_id":"{\"name\": \"Dovecot\"}","is_chatmail":"true","is_configured":"1","is_muted":"false","journal_mode":"wal","last_cant_decrypt_outgoing_msgs":"0","last_housekeeping":"1748561391","last_msg_id":"11","level":"awesome","mdns_enabled":"1","media_quality":"0","messages_in_contact_requests":"0","mvbox_move":"0","num_cpus":"4","number_of_chat_messages":"5","number_of_chats":"3","number_of_contacts":"1","only_fetch_mvbox":"0","private_key_count":"1","private_tag":"<unset>","protect_autocrypt":"0","proxy_enabled":"0","public_key_count":"2","quota_exceeding":"0","scan_all_folders_debounce_secs":"60","secondary_addrs":"","selfavatar":"<unset>","sentbox_watch":"0","show_emails":"2","sign_unencrypted":"0","sqlite_version":"3.45.3","sync_msgs":"1","uptime":"0h 2m 49s","used_account_settings":"11lmq9jmo@nine.testrun.org imap:[nine.testrun.org:443:tls:11lmq9jmo@nine.testrun.org, nine.testrun.org:993:tls:11lmq9jmo@nine.testrun.org, nine.testrun.org:143:starttls:11lmq9jmo@nine.testrun.org] smtp:[nine.testrun.org:443:tls:11lmq9jmo@nine.testrun.org, nine.testrun.org:465:tls:11lmq9jmo@nine.testrun.org, nine.testrun.org:587:starttls:11lmq9jmo@nine.testrun.org] provider:nine.testrun.org cert_automatic","verified_one_on_one_chats":"true","webrtc_instance":"<unset>","webxdc_realtime_enabled":"true"}
+2025-05-29T23:32:37.888Z	renderer/stores/SettingsStore	DEBUG	""	"set changed the state"
+2025-05-29T23:32:37.892Z	renderer/helpers/ChatList	DEBUG	""	"useChatList: query params are initial, we'll use the cached version of the chat list"
+2025-05-29T23:32:37.954Z	renderer/keybindings  	DEBUG	""	"fire action"	"chatlist:switch-to-normal-view"	"handlers:"	[null]
+2025-05-29T23:32:37.960Z	renderer/stores/SettingsStore	DEBUG	""	"set changed the state"
+2025-05-29T23:32:37.972Z	renderer/helpers/ChatList	DEBUG	""	"useChatList: query params are initial, we'll use the cached version of the chat list"
+2025-05-29T23:32:38.010Z	renderer/composer     	DEBUG	""	"reloading chat because id changed"	11
+2025-05-29T23:32:38.042Z	renderer/stores/MessageListStore	DEBUG	""	"loadChat took"	64.80000000074506
+2025-05-29T23:32:38.043Z	renderer/stores/MessageListStore	DEBUG	""	"selectedChat changed the state"
+2025-05-29T23:32:38.043Z	renderer/stores/chat/scheduler	DEBUG	""	"lockedQueuedEffect: selectChat: unlocked"
+2025-05-29T23:32:38.044Z	renderer/stores/chat/scheduler	DEBUG	""	"lockedQueuedEffect: selectChat: done"
+2025-05-29T23:32:38.057Z	render/components/message/MessageList	DEBUG	""	"scrollTo: scrollToBottom"	"scrollTop:"	0	"scrollHeight:"	569	"reactionsBar:"	false
+2025-05-29T23:32:38.058Z	render/components/message/MessageList	DEBUG	""	"scrollToBottom"	0	569
+2025-05-29T23:32:38.059Z	renderer/stores/MessageListStore	DEBUG	""	"unlockScroll"
+2025-05-29T23:32:38.060Z	renderer/stores/MessageListStore	DEBUG	""	"unlockScroll changed the state"
+2025-05-29T23:32:38.076Z	render/components/message/MessageList	DEBUG	""	"onScroll: Scrolled to top, fetching more messages!"
+2025-05-29T23:32:38.077Z	render/components/message/MessageList	DEBUG	""	"onScroll: Scrolled to bottom, fetching more messages!"
+2025-05-29T23:32:38.082Z	renderer/stores/MessageListStore	DEBUG	""	"fetchMoreMessagesTop"
+2025-05-29T23:32:38.082Z	renderer/stores/MessageListStore	DEBUG	""	"FETCH_MORE_MESSAGES: lastMessageIndexOnLastPage is zero, returning"
+2025-05-29T23:32:38.467Z	renderer/stores/SettingsStore	DEBUG	""	"set changed the state"
+2025-05-29T23:32:38.468Z	renderer/stores/SettingsStore	INFO	""	"cleared settings store"
+2025-05-29T23:32:38.471Z	renderer/helpers/ChatList	DEBUG	""	"useChatList: query params are initial, we'll use the cached version of the chat list"
+2025-05-29T23:32:38.489Z	renderer/ScreenController	DEBUG	""	"Changing screen to:"	"main"
+2025-05-29T23:32:38.494Z	renderer/helpers/ChatList	DEBUG	""	"useChatList: query params are initial, we'll use the cached version of the chat list"
+2025-05-29T23:32:38.511Z	renderer/helpers/ChatList	DEBUG	""	"useChatListNoDebounce: fetching chat list"
+2025-05-29T23:32:38.516Z	renderer/helpers/ChatList	DEBUG	""	"useChatList: listFlags, queryStr or queryContactId changed, refetching chatlistids"
+2025-05-29T23:32:38.517Z	renderer/components/ConnectivityToast	DEBUG	""	"Browser knows we're offline"
+2025-05-29T23:32:38.548Z	renderer/stores/SettingsStore	DEBUG	""	"set changed the state"
+2025-05-29T23:32:38.553Z	renderer/helpers/ChatList	DEBUG	""	"useChatList: query params are initial, we'll use the cached version of the chat list"
+2025-05-29T23:32:38.559Z	renderer/helpers/ChatList	DEBUG	""	"useChatList: query params are initial, we'll use the cached version of the chat list"
+2025-05-29T23:32:38.560Z	renderer/ScreenController	INFO	""	"system_info"	{"arch":"64","deltachat_core_version":"v1.159.4","level":"awesome","num_cpus":"4","sqlite_version":"3.45.3"}
+2025-05-29T23:32:38.566Z	renderer/helpers/ChatList	DEBUG	""	"useChatList: query params are initial, we'll use the cached version of the chat list"
+2025-05-29T23:32:38.569Z	renderer/notifications	DEBUG	""	"clearNotificationsForChat"	7	11
+2025-05-29T23:32:38.569Z	main/notifications    	DEBUG	""	"clearNotificationsForChat"	{"accountId":7,"chatId":11,"notifications":{}}
+2025-05-29T23:32:38.587Z	main/notifications    	DEBUG	""	"after cleared Notifications"	{"accountId":7,"chatId":11,"notifications":{}}
+2025-05-29T23:32:38.589Z	renderer/helpers/ChatList	DEBUG	""	"useChatList: query params are initial, we'll use the cached version of the chat list"
+2025-05-29T23:32:38.589Z	renderer/ScreenController	INFO	""	"account_info"	{"arch":"64","authserv_id_candidates":"","bcc_self":"0","blobdir":"C:\\Users\\Ewok\\AppData\\Local\\DeltaChat\\accounts\\dff4c387-1735-4f24-8dc3-0559567335b1\\dc.db-blobs","bot":"0","configured_inbox_folder":"INBOX","configured_mvbox_folder":"<unset>","configured_sentbox_folder":"<unset>","configured_trash_folder":"<unset>","database_dir":"C:\\Users\\Ewok\\AppData\\Local\\DeltaChat\\accounts\\dff4c387-1735-4f24-8dc3-0559567335b1\\dc.db","database_encrypted":"false","database_version":"131","debug_logging":"0","delete_device_after":"0","delete_server_after":"1","delete_to_trash":"<unset>","deltachat_core_version":"v1.159.4","disable_idle":"false","displayname":"deep-tree-echo","download_limit":"0","e2ee_enabled":"1","entered_account_settings":"gg41300za@nine.testrun.org imap:unset:***:unset:0:Automatic:AUTH_NORMAL smtp:unset:0:unset:0:Automatic:AUTH_NORMAL cert_automatic","fetched_existing_msgs":"true","fingerprint":"B041255891B974D23AEBE3C0E7289961FF5DB67B","fix_is_chatmail":"false","folders_configured":"5","gossip_period":"172800","imap_server_admin":"\"mailto:root@nine.testrun.org\"","imap_server_comment":"\"Chatmail server\"","imap_server_id":"{\"name\": \"Dovecot\"}","is_chatmail":"true","is_configured":"1","is_muted":"false","journal_mode":"wal","last_cant_decrypt_outgoing_msgs":"0","last_housekeeping":"1748561391","last_msg_id":"11","level":"awesome","mdns_enabled":"1","media_quality":"0","messages_in_contact_requests":"0","mvbox_move":"0","num_cpus":"4","number_of_chat_messages":"2","number_of_chats":"2","number_of_contacts":"0","only_fetch_mvbox":"0","private_key_count":"1","private_tag":"<unset>","protect_autocrypt":"0","proxy_enabled":"0","public_key_count":"0","quota_exceeding":"0","scan_all_folders_debounce_secs":"60","secondary_addrs":"","selfavatar":"<unset>","sentbox_watch":"0","show_emails":"2","sign_unencrypted":"0","sqlite_version":"3.45.3","sync_msgs":"1","uptime":"0h 2m 49s","used_account_settings":"gg41300za@nine.testrun.org imap:[nine.testrun.org:443:tls:gg41300za@nine.testrun.org, nine.testrun.org:993:tls:gg41300za@nine.testrun.org, nine.testrun.org:143:starttls:gg41300za@nine.testrun.org] smtp:[nine.testrun.org:443:tls:gg41300za@nine.testrun.org, nine.testrun.org:465:tls:gg41300za@nine.testrun.org, nine.testrun.org:587:starttls:gg41300za@nine.testrun.org] provider:nine.testrun.org cert_automatic","verified_one_on_one_chats":"true","webrtc_instance":"<unset>","webxdc_realtime_enabled":"true"}
+2025-05-29T23:32:38.593Z	renderer/helpers/ChatList	DEBUG	""	"useChatList: query params are initial, we'll use the cached version of the chat list"
+2025-05-29T23:32:38.605Z	renderer/stores/SettingsStore	DEBUG	""	"set changed the state"
+2025-05-29T23:32:38.615Z	renderer/helpers/ChatList	DEBUG	""	"useChatList: query params are initial, we'll use the cached version of the chat list"
+2025-05-29T23:32:38.620Z	renderer/keybindings  	DEBUG	""	"fire action"	"chatlist:switch-to-normal-view"	"handlers:"	[null]
+2025-05-29T23:32:38.624Z	renderer/helpers/ChatList	DEBUG	""	"useChatList: query params are initial, we'll use the cached version of the chat list"
+2025-05-29T23:32:38.648Z	renderer/composer     	DEBUG	""	"reloading chat because id changed"	11
+2025-05-29T23:32:38.674Z	renderer/stores/MessageListStore	DEBUG	""	"loadChat took"	46.599999997764826
+2025-05-29T23:32:38.674Z	renderer/stores/MessageListStore	DEBUG	""	"selectedChat changed the state"
+2025-05-29T23:32:38.675Z	renderer/stores/chat/scheduler	DEBUG	""	"lockedQueuedEffect: selectChat: unlocked"
+2025-05-29T23:32:38.675Z	renderer/stores/chat/scheduler	DEBUG	""	"lockedQueuedEffect: selectChat: done"
+2025-05-29T23:32:38.694Z	render/components/message/MessageList	DEBUG	""	"scrollTo: scrollToBottom"	"scrollTop:"	0	"scrollHeight:"	569	"reactionsBar:"	false
+2025-05-29T23:32:38.695Z	render/components/message/MessageList	DEBUG	""	"scrollToBottom"	0	569
+2025-05-29T23:32:38.703Z	renderer/stores/MessageListStore	DEBUG	""	"unlockScroll"
+2025-05-29T23:32:38.703Z	renderer/stores/MessageListStore	DEBUG	""	"unlockScroll changed the state"
+2025-05-29T23:32:38.711Z	render/components/message/MessageList	DEBUG	""	"onScroll: Scrolled to top, fetching more messages!"
+2025-05-29T23:32:38.712Z	render/components/message/MessageList	DEBUG	""	"onScroll: Scrolled to bottom, fetching more messages!"
+2025-05-29T23:32:38.719Z	renderer/stores/MessageListStore	DEBUG	""	"fetchMoreMessagesTop"
+2025-05-29T23:32:38.719Z	renderer/stores/MessageListStore	DEBUG	""	"FETCH_MORE_MESSAGES: lastMessageIndexOnLastPage is zero, returning"
+2025-05-29T23:32:39.496Z	main/state            	INFO	""	"Saving state to C:\\Users\\Ewok\\AppData\\Local\\DeltaChat\\config.json"
+2025-05-29T23:32:45.205Z	renderer/helpers/ChatList	DEBUG	""	"useChatList: query params are initial, we'll use the cached version of the chat list"
+2025-05-29T23:32:54.118Z	renderer/Component/Timestamp	DEBUG	""	"updateTS:"	{"updateRefs":{}}
+2025-05-29T23:33:10.285Z	render/components/Settings/BotSettings	INFO	""	"Saving bot setting: enabled = false"
+2025-05-29T23:33:10.286Z	render/components/Settings/BotSettings	INFO	""	"Setting desktop setting: deepTreeEchoBotEnabled = false"
+2025-05-29T23:33:10.295Z	render/components/Settings/BotSettings	INFO	""	"Successfully saved bot setting: enabled"
+2025-05-29T23:33:10.299Z	render/components/DeepTreeEchoBot/DeepTreeEchoIntegration	INFO	""	"Bot settings updated"
+2025-05-29T23:33:10.305Z	renderer/stores/SettingsStore	DEBUG	""	"set changed the state"
+2025-05-29T23:33:10.306Z	renderer/helpers/ChatList	DEBUG	""	"useChatList: query params are initial, we'll use the cached version of the chat list"
+2025-05-29T23:33:11.307Z	main/state            	INFO	""	"Saving state to C:\\Users\\Ewok\\AppData\\Local\\DeltaChat\\config.json"
+2025-05-29T23:33:54.126Z	renderer/Component/Timestamp	DEBUG	""	"updateTS:"	{"updateRefs":{}}
+2025-05-29T23:34:27.568Z	render/components/Settings/BotSettings	INFO	""	"Saving bot setting: personality = Deep Tree Echo is a helpful, friendly AI assistant that provides thoughtful responses to users in Delta Cnhat."
+2025-05-29T23:34:27.569Z	render/components/Settings/BotSettings	INFO	""	"Setting desktop setting: deepTreeEchoBotPersonality = Deep Tree Echo is a helpful, friendly AI assistant that provides thoughtful responses to users in Delta Cnhat."
+2025-05-29T23:34:27.589Z	render/components/Settings/BotSettings	INFO	""	"Successfully saved bot setting: personality"
+2025-05-29T23:34:27.592Z	render/components/DeepTreeEchoBot/DeepTreeEchoIntegration	INFO	""	"Bot settings updated"
+2025-05-29T23:34:27.610Z	renderer/stores/SettingsStore	DEBUG	""	"set changed the state"
+2025-05-29T23:34:27.612Z	renderer/helpers/ChatList	DEBUG	""	"useChatList: query params are initial, we'll use the cached version of the chat list"
+2025-05-29T23:34:28.593Z	main/state            	INFO	""	"Saving state to C:\\Users\\Ewok\\AppData\\Local\\DeltaChat\\config.json"
+2025-05-29T23:34:28.721Z	render/components/Settings/BotSettings	INFO	""	"Saving bot setting: personality = Deep Tree Echo is a helpful, friendly AI assistant that provides thoughtful responses to users in Delta Chat."
+2025-05-29T23:34:28.721Z	render/components/Settings/BotSettings	INFO	""	"Setting desktop setting: deepTreeEchoBotPersonality = Deep Tree Echo is a helpful, friendly AI assistant that provides thoughtful responses to users in Delta Chat."
+2025-05-29T23:34:28.728Z	render/components/Settings/BotSettings	INFO	""	"Successfully saved bot setting: personality"
+2025-05-29T23:34:28.729Z	render/components/DeepTreeEchoBot/DeepTreeEchoIntegration	INFO	""	"Bot settings updated"
+2025-05-29T23:34:28.734Z	renderer/stores/SettingsStore	DEBUG	""	"set changed the state"
+2025-05-29T23:34:28.736Z	renderer/helpers/ChatList	DEBUG	""	"useChatList: query params are initial, we'll use the cached version of the chat list"
+2025-05-29T23:34:29.732Z	main/state            	INFO	""	"Saving state to C:\\Users\\Ewok\\AppData\\Local\\DeltaChat\\config.json"
+2025-05-29T23:34:44.653Z	renderer              	ERROR	"\nfile:///D:/curso/deltachat-desktop/packages/target-electron/src/App.tsx:106:10,\nObject.invokeGuardedCallbackDev (file:///D:/curso/deltachat-desktop/node_modules/.pnpm/react-dom@18.3.1_react@18.3.1/node_modules/react-dom/cjs/react-dom.development.js:4213:16),\ninvokeGuardedCallback (file:///D:/curso/deltachat-desktop/node_modules/.pnpm/react-dom@18.3.1_react@18.3.1/node_modules/react-dom/cjs/react-dom.development.js:4277:31),\nbeginWork$1 (file:///D:/curso/deltachat-desktop/node_modules/.pnpm/react-dom@18.3.1_react@18.3.1/node_modules/react-dom/cjs/react-dom.development.js:27490:7),\nperformUnitOfWork (file:///D:/curso/deltachat-desktop/node_modules/.pnpm/react-dom@18.3.1_react@18.3.1/node_modules/react-dom/cjs/react-dom.development.js:26599:12),\nworkLoopSync (file:///D:/curso/deltachat-desktop/node_modules/.pnpm/react-dom@18.3.1_react@18.3.1/node_modules/react-dom/cjs/react-dom.development.js:26505:5),\nrenderRootSync (file:///D:/curso/deltachat-desktop/node_modules/.pnpm/react-dom@18.3.1_react@18.3.1/node_modules/react-dom/cjs/react-dom.development.js:26473:7),\nperformSyncWorkOnRoot (file:///D:/curso/deltachat-desktop/node_modules/.pnpm/react-dom@18.3.1_react@18.3.1/node_modules/react-dom/cjs/react-dom.development.js:26124:20)"	"Unhandled Error: setActiveConversation is not defined"	{"stack":"ReferenceError: setActiveConversation is not defined\n    at Component (file:///D:/curso/deltachat-desktop/packages/target-electron/src/components/AICompanionHub/AICompanionController.tsx:437:5)\n    at renderWithHooks (file:///D:/curso/deltachat-desktop/node_modules/.pnpm/react-dom@18.3.1_react@18.3.1/node_modules/react-dom/cjs/react-dom.development.js:15486:18)\n    at mountIndeterminateComponent (file:///D:/curso/deltachat-desktop/node_modules/.pnpm/react-dom@18.3.1_react@18.3.1/node_modules/react-dom/cjs/react-dom.development.js:20103:13)\n    at beginWork (file:///D:/curso/deltachat-desktop/node_modules/.pnpm/react-dom@18.3.1_react@18.3.1/node_modules/react-dom/cjs/react-dom.development.js:21626:16)\n    at HTMLUnknownElement.callCallback2 (file:///D:/curso/deltachat-desktop/node_modules/.pnpm/react-dom@18.3.1_react@18.3.1/node_modules/react-dom/cjs/react-dom.development.js:4164:14)\n    at Object.invokeGuardedCallbackDev (file:///D:/curso/deltachat-desktop/node_modules/.pnpm/react-dom@18.3.1_react@18.3.1/node_modules/react-dom/cjs/react-dom.development.js:4213:16)\n    at invokeGuardedCallback (file:///D:/curso/deltachat-desktop/node_modules/.pnpm/react-dom@18.3.1_react@18.3.1/node_modules/react-dom/cjs/react-dom.development.js:4277:31)\n    at beginWork$1 (file:///D:/curso/deltachat-desktop/node_modules/.pnpm/react-dom@18.3.1_react@18.3.1/node_modules/react-dom/cjs/react-dom.development.js:27490:7)\n    at performUnitOfWork (file:///D:/curso/deltachat-desktop/node_modules/.pnpm/react-dom@18.3.1_react@18.3.1/node_modules/react-dom/cjs/react-dom.development.js:26599:12)\n    at workLoopSync (file:///D:/curso/deltachat-desktop/node_modules/.pnpm/react-dom@18.3.1_react@18.3.1/node_modules/react-dom/cjs/react-dom.development.js:26505:5)","message":"setActiveConversation is not defined"}
+2025-05-29T23:34:44.662Z	renderer              	ERROR	"\nfile:///D:/curso/deltachat-desktop/packages/target-electron/src/App.tsx:106:10,\nObject.invokeGuardedCallbackDev (file:///D:/curso/deltachat-desktop/node_modules/.pnpm/react-dom@18.3.1_react@18.3.1/node_modules/react-dom/cjs/react-dom.development.js:4213:16),\ninvokeGuardedCallback (file:///D:/curso/deltachat-desktop/node_modules/.pnpm/react-dom@18.3.1_react@18.3.1/node_modules/react-dom/cjs/react-dom.development.js:4277:31),\nbeginWork$1 (file:///D:/curso/deltachat-desktop/node_modules/.pnpm/react-dom@18.3.1_react@18.3.1/node_modules/react-dom/cjs/react-dom.development.js:27490:7),\nperformUnitOfWork (file:///D:/curso/deltachat-desktop/node_modules/.pnpm/react-dom@18.3.1_react@18.3.1/node_modules/react-dom/cjs/react-dom.development.js:26599:12),\nworkLoopSync (file:///D:/curso/deltachat-desktop/node_modules/.pnpm/react-dom@18.3.1_react@18.3.1/node_modules/react-dom/cjs/react-dom.development.js:26505:5),\nrenderRootSync (file:///D:/curso/deltachat-desktop/node_modules/.pnpm/react-dom@18.3.1_react@18.3.1/node_modules/react-dom/cjs/react-dom.development.js:26473:7),\nrecoverFromConcurrentError (file:///D:/curso/deltachat-desktop/node_modules/.pnpm/react-dom@18.3.1_react@18.3.1/node_modules/react-dom/cjs/react-dom.development.js:25889:20)"	"Unhandled Error: setActiveConversation is not defined"	{"stack":"ReferenceError: setActiveConversation is not defined\n    at Component (file:///D:/curso/deltachat-desktop/packages/target-electron/src/components/AICompanionHub/AICompanionController.tsx:437:5)\n    at renderWithHooks (file:///D:/curso/deltachat-desktop/node_modules/.pnpm/react-dom@18.3.1_react@18.3.1/node_modules/react-dom/cjs/react-dom.development.js:15486:18)\n    at mountIndeterminateComponent (file:///D:/curso/deltachat-desktop/node_modules/.pnpm/react-dom@18.3.1_react@18.3.1/node_modules/react-dom/cjs/react-dom.development.js:20103:13)\n    at beginWork (file:///D:/curso/deltachat-desktop/node_modules/.pnpm/react-dom@18.3.1_react@18.3.1/node_modules/react-dom/cjs/react-dom.development.js:21626:16)\n    at HTMLUnknownElement.callCallback2 (file:///D:/curso/deltachat-desktop/node_modules/.pnpm/react-dom@18.3.1_react@18.3.1/node_modules/react-dom/cjs/react-dom.development.js:4164:14)\n    at Object.invokeGuardedCallbackDev (file:///D:/curso/deltachat-desktop/node_modules/.pnpm/react-dom@18.3.1_react@18.3.1/node_modules/react-dom/cjs/react-dom.development.js:4213:16)\n    at invokeGuardedCallback (file:///D:/curso/deltachat-desktop/node_modules/.pnpm/react-dom@18.3.1_react@18.3.1/node_modules/react-dom/cjs/react-dom.development.js:4277:31)\n    at beginWork$1 (file:///D:/curso/deltachat-desktop/node_modules/.pnpm/react-dom@18.3.1_react@18.3.1/node_modules/react-dom/cjs/react-dom.development.js:27490:7)\n    at performUnitOfWork (file:///D:/curso/deltachat-desktop/node_modules/.pnpm/react-dom@18.3.1_react@18.3.1/node_modules/react-dom/cjs/react-dom.development.js:26599:12)\n    at workLoopSync (file:///D:/curso/deltachat-desktop/node_modules/.pnpm/react-dom@18.3.1_react@18.3.1/node_modules/react-dom/cjs/react-dom.development.js:26505:5)","message":"setActiveConversation is not defined"}
+2025-05-29T23:34:44.670Z	renderer/react-crashhandler	ERROR	"\nCrashScreen.componentDidCatch (file:///D:/curso/deltachat-desktop/packages/target-electron/src/components/screens/CrashScreen.tsx:24:9),\nCrashScreen.callback (file:///D:/curso/deltachat-desktop/node_modules/.pnpm/react-dom@18.3.1_react@18.3.1/node_modules/react-dom/cjs/react-dom.development.js:18785:12),\ncallCallback (file:///D:/curso/deltachat-desktop/node_modules/.pnpm/react-dom@18.3.1_react@18.3.1/node_modules/react-dom/cjs/react-dom.development.js:15036:12),\ncommitUpdateQueue (file:///D:/curso/deltachat-desktop/node_modules/.pnpm/react-dom@18.3.1_react@18.3.1/node_modules/react-dom/cjs/react-dom.development.js:15057:9),\ncommitLayoutEffectOnFiber (file:///D:/curso/deltachat-desktop/node_modules/.pnpm/react-dom@18.3.1_react@18.3.1/node_modules/react-dom/cjs/react-dom.development.js:23403:13),\ncommitLayoutMountEffects_complete (file:///D:/curso/deltachat-desktop/node_modules/.pnpm/react-dom@18.3.1_react@18.3.1/node_modules/react-dom/cjs/react-dom.development.js:24727:9),\ncommitLayoutEffects_begin (file:///D:/curso/deltachat-desktop/node_modules/.pnpm/react-dom@18.3.1_react@18.3.1/node_modules/react-dom/cjs/react-dom.development.js:24713:7),\ncommitLayoutEffects (file:///D:/curso/deltachat-desktop/node_modules/.pnpm/react-dom@18.3.1_react@18.3.1/node_modules/react-dom/cjs/react-dom.development.js:24651:3)"	"The app encountered an react error"	{"stack":"ReferenceError: setActiveConversation is not defined\n    at Component (file:///D:/curso/deltachat-desktop/packages/target-electron/src/components/AICompanionHub/AICompanionController.tsx:437:5)\n    at renderWithHooks (file:///D:/curso/deltachat-desktop/node_modules/.pnpm/react-dom@18.3.1_react@18.3.1/node_modules/react-dom/cjs/react-dom.development.js:15486:18)\n    at mountIndeterminateComponent (file:///D:/curso/deltachat-desktop/node_modules/.pnpm/react-dom@18.3.1_react@18.3.1/node_modules/react-dom/cjs/react-dom.development.js:20103:13)\n    at beginWork (file:///D:/curso/deltachat-desktop/node_modules/.pnpm/react-dom@18.3.1_react@18.3.1/node_modules/react-dom/cjs/react-dom.development.js:21626:16)\n    at beginWork$1 (file:///D:/curso/deltachat-desktop/node_modules/.pnpm/react-dom@18.3.1_react@18.3.1/node_modules/react-dom/cjs/react-dom.development.js:27465:14)\n    at performUnitOfWork (file:///D:/curso/deltachat-desktop/node_modules/.pnpm/react-dom@18.3.1_react@18.3.1/node_modules/react-dom/cjs/react-dom.development.js:26599:12)\n    at workLoopSync (file:///D:/curso/deltachat-desktop/node_modules/.pnpm/react-dom@18.3.1_react@18.3.1/node_modules/react-dom/cjs/react-dom.development.js:26505:5)\n    at renderRootSync (file:///D:/curso/deltachat-desktop/node_modules/.pnpm/react-dom@18.3.1_react@18.3.1/node_modules/react-dom/cjs/react-dom.development.js:26473:7)\n    at recoverFromConcurrentError (file:///D:/curso/deltachat-desktop/node_modules/.pnpm/react-dom@18.3.1_react@18.3.1/node_modules/react-dom/cjs/react-dom.development.js:25889:20)\n    at performSyncWorkOnRoot (file:///D:/curso/deltachat-desktop/node_modules/.pnpm/react-dom@18.3.1_react@18.3.1/node_modules/react-dom/cjs/react-dom.development.js:26135:20)","message":"setActiveConversation is not defined"}
+2025-05-29T23:34:53.262Z	/mainWindow           	INFO	""	"preq"	"media"
+2025-05-29T23:34:53.262Z	/mainWindow           	INFO	""	"preq"	"media"
+2025-05-29T23:34:53.263Z	/mainWindow           	INFO	""	"preq"	"geolocation"
+2025-05-29T23:34:53.263Z	/mainWindow           	INFO	""	"main window requested \"geolocation\" permission, but we denied it, because it is not in the list of allowed permissions."
+2025-05-29T23:34:54.072Z	/mainWindow           	INFO	""	"preq"	"background-sync"
+2025-05-29T23:34:54.073Z	/mainWindow           	INFO	""	"main window requested \"background-sync\" permission, but we denied it, because it is not in the list of allowed permissions."
+2025-05-29T23:34:54.078Z	render/components/DeepTreeEchoBot/DeepTreeEchoIntegration	INFO	""	"Deep Tree Echo Bot is disabled in settings"
+2025-05-29T23:34:54.107Z	load-translations     	DEBUG	""	{"message":"Select a chat or create a new chat"}
+2025-05-29T23:34:54.125Z	renderer/stockstrings 	INFO	""	"loading core translations"
+2025-05-29T23:34:54.176Z	renderer/stores/AccountNotificationStore	DEBUG	""	"set changed the state"
+2025-05-29T23:34:54.182Z	main/themes           	DEBUG	""	"theme"	"system"
+2025-05-29T23:34:54.184Z	main/themes           	DEBUG	""	"load theme file"	"system"	"D:\\curso\\deltachat-desktop\\packages\\target-electron\\html-dist\\themes\\dark.css"
+2025-05-29T23:34:54.188Z	main/themes           	DEBUG	""	"render theme data"
+2025-05-29T23:34:54.191Z	main/themes           	DEBUG	""	"render theme data for theme:"	{"name":"Dark Theme","description":"Our default dark theme."}
+2025-05-29T23:34:54.287Z	renderer/ScreenController	DEBUG	""	"Changing screen to:"	"main"
+2025-05-29T23:34:54.314Z	renderer/helpers/ChatList	DEBUG	""	"useChatList: query params are initial, we'll use the cached version of the chat list"
+2025-05-29T23:34:54.332Z	renderer/helpers/ChatList	DEBUG	""	"useChatListNoDebounce: fetching chat list"
+2025-05-29T23:34:54.333Z	renderer/helpers/ChatList	DEBUG	""	"useChatList: listFlags, queryStr or queryContactId changed, refetching chatlistids"
+2025-05-29T23:34:54.334Z	renderer/components/ConnectivityToast	DEBUG	""	"Browser knows we're offline"
+2025-05-29T23:34:54.437Z	renderer/stores/SettingsStore	DEBUG	""	"set changed the state"
+2025-05-29T23:34:54.452Z	renderer/helpers/ChatList	DEBUG	""	"useChatList: query params are initial, we'll use the cached version of the chat list"
+2025-05-29T23:34:54.462Z	renderer/helpers/ChatList	DEBUG	""	"useChatList: query params are initial, we'll use the cached version of the chat list"
+2025-05-29T23:34:54.465Z	renderer/ScreenController	INFO	""	"system_info"	{"arch":"64","deltachat_core_version":"v1.159.4","level":"awesome","num_cpus":"4","sqlite_version":"3.45.3"}
+2025-05-29T23:34:54.467Z	renderer/helpers/ChatList	DEBUG	""	"useChatList: query params are initial, we'll use the cached version of the chat list"
+2025-05-29T23:34:54.469Z	renderer/ScreenController	INFO	""	"account_info"	{"arch":"64","authserv_id_candidates":"","bcc_self":"0","blobdir":"C:\\Users\\Ewok\\AppData\\Local\\DeltaChat\\accounts\\dff4c387-1735-4f24-8dc3-0559567335b1\\dc.db-blobs","bot":"0","configured_inbox_folder":"INBOX","configured_mvbox_folder":"<unset>","configured_sentbox_folder":"<unset>","configured_trash_folder":"<unset>","database_dir":"C:\\Users\\Ewok\\AppData\\Local\\DeltaChat\\accounts\\dff4c387-1735-4f24-8dc3-0559567335b1\\dc.db","database_encrypted":"false","database_version":"131","debug_logging":"0","delete_device_after":"0","delete_server_after":"1","delete_to_trash":"<unset>","deltachat_core_version":"v1.159.4","disable_idle":"false","displayname":"deep-tree-echo","download_limit":"0","e2ee_enabled":"1","entered_account_settings":"gg41300za@nine.testrun.org imap:unset:***:unset:0:Automatic:AUTH_NORMAL smtp:unset:0:unset:0:Automatic:AUTH_NORMAL cert_automatic","fetched_existing_msgs":"true","fingerprint":"B041255891B974D23AEBE3C0E7289961FF5DB67B","fix_is_chatmail":"false","folders_configured":"5","gossip_period":"172800","imap_server_admin":"\"mailto:root@nine.testrun.org\"","imap_server_comment":"\"Chatmail server\"","imap_server_id":"{\"name\": \"Dovecot\"}","is_chatmail":"true","is_configured":"1","is_muted":"false","journal_mode":"wal","last_cant_decrypt_outgoing_msgs":"0","last_housekeeping":"1748561391","last_msg_id":"11","level":"awesome","mdns_enabled":"1","media_quality":"0","messages_in_contact_requests":"0","mvbox_move":"0","num_cpus":"4","number_of_chat_messages":"2","number_of_chats":"2","number_of_contacts":"0","only_fetch_mvbox":"0","private_key_count":"1","private_tag":"<unset>","protect_autocrypt":"0","proxy_enabled":"0","public_key_count":"0","quota_exceeding":"0","scan_all_folders_debounce_secs":"60","secondary_addrs":"","selfavatar":"<unset>","sentbox_watch":"0","show_emails":"2","sign_unencrypted":"0","sqlite_version":"3.45.3","sync_msgs":"1","uptime":"0h 5m 5s","used_account_settings":"gg41300za@nine.testrun.org imap:[nine.testrun.org:443:tls:gg41300za@nine.testrun.org, nine.testrun.org:993:tls:gg41300za@nine.testrun.org, nine.testrun.org:143:starttls:gg41300za@nine.testrun.org] smtp:[nine.testrun.org:443:tls:gg41300za@nine.testrun.org, nine.testrun.org:465:tls:gg41300za@nine.testrun.org, nine.testrun.org:587:starttls:gg41300za@nine.testrun.org] provider:nine.testrun.org cert_automatic","verified_one_on_one_chats":"true","webrtc_instance":"<unset>","webxdc_realtime_enabled":"true"}
+2025-05-29T23:34:54.509Z	renderer/notifications	DEBUG	""	"clearNotificationsForChat"	7	11
+2025-05-29T23:34:54.510Z	main/notifications    	DEBUG	""	"clearNotificationsForChat"	{"accountId":7,"chatId":11,"notifications":{}}
+2025-05-29T23:34:54.514Z	main/notifications    	DEBUG	""	"after cleared Notifications"	{"accountId":7,"chatId":11,"notifications":{}}
+2025-05-29T23:34:54.528Z	renderer/helpers/ChatList	DEBUG	""	"useChatList: query params are initial, we'll use the cached version of the chat list"
+2025-05-29T23:34:54.583Z	core/event            	INFO	""	1	"src/chat.rs:4585: Device-message changelog-version-1.58.0 already added."
+2025-05-29T23:34:54.586Z	renderer/stores/SettingsStore	DEBUG	""	"set changed the state"
+2025-05-29T23:34:54.597Z	renderer/helpers/ChatList	DEBUG	""	"useChatList: query params are initial, we'll use the cached version of the chat list"
+2025-05-29T23:34:54.619Z	renderer/keybindings  	DEBUG	""	"fire action"	"chatlist:switch-to-normal-view"	"handlers:"	[null]
+2025-05-29T23:34:54.635Z	renderer/helpers/ChatList	DEBUG	""	"useChatList: query params are initial, we'll use the cached version of the chat list"
+2025-05-29T23:34:54.697Z	renderer/notifications	DEBUG	""	"clearNotificationsForChat"	1	11
+2025-05-29T23:34:54.697Z	main/notifications    	DEBUG	""	"clearNotificationsForChat"	{"accountId":1,"chatId":11,"notifications":{}}
+2025-05-29T23:34:54.700Z	main/notifications    	DEBUG	""	"after cleared Notifications"	{"accountId":1,"chatId":11,"notifications":{}}
+2025-05-29T23:34:54.703Z	renderer/composer     	DEBUG	""	"reloading chat because id changed"	11
+2025-05-29T23:34:54.707Z	core/event            	INFO	""	2	"src/chat.rs:4585: Device-message changelog-version-1.58.0 already added."
+2025-05-29T23:34:54.714Z	renderer/stores/MessageListStore	DEBUG	""	"loadChat took"	59.70000000298023
+2025-05-29T23:34:54.714Z	renderer/stores/MessageListStore	DEBUG	""	"selectedChat changed the state"
+2025-05-29T23:34:54.715Z	renderer/stores/chat/scheduler	DEBUG	""	"lockedQueuedEffect: selectChat: unlocked"
+2025-05-29T23:34:54.715Z	renderer/stores/chat/scheduler	DEBUG	""	"lockedQueuedEffect: selectChat: done"
+2025-05-29T23:34:54.746Z	render/components/message/MessageList	DEBUG	""	"scrollTo: scrollToBottom"	"scrollTop:"	0	"scrollHeight:"	569	"reactionsBar:"	false
+2025-05-29T23:34:54.747Z	render/components/message/MessageList	DEBUG	""	"scrollToBottom"	0	569
+2025-05-29T23:34:54.752Z	renderer/notifications	DEBUG	""	"clearNotificationsForChat"	2	11
+2025-05-29T23:34:54.752Z	main/notifications    	DEBUG	""	"clearNotificationsForChat"	{"accountId":2,"chatId":11,"notifications":{}}
+2025-05-29T23:34:54.827Z	main/notifications    	DEBUG	""	"after cleared Notifications"	{"accountId":2,"chatId":11,"notifications":{}}
+2025-05-29T23:34:54.829Z	renderer/stores/MessageListStore	DEBUG	""	"unlockScroll"
+2025-05-29T23:34:54.829Z	renderer/stores/MessageListStore	DEBUG	""	"unlockScroll changed the state"
+2025-05-29T23:34:54.829Z	render/components/message/MessageList	DEBUG	""	"onScroll: Scrolled to top, fetching more messages!"
+2025-05-29T23:34:54.829Z	render/components/message/MessageList	DEBUG	""	"onScroll: Scrolled to bottom, fetching more messages!"
+2025-05-29T23:34:54.829Z	renderer/stores/MessageListStore	DEBUG	""	"fetchMoreMessagesTop"
+2025-05-29T23:34:54.830Z	renderer/stores/MessageListStore	DEBUG	""	"FETCH_MORE_MESSAGES: lastMessageIndexOnLastPage is zero, returning"
+2025-05-29T23:34:54.870Z	core/event            	INFO	""	3	"src/chat.rs:4585: Device-message changelog-version-1.58.0 already added."
+2025-05-29T23:34:54.955Z	renderer/notifications	DEBUG	""	"clearNotificationsForChat"	3	11
+2025-05-29T23:34:54.957Z	main/notifications    	DEBUG	""	"clearNotificationsForChat"	{"accountId":3,"chatId":11,"notifications":{}}
+2025-05-29T23:34:54.993Z	main/notifications    	DEBUG	""	"after cleared Notifications"	{"accountId":3,"chatId":11,"notifications":{}}
+2025-05-29T23:34:55.015Z	core/event            	INFO	""	4	"src/chat.rs:4585: Device-message changelog-version-1.58.0 already added."
+2025-05-29T23:34:55.024Z	renderer/notifications	DEBUG	""	"clearNotificationsForChat"	4	11
+2025-05-29T23:34:55.025Z	main/notifications    	DEBUG	""	"clearNotificationsForChat"	{"accountId":4,"chatId":11,"notifications":{}}
+2025-05-29T23:34:55.048Z	main/notifications    	DEBUG	""	"after cleared Notifications"	{"accountId":4,"chatId":11,"notifications":{}}
+2025-05-29T23:34:55.055Z	core/event            	INFO	""	5	"src/chat.rs:4585: Device-message changelog-version-1.58.0 already added."
+2025-05-29T23:34:55.071Z	renderer/notifications	DEBUG	""	"clearNotificationsForChat"	5	11
+2025-05-29T23:34:55.072Z	main/notifications    	DEBUG	""	"clearNotificationsForChat"	{"accountId":5,"chatId":11,"notifications":{}}
+2025-05-29T23:34:55.077Z	main/notifications    	DEBUG	""	"after cleared Notifications"	{"accountId":5,"chatId":11,"notifications":{}}
+2025-05-29T23:34:55.081Z	core/event            	INFO	""	7	"src/chat.rs:4585: Device-message changelog-version-1.58.0 already added."
+2025-05-29T23:34:59.063Z	renderer/helpers/ChatList	DEBUG	""	"useChatList: query params are initial, we'll use the cached version of the chat list"
+2025-05-29T23:35:02.342Z	renderer              	ERROR	"\nfile:///D:/curso/deltachat-desktop/packages/target-electron/src/App.tsx:106:10,\nObject.invokeGuardedCallbackDev (file:///D:/curso/deltachat-desktop/node_modules/.pnpm/react-dom@18.3.1_react@18.3.1/node_modules/react-dom/cjs/react-dom.development.js:4213:16),\ninvokeGuardedCallback (file:///D:/curso/deltachat-desktop/node_modules/.pnpm/react-dom@18.3.1_react@18.3.1/node_modules/react-dom/cjs/react-dom.development.js:4277:31),\nbeginWork$1 (file:///D:/curso/deltachat-desktop/node_modules/.pnpm/react-dom@18.3.1_react@18.3.1/node_modules/react-dom/cjs/react-dom.development.js:27490:7),\nperformUnitOfWork (file:///D:/curso/deltachat-desktop/node_modules/.pnpm/react-dom@18.3.1_react@18.3.1/node_modules/react-dom/cjs/react-dom.development.js:26599:12),\nworkLoopSync (file:///D:/curso/deltachat-desktop/node_modules/.pnpm/react-dom@18.3.1_react@18.3.1/node_modules/react-dom/cjs/react-dom.development.js:26505:5),\nrenderRootSync (file:///D:/curso/deltachat-desktop/node_modules/.pnpm/react-dom@18.3.1_react@18.3.1/node_modules/react-dom/cjs/react-dom.development.js:26473:7),\nperformSyncWorkOnRoot (file:///D:/curso/deltachat-desktop/node_modules/.pnpm/react-dom@18.3.1_react@18.3.1/node_modules/react-dom/cjs/react-dom.development.js:26124:20)"	"Unhandled Error: setActiveConversation is not defined"	{"stack":"ReferenceError: setActiveConversation is not defined\n    at Component (file:///D:/curso/deltachat-desktop/packages/target-electron/src/components/AICompanionHub/AICompanionController.tsx:437:5)\n    at renderWithHooks (file:///D:/curso/deltachat-desktop/node_modules/.pnpm/react-dom@18.3.1_react@18.3.1/node_modules/react-dom/cjs/react-dom.development.js:15486:18)\n    at mountIndeterminateComponent (file:///D:/curso/deltachat-desktop/node_modules/.pnpm/react-dom@18.3.1_react@18.3.1/node_modules/react-dom/cjs/react-dom.development.js:20103:13)\n    at beginWork (file:///D:/curso/deltachat-desktop/node_modules/.pnpm/react-dom@18.3.1_react@18.3.1/node_modules/react-dom/cjs/react-dom.development.js:21626:16)\n    at HTMLUnknownElement.callCallback2 (file:///D:/curso/deltachat-desktop/node_modules/.pnpm/react-dom@18.3.1_react@18.3.1/node_modules/react-dom/cjs/react-dom.development.js:4164:14)\n    at Object.invokeGuardedCallbackDev (file:///D:/curso/deltachat-desktop/node_modules/.pnpm/react-dom@18.3.1_react@18.3.1/node_modules/react-dom/cjs/react-dom.development.js:4213:16)\n    at invokeGuardedCallback (file:///D:/curso/deltachat-desktop/node_modules/.pnpm/react-dom@18.3.1_react@18.3.1/node_modules/react-dom/cjs/react-dom.development.js:4277:31)\n    at beginWork$1 (file:///D:/curso/deltachat-desktop/node_modules/.pnpm/react-dom@18.3.1_react@18.3.1/node_modules/react-dom/cjs/react-dom.development.js:27490:7)\n    at performUnitOfWork (file:///D:/curso/deltachat-desktop/node_modules/.pnpm/react-dom@18.3.1_react@18.3.1/node_modules/react-dom/cjs/react-dom.development.js:26599:12)\n    at workLoopSync (file:///D:/curso/deltachat-desktop/node_modules/.pnpm/react-dom@18.3.1_react@18.3.1/node_modules/react-dom/cjs/react-dom.development.js:26505:5)","message":"setActiveConversation is not defined"}
+2025-05-29T23:35:02.377Z	renderer              	ERROR	"\nfile:///D:/curso/deltachat-desktop/packages/target-electron/src/App.tsx:106:10,\nObject.invokeGuardedCallbackDev (file:///D:/curso/deltachat-desktop/node_modules/.pnpm/react-dom@18.3.1_react@18.3.1/node_modules/react-dom/cjs/react-dom.development.js:4213:16),\ninvokeGuardedCallback (file:///D:/curso/deltachat-desktop/node_modules/.pnpm/react-dom@18.3.1_react@18.3.1/node_modules/react-dom/cjs/react-dom.development.js:4277:31),\nbeginWork$1 (file:///D:/curso/deltachat-desktop/node_modules/.pnpm/react-dom@18.3.1_react@18.3.1/node_modules/react-dom/cjs/react-dom.development.js:27490:7),\nperformUnitOfWork (file:///D:/curso/deltachat-desktop/node_modules/.pnpm/react-dom@18.3.1_react@18.3.1/node_modules/react-dom/cjs/react-dom.development.js:26599:12),\nworkLoopSync (file:///D:/curso/deltachat-desktop/node_modules/.pnpm/react-dom@18.3.1_react@18.3.1/node_modules/react-dom/cjs/react-dom.development.js:26505:5),\nrenderRootSync (file:///D:/curso/deltachat-desktop/node_modules/.pnpm/react-dom@18.3.1_react@18.3.1/node_modules/react-dom/cjs/react-dom.development.js:26473:7),\nrecoverFromConcurrentError (file:///D:/curso/deltachat-desktop/node_modules/.pnpm/react-dom@18.3.1_react@18.3.1/node_modules/react-dom/cjs/react-dom.development.js:25889:20)"	"Unhandled Error: setActiveConversation is not defined"	{"stack":"ReferenceError: setActiveConversation is not defined\n    at Component (file:///D:/curso/deltachat-desktop/packages/target-electron/src/components/AICompanionHub/AICompanionController.tsx:437:5)\n    at renderWithHooks (file:///D:/curso/deltachat-desktop/node_modules/.pnpm/react-dom@18.3.1_react@18.3.1/node_modules/react-dom/cjs/react-dom.development.js:15486:18)\n    at mountIndeterminateComponent (file:///D:/curso/deltachat-desktop/node_modules/.pnpm/react-dom@18.3.1_react@18.3.1/node_modules/react-dom/cjs/react-dom.development.js:20103:13)\n    at beginWork (file:///D:/curso/deltachat-desktop/node_modules/.pnpm/react-dom@18.3.1_react@18.3.1/node_modules/react-dom/cjs/react-dom.development.js:21626:16)\n    at HTMLUnknownElement.callCallback2 (file:///D:/curso/deltachat-desktop/node_modules/.pnpm/react-dom@18.3.1_react@18.3.1/node_modules/react-dom/cjs/react-dom.development.js:4164:14)\n    at Object.invokeGuardedCallbackDev (file:///D:/curso/deltachat-desktop/node_modules/.pnpm/react-dom@18.3.1_react@18.3.1/node_modules/react-dom/cjs/react-dom.development.js:4213:16)\n    at invokeGuardedCallback (file:///D:/curso/deltachat-desktop/node_modules/.pnpm/react-dom@18.3.1_react@18.3.1/node_modules/react-dom/cjs/react-dom.development.js:4277:31)\n    at beginWork$1 (file:///D:/curso/deltachat-desktop/node_modules/.pnpm/react-dom@18.3.1_react@18.3.1/node_modules/react-dom/cjs/react-dom.development.js:27490:7)\n    at performUnitOfWork (file:///D:/curso/deltachat-desktop/node_modules/.pnpm/react-dom@18.3.1_react@18.3.1/node_modules/react-dom/cjs/react-dom.development.js:26599:12)\n    at workLoopSync (file:///D:/curso/deltachat-desktop/node_modules/.pnpm/react-dom@18.3.1_react@18.3.1/node_modules/react-dom/cjs/react-dom.development.js:26505:5)","message":"setActiveConversation is not defined"}
+2025-05-29T23:35:02.387Z	renderer/react-crashhandler	ERROR	"\nCrashScreen.componentDidCatch (file:///D:/curso/deltachat-desktop/packages/target-electron/src/components/screens/CrashScreen.tsx:24:9),\nCrashScreen.callback (file:///D:/curso/deltachat-desktop/node_modules/.pnpm/react-dom@18.3.1_react@18.3.1/node_modules/react-dom/cjs/react-dom.development.js:18785:12),\ncallCallback (file:///D:/curso/deltachat-desktop/node_modules/.pnpm/react-dom@18.3.1_react@18.3.1/node_modules/react-dom/cjs/react-dom.development.js:15036:12),\ncommitUpdateQueue (file:///D:/curso/deltachat-desktop/node_modules/.pnpm/react-dom@18.3.1_react@18.3.1/node_modules/react-dom/cjs/react-dom.development.js:15057:9),\ncommitLayoutEffectOnFiber (file:///D:/curso/deltachat-desktop/node_modules/.pnpm/react-dom@18.3.1_react@18.3.1/node_modules/react-dom/cjs/react-dom.development.js:23403:13),\ncommitLayoutMountEffects_complete (file:///D:/curso/deltachat-desktop/node_modules/.pnpm/react-dom@18.3.1_react@18.3.1/node_modules/react-dom/cjs/react-dom.development.js:24727:9),\ncommitLayoutEffects_begin (file:///D:/curso/deltachat-desktop/node_modules/.pnpm/react-dom@18.3.1_react@18.3.1/node_modules/react-dom/cjs/react-dom.development.js:24713:7),\ncommitLayoutEffects (file:///D:/curso/deltachat-desktop/node_modules/.pnpm/react-dom@18.3.1_react@18.3.1/node_modules/react-dom/cjs/react-dom.development.js:24651:3)"	"The app encountered an react error"	{"stack":"ReferenceError: setActiveConversation is not defined\n    at Component (file:///D:/curso/deltachat-desktop/packages/target-electron/src/components/AICompanionHub/AICompanionController.tsx:437:5)\n    at renderWithHooks (file:///D:/curso/deltachat-desktop/node_modules/.pnpm/react-dom@18.3.1_react@18.3.1/node_modules/react-dom/cjs/react-dom.development.js:15486:18)\n    at mountIndeterminateComponent (file:///D:/curso/deltachat-desktop/node_modules/.pnpm/react-dom@18.3.1_react@18.3.1/node_modules/react-dom/cjs/react-dom.development.js:20103:13)\n    at beginWork (file:///D:/curso/deltachat-desktop/node_modules/.pnpm/react-dom@18.3.1_react@18.3.1/node_modules/react-dom/cjs/react-dom.development.js:21626:16)\n    at beginWork$1 (file:///D:/curso/deltachat-desktop/node_modules/.pnpm/react-dom@18.3.1_react@18.3.1/node_modules/react-dom/cjs/react-dom.development.js:27465:14)\n    at performUnitOfWork (file:///D:/curso/deltachat-desktop/node_modules/.pnpm/react-dom@18.3.1_react@18.3.1/node_modules/react-dom/cjs/react-dom.development.js:26599:12)\n    at workLoopSync (file:///D:/curso/deltachat-desktop/node_modules/.pnpm/react-dom@18.3.1_react@18.3.1/node_modules/react-dom/cjs/react-dom.development.js:26505:5)\n    at renderRootSync (file:///D:/curso/deltachat-desktop/node_modules/.pnpm/react-dom@18.3.1_react@18.3.1/node_modules/react-dom/cjs/react-dom.development.js:26473:7)\n    at recoverFromConcurrentError (file:///D:/curso/deltachat-desktop/node_modules/.pnpm/react-dom@18.3.1_react@18.3.1/node_modules/react-dom/cjs/react-dom.development.js:25889:20)\n    at performSyncWorkOnRoot (file:///D:/curso/deltachat-desktop/node_modules/.pnpm/react-dom@18.3.1_react@18.3.1/node_modules/react-dom/cjs/react-dom.development.js:26135:20)","message":"setActiveConversation is not defined"}
+2025-05-29T23:35:20.551Z	/mainWindow           	INFO	""	"preq"	"media"
+2025-05-29T23:35:20.553Z	/mainWindow           	INFO	""	"preq"	"media"
+2025-05-29T23:35:20.553Z	/mainWindow           	INFO	""	"preq"	"geolocation"
+2025-05-29T23:35:20.554Z	/mainWindow           	INFO	""	"main window requested \"geolocation\" permission, but we denied it, because it is not in the list of allowed permissions."

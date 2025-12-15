@@ -1,0 +1,1 @@
+{"version":3,"file":"SecureIntegration.d.ts","sourceRoot":"","sources":["../../src/security/SecureIntegration.ts"],"names":[],"mappings":"AAAA;;;;;GAKG;AACH,qBAAa,iBAAiB;IAC5B;;OAEG;IACI,cAAc,CAAC,MAAM,EAAE,MAAM,GAAG,OAAO;IAO9C;;OAEG;IACI,WAAW,CAAC,IAAI,EAAE,MAAM,GAAG,MAAM;IAKxC;;OAEG;IACI,WAAW,CAAC,SAAS,EAAE,MAAM,GAAG,MAAM;CAI9C"}

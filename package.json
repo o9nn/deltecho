@@ -1,0 +1,19 @@
+{
+  "name": "deltecho-monorepo",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Deltecho monorepo with Deep Tree Echo orchestrator",
+  "type": "module",
+  "engines": {
+    "node": "^20",
+    "pnpm": ">=9.6.0"
+  },
+  "scripts": {
+    "build:core": "cd deep-tree-echo-core && npm run build",
+    "check:core": "cd deep-tree-echo-core && npm run check:types",
+    "test:core": "cd deep-tree-echo-core && npm test"
+  },
+  "devDependencies": {
+    "typescript": "^5.4.5"
+  }
+}
