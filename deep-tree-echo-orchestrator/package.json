@@ -24,7 +24,8 @@
   "author": "",
   "license": "GPL-3.0-or-later",
   "dependencies": {
-    "deep-tree-echo-core": "file:../deep-tree-echo-core"
+    "deep-tree-echo-core": "file:../deep-tree-echo-core",
+    "dove9": "file:../dove9"
   },
   "devDependencies": {
     "@types/node": "^20.11.0",
