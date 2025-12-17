@@ -29,6 +29,10 @@
     "./embodiment": {
       "import": "./dist/embodiment/index.js",
       "types": "./dist/embodiment/index.d.ts"
+    },
+    "./adapters": {
+      "import": "./dist/adapters/index.js",
+      "types": "./dist/adapters/index.d.ts"
     }
   },
   "scripts": {

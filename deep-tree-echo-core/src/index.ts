@@ -1,6 +1,9 @@
 // Export cognitive modules
 export * from './cognitive'
 
+// Export storage adapters
+export * from './adapters'
+
 // Export memory modules
 export * from './memory'
 
