@@ -4,6 +4,9 @@ export * from './cognitive'
 // Export storage adapters
 export * from './adapters'
 
+// Export integration modules
+export * from './integration'
+
 // Export memory modules
 export * from './memory'
 

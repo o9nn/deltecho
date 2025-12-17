@@ -1,6 +1,18 @@
 import { MemoryStorage } from '../memory/storage.js';
 
 /**
+ * Tauri Store interface (matches @tauri-apps/plugin-store API)
+ */
+interface TauriStore {
+  get(key: string): Promise<string | null>;
+  set(key: string, value: string): Promise<void>;
+  delete(key: string): Promise<void>;
+  keys(): Promise<string[]>;
+  clear(): Promise<void>;
+  save(): Promise<void>;
+}
+
+/**
  * Storage adapter for Tauri runtime using the Tauri Store API
  * 
  * This adapter provides persistent storage for cognitive modules in Tauri apps
@@ -14,7 +26,7 @@ import { MemoryStorage } from '../memory/storage.js';
  * ```
  */
 export class TauriStorageAdapter implements MemoryStorage {
-  private store: any;
+  private store: TauriStore | null = null;
   private readonly storagePrefix: string;
   private initialized = false;
 
@@ -31,8 +43,9 @@ export class TauriStorageAdapter implements MemoryStorage {
 
     try {
       // Dynamic import to avoid issues when not in Tauri environment
-      const { Store } = await import('@tauri-apps/plugin-store');
-      this.store = new Store('deltecho.dat');
+      // eslint-disable-next-line @typescript-eslint/no-var-requires
+      const tauriStore = await (Function('return import("@tauri-apps/plugin-store")')() as Promise<{ Store: new (path: string) => TauriStore }>);
+      this.store = new tauriStore.Store('deltecho.dat');
       this.initialized = true;
     } catch (error) {
       throw new Error(
@@ -50,7 +63,7 @@ export class TauriStorageAdapter implements MemoryStorage {
     
     try {
       const prefixedKey = `${this.storagePrefix}:${key}`;
-      const result = await this.store.get(prefixedKey);
+      const result = await this.store!.get(prefixedKey);
       return result ?? undefined;
     } catch (error) {
       console.error(`Failed to load key ${key}:`, error);
@@ -66,8 +79,8 @@ export class TauriStorageAdapter implements MemoryStorage {
     
     try {
       const prefixedKey = `${this.storagePrefix}:${key}`;
-      await this.store.set(prefixedKey, value);
-      await this.store.save();
+      await this.store!.set(prefixedKey, value);
+      await this.store!.save();
     } catch (error) {
       console.error(`Failed to save key ${key}:`, error);
       throw error;
@@ -82,8 +95,8 @@ export class TauriStorageAdapter implements MemoryStorage {
     
     try {
       const prefixedKey = `${this.storagePrefix}:${key}`;
-      await this.store.delete(prefixedKey);
-      await this.store.save();
+      await this.store!.delete(prefixedKey);
+      await this.store!.save();
     } catch (error) {
       console.error(`Failed to delete key ${key}:`, error);
       throw error;
@@ -114,7 +127,7 @@ export class TauriStorageAdapter implements MemoryStorage {
     await this.ensureInitialized();
     
     try {
-      const allKeys = await this.store.keys();
+      const allKeys = await this.store!.keys();
       return allKeys
         .filter((key: string) => key.startsWith(`${this.storagePrefix}:`))
         .map((key: string) => key.replace(`${this.storagePrefix}:`, ''));

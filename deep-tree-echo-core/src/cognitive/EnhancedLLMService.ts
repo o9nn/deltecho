@@ -97,7 +97,11 @@ export class EnhancedLLMService {
       throw new Error(`OpenAI API error: ${error}`);
     }
 
-    const data = await response.json();
+    const data = await response.json() as {
+      choices: Array<{ message: { content: string }; finish_reason: string }>;
+      usage: { prompt_tokens: number; completion_tokens: number; total_tokens: number };
+      model: string;
+    };
     return {
       content: data.choices[0].message.content,
       usage: {
@@ -143,7 +147,12 @@ export class EnhancedLLMService {
       throw new Error(`Anthropic API error: ${error}`);
     }
 
-    const data = await response.json();
+    const data = await response.json() as {
+      content: Array<{ text: string }>;
+      usage: { input_tokens: number; output_tokens: number };
+      model: string;
+      stop_reason: string;
+    };
     return {
       content: data.content[0].text,
       usage: {
@@ -185,7 +194,11 @@ export class EnhancedLLMService {
       throw new Error(`OpenRouter API error: ${error}`);
     }
 
-    const data = await response.json();
+    const data = await response.json() as {
+      choices: Array<{ message: { content: string }; finish_reason: string }>;
+      usage?: { prompt_tokens: number; completion_tokens: number; total_tokens: number };
+      model: string;
+    };
     return {
       content: data.choices[0].message.content,
       usage: data.usage
@@ -227,7 +240,9 @@ export class EnhancedLLMService {
       throw new Error(`Ollama API error: ${error}`);
     }
 
-    const data = await response.json();
+    const data = await response.json() as {
+      message: { content: string };
+    };
     return {
       content: data.message.content,
       model: this.config.model,

@@ -1,4 +1,6 @@
 export * from './cognitive';
+export * from './adapters';
+export * from './integration';
 export * from './memory';
 export * from './personality';
 export * from './security';

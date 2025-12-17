@@ -1,6 +1,6 @@
 // src/session-store.ts
 import { Store } from "express-session";
-const FileStore = class extends Store {
+var FileStore = class extends Store {
   constructor(localstorage) {
     super();
     this.localstorage = localstorage;
@@ -77,6 +77,18 @@ function getDefaultState() {
     HTMLEmailAskForRemoteLoadingConfirmation: true,
     HTMLEmailAlwaysLoadRemoteContent: false,
     enableRelatedChats: false,
+    deepTreeEchoBotEnabled: false,
+    deepTreeEchoBotMemoryEnabled: false,
+    deepTreeEchoBotPersonality: "",
+    deepTreeEchoBotApiKey: "",
+    deepTreeEchoBotApiEndpoint: "",
+    deepTreeEchoBotVisionEnabled: false,
+    deepTreeEchoBotWebAutomationEnabled: false,
+    deepTreeEchoBotEmbodimentEnabled: false,
+    deepTreeEchoBotPersonaState: "",
+    deepTreeEchoBotMemories: "",
+    deepTreeEchoBotReflections: "",
+    deepTreeEchoBotCognitiveKeys: "",
     galleryImageKeepAspectRatio: false,
     useSystemUIFont: false,
     contentProtectionEnabled: false,
@@ -87,15 +99,15 @@ function getDefaultState() {
 
 // ../shared/logger.ts
 import errorStackParser from "error-stack-parser";
-const startTime = Date.now();
-const colorize = (light, code) => (str) => "\x1B[" + light + ";" + code + "m" + str + "\x1B[0m";
-const blue = colorize(1, 34);
-const red = colorize(1, 31);
-const yellow = colorize(1, 33);
-const grey = colorize(0, 37);
-const green = colorize(1, 37);
-const cyan = colorize(1, 36);
-const emojiFontCss = 'font-family: Roboto, "Apple Color Emoji", NotoEmoji, "Helvetica Neue", Arial, Helvetica, NotoMono, sans-serif !important;';
+var startTime = Date.now();
+var colorize = (light, code) => (str) => "\x1B[" + light + ";" + code + "m" + str + "\x1B[0m";
+var blue = colorize(1, 34);
+var red = colorize(1, 31);
+var yellow = colorize(1, 33);
+var grey = colorize(0, 37);
+var green = colorize(1, 37);
+var cyan = colorize(1, 36);
+var emojiFontCss = 'font-family: Roboto, "Apple Color Emoji", NotoEmoji, "Helvetica Neue", Arial, Helvetica, NotoMono, sans-serif !important;';
 var LogLevelString = /* @__PURE__ */ ((LogLevelString2) => {
   LogLevelString2["DEBUG"] = "DEBUG";
   LogLevelString2["WARNING"] = "WARNING";
@@ -104,7 +116,7 @@ var LogLevelString = /* @__PURE__ */ ((LogLevelString2) => {
   LogLevelString2["CRITICAL"] = "CRITICAL";
   return LogLevelString2;
 })(LogLevelString || {});
-const LoggerVariants = [
+var LoggerVariants = [
   {
     log: console.debug,
     level: "DEBUG" /* DEBUG */,
@@ -169,8 +181,8 @@ If the log seems quiet, make sure the 'All levels' drop down has 'Verbose' check
   `
   );
 }
-let handler;
-let rc = {};
+var handler;
+var rc = {};
 function setLogHandler(LogHandler, rcObject) {
   handler = LogHandler;
   rc = rcObject;
@@ -217,7 +229,7 @@ function getStackTrace() {
   return rc["machine-readable-stacktrace"] ? stack : stack.map((s) => `
 ${s.toString()}`).join();
 }
-const Logger = class {
+var Logger = class {
   constructor(channel) {
     this.channel = channel;
     //@ts-ignore
@@ -277,27 +289,27 @@ import { existsSync, mkdirSync } from "node:fs";
 import { fileURLToPath } from "node:url";
 import { dirname, join } from "path";
 import { config } from "dotenv";
-const __dirname = dirname(fileURLToPath(import.meta.url));
+var __dirname = dirname(fileURLToPath(import.meta.url));
 config({ path: join(__dirname, "../") + ".env" });
-const DIST_DIR = join(__dirname);
-const DATA_DIR = join(__dirname, "../data");
-const LOGS_DIR = join(DATA_DIR, "logs");
-const PRIVATE_CERTIFICATE_KEY = join(
+var DIST_DIR = join(__dirname);
+var DATA_DIR = join(__dirname, "../data");
+var LOGS_DIR = join(DATA_DIR, "logs");
+var PRIVATE_CERTIFICATE_KEY = join(
   DATA_DIR,
   "certificate/cert.key.pem"
 );
-const PRIVATE_CERTIFICATE_CERT = join(DATA_DIR, "certificate/cert.pem");
-let DC_ACCOUNTS_DIR = join(DATA_DIR, "accounts");
-const LOCALES_DIR = join(__dirname, "../../../_locales");
-const ENV_WEB_PASSWORD = process.env["WEB_PASSWORD"];
-const ENV_WEB_PORT = process.env["WEB_PORT"] || 3e3;
-const ENV_WEB_TRUST_FIRST_PROXY = Boolean(
+var PRIVATE_CERTIFICATE_CERT = join(DATA_DIR, "certificate/cert.pem");
+var DC_ACCOUNTS_DIR = join(DATA_DIR, "accounts");
+var LOCALES_DIR = join(__dirname, "../../../_locales");
+var ENV_WEB_PASSWORD = process.env["WEB_PASSWORD"];
+var ENV_WEB_PORT = process.env["WEB_PORT"] || 3e3;
+var ENV_WEB_TRUST_FIRST_PROXY = Boolean(
   process.env["WEB_TRUST_FIRST_PROXY"]
 );
 if (process.env["DC_ACCOUNTS_DIR"]) {
   DC_ACCOUNTS_DIR = join(__dirname, process.env["DC_ACCOUNTS_DIR"]);
 }
-const NODE_ENV = (process.env["NODE_ENV"] ?? "production").toLowerCase();
+var NODE_ENV = (process.env["NODE_ENV"] ?? "production").toLowerCase();
 if (!existsSync(DATA_DIR)) {
   console.log(
     "\n[ERROR]: Data dir does not exist, make sure you follow the steps in the Readme file\n"
@@ -321,15 +333,15 @@ if (!ENV_WEB_PASSWORD && NODE_ENV !== "test") {
   );
   process.exit(1);
 }
-const localStorage = new LocalStorage2(
+var localStorage = new LocalStorage2(
   join(DATA_DIR, "browser-runtime-data")
 );
 
 // src/get-build-info.ts
-const BuildInfo = JSON.parse('{"VERSION":"1.58.2","BUILD_TIMESTAMP":1748601108848,"GIT_REF":"v1.48.0-670-g896ac3964"}');
+var BuildInfo = JSON.parse('{"VERSION":"1.58.2","BUILD_TIMESTAMP":1765963401379,"GIT_REF":"v1.0.0"}');
 
 // src/rc-config.ts
-const RCConfig = {
+var RCConfig = {
   "log-debug": true,
   // should become real
   "log-to-console": true,
@@ -359,8 +371,8 @@ import express2, { json as BodyParserJson, Router } from "express";
 import { mkdtemp, writeFile, unlink, rm, mkdir, copyFile } from "fs/promises";
 import { basename, extname, join as join2 } from "path";
 import { tmpdir } from "os";
-const log2 = getLogger("main/BackendApiRoute");
-const BackendApiRoute = Router();
+var log2 = getLogger("main/BackendApiRoute");
+var BackendApiRoute = Router();
 BackendApiRoute.use(authMiddleWare);
 BackendApiRoute.get("/rc_config", (_req, res) => {
   res.status(200).json(RCConfig);
@@ -377,13 +389,13 @@ BackendApiRoute.get("/runtime_info", (_req, res) => {
   };
   res.status(200).json(runtimeInfo);
 });
-const Config = {
+var Config = {
   ...getDefaultState(),
   minimizeToTray: false,
   // does not exist in browser
   ...JSON.parse(localStorage.getItem("config") || "{}")
 };
-const allowedKeys = Object.keys(getDefaultState());
+var allowedKeys = Object.keys(getDefaultState());
 BackendApiRoute.get("/config", (_req, res) => {
   res.json(Config);
 });
@@ -495,9 +507,9 @@ import { getRPCServerPath } from "@deltachat/stdio-rpc-server";
 import { BaseDeltaChat, yerpc } from "@deltachat/jsonrpc-client";
 import { WebSocketServer } from "ws";
 import { join as join3 } from "path";
-const log3 = getLogger("main/dc_wss");
-const logCoreEvent = getLogger("core");
-const StdioServer = class {
+var log3 = getLogger("main/dc_wss");
+var logCoreEvent = getLogger("core");
+var StdioServer = class {
   constructor(on_data) {
     this.on_data = on_data;
     this.serverProcess = null;
@@ -551,7 +563,7 @@ const StdioServer = class {
     this.serverProcess?.stdin.write(message + "\n");
   }
 };
-const MainTransport = class extends yerpc.BaseTransport {
+var MainTransport = class extends yerpc.BaseTransport {
   constructor(sender) {
     super();
     this.sender = sender;
@@ -563,7 +575,7 @@ const MainTransport = class extends yerpc.BaseTransport {
     this.sender(message);
   }
 };
-const JRPCDeltaChat = class extends BaseDeltaChat {
+var JRPCDeltaChat = class extends BaseDeltaChat {
 };
 async function startDeltaChat() {
   let active_connection;
@@ -656,8 +668,8 @@ import express3, { Router as Router2 } from "express";
 import { join as join4 } from "path";
 import resolvePath from "resolve-path";
 import { stat } from "fs/promises";
-const helpRoute = Router2();
-const helpDir = join4(DIST_DIR, "/help");
+var helpRoute = Router2();
+var helpDir = join4(DIST_DIR, "/help");
 helpRoute.get("/help", express3.static(helpDir));
 helpRoute.get("/help_exists/:lang", async (req, res) => {
   const filePath = resolvePath(helpDir, `${req.params.lang}/help.html`);
@@ -775,13 +787,13 @@ function parseThemeMetaData(rawTheme) {
   }
   return meta;
 }
-const HIDDEN_THEME_PREFIX = "dev_";
+var HIDDEN_THEME_PREFIX = "dev_";
 
 // src/themes.ts
 import { basename as basename2, join as join6 } from "path";
 import { readdir as readdir2, readFile } from "fs/promises";
-const log4 = getLogger("main/themes");
-const dc_theme_dir = join6(DIST_DIR, "themes");
+var log4 = getLogger("main/themes");
+var dc_theme_dir = join6(DIST_DIR, "themes");
 async function readThemeDir(path = dc_theme_dir, prefix = "dc") {
   const files = await readdir2(path);
   return Promise.all(
@@ -817,15 +829,15 @@ import { readFile as readFile2, stat as stat2, unlink as unlink3 } from "fs/prom
 import session from "express-session";
 import resolvePath2 from "resolve-path";
 import { WebSocketServer as WebSocketServer2 } from "ws";
-const logHandler = createLogHandler();
+var logHandler = createLogHandler();
 setLogHandler(logHandler.log, RCConfig);
 cleanupLogFolder();
-const log5 = getLogger("main");
-const app = express4();
+var log5 = getLogger("main");
+var app = express4();
 if (ENV_WEB_TRUST_FIRST_PROXY) {
   app.set("trust proxy", 1);
 }
-const getCookieSecret = () => {
+var getCookieSecret = () => {
   const savedSecret = localStorage.getItem("cookieSecret");
   if (savedSecret) {
     return savedSecret;
@@ -835,7 +847,7 @@ const getCookieSecret = () => {
     return newSecret;
   }
 };
-const sessionParser = session({
+var sessionParser = session({
   store: new FileStore(localStorage),
   secret: getCookieSecret(),
   resave: false,
@@ -892,7 +904,7 @@ app.get("/logout", (req, res) => {
   });
   res.redirect("/");
 });
-const [dc, wssDC, shutdownDC] = await startDeltaChat();
+var [dc, wssDC, shutdownDC] = await startDeltaChat();
 log5.info(await dc.rpc.getSystemInfo());
 app.get("/blobs/:accountId/:filename", authMiddleWare, async (req, res) => {
   const { filename } = req.params;
@@ -950,26 +962,26 @@ app.use(helpRoute);
 app.get("/themes.json", async (req, res) => {
   res.json(await readThemeDir());
 });
-let certificate = "";
+var certificate = "";
 if (process.env.PRIVATE_CERTIFICATE_CERT) {
   certificate = process.env.PRIVATE_CERTIFICATE_CERT;
 } else {
   certificate = await readFile2(PRIVATE_CERTIFICATE_CERT, "utf8");
 }
-let certificateKey = "";
+var certificateKey = "";
 if (process.env.PRIVATE_CERTIFICATE_KEY) {
   certificateKey = process.env.PRIVATE_CERTIFICATE_KEY;
 } else {
   certificateKey = await readFile2(PRIVATE_CERTIFICATE_KEY, "utf8");
 }
-const sslserver = https.createServer(
+var sslserver = https.createServer(
   {
     key: certificateKey,
     cert: certificate
   },
   app
 );
-const wssBackend = new WebSocketServer2({
+var wssBackend = new WebSocketServer2({
   noServer: true,
   perMessageDeflate: true
 });

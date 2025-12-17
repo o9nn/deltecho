@@ -1,35 +1,35 @@
-const __create = Object.create;
-const __defProp = Object.defineProperty;
-const __getOwnPropDesc = Object.getOwnPropertyDescriptor;
-const __getOwnPropNames = Object.getOwnPropertyNames;
-const __getProtoOf = Object.getPrototypeOf;
-const __hasOwnProp = Object.prototype.hasOwnProperty;
-const __require = /* @__PURE__ */ ((x) => typeof require !== "undefined" ? require : typeof Proxy !== "undefined" ? new Proxy(x, {
+var __create = Object.create;
+var __defProp = Object.defineProperty;
+var __getOwnPropDesc = Object.getOwnPropertyDescriptor;
+var __getOwnPropNames = Object.getOwnPropertyNames;
+var __getProtoOf = Object.getPrototypeOf;
+var __hasOwnProp = Object.prototype.hasOwnProperty;
+var __require = /* @__PURE__ */ ((x) => typeof require !== "undefined" ? require : typeof Proxy !== "undefined" ? new Proxy(x, {
   get: (a, b) => (typeof require !== "undefined" ? require : a)[b]
 }) : x)(function(x) {
   if (typeof require !== "undefined")
     return require.apply(this, arguments);
   throw Error('Dynamic require of "' + x + '" is not supported');
 });
-const __esm = (fn, res) => function __init() {
+var __esm = (fn, res) => function __init() {
   return fn && (res = (0, fn[__getOwnPropNames(fn)[0]])(fn = 0)), res;
 };
-const __commonJS = (cb, mod) => function __require2() {
+var __commonJS = (cb, mod) => function __require2() {
   return mod || (0, cb[__getOwnPropNames(cb)[0]])((mod = { exports: {} }).exports, mod), mod.exports;
 };
-const __export = (target, all) => {
-  for (const name in all)
+var __export = (target, all) => {
+  for (var name in all)
     __defProp(target, name, { get: all[name], enumerable: true });
 };
-const __copyProps = (to, from, except, desc) => {
+var __copyProps = (to, from, except, desc) => {
   if (from && typeof from === "object" || typeof from === "function") {
-    for (const key of __getOwnPropNames(from))
+    for (let key of __getOwnPropNames(from))
       if (!__hasOwnProp.call(to, key) && key !== except)
         __defProp(to, key, { get: () => from[key], enumerable: !(desc = __getOwnPropDesc(from, key)) || desc.enumerable });
   }
   return to;
 };
-const __toESM = (mod, isNodeMode, target) => (target = mod != null ? __create(__getProtoOf(mod)) : {}, __copyProps(
+var __toESM = (mod, isNodeMode, target) => (target = mod != null ? __create(__getProtoOf(mod)) : {}, __copyProps(
   // If the importer is in node compatibility mode or this is not an ESM
   // file that has been converted to a CommonJS file using a Babel-
   // compatible transform (i.e. "__esModule" has not been set), then set
@@ -42,7 +42,7 @@ const __toESM = (mod, isNodeMode, target) => (target = mod != null ? __create(__
 import { createRequire } from "node:module";
 import path from "node:path";
 import url from "node:url";
-const init_cjs_shim = __esm({
+var init_cjs_shim = __esm({
   "src/cjs-shim.ts"() {
     "use strict";
     globalThis.require = createRequire(import.meta.url);
@@ -51,18 +51,18 @@ const init_cjs_shim = __esm({
   }
 });
 
-// ../../node_modules/.pnpm/ini@1.3.8/node_modules/ini/ini.js
-const require_ini = __commonJS({
-  "../../node_modules/.pnpm/ini@1.3.8/node_modules/ini/ini.js"(exports) {
+// ../../../node_modules/.pnpm/ini@1.3.8/node_modules/ini/ini.js
+var require_ini = __commonJS({
+  "../../../node_modules/.pnpm/ini@1.3.8/node_modules/ini/ini.js"(exports) {
     init_cjs_shim();
     exports.parse = exports.decode = decode;
     exports.stringify = exports.encode = encode;
     exports.safe = safe;
     exports.unsafe = unsafe;
-    const eol = typeof process !== "undefined" && process.platform === "win32" ? "\r\n" : "\n";
+    var eol = typeof process !== "undefined" && process.platform === "win32" ? "\r\n" : "\n";
     function encode(obj, opt) {
-      const children = [];
-      let out = "";
+      var children = [];
+      var out = "";
       if (typeof opt === "string") {
         opt = {
           section: opt,
@@ -72,9 +72,9 @@ const require_ini = __commonJS({
         opt = opt || {};
         opt.whitespace = opt.whitespace === true;
       }
-      const separator = opt.whitespace ? " = " : "=";
+      var separator = opt.whitespace ? " = " : "=";
       Object.keys(obj).forEach(function(k, _, __) {
-        const val = obj[k];
+        var val = obj[k];
         if (val && Array.isArray(val)) {
           val.forEach(function(item) {
             out += safe(k + "[]") + separator + safe(item) + "\n";
@@ -87,9 +87,9 @@ const require_ini = __commonJS({
       if (opt.section && out.length)
         out = "[" + safe(opt.section) + "]" + eol + out;
       children.forEach(function(k, _, __) {
-        const nk = dotSplit(k).join("\\.");
-        const section = (opt.section ? opt.section + "." : "") + nk;
-        const child = encode(obj[k], {
+        var nk = dotSplit(k).join("\\.");
+        var section = (opt.section ? opt.section + "." : "") + nk;
+        var child = encode(obj[k], {
           section,
           whitespace: opt.whitespace
         });
@@ -105,15 +105,15 @@ const require_ini = __commonJS({
       });
     }
     function decode(str) {
-      const out = {};
-      let p = out;
-      let section = null;
-      const re = /^\[([^\]]*)\]$|^([^=]+)(=(.*))?$/i;
-      const lines = str.split(/[\r\n]+/g);
+      var out = {};
+      var p = out;
+      var section = null;
+      var re = /^\[([^\]]*)\]$|^([^=]+)(=(.*))?$/i;
+      var lines = str.split(/[\r\n]+/g);
       lines.forEach(function(line, _, __) {
         if (!line || line.match(/^\s*[;#]/))
           return;
-        const match = line.match(re);
+        var match = line.match(re);
         if (!match)
           return;
         if (match[1] !== void 0) {
@@ -125,10 +125,10 @@ const require_ini = __commonJS({
           p = out[section] = out[section] || {};
           return;
         }
-        let key = unsafe(match[2]);
+        var key = unsafe(match[2]);
         if (key === "__proto__")
           return;
-        let value = match[3] ? unsafe(match[4]) : true;
+        var value = match[3] ? unsafe(match[4]) : true;
         switch (value) {
           case "true":
           case "false":
@@ -152,10 +152,10 @@ const require_ini = __commonJS({
       Object.keys(out).filter(function(k, _, __) {
         if (!out[k] || typeof out[k] !== "object" || Array.isArray(out[k]))
           return false;
-        const parts = dotSplit(k);
-        let p2 = out;
-        const l = parts.pop();
-        const nl = l.replace(/\\\./g, ".");
+        var parts = dotSplit(k);
+        var p2 = out;
+        var l = parts.pop();
+        var nl = l.replace(/\\\./g, ".");
         parts.forEach(function(part, _2, __2) {
           if (part === "__proto__")
             return;
@@ -188,10 +188,10 @@ const require_ini = __commonJS({
         } catch (_) {
         }
       } else {
-        let esc = false;
-        let unesc = "";
-        for (let i = 0, l = val.length; i < l; i++) {
-          const c = val.charAt(i);
+        var esc = false;
+        var unesc = "";
+        for (var i = 0, l = val.length; i < l; i++) {
+          var c = val.charAt(i);
           if (esc) {
             if ("\\;#".indexOf(c) !== -1)
               unesc += c;
@@ -214,13 +214,13 @@ const require_ini = __commonJS({
   }
 });
 
-// ../../node_modules/.pnpm/strip-json-comments@2.0.1/node_modules/strip-json-comments/index.js
-const require_strip_json_comments = __commonJS({
-  "../../node_modules/.pnpm/strip-json-comments@2.0.1/node_modules/strip-json-comments/index.js"(exports, module) {
+// ../../../node_modules/.pnpm/strip-json-comments@2.0.1/node_modules/strip-json-comments/index.js
+var require_strip_json_comments = __commonJS({
+  "../../../node_modules/.pnpm/strip-json-comments@2.0.1/node_modules/strip-json-comments/index.js"(exports, module) {
     "use strict";
     init_cjs_shim();
-    const singleComment = 1;
-    const multiComment = 2;
+    var singleComment = 1;
+    var multiComment = 2;
     function stripWithoutWhitespace() {
       return "";
     }
@@ -229,18 +229,18 @@ const require_strip_json_comments = __commonJS({
     }
     module.exports = function(str, opts) {
       opts = opts || {};
-      let currentChar;
-      let nextChar;
-      let insideString = false;
-      let insideComment = false;
-      let offset = 0;
-      let ret = "";
-      const strip = opts.whitespace === false ? stripWithoutWhitespace : stripWithWhitespace;
-      for (let i = 0; i < str.length; i++) {
+      var currentChar;
+      var nextChar;
+      var insideString = false;
+      var insideComment = false;
+      var offset = 0;
+      var ret = "";
+      var strip = opts.whitespace === false ? stripWithoutWhitespace : stripWithWhitespace;
+      for (var i = 0; i < str.length; i++) {
         currentChar = str[i];
         nextChar = str[i + 1];
         if (!insideComment && currentChar === '"') {
-          const escaped = str[i - 1] === "\\" && str[i - 2] !== "\\";
+          var escaped = str[i - 1] === "\\" && str[i - 2] !== "\\";
           if (!escaped) {
             insideString = !insideString;
           }
@@ -282,43 +282,43 @@ const require_strip_json_comments = __commonJS({
   }
 });
 
-// ../../node_modules/.pnpm/rc@1.2.8/node_modules/rc/lib/utils.js
-const require_utils = __commonJS({
-  "../../node_modules/.pnpm/rc@1.2.8/node_modules/rc/lib/utils.js"(exports) {
+// ../../../node_modules/.pnpm/rc@1.2.8/node_modules/rc/lib/utils.js
+var require_utils = __commonJS({
+  "../../../node_modules/.pnpm/rc@1.2.8/node_modules/rc/lib/utils.js"(exports) {
     "use strict";
     init_cjs_shim();
-    const fs2 = __require("fs");
-    const ini = require_ini();
-    const path4 = __require("path");
-    const stripJsonComments = require_strip_json_comments();
-    const parse = exports.parse = function(content) {
+    var fs2 = __require("fs");
+    var ini = require_ini();
+    var path4 = __require("path");
+    var stripJsonComments = require_strip_json_comments();
+    var parse = exports.parse = function(content) {
       if (/^\s*{/.test(content))
         return JSON.parse(stripJsonComments(content));
       return ini.parse(content);
     };
-    const file = exports.file = function() {
-      const args = [].slice.call(arguments).filter(function(arg) {
+    var file = exports.file = function() {
+      var args = [].slice.call(arguments).filter(function(arg) {
         return arg != null;
       });
-      for (const i in args)
+      for (var i in args)
         if ("string" !== typeof args[i])
           return;
-      const file2 = path4.join.apply(null, args);
-      let content;
+      var file2 = path4.join.apply(null, args);
+      var content;
       try {
         return fs2.readFileSync(file2, "utf-8");
       } catch (err) {
         return;
       }
     };
-    const json = exports.json = function() {
-      const content = file.apply(null, arguments);
+    var json = exports.json = function() {
+      var content = file.apply(null, arguments);
       return content ? parse(content) : null;
     };
-    const env = exports.env = function(prefix, env2) {
+    var env = exports.env = function(prefix, env2) {
       env2 = env2 || process.env;
-      const obj = {};
-      const l = prefix.length;
+      var obj = {};
+      var l = prefix.length;
       for (var k in env2) {
         if (k.toLowerCase().indexOf(prefix.toLowerCase()) === 0) {
           var keypath = k.substring(l).split("__");
@@ -340,10 +340,10 @@ const require_utils = __commonJS({
       }
       return obj;
     };
-    const find = exports.find = function() {
-      const rel = path4.join.apply(null, [].slice.call(arguments));
+    var find = exports.find = function() {
+      var rel = path4.join.apply(null, [].slice.call(arguments));
       function find2(start, rel2) {
-        const file2 = path4.join(start, rel2);
+        var file2 = path4.join(start, rel2);
         try {
           fs2.statSync(file2);
           return file2;
@@ -357,9 +357,9 @@ const require_utils = __commonJS({
   }
 });
 
-// ../../node_modules/.pnpm/deep-extend@0.6.0/node_modules/deep-extend/lib/deep-extend.js
-const require_deep_extend = __commonJS({
-  "../../node_modules/.pnpm/deep-extend@0.6.0/node_modules/deep-extend/lib/deep-extend.js"(exports, module) {
+// ../../../node_modules/.pnpm/deep-extend@0.6.0/node_modules/deep-extend/lib/deep-extend.js
+var require_deep_extend = __commonJS({
+  "../../../node_modules/.pnpm/deep-extend@0.6.0/node_modules/deep-extend/lib/deep-extend.js"(exports, module) {
     "use strict";
     init_cjs_shim();
     function isSpecificValue(val) {
@@ -367,7 +367,7 @@ const require_deep_extend = __commonJS({
     }
     function cloneSpecificValue(val) {
       if (val instanceof Buffer) {
-        const x = Buffer.alloc ? Buffer.alloc(val.length) : new Buffer(val.length);
+        var x = Buffer.alloc ? Buffer.alloc(val.length) : new Buffer(val.length);
         val.copy(x);
         return x;
       } else if (val instanceof Date) {
@@ -379,7 +379,7 @@ const require_deep_extend = __commonJS({
       }
     }
     function deepCloneArray(arr) {
-      const clone = [];
+      var clone = [];
       arr.forEach(function(item, index) {
         if (typeof item === "object" && item !== null) {
           if (Array.isArray(item)) {
@@ -405,9 +405,9 @@ const require_deep_extend = __commonJS({
       if (arguments.length < 2) {
         return arguments[0];
       }
-      const target = arguments[0];
-      const args = Array.prototype.slice.call(arguments, 1);
-      let val, src, clone;
+      var target = arguments[0];
+      var args = Array.prototype.slice.call(arguments, 1);
+      var val, src, clone;
       args.forEach(function(obj) {
         if (typeof obj !== "object" || obj === null || Array.isArray(obj)) {
           return;
@@ -440,25 +440,56 @@ const require_deep_extend = __commonJS({
   }
 });
 
-// ../../node_modules/.pnpm/minimist@1.2.6/node_modules/minimist/index.js
-const require_minimist = __commonJS({
-  "../../node_modules/.pnpm/minimist@1.2.6/node_modules/minimist/index.js"(exports, module) {
+// ../../../node_modules/.pnpm/minimist@1.2.8/node_modules/minimist/index.js
+var require_minimist = __commonJS({
+  "../../../node_modules/.pnpm/minimist@1.2.8/node_modules/minimist/index.js"(exports, module) {
+    "use strict";
     init_cjs_shim();
-    module.exports = function(args, opts) {
-      if (!opts)
-        opts = {};
-      const flags = { bools: {}, strings: {}, unknownFn: null };
-      if (typeof opts["unknown"] === "function") {
-        flags.unknownFn = opts["unknown"];
+    function hasKey(obj, keys) {
+      var o = obj;
+      keys.slice(0, -1).forEach(function(key2) {
+        o = o[key2] || {};
+      });
+      var key = keys[keys.length - 1];
+      return key in o;
+    }
+    function isNumber(x) {
+      if (typeof x === "number") {
+        return true;
       }
-      if (typeof opts["boolean"] === "boolean" && opts["boolean"]) {
+      if (/^0x[0-9a-f]+$/i.test(x)) {
+        return true;
+      }
+      return /^[-+]?(?:\d+(?:\.\d*)?|\.\d+)(e[-+]?\d+)?$/.test(x);
+    }
+    function isConstructorOrProto(obj, key) {
+      return key === "constructor" && typeof obj[key] === "function" || key === "__proto__";
+    }
+    module.exports = function(args, opts) {
+      if (!opts) {
+        opts = {};
+      }
+      var flags = {
+        bools: {},
+        strings: {},
+        unknownFn: null
+      };
+      if (typeof opts.unknown === "function") {
+        flags.unknownFn = opts.unknown;
+      }
+      if (typeof opts.boolean === "boolean" && opts.boolean) {
         flags.allBools = true;
       } else {
-        [].concat(opts["boolean"]).filter(Boolean).forEach(function(key2) {
+        [].concat(opts.boolean).filter(Boolean).forEach(function(key2) {
           flags.bools[key2] = true;
         });
       }
-      const aliases = {};
+      var aliases = {};
+      function aliasIsBoolean(key2) {
+        return aliases[key2].some(function(x) {
+          return flags.bools[x];
+        });
+      }
       Object.keys(opts.alias || {}).forEach(function(key2) {
         aliases[key2] = [].concat(opts.alias[key2]);
         aliases[key2].forEach(function(x) {
@@ -470,103 +501,110 @@ const require_minimist = __commonJS({
       [].concat(opts.string).filter(Boolean).forEach(function(key2) {
         flags.strings[key2] = true;
         if (aliases[key2]) {
-          flags.strings[aliases[key2]] = true;
+          [].concat(aliases[key2]).forEach(function(k) {
+            flags.strings[k] = true;
+          });
         }
       });
-      const defaults2 = opts["default"] || {};
-      const argv = { _: [] };
-      Object.keys(flags.bools).forEach(function(key2) {
-        setArg(key2, defaults2[key2] === void 0 ? false : defaults2[key2]);
-      });
-      let notFlags = [];
-      if (args.indexOf("--") !== -1) {
-        notFlags = args.slice(args.indexOf("--") + 1);
-        args = args.slice(0, args.indexOf("--"));
-      }
+      var defaults2 = opts.default || {};
+      var argv = { _: [] };
       function argDefined(key2, arg2) {
         return flags.allBools && /^--[^=]+$/.test(arg2) || flags.strings[key2] || flags.bools[key2] || aliases[key2];
       }
+      function setKey(obj, keys, value2) {
+        var o = obj;
+        for (var i2 = 0; i2 < keys.length - 1; i2++) {
+          var key2 = keys[i2];
+          if (isConstructorOrProto(o, key2)) {
+            return;
+          }
+          if (o[key2] === void 0) {
+            o[key2] = {};
+          }
+          if (o[key2] === Object.prototype || o[key2] === Number.prototype || o[key2] === String.prototype) {
+            o[key2] = {};
+          }
+          if (o[key2] === Array.prototype) {
+            o[key2] = [];
+          }
+          o = o[key2];
+        }
+        var lastKey = keys[keys.length - 1];
+        if (isConstructorOrProto(o, lastKey)) {
+          return;
+        }
+        if (o === Object.prototype || o === Number.prototype || o === String.prototype) {
+          o = {};
+        }
+        if (o === Array.prototype) {
+          o = [];
+        }
+        if (o[lastKey] === void 0 || flags.bools[lastKey] || typeof o[lastKey] === "boolean") {
+          o[lastKey] = value2;
+        } else if (Array.isArray(o[lastKey])) {
+          o[lastKey].push(value2);
+        } else {
+          o[lastKey] = [o[lastKey], value2];
+        }
+      }
       function setArg(key2, val, arg2) {
         if (arg2 && flags.unknownFn && !argDefined(key2, arg2)) {
-          if (flags.unknownFn(arg2) === false)
+          if (flags.unknownFn(arg2) === false) {
             return;
+          }
         }
-        const value2 = !flags.strings[key2] && isNumber(val) ? Number(val) : val;
+        var value2 = !flags.strings[key2] && isNumber(val) ? Number(val) : val;
         setKey(argv, key2.split("."), value2);
         (aliases[key2] || []).forEach(function(x) {
           setKey(argv, x.split("."), value2);
         });
       }
-      function setKey(obj, keys, value2) {
-        let o = obj;
-        for (let i2 = 0; i2 < keys.length - 1; i2++) {
-          var key2 = keys[i2];
-          if (isConstructorOrProto(o, key2))
-            return;
-          if (o[key2] === void 0)
-            o[key2] = {};
-          if (o[key2] === Object.prototype || o[key2] === Number.prototype || o[key2] === String.prototype)
-            o[key2] = {};
-          if (o[key2] === Array.prototype)
-            o[key2] = [];
-          o = o[key2];
-        }
-        var key2 = keys[keys.length - 1];
-        if (isConstructorOrProto(o, key2))
-          return;
-        if (o === Object.prototype || o === Number.prototype || o === String.prototype)
-          o = {};
-        if (o === Array.prototype)
-          o = [];
-        if (o[key2] === void 0 || flags.bools[key2] || typeof o[key2] === "boolean") {
-          o[key2] = value2;
-        } else if (Array.isArray(o[key2])) {
-          o[key2].push(value2);
-        } else {
-          o[key2] = [o[key2], value2];
-        }
+      Object.keys(flags.bools).forEach(function(key2) {
+        setArg(key2, defaults2[key2] === void 0 ? false : defaults2[key2]);
+      });
+      var notFlags = [];
+      if (args.indexOf("--") !== -1) {
+        notFlags = args.slice(args.indexOf("--") + 1);
+        args = args.slice(0, args.indexOf("--"));
       }
-      function aliasIsBoolean(key2) {
-        return aliases[key2].some(function(x) {
-          return flags.bools[x];
-        });
-      }
-      for (let i = 0; i < args.length; i++) {
-        const arg = args[i];
+      for (var i = 0; i < args.length; i++) {
+        var arg = args[i];
+        var key;
+        var next;
         if (/^--.+=/.test(arg)) {
-          const m = arg.match(/^--([^=]+)=([\s\S]*)$/);
-          var key = m[1];
-          let value = m[2];
+          var m = arg.match(/^--([^=]+)=([\s\S]*)$/);
+          key = m[1];
+          var value = m[2];
           if (flags.bools[key]) {
             value = value !== "false";
           }
           setArg(key, value, arg);
         } else if (/^--no-.+/.test(arg)) {
-          var key = arg.match(/^--no-(.+)/)[1];
+          key = arg.match(/^--no-(.+)/)[1];
           setArg(key, false, arg);
         } else if (/^--.+/.test(arg)) {
-          var key = arg.match(/^--(.+)/)[1];
-          var next = args[i + 1];
-          if (next !== void 0 && !/^-/.test(next) && !flags.bools[key] && !flags.allBools && (aliases[key] ? !aliasIsBoolean(key) : true)) {
+          key = arg.match(/^--(.+)/)[1];
+          next = args[i + 1];
+          if (next !== void 0 && !/^(-|--)[^-]/.test(next) && !flags.bools[key] && !flags.allBools && (aliases[key] ? !aliasIsBoolean(key) : true)) {
             setArg(key, next, arg);
-            i++;
+            i += 1;
           } else if (/^(true|false)$/.test(next)) {
             setArg(key, next === "true", arg);
-            i++;
+            i += 1;
           } else {
             setArg(key, flags.strings[key] ? "" : true, arg);
           }
         } else if (/^-[^-]+/.test(arg)) {
-          const letters = arg.slice(1, -1).split("");
-          let broken = false;
-          for (let j = 0; j < letters.length; j++) {
-            var next = arg.slice(j + 2);
+          var letters = arg.slice(1, -1).split("");
+          var broken = false;
+          for (var j = 0; j < letters.length; j++) {
+            next = arg.slice(j + 2);
             if (next === "-") {
               setArg(letters[j], next, arg);
               continue;
             }
-            if (/[A-Za-z]/.test(letters[j]) && /=/.test(next)) {
-              setArg(letters[j], next.split("=")[1], arg);
+            if (/[A-Za-z]/.test(letters[j]) && next[0] === "=") {
+              setArg(letters[j], next.slice(1), arg);
               broken = true;
               break;
             }
@@ -583,23 +621,21 @@ const require_minimist = __commonJS({
               setArg(letters[j], flags.strings[letters[j]] ? "" : true, arg);
             }
           }
-          var key = arg.slice(-1)[0];
+          key = arg.slice(-1)[0];
           if (!broken && key !== "-") {
             if (args[i + 1] && !/^(-|--)[^-]/.test(args[i + 1]) && !flags.bools[key] && (aliases[key] ? !aliasIsBoolean(key) : true)) {
               setArg(key, args[i + 1], arg);
-              i++;
+              i += 1;
             } else if (args[i + 1] && /^(true|false)$/.test(args[i + 1])) {
               setArg(key, args[i + 1] === "true", arg);
-              i++;
+              i += 1;
             } else {
               setArg(key, flags.strings[key] ? "" : true, arg);
             }
           }
         } else {
           if (!flags.unknownFn || flags.unknownFn(arg) !== false) {
-            argv._.push(
-              flags.strings["_"] || !isNumber(arg) ? arg : Number(arg)
-            );
+            argv._.push(flags.strings._ || !isNumber(arg) ? arg : Number(arg));
           }
           if (opts.stopEarly) {
             argv._.push.apply(argv._, args.slice(i + 1));
@@ -607,57 +643,36 @@ const require_minimist = __commonJS({
           }
         }
       }
-      Object.keys(defaults2).forEach(function(key2) {
-        if (!hasKey(argv, key2.split("."))) {
-          setKey(argv, key2.split("."), defaults2[key2]);
-          (aliases[key2] || []).forEach(function(x) {
-            setKey(argv, x.split("."), defaults2[key2]);
+      Object.keys(defaults2).forEach(function(k) {
+        if (!hasKey(argv, k.split("."))) {
+          setKey(argv, k.split("."), defaults2[k]);
+          (aliases[k] || []).forEach(function(x) {
+            setKey(argv, x.split("."), defaults2[k]);
           });
         }
       });
       if (opts["--"]) {
-        argv["--"] = [];
-        notFlags.forEach(function(key2) {
-          argv["--"].push(key2);
-        });
+        argv["--"] = notFlags.slice();
       } else {
-        notFlags.forEach(function(key2) {
-          argv._.push(key2);
+        notFlags.forEach(function(k) {
+          argv._.push(k);
         });
       }
       return argv;
     };
-    function hasKey(obj, keys) {
-      let o = obj;
-      keys.slice(0, -1).forEach(function(key2) {
-        o = o[key2] || {};
-      });
-      const key = keys[keys.length - 1];
-      return key in o;
-    }
-    function isNumber(x) {
-      if (typeof x === "number")
-        return true;
-      if (/^0x[0-9a-f]+$/i.test(x))
-        return true;
-      return /^[-+]?(?:\d+(?:\.\d*)?|\.\d+)(e[-+]?\d+)?$/.test(x);
-    }
-    function isConstructorOrProto(obj, key) {
-      return key === "constructor" && typeof obj[key] === "function" || key === "__proto__";
-    }
   }
 });
 
-// ../../node_modules/.pnpm/rc@1.2.8/node_modules/rc/index.js
-const require_rc = __commonJS({
-  "../../node_modules/.pnpm/rc@1.2.8/node_modules/rc/index.js"(exports, module) {
+// ../../../node_modules/.pnpm/rc@1.2.8/node_modules/rc/index.js
+var require_rc = __commonJS({
+  "../../../node_modules/.pnpm/rc@1.2.8/node_modules/rc/index.js"(exports, module) {
     init_cjs_shim();
-    const cc = require_utils();
-    const join17 = __require("path").join;
-    const deepExtend = require_deep_extend();
-    const etc = "/etc";
-    const win2 = process.platform === "win32";
-    const home = win2 ? process.env.USERPROFILE : process.env.HOME;
+    var cc = require_utils();
+    var join17 = __require("path").join;
+    var deepExtend = require_deep_extend();
+    var etc = "/etc";
+    var win2 = process.platform === "win32";
+    var home = win2 ? process.env.USERPROFILE : process.env.HOME;
     module.exports = function(name, defaults2, argv, parse) {
       if ("string" !== typeof name)
         throw new Error("rc(name): name *must* be string");
@@ -665,13 +680,13 @@ const require_rc = __commonJS({
         argv = require_minimist()(process.argv.slice(2));
       defaults2 = ("string" === typeof defaults2 ? cc.json(defaults2) : defaults2) || {};
       parse = parse || cc.parse;
-      const env = cc.env(name + "_");
-      const configs = [defaults2];
-      const configFiles = [];
+      var env = cc.env(name + "_");
+      var configs = [defaults2];
+      var configFiles = [];
       function addConfigFile(file) {
         if (configFiles.indexOf(file) >= 0)
           return;
-        const fileConfig = cc.file(file);
+        var fileConfig = cc.file(file);
         if (fileConfig) {
           configs.push(parse(fileConfig));
           configFiles.push(file);
@@ -703,9 +718,9 @@ const require_rc = __commonJS({
   }
 });
 
-// ../../node_modules/.pnpm/stackframe@1.3.4/node_modules/stackframe/stackframe.js
-const require_stackframe = __commonJS({
-  "../../node_modules/.pnpm/stackframe@1.3.4/node_modules/stackframe/stackframe.js"(exports, module) {
+// ../../../node_modules/.pnpm/stackframe@1.3.4/node_modules/stackframe/stackframe.js
+var require_stackframe = __commonJS({
+  "../../../node_modules/.pnpm/stackframe@1.3.4/node_modules/stackframe/stackframe.js"(exports, module) {
     init_cjs_shim();
     (function(root, factory) {
       "use strict";
@@ -729,16 +744,16 @@ const require_stackframe = __commonJS({
           return this[p];
         };
       }
-      const booleanProps = ["isConstructor", "isEval", "isNative", "isToplevel"];
-      const numericProps = ["columnNumber", "lineNumber"];
-      const stringProps = ["fileName", "functionName", "source"];
-      const arrayProps = ["args"];
-      const objectProps = ["evalOrigin"];
-      const props = booleanProps.concat(numericProps, stringProps, arrayProps, objectProps);
+      var booleanProps = ["isConstructor", "isEval", "isNative", "isToplevel"];
+      var numericProps = ["columnNumber", "lineNumber"];
+      var stringProps = ["fileName", "functionName", "source"];
+      var arrayProps = ["args"];
+      var objectProps = ["evalOrigin"];
+      var props = booleanProps.concat(numericProps, stringProps, arrayProps, objectProps);
       function StackFrame2(obj) {
         if (!obj)
           return;
-        for (let i2 = 0; i2 < props.length; i2++) {
+        for (var i2 = 0; i2 < props.length; i2++) {
           if (obj[props[i2]] !== void 0) {
             this["set" + _capitalize(props[i2])](obj[props[i2]]);
           }
@@ -767,10 +782,10 @@ const require_stackframe = __commonJS({
           }
         },
         toString: function() {
-          const fileName = this.getFileName() || "";
-          const lineNumber = this.getLineNumber() || "";
-          const columnNumber = this.getColumnNumber() || "";
-          const functionName = this.getFunctionName() || "";
+          var fileName = this.getFileName() || "";
+          var lineNumber = this.getLineNumber() || "";
+          var columnNumber = this.getColumnNumber() || "";
+          var functionName = this.getFunctionName() || "";
           if (this.getIsEval()) {
             if (fileName) {
               return "[eval] (" + fileName + ":" + lineNumber + ":" + columnNumber + ")";
@@ -784,13 +799,13 @@ const require_stackframe = __commonJS({
         }
       };
       StackFrame2.fromString = function StackFrame$$fromString(str) {
-        const argsStartIndex = str.indexOf("(");
-        const argsEndIndex = str.lastIndexOf(")");
-        const functionName = str.substring(0, argsStartIndex);
-        const args = str.substring(argsStartIndex + 1, argsEndIndex).split(",");
-        const locationString = str.substring(argsEndIndex + 1);
+        var argsStartIndex = str.indexOf("(");
+        var argsEndIndex = str.lastIndexOf(")");
+        var functionName = str.substring(0, argsStartIndex);
+        var args = str.substring(argsStartIndex + 1, argsEndIndex).split(",");
+        var locationString = str.substring(argsEndIndex + 1);
         if (locationString.indexOf("@") === 0) {
-          const parts = /@(.+?)(?::(\d+))?(?::(\d+))?$/.exec(locationString, "");
+          var parts = /@(.+?)(?::(\d+))?(?::(\d+))?$/.exec(locationString, "");
           var fileName = parts[1];
           var lineNumber = parts[2];
           var columnNumber = parts[3];
@@ -803,7 +818,7 @@ const require_stackframe = __commonJS({
           columnNumber: columnNumber || void 0
         });
       };
-      for (let i = 0; i < booleanProps.length; i++) {
+      for (var i = 0; i < booleanProps.length; i++) {
         StackFrame2.prototype["get" + _capitalize(booleanProps[i])] = _getter(booleanProps[i]);
         StackFrame2.prototype["set" + _capitalize(booleanProps[i])] = /* @__PURE__ */ function(p) {
           return function(v) {
@@ -811,7 +826,7 @@ const require_stackframe = __commonJS({
           };
         }(booleanProps[i]);
       }
-      for (let j = 0; j < numericProps.length; j++) {
+      for (var j = 0; j < numericProps.length; j++) {
         StackFrame2.prototype["get" + _capitalize(numericProps[j])] = _getter(numericProps[j]);
         StackFrame2.prototype["set" + _capitalize(numericProps[j])] = /* @__PURE__ */ function(p) {
           return function(v) {
@@ -822,7 +837,7 @@ const require_stackframe = __commonJS({
           };
         }(numericProps[j]);
       }
-      for (let k = 0; k < stringProps.length; k++) {
+      for (var k = 0; k < stringProps.length; k++) {
         StackFrame2.prototype["get" + _capitalize(stringProps[k])] = _getter(stringProps[k]);
         StackFrame2.prototype["set" + _capitalize(stringProps[k])] = /* @__PURE__ */ function(p) {
           return function(v) {
@@ -835,9 +850,9 @@ const require_stackframe = __commonJS({
   }
 });
 
-// ../../node_modules/.pnpm/error-stack-parser@2.1.4/node_modules/error-stack-parser/error-stack-parser.js
-const require_error_stack_parser = __commonJS({
-  "../../node_modules/.pnpm/error-stack-parser@2.1.4/node_modules/error-stack-parser/error-stack-parser.js"(exports, module) {
+// ../../../node_modules/.pnpm/error-stack-parser@2.1.4/node_modules/error-stack-parser/error-stack-parser.js
+var require_error_stack_parser = __commonJS({
+  "../../../node_modules/.pnpm/error-stack-parser@2.1.4/node_modules/error-stack-parser/error-stack-parser.js"(exports, module) {
     init_cjs_shim();
     (function(root, factory) {
       "use strict";
@@ -850,9 +865,9 @@ const require_error_stack_parser = __commonJS({
       }
     })(exports, function ErrorStackParser(StackFrame2) {
       "use strict";
-      const FIREFOX_SAFARI_STACK_REGEXP = /(^|@)\S+:\d+/;
-      const CHROME_IE_STACK_REGEXP = /^\s*at .*(\S+:\d+|\(native\))/m;
-      const SAFARI_NATIVE_CODE_REGEXP = /^(eval@)?(\[native code])?$/;
+      var FIREFOX_SAFARI_STACK_REGEXP = /(^|@)\S+:\d+/;
+      var CHROME_IE_STACK_REGEXP = /^\s*at .*(\S+:\d+|\(native\))/m;
+      var SAFARI_NATIVE_CODE_REGEXP = /^(eval@)?(\[native code])?$/;
       return {
         /**
          * Given an Error object, extract the most information from it.
@@ -876,24 +891,24 @@ const require_error_stack_parser = __commonJS({
           if (urlLike.indexOf(":") === -1) {
             return [urlLike];
           }
-          const regExp = /(.+?)(?::(\d+))?(?::(\d+))?$/;
-          const parts = regExp.exec(urlLike.replace(/[()]/g, ""));
+          var regExp = /(.+?)(?::(\d+))?(?::(\d+))?$/;
+          var parts = regExp.exec(urlLike.replace(/[()]/g, ""));
           return [parts[1], parts[2] || void 0, parts[3] || void 0];
         },
         parseV8OrIE: function ErrorStackParser$$parseV8OrIE(error) {
-          const filtered = error.stack.split("\n").filter(function(line) {
+          var filtered = error.stack.split("\n").filter(function(line) {
             return !!line.match(CHROME_IE_STACK_REGEXP);
           }, this);
           return filtered.map(function(line) {
             if (line.indexOf("(eval ") > -1) {
               line = line.replace(/eval code/g, "eval").replace(/(\(eval at [^()]*)|(,.*$)/g, "");
             }
-            let sanitizedLine = line.replace(/^\s+/, "").replace(/\(eval code/g, "(").replace(/^.*?\s+/, "");
-            const location = sanitizedLine.match(/ (\(.+\)$)/);
+            var sanitizedLine = line.replace(/^\s+/, "").replace(/\(eval code/g, "(").replace(/^.*?\s+/, "");
+            var location = sanitizedLine.match(/ (\(.+\)$)/);
             sanitizedLine = location ? sanitizedLine.replace(location[0], "") : sanitizedLine;
-            const locationParts = this.extractLocation(location ? location[1] : sanitizedLine);
-            const functionName = location && sanitizedLine || void 0;
-            const fileName = ["eval", "<anonymous>"].indexOf(locationParts[0]) > -1 ? void 0 : locationParts[0];
+            var locationParts = this.extractLocation(location ? location[1] : sanitizedLine);
+            var functionName = location && sanitizedLine || void 0;
+            var fileName = ["eval", "<anonymous>"].indexOf(locationParts[0]) > -1 ? void 0 : locationParts[0];
             return new StackFrame2({
               functionName,
               fileName,
@@ -904,7 +919,7 @@ const require_error_stack_parser = __commonJS({
           }, this);
         },
         parseFFOrSafari: function ErrorStackParser$$parseFFOrSafari(error) {
-          const filtered = error.stack.split("\n").filter(function(line) {
+          var filtered = error.stack.split("\n").filter(function(line) {
             return !line.match(SAFARI_NATIVE_CODE_REGEXP);
           }, this);
           return filtered.map(function(line) {
@@ -916,10 +931,10 @@ const require_error_stack_parser = __commonJS({
                 functionName: line
               });
             } else {
-              const functionNameRegex = /((.*".+"[^@]*)?[^@]*)(?:@)/;
-              const matches = line.match(functionNameRegex);
-              const functionName = matches && matches[1] ? matches[1] : void 0;
-              const locationParts = this.extractLocation(line.replace(functionNameRegex, ""));
+              var functionNameRegex = /((.*".+"[^@]*)?[^@]*)(?:@)/;
+              var matches = line.match(functionNameRegex);
+              var functionName = matches && matches[1] ? matches[1] : void 0;
+              var locationParts = this.extractLocation(line.replace(functionNameRegex, ""));
               return new StackFrame2({
                 functionName,
                 fileName: locationParts[0],
@@ -940,11 +955,11 @@ const require_error_stack_parser = __commonJS({
           }
         },
         parseOpera9: function ErrorStackParser$$parseOpera9(e) {
-          const lineRE = /Line (\d+).*script (?:in )?(\S+)/i;
-          const lines = e.message.split("\n");
-          const result = [];
-          for (let i = 2, len = lines.length; i < len; i += 2) {
-            const match = lineRE.exec(lines[i]);
+          var lineRE = /Line (\d+).*script (?:in )?(\S+)/i;
+          var lines = e.message.split("\n");
+          var result = [];
+          for (var i = 2, len = lines.length; i < len; i += 2) {
+            var match = lineRE.exec(lines[i]);
             if (match) {
               result.push(new StackFrame2({
                 fileName: match[2],
@@ -956,11 +971,11 @@ const require_error_stack_parser = __commonJS({
           return result;
         },
         parseOpera10: function ErrorStackParser$$parseOpera10(e) {
-          const lineRE = /Line (\d+).*script (?:in )?(\S+)(?:: In function (\S+))?$/i;
-          const lines = e.stacktrace.split("\n");
-          const result = [];
-          for (let i = 0, len = lines.length; i < len; i += 2) {
-            const match = lineRE.exec(lines[i]);
+          var lineRE = /Line (\d+).*script (?:in )?(\S+)(?:: In function (\S+))?$/i;
+          var lines = e.stacktrace.split("\n");
+          var result = [];
+          for (var i = 0, len = lines.length; i < len; i += 2) {
+            var match = lineRE.exec(lines[i]);
             if (match) {
               result.push(
                 new StackFrame2({
@@ -976,19 +991,19 @@ const require_error_stack_parser = __commonJS({
         },
         // Opera 10.65+ Error.stack very similar to FF/Safari
         parseOpera11: function ErrorStackParser$$parseOpera11(error) {
-          const filtered = error.stack.split("\n").filter(function(line) {
+          var filtered = error.stack.split("\n").filter(function(line) {
             return !!line.match(FIREFOX_SAFARI_STACK_REGEXP) && !line.match(/^Error created at/);
           }, this);
           return filtered.map(function(line) {
-            const tokens = line.split("@");
-            const locationParts = this.extractLocation(tokens.pop());
-            const functionCall = tokens.shift() || "";
-            const functionName = functionCall.replace(/<anonymous function(: (\w+))?>/, "$2").replace(/\([^)]*\)/g, "") || void 0;
-            let argsRaw;
+            var tokens = line.split("@");
+            var locationParts = this.extractLocation(tokens.pop());
+            var functionCall = tokens.shift() || "";
+            var functionName = functionCall.replace(/<anonymous function(: (\w+))?>/, "$2").replace(/\([^)]*\)/g, "") || void 0;
+            var argsRaw;
             if (functionCall.match(/\(([^)]*)\)/)) {
               argsRaw = functionCall.replace(/^[^(]+\(([^)]*)\)$/, "$1");
             }
-            const args = argsRaw === void 0 || argsRaw === "[arguments not available]" ? void 0 : argsRaw.split(",");
+            var args = argsRaw === void 0 || argsRaw === "[arguments not available]" ? void 0 : argsRaw.split(",");
             return new StackFrame2({
               functionName,
               args,
@@ -1004,12 +1019,12 @@ const require_error_stack_parser = __commonJS({
   }
 });
 
-// ../../node_modules/.pnpm/dotenv@16.4.5/node_modules/dotenv/package.json
-const require_package = __commonJS({
-  "../../node_modules/.pnpm/dotenv@16.4.5/node_modules/dotenv/package.json"(exports, module) {
+// ../../../node_modules/.pnpm/dotenv@16.6.1/node_modules/dotenv/package.json
+var require_package = __commonJS({
+  "../../../node_modules/.pnpm/dotenv@16.6.1/node_modules/dotenv/package.json"(exports, module) {
     module.exports = {
       name: "dotenv",
-      version: "16.4.5",
+      version: "16.6.1",
       description: "Loads environment variables from .env file",
       main: "lib/main.js",
       types: "lib/main.d.ts",
@@ -1030,10 +1045,9 @@ const require_package = __commonJS({
       scripts: {
         "dts-check": "tsc --project tests/types/tsconfig.json",
         lint: "standard",
-        "lint-readme": "standard-markdown",
         pretest: "npm run lint && npm run dts-check",
-        test: "tap tests/*.js --100 -Rspec",
-        "test:coverage": "tap --coverage-report=lcov",
+        test: "tap run --allow-empty-coverage --disable-coverage --timeout=60000",
+        "test:coverage": "tap run --show-full-coverage --timeout=60000 --coverage-report=text --coverage-report=lcov",
         prerelease: "npm test",
         release: "standard-version"
       },
@@ -1041,6 +1055,7 @@ const require_package = __commonJS({
         type: "git",
         url: "git://github.com/motdotla/dotenv.git"
       },
+      homepage: "https://github.com/motdotla/dotenv#readme",
       funding: "https://dotenvx.com",
       keywords: [
         "dotenv",
@@ -1054,15 +1069,12 @@ const require_package = __commonJS({
       readmeFilename: "README.md",
       license: "BSD-2-Clause",
       devDependencies: {
-        "@definitelytyped/dtslint": "^0.0.133",
         "@types/node": "^18.11.3",
-        decache: "^4.6.1",
+        decache: "^4.6.2",
         sinon: "^14.0.1",
         standard: "^17.0.0",
-        "standard-markdown": "^7.1.0",
         "standard-version": "^9.5.0",
-        tap: "^16.3.0",
-        tar: "^6.1.11",
+        tap: "^19.2.0",
         typescript: "^4.8.4"
       },
       engines: {
@@ -1075,17 +1087,17 @@ const require_package = __commonJS({
   }
 });
 
-// ../../node_modules/.pnpm/dotenv@16.4.5/node_modules/dotenv/lib/main.js
-const require_main = __commonJS({
-  "../../node_modules/.pnpm/dotenv@16.4.5/node_modules/dotenv/lib/main.js"(exports, module) {
+// ../../../node_modules/.pnpm/dotenv@16.6.1/node_modules/dotenv/lib/main.js
+var require_main = __commonJS({
+  "../../../node_modules/.pnpm/dotenv@16.6.1/node_modules/dotenv/lib/main.js"(exports, module) {
     init_cjs_shim();
-    const fs2 = __require("fs");
-    const path4 = __require("path");
-    const os = __require("os");
-    const crypto = __require("crypto");
-    const packageJson = require_package();
-    const version = packageJson.version;
-    const LINE = /(?:^|^)\s*(?:export\s+)?([\w.-]+)(?:\s*=\s*?|:\s+?)(\s*'(?:\\'|[^'])*'|\s*"(?:\\"|[^"])*"|\s*`(?:\\`|[^`])*`|[^#\r\n]+)?\s*(?:#.*)?(?:$|$)/mg;
+    var fs2 = __require("fs");
+    var path4 = __require("path");
+    var os = __require("os");
+    var crypto = __require("crypto");
+    var packageJson = require_package();
+    var version = packageJson.version;
+    var LINE = /(?:^|^)\s*(?:export\s+)?([\w.-]+)(?:\s*=\s*?|:\s+?)(\s*'(?:\\'|[^'])*'|\s*"(?:\\"|[^"])*"|\s*`(?:\\`|[^`])*`|[^#\r\n]+)?\s*(?:#.*)?(?:$|$)/mg;
     function parse(src) {
       const obj = {};
       let lines = src.toString();
@@ -1106,8 +1118,10 @@ const require_main = __commonJS({
       return obj;
     }
     function _parseVault(options) {
+      options = options || {};
       const vaultPath = _vaultPath(options);
-      const result = DotenvModule.configDotenv({ path: vaultPath });
+      options.path = vaultPath;
+      const result = DotenvModule.configDotenv(options);
       if (!result.parsed) {
         const err = new Error(`MISSING_DATA: Cannot parse ${vaultPath} for an unknown reason`);
         err.code = "MISSING_DATA";
@@ -1130,14 +1144,14 @@ const require_main = __commonJS({
       }
       return DotenvModule.parse(decrypted);
     }
-    function _log(message) {
-      console.log(`[dotenv@${version}][INFO] ${message}`);
-    }
     function _warn(message) {
       console.log(`[dotenv@${version}][WARN] ${message}`);
     }
     function _debug(message) {
       console.log(`[dotenv@${version}][DEBUG] ${message}`);
+    }
+    function _log(message) {
+      console.log(`[dotenv@${version}] ${message}`);
     }
     function _dotenvKey(options) {
       if (options && options.DOTENV_KEY && options.DOTENV_KEY.length > 0) {
@@ -1205,7 +1219,11 @@ const require_main = __commonJS({
       return envPath[0] === "~" ? path4.join(os.homedir(), envPath.slice(1)) : envPath;
     }
     function _configVault(options) {
-      _log("Loading env from encrypted .env.vault");
+      const debug = Boolean(options && options.debug);
+      const quiet = options && "quiet" in options ? options.quiet : true;
+      if (debug || !quiet) {
+        _log("Loading env from encrypted .env.vault");
+      }
       const parsed = DotenvModule._parseVault(options);
       let processEnv = process.env;
       if (options && options.processEnv != null) {
@@ -1218,6 +1236,7 @@ const require_main = __commonJS({
       const dotenvPath = path4.resolve(process.cwd(), ".env");
       let encoding = "utf8";
       const debug = Boolean(options && options.debug);
+      const quiet = options && "quiet" in options ? options.quiet : true;
       if (options && options.encoding) {
         encoding = options.encoding;
       } else {
@@ -1254,6 +1273,22 @@ const require_main = __commonJS({
         processEnv = options.processEnv;
       }
       DotenvModule.populate(processEnv, parsedAll, options);
+      if (debug || !quiet) {
+        const keysCount = Object.keys(parsedAll).length;
+        const shortPaths = [];
+        for (const filePath of optionPaths) {
+          try {
+            const relative = path4.relative(process.cwd(), filePath);
+            shortPaths.push(relative);
+          } catch (e) {
+            if (debug) {
+              _debug(`Failed to load ${filePath} ${e.message}`);
+            }
+            lastError = e;
+          }
+        }
+        _log(`injecting env (${keysCount}) from ${shortPaths.join(",")}`);
+      }
       if (lastError) {
         return { parsed: parsedAll, error: lastError };
       } else {
@@ -1343,26 +1378,26 @@ const require_main = __commonJS({
   }
 });
 
-// ../../node_modules/.pnpm/application-config-path@0.1.0/node_modules/application-config-path/index.js
-const require_application_config_path = __commonJS({
-  "../../node_modules/.pnpm/application-config-path@0.1.0/node_modules/application-config-path/index.js"(exports, module) {
+// ../../../node_modules/.pnpm/application-config-path@0.1.1/node_modules/application-config-path/index.js
+var require_application_config_path = __commonJS({
+  "../../../node_modules/.pnpm/application-config-path@0.1.1/node_modules/application-config-path/index.js"(exports, module) {
     init_cjs_shim();
-    const os = __require("os");
-    const path4 = __require("path");
+    var os = __require("os");
+    var path4 = __require("path");
     function darwin(name) {
-      return path4.join(process.env["HOME"], "Library", "Application Support", name);
+      return path4.join(process.env.HOME, "Library", "Application Support", name);
     }
-    function linux(name) {
-      if (process.env["XDG_CONFIG_HOME"]) {
-        return path4.join(process.env["XDG_CONFIG_HOME"], name);
+    function xdg(name) {
+      if (process.env.XDG_CONFIG_HOME) {
+        return path4.join(process.env.XDG_CONFIG_HOME, name);
       }
-      return path4.join(process.env["HOME"], ".config", name);
+      return path4.join(process.env.HOME, ".config", name);
     }
     function win32(name) {
-      if (process.env["LOCALAPPDATA"]) {
-        return path4.join(process.env["LOCALAPPDATA"], name);
+      if (process.env.LOCALAPPDATA) {
+        return path4.join(process.env.LOCALAPPDATA, name);
       }
-      return path4.join(process.env["USERPROFILE"], "Local Settings", "Application Data", name);
+      return path4.join(process.env.USERPROFILE, "Local Settings", "Application Data", name);
     }
     function applicationConfigPath(name) {
       if (typeof name !== "string") {
@@ -1371,8 +1406,10 @@ const require_application_config_path = __commonJS({
       switch (os.platform()) {
         case "darwin":
           return darwin(name);
+        case "freebsd":
+        case "openbsd":
         case "linux":
-          return linux(name);
+          return xdg(name);
         case "win32":
           return win32(name);
       }
@@ -1382,13 +1419,13 @@ const require_application_config_path = __commonJS({
   }
 });
 
-// ../../node_modules/.pnpm/mkdirp@0.5.6/node_modules/mkdirp/index.js
-const require_mkdirp = __commonJS({
-  "../../node_modules/.pnpm/mkdirp@0.5.6/node_modules/mkdirp/index.js"(exports, module) {
+// ../../../node_modules/.pnpm/mkdirp@0.5.6/node_modules/mkdirp/index.js
+var require_mkdirp = __commonJS({
+  "../../../node_modules/.pnpm/mkdirp@0.5.6/node_modules/mkdirp/index.js"(exports, module) {
     init_cjs_shim();
-    const path4 = __require("path");
-    const fs2 = __require("fs");
-    const _0777 = parseInt("0777", 8);
+    var path4 = __require("path");
+    var fs2 = __require("fs");
+    var _0777 = parseInt("0777", 8);
     module.exports = mkdirP.mkdirp = mkdirP.mkdirP = mkdirP;
     function mkdirP(p, opts, f, made) {
       if (typeof opts === "function") {
@@ -1397,14 +1434,14 @@ const require_mkdirp = __commonJS({
       } else if (!opts || typeof opts !== "object") {
         opts = { mode: opts };
       }
-      let mode = opts.mode;
-      const xfs = opts.fs || fs2;
+      var mode = opts.mode;
+      var xfs = opts.fs || fs2;
       if (mode === void 0) {
         mode = _0777;
       }
       if (!made)
         made = null;
-      const cb = f || /* istanbul ignore next */
+      var cb = f || /* istanbul ignore next */
       function() {
       };
       p = path4.resolve(p);
@@ -1439,8 +1476,8 @@ const require_mkdirp = __commonJS({
       if (!opts || typeof opts !== "object") {
         opts = { mode: opts };
       }
-      let mode = opts.mode;
-      const xfs = opts.fs || fs2;
+      var mode = opts.mode;
+      var xfs = opts.fs || fs2;
       if (mode === void 0) {
         mode = _0777;
       }
@@ -1473,24 +1510,24 @@ const require_mkdirp = __commonJS({
   }
 });
 
-// ../../node_modules/.pnpm/application-config@1.0.1/node_modules/application-config/index.js
-const require_application_config = __commonJS({
-  "../../node_modules/.pnpm/application-config@1.0.1/node_modules/application-config/index.js"(exports, module) {
+// ../../../node_modules/.pnpm/application-config@1.0.1/node_modules/application-config/index.js
+var require_application_config = __commonJS({
+  "../../../node_modules/.pnpm/application-config@1.0.1/node_modules/application-config/index.js"(exports, module) {
     init_cjs_shim();
-    const fs2 = __require("fs");
-    const path4 = __require("path");
-    const applicationConfigPath = require_application_config_path();
+    var fs2 = __require("fs");
+    var path4 = __require("path");
+    var applicationConfigPath = require_application_config_path();
     function ApplicationConfig(name) {
       this.filePath = path4.join(applicationConfigPath(name), "config.json");
     }
     ApplicationConfig.prototype.read = function(cb) {
-      const self = this;
+      var self = this;
       fs2.readFile(self.filePath, function(err, raw) {
         if (err && err.code === "ENOENT")
           return cb(null, {});
         if (err)
           return cb(err);
-        let data;
+        var data;
         try {
           data = JSON.parse(raw.toString());
         } catch (err2) {
@@ -1500,17 +1537,17 @@ const require_application_config = __commonJS({
       });
     };
     ApplicationConfig.prototype.write = function(data, cb) {
-      const self = this;
-      const mkdirp = require_mkdirp();
+      var self = this;
+      var mkdirp = require_mkdirp();
       if (typeof data !== "object" || data === null) {
         throw new TypeError("data is not an object");
       }
-      const directoryPath = path4.dirname(self.filePath);
+      var directoryPath = path4.dirname(self.filePath);
       mkdirp(directoryPath, function(err) {
         if (err) {
           return cb(err);
         }
-        const tempFilePath = self.filePath + "-" + Math.random().toString().substr(2) + Date.now().toString() + path4.extname(self.filePath);
+        var tempFilePath = self.filePath + "-" + Math.random().toString().substr(2) + Date.now().toString() + path4.extname(self.filePath);
         fs2.writeFile(tempFilePath, JSON.stringify(data, null, 2), function(err2) {
           if (err2) {
             return cb(err2);
@@ -1520,11 +1557,11 @@ const require_application_config = __commonJS({
       });
     };
     ApplicationConfig.prototype.trash = function(cb) {
-      const self = this;
+      var self = this;
       fs2.unlink(self.filePath, function(err) {
         if (err && err.code !== "ENOENT")
           return cb(err);
-        const directoryPath = path4.dirname(self.filePath);
+        var directoryPath = path4.dirname(self.filePath);
         fs2.rmdir(directoryPath, function(err2) {
           if (err2 && err2.code !== "ENOENT")
             return cb(err2);
@@ -1538,16 +1575,16 @@ const require_application_config = __commonJS({
   }
 });
 
-// ../../node_modules/.pnpm/debounce@1.2.1/node_modules/debounce/index.js
-const require_debounce = __commonJS({
-  "../../node_modules/.pnpm/debounce@1.2.1/node_modules/debounce/index.js"(exports, module) {
+// ../../../node_modules/.pnpm/debounce@1.2.1/node_modules/debounce/index.js
+var require_debounce = __commonJS({
+  "../../../node_modules/.pnpm/debounce@1.2.1/node_modules/debounce/index.js"(exports, module) {
     init_cjs_shim();
     function debounce3(func, wait, immediate) {
-      let timeout, args, context, timestamp, result;
+      var timeout, args, context, timestamp, result;
       if (null == wait)
         wait = 100;
       function later() {
-        const last = Date.now() - timestamp;
+        var last = Date.now() - timestamp;
         if (last < wait && last >= 0) {
           timeout = setTimeout(later, wait - last);
         } else {
@@ -1559,11 +1596,11 @@ const require_debounce = __commonJS({
         }
       }
       ;
-      const debounced = function() {
+      var debounced = function() {
         context = this;
         args = arguments;
         timestamp = Date.now();
-        const callNow = immediate && !timeout;
+        var callNow = immediate && !timeout;
         if (!timeout)
           timeout = setTimeout(later, wait);
         if (callNow) {
@@ -1599,8 +1636,8 @@ init_cjs_shim();
 
 // src/rc.ts
 init_cjs_shim();
-const import_rc = __toESM(require_rc(), 1);
-const defaults = {
+var import_rc = __toESM(require_rc(), 1);
+var defaults = {
   "log-debug": false,
   "log-to-console": false,
   "machine-readable-stacktrace": false,
@@ -1615,7 +1652,7 @@ const defaults = {
   h: false,
   "allow-unsafe-core-replacement": false
 };
-const config = (0, import_rc.default)("DeltaChat", defaults);
+var config = (0, import_rc.default)("DeltaChat", defaults);
 if (config.version || config.v) {
   config.version == true;
 }
@@ -1626,8 +1663,8 @@ if (config.devmode) {
   config["log-debug"] = true;
   config["log-to-console"] = true;
 }
-const rc_config = Object.freeze(config);
-const rc_default = rc_config;
+var rc_config = Object.freeze(config);
+var rc_default = rc_config;
 
 // src/electron-context-menu.ts
 init_cjs_shim();
@@ -1637,16 +1674,16 @@ init_cjs_shim();
 
 // ../shared/logger.ts
 init_cjs_shim();
-const import_error_stack_parser = __toESM(require_error_stack_parser(), 1);
-const startTime = Date.now();
-const colorize = (light, code) => (str) => "\x1B[" + light + ";" + code + "m" + str + "\x1B[0m";
-const blue = colorize(1, 34);
-const red = colorize(1, 31);
-const yellow = colorize(1, 33);
-const grey = colorize(0, 37);
-const green = colorize(1, 37);
-const cyan = colorize(1, 36);
-const emojiFontCss = 'font-family: Roboto, "Apple Color Emoji", NotoEmoji, "Helvetica Neue", Arial, Helvetica, NotoMono, sans-serif !important;';
+var import_error_stack_parser = __toESM(require_error_stack_parser(), 1);
+var startTime = Date.now();
+var colorize = (light, code) => (str) => "\x1B[" + light + ";" + code + "m" + str + "\x1B[0m";
+var blue = colorize(1, 34);
+var red = colorize(1, 31);
+var yellow = colorize(1, 33);
+var grey = colorize(0, 37);
+var green = colorize(1, 37);
+var cyan = colorize(1, 36);
+var emojiFontCss = 'font-family: Roboto, "Apple Color Emoji", NotoEmoji, "Helvetica Neue", Arial, Helvetica, NotoMono, sans-serif !important;';
 var LogLevelString = /* @__PURE__ */ ((LogLevelString2) => {
   LogLevelString2["DEBUG"] = "DEBUG";
   LogLevelString2["WARNING"] = "WARNING";
@@ -1655,7 +1692,7 @@ var LogLevelString = /* @__PURE__ */ ((LogLevelString2) => {
   LogLevelString2["CRITICAL"] = "CRITICAL";
   return LogLevelString2;
 })(LogLevelString || {});
-const LoggerVariants = [
+var LoggerVariants = [
   {
     log: console.debug,
     level: "DEBUG" /* DEBUG */,
@@ -1720,8 +1757,8 @@ If the log seems quiet, make sure the 'All levels' drop down has 'Verbose' check
   `
   );
 }
-let handler;
-let rc2 = {};
+var handler;
+var rc2 = {};
 function setLogHandler(LogHandler3, rcObject) {
   handler = LogHandler3;
   rc2 = rcObject;
@@ -1768,7 +1805,7 @@ function getStackTrace() {
   return rc2["machine-readable-stacktrace"] ? stack : stack.map((s) => `
 ${s.toString()}`).join();
 }
-const Logger = class {
+var Logger = class {
   constructor(channel) {
     this.channel = channel;
     //@ts-ignore
@@ -1825,7 +1862,7 @@ if (!("toJSON" in Error.prototype))
 
 // ../shared/localize.ts
 init_cjs_shim();
-const log2 = getLogger("localize");
+var log2 = getLogger("localize");
 function translate(locale, messages) {
   const localeBCP47 = locale.replace("_", "-");
   let pluralRules;
@@ -1918,13 +1955,13 @@ init_cjs_shim();
 
 // ../shared/constants.ts
 init_cjs_shim();
-const appName = "Delta Chat";
-const homePageUrl = "https://delta.chat";
-const gitHubUrl = "https://github.com/deltachat/deltachat-desktop";
-const gitHubIssuesUrl = gitHubUrl + "/issues";
-const gitHubLicenseUrl = gitHubUrl + "/blob/main/LICENSE";
-const donationUrl = "https://delta.chat/donate";
-const appWindowTitle = appName;
+var appName = "Delta Chat";
+var homePageUrl = "https://delta.chat";
+var gitHubUrl = "https://github.com/deltachat/deltachat-desktop";
+var gitHubIssuesUrl = gitHubUrl + "/issues";
+var gitHubLicenseUrl = gitHubUrl + "/blob/main/LICENSE";
+var donationUrl = "https://delta.chat/donate";
+var appWindowTitle = appName;
 var Timespans = /* @__PURE__ */ ((Timespans2) => {
   Timespans2[Timespans2["ZERO_SECONDS"] = 0] = "ZERO_SECONDS";
   Timespans2[Timespans2["ONE_SECOND"] = 1] = "ONE_SECOND";
@@ -1946,9 +1983,9 @@ var AutodeleteDuration = /* @__PURE__ */ ((AutodeleteDuration2) => {
   AutodeleteDuration2[AutodeleteDuration2["ONE_YEAR"] = 31536e3 /* ONE_YEAR_IN_SECONDS */] = "ONE_YEAR";
   return AutodeleteDuration2;
 })(AutodeleteDuration || {});
-const IMAGE_EXTENSIONS = ["jpg", "jpeg", "png", "apng", "gif", "webp"];
-const VIDEO_CHAT_INSTANCE_SYSTEMLI = "https://meet.systemli.org/$ROOM";
-const VIDEO_CHAT_INSTANCE_AUTISTICI = "https://vc.autistici.org/$ROOM";
+var IMAGE_EXTENSIONS = ["jpg", "jpeg", "png", "apng", "gif", "webp"];
+var VIDEO_CHAT_INSTANCE_SYSTEMLI = "https://meet.systemli.org/$ROOM";
+var VIDEO_CHAT_INSTANCE_AUTISTICI = "https://vc.autistici.org/$ROOM";
 var NOTIFICATION_TYPE = /* @__PURE__ */ ((NOTIFICATION_TYPE2) => {
   NOTIFICATION_TYPE2[NOTIFICATION_TYPE2["MESSAGE"] = 0] = "MESSAGE";
   NOTIFICATION_TYPE2[NOTIFICATION_TYPE2["REACTION"] = 1] = "REACTION";
@@ -1961,7 +1998,7 @@ init_cjs_shim();
 
 // src/application-config.ts
 init_cjs_shim();
-const import_application_config = __toESM(require_application_config(), 1);
+var import_application_config = __toESM(require_application_config(), 1);
 if (process.env.NODE_ENV !== "production") {
   try {
     const { config: config2 } = await Promise.resolve().then(() => __toESM(require_main(), 1));
@@ -1970,7 +2007,7 @@ if (process.env.NODE_ENV !== "production") {
     console.error("Failed to load .env file", e);
   }
 }
-const appConfig = (0, import_application_config.default)("DeltaChat");
+var appConfig = (0, import_application_config.default)("DeltaChat");
 import { join } from "path";
 if (process.env.DC_TEST_DIR) {
   appConfig.filePath = join(process.env.DC_TEST_DIR, "config.json");
@@ -1982,14 +2019,14 @@ if (process.env.DC_TEST_DIR) {
     "config.json"
   );
 }
-const application_config_default = Object.freeze(appConfig);
+var application_config_default = Object.freeze(appConfig);
 
 // src/application-constants.ts
 import { dirname, join as join2 } from "path";
 import { app, screen } from "electron";
 import { fileURLToPath } from "url";
-const __dirname = dirname(fileURLToPath(import.meta.url));
-const AppFilesDir = join2(__dirname, "..");
+var __dirname = dirname(fileURLToPath(import.meta.url));
+var AppFilesDir = join2(__dirname, "..");
 function appIcon() {
   const iconFormat = process.platform === "win32" ? ".ico" : ".png";
   return `${join2(htmlDistDir(), "images", "deltachat" + iconFormat)}`;
@@ -2040,31 +2077,31 @@ function getCustomThemesPath() {
 function getDraftTempDir() {
   return join2(app.getPath("temp"), "chat.delta.desktop-draft");
 }
-const supportedURISchemes = [
+var supportedURISchemes = [
   "OPENPGP4FPR:",
   "MAILTO:",
   "DCACCOUNT:",
   "DCLOGIN:"
 ];
-const ALLOWED_RESOURCE_FOLDERS = ["images", "node_modules", "html-dist"];
-const ALLOWED_SOURCE_FOLDERS = ["src", "scss", "node_modules"];
-const ALLOWED_CONFIG_FOLDERS = ["background"];
-const ALLOWED_STATIC_FOLDERS = [
+var ALLOWED_RESOURCE_FOLDERS = ["images", "node_modules", "html-dist"];
+var ALLOWED_SOURCE_FOLDERS = ["src", "scss", "node_modules"];
+var ALLOWED_CONFIG_FOLDERS = ["background"];
+var ALLOWED_STATIC_FOLDERS = [
   ...[...ALLOWED_RESOURCE_FOLDERS, ...ALLOWED_SOURCE_FOLDERS].map(
     (folder) => join2(AppFilesDir, folder)
   ),
   ...ALLOWED_CONFIG_FOLDERS.map((folder) => join2(getConfigPath(), folder)),
   getDraftTempDir()
 ];
-const ALLOWED_ACCOUNT_FOLDERS = [
+var ALLOWED_ACCOUNT_FOLDERS = [
   "db.sqlite-blobs",
   "dc.db-blobs",
   "stickers"
 ];
-const INTERNAL_TMP_DIR_NAME = "tmp";
+var INTERNAL_TMP_DIR_NAME = "tmp";
 
 // src/windows/main.ts
-const main_exports = {};
+var main_exports = {};
 __export(main_exports, {
   chooseLanguage: () => chooseLanguage,
   hide: () => hide,
@@ -2117,6 +2154,18 @@ function getDefaultState() {
     HTMLEmailAskForRemoteLoadingConfirmation: true,
     HTMLEmailAlwaysLoadRemoteContent: false,
     enableRelatedChats: false,
+    deepTreeEchoBotEnabled: false,
+    deepTreeEchoBotMemoryEnabled: false,
+    deepTreeEchoBotPersonality: "",
+    deepTreeEchoBotApiKey: "",
+    deepTreeEchoBotApiEndpoint: "",
+    deepTreeEchoBotVisionEnabled: false,
+    deepTreeEchoBotWebAutomationEnabled: false,
+    deepTreeEchoBotEmbodimentEnabled: false,
+    deepTreeEchoBotPersonaState: "",
+    deepTreeEchoBotMemories: "",
+    deepTreeEchoBotReflections: "",
+    deepTreeEchoBotCognitiveKeys: "",
     galleryImageKeepAspectRatio: false,
     useSystemUIFont: false,
     contentProtectionEnabled: false,
@@ -2126,12 +2175,12 @@ function getDefaultState() {
 }
 
 // src/desktop_settings.ts
-const import_debounce = __toESM(require_debounce(), 1);
+var import_debounce = __toESM(require_debounce(), 1);
 import { EventEmitter } from "events";
 import { promisify } from "util";
-const log3 = getLogger("main/state");
-const SAVE_DEBOUNCE_INTERVAL = 1e3;
-const PersistentState = class extends EventEmitter {
+var log3 = getLogger("main/state");
+var SAVE_DEBOUNCE_INTERVAL = 1e3;
+var PersistentState = class extends EventEmitter {
   constructor() {
     super();
   }
@@ -2181,19 +2230,19 @@ const PersistentState = class extends EventEmitter {
     });
   }
 };
-const DesktopSettings = new PersistentState();
+var DesktopSettings = new PersistentState();
 
 // src/tray.ts
 import { app as rawApp, Menu, Tray, nativeImage } from "electron";
 import { globalShortcut } from "electron";
 import { join as join3, dirname as dirname2 } from "path";
 import { fileURLToPath as fileURLToPath2 } from "url";
-const __dirname2 = dirname2(fileURLToPath2(import.meta.url));
-let tray = null;
-let contextMenu = null;
-const app2 = rawApp;
-const log4 = getLogger("main/tray");
-let has_unread = false;
+var __dirname2 = dirname2(fileURLToPath2(import.meta.url));
+var tray = null;
+var contextMenu = null;
+var app2 = rawApp;
+var log4 = getLogger("main/tray");
+var has_unread = false;
 function set_has_unread(new_has_unread) {
   has_unread = new_has_unread;
   if (tray) {
@@ -2380,7 +2429,7 @@ function initMinWinDimensionHandling(main_window, minWidth, minHeight) {
 init_cjs_shim();
 import { BrowserWindow as BrowserWindow2 } from "electron";
 import { platform } from "os";
-const log5 = getLogger("contentProtection");
+var log5 = getLogger("contentProtection");
 function updateContentProtection(window3, enabled) {
   window3.setContentProtection(enabled);
   if (enabled && platform() !== "darwin" && platform() !== "win32") {
@@ -2400,12 +2449,12 @@ function updateContentProtectionOnAllActiveWindows(enabled) {
 }
 
 // src/windows/main.ts
-const import_debounce2 = __toESM(require_debounce(), 1);
+var import_debounce2 = __toESM(require_debounce(), 1);
 import electron, { session } from "electron";
 import { isAbsolute, join as join4, sep } from "path";
 import { platform as platform2 } from "os";
 import { fileURLToPath as fileURLToPath3 } from "url";
-const log6 = getLogger("/mainWindow");
+var log6 = getLogger("/mainWindow");
 var window2 = null;
 function init(options) {
   if (window2) {
@@ -2654,7 +2703,7 @@ import { join as join5 } from "path";
 import { app as app3 } from "electron";
 import { readFile } from "fs/promises";
 import { existsSync } from "fs";
-let appx = false;
+var appx = false;
 async function isWindowsStorePackage() {
   if (platform3() === "win32") {
     const app_path = app3.getAppPath();
@@ -2699,9 +2748,9 @@ init_cjs_shim();
 import { existsSync as existsSync2 } from "fs";
 import { join as join6, dirname as dirname3 } from "path";
 import { fileURLToPath as fileURLToPath4 } from "url";
-const __dirname3 = dirname3(fileURLToPath4(import.meta.url));
-const alternativeDirectory = process.env["DELTACHAT_LOCALE_DIR"];
-let cachedResult = null;
+var __dirname3 = dirname3(fileURLToPath4(import.meta.url));
+var alternativeDirectory = process.env["DELTACHAT_LOCALE_DIR"];
+var cachedResult = null;
 function getLocaleDirectoryPath() {
   if (cachedResult) {
     return cachedResult;
@@ -2739,8 +2788,8 @@ function isValidLocaleDirectory(path4) {
 import { Menu as Menu2, shell } from "electron";
 import { readFileSync } from "fs";
 import { join as join7 } from "path";
-const log7 = getLogger("main/menu");
-const languages = (() => {
+var log7 = getLogger("main/menu");
+var languages = (() => {
   const languagesFile = join7(getLocaleDirectoryPath(), "_languages.json");
   const rawLanguageList = JSON.parse(
     readFileSync(languagesFile, "utf8")
@@ -2750,7 +2799,7 @@ const languages = (() => {
     name: rawLanguageList[locale]
   })).filter(({ name }) => name.indexOf("*") === -1).sort(({ name: name1 }, { name: name2 }) => name1 > name2 ? 1 : -1);
 })();
-let logHandlerRef = null;
+var logHandlerRef = null;
 function refresh() {
   log7.info(`rebuilding menu with locale ${getCurrentLocaleDate().locale}`);
   if (!logHandlerRef) {
@@ -3067,8 +3116,8 @@ function getMenuItem(menu, label) {
 import path2 from "path";
 import fs from "fs";
 import { ipcMain } from "electron";
-const log8 = getLogger("load-translations");
-let currentlocaleData = null;
+var log8 = getLogger("load-translations");
+var currentlocaleData = null;
 function getCurrentLocaleDate() {
   if (currentlocaleData === null) {
     log8.error("tried to get locale data before init");
@@ -3076,7 +3125,7 @@ function getCurrentLocaleDate() {
   }
   return currentlocaleData;
 }
-let translateFunction = null;
+var translateFunction = null;
 var tx = function(key, substitutions, raw_opts) {
   if (translateFunction === null) {
     log8.error("tried to use translation function before init");
@@ -3146,8 +3195,8 @@ ipcMain.handle("setLocale", (_ev, locale) => {
 
 // src/electron-context-menu.ts
 import electron2 from "electron";
-const webContents = (win2) => win2.webContents;
-const removeUnusedMenuItems = (menuTemplate) => {
+var webContents = (win2) => win2.webContents;
+var removeUnusedMenuItems = (menuTemplate) => {
   let notDeletedPreviousElement;
   return menuTemplate.filter((menuItem) => {
     if (!menuItem) {
@@ -3164,7 +3213,7 @@ const removeUnusedMenuItems = (menuTemplate) => {
     return !toDelete;
   });
 };
-const create = (win2) => {
+var create = (win2) => {
   const enableSpellChecking = false;
   const handleContextMenu = (_event, props) => {
     const { editFlags } = props;
@@ -3296,7 +3345,7 @@ const create = (win2) => {
     webContents(win2).removeListener("context-menu", handleContextMenu);
   };
 };
-const ContextMenu = () => {
+var ContextMenu = () => {
   let isDisposed = false;
   const disposables = [];
   const init4 = (win2) => {
@@ -3338,7 +3387,7 @@ const ContextMenu = () => {
   });
   return dispose;
 };
-const electron_context_menu_default = ContextMenu;
+var electron_context_menu_default = ContextMenu;
 
 // src/help_menu.ts
 init_cjs_shim();
@@ -3479,7 +3528,7 @@ import { BrowserWindow as BrowserWindow6, Menu as Menu3, shell as shell2 } from 
 import { join as join9 } from "path";
 import { stat } from "fs/promises";
 import { platform as platform4 } from "os";
-const log9 = getLogger("main/help");
+var log9 = getLogger("main/help");
 async function getHelpFileForLang(locale) {
   const contentFilePath = join9(htmlDistDir(), `help/${locale}/help.html`);
   try {
@@ -3495,7 +3544,7 @@ async function getHelpFileForLang(locale) {
     return join9(htmlDistDir(), `help/en/help.html`);
   }
 }
-let win = null;
+var win = null;
 async function openHelpWindow(locale, anchor) {
   if (win) {
     win.focus();
@@ -3681,8 +3730,8 @@ import { app as rawApp2, ipcMain as ipcMain2 } from "electron";
 import { readFile as readFile2 } from "fs/promises";
 import { basename } from "path";
 import { platform as platform5 } from "os";
-const log10 = getLogger("main/open_url");
-const app4 = rawApp2;
+var log10 = getLogger("main/open_url");
+var app4 = rawApp2;
 if (platform5() !== "linux") {
   app4.setAsDefaultProtocolClient("openpgp4fpr");
   app4.setAsDefaultProtocolClient("OPENPGP4FPR");
@@ -3691,7 +3740,7 @@ if (platform5() !== "linux") {
   app4.setAsDefaultProtocolClient("dclogin");
   app4.setAsDefaultProtocolClient("DCLOGIN");
 }
-let frontend_ready = false;
+var frontend_ready = false;
 ipcMain2.once("frontendReady", () => {
   frontend_ready = true;
 });
@@ -3702,7 +3751,7 @@ function sendToFrontend(url2) {
     send("open-url", url2);
   }
 }
-const open_url = function(url2) {
+var open_url = function(url2) {
   log10.info("open_url was called");
   const sendOpenUrlEvent = () => {
     log10.info("open-url: Sending url to frontend.");
@@ -3818,16 +3867,16 @@ function parseThemeMetaData(rawTheme) {
   }
   return meta;
 }
-const HIDDEN_THEME_PREFIX = "dev_";
+var HIDDEN_THEME_PREFIX = "dev_";
 
 // src/themes.ts
 import { existsSync as existsSync3, watchFile } from "fs";
 import { readFile as readFile3, readdir as readdir2 } from "fs/promises";
 import { join as join10, basename as basename2 } from "path";
 import { app as rawApp3, ipcMain as ipcMain3, nativeTheme } from "electron";
-const app5 = rawApp3;
-const log11 = getLogger("main/themes");
-const dc_theme_dir = join10(htmlDistDir(), "themes");
+var app5 = rawApp3;
+var log11 = getLogger("main/themes");
+var dc_theme_dir = join10(htmlDistDir(), "themes");
 async function readThemeDir(path4, prefix) {
   const files = await readdir2(path4);
   return Promise.all(
@@ -3965,8 +4014,8 @@ import electron3, {
 import { clipboard } from "electron/common";
 import { join as join11 } from "path";
 import { platform as platform6 } from "os";
-const log12 = getLogger("html_email");
-const open_windows = {};
+var log12 = getLogger("html_email");
+var open_windows = {};
 function openHtmlEmailWindow(account_id, message_id, isContactRequest, subject, from, receiveTime, htmlEmail) {
   const window_id = `${account_id}.${message_id}`;
   if (open_windows[window_id]) {
@@ -4238,7 +4287,7 @@ function openHtmlEmailWindow(account_id, message_id, isContactRequest, subject, 
     )
   );
 }
-const CSP_DENY = `default-src 'none';
+var CSP_DENY = `default-src 'none';
 font-src 'self' data:;
 frame-src 'none';
 img-src 'self' data:;
@@ -4246,7 +4295,7 @@ media-src 'self' data:;
 style-src 'self' data: 'unsafe-inline';
 form-action 'none';
 script-src 'none';`.replace(/\n/g, "");
-const CSP_ALLOW = `
+var CSP_ALLOW = `
 default-src 'none';
 font-src 'self' data: http: https:;
 frame-src 'none';
@@ -4459,28 +4508,28 @@ import { fileURLToPath as fileURLToPath5 } from "url";
 import { platform as platform7 } from "os";
 import { readdir as readdir3, stat as stat2, rmdir, writeFile, readFile as readFile4 } from "fs/promises";
 import { existsSync as existsSync4 } from "fs";
-const __dirname4 = dirname4(fileURLToPath5(import.meta.url));
-const log13 = getLogger("main/deltachat/webxdc");
-const open_apps = {};
-const accounts_sessions = [];
-const CSP = "default-src 'self';  style-src 'self' 'unsafe-inline' blob: ;  font-src 'self' data: blob: ;  script-src 'self' 'unsafe-inline' 'unsafe-eval' blob: ;  connect-src 'self' data: blob: ;  img-src 'self' data: blob: ;  media-src 'self' data: blob: ;  webrtc 'block'";
-const ALLOWED_PERMISSIONS = [
+var __dirname4 = dirname4(fileURLToPath5(import.meta.url));
+var log13 = getLogger("main/deltachat/webxdc");
+var open_apps = {};
+var accounts_sessions = [];
+var CSP = "default-src 'self';  style-src 'self' 'unsafe-inline' blob: ;  font-src 'self' data: blob: ;  script-src 'self' 'unsafe-inline' 'unsafe-eval' blob: ;  connect-src 'self' data: blob: ;  img-src 'self' data: blob: ;  media-src 'self' data: blob: ;  webrtc 'block'";
+var ALLOWED_PERMISSIONS = [
   // Games might lock the pointer
   "pointerLock",
   // Games might do that too
   "fullscreen"
 ];
-const WRAPPER_PATH = "webxdc-wrapper.45870014933640136498.html";
-const BOUNDS_UI_CONFIG_PREFIX = "ui.desktop.webxdcBounds";
-const DEFAULT_SIZE_WEBXDC = {
+var WRAPPER_PATH = "webxdc-wrapper.45870014933640136498.html";
+var BOUNDS_UI_CONFIG_PREFIX = "ui.desktop.webxdcBounds";
+var DEFAULT_SIZE_WEBXDC = {
   width: 375,
   height: 667
 };
-const DEFAULT_SIZE_MAP = {
+var DEFAULT_SIZE_MAP = {
   width: 1e3,
   height: 800
 };
-const DCWebxdc = class {
+var DCWebxdc = class {
   constructor(controller) {
     this.controller = controller;
     app6.whenReady().then(() => {
@@ -5226,14 +5275,14 @@ init_cjs_shim();
 
 // src/get-build-info.ts
 init_cjs_shim();
-const BuildInfo = JSON.parse('{"VERSION":"1.58.2","BUILD_TIMESTAMP":1748600552939,"GIT_REF":"v1.48.0-670-g896ac3964"}');
+var BuildInfo = JSON.parse('{"VERSION":"1.58.2","BUILD_TIMESTAMP":1765963401498,"GIT_REF":"v1.0.0"}');
 
 // src/deltachat/stdio_server.ts
 import { spawn } from "child_process";
 import { app as app7, dialog as dialog3 } from "electron/main";
 import { arch, platform as platform8 } from "os";
-const log14 = getLogger("DC-RPC");
-const StdioServer = class {
+var log14 = getLogger("DC-RPC");
+var StdioServer = class {
   constructor(on_data, accounts_path, cmd_path) {
     this.on_data = on_data;
     this.accounts_path = accounts_path;
@@ -5464,10 +5513,10 @@ import { app as rawApp4, ipcMain as ipcMain5 } from "electron";
 import { EventEmitter as EventEmitter2 } from "events";
 import { yerpc, BaseDeltaChat } from "@deltachat/jsonrpc-client";
 import { getRPCServerPath } from "@deltachat/stdio-rpc-server";
-const app8 = rawApp4;
-const log15 = getLogger("main/deltachat");
-const logCoreEvent = getLogger("core/event");
-const ElectronMainTransport = class extends yerpc.BaseTransport {
+var app8 = rawApp4;
+var log15 = getLogger("main/deltachat");
+var logCoreEvent = getLogger("core/event");
+var ElectronMainTransport = class extends yerpc.BaseTransport {
   constructor(sender) {
     super();
     this.sender = sender;
@@ -5479,9 +5528,9 @@ const ElectronMainTransport = class extends yerpc.BaseTransport {
     this.sender(message);
   }
 };
-const JRPCDeltaChat = class extends BaseDeltaChat {
+var JRPCDeltaChat = class extends BaseDeltaChat {
 };
-const DeltaChatController = class extends EventEmitter2 {
+var DeltaChatController = class extends EventEmitter2 {
   constructor(cwd) {
     super();
     this.cwd = cwd;
@@ -5617,10 +5666,10 @@ import { platform as platform9 } from "os";
 import { existsSync as existsSync6 } from "fs";
 import { versions } from "process";
 import { fileURLToPath as fileURLToPath6 } from "url";
-const __dirname5 = dirname5(fileURLToPath6(import.meta.url));
-const log16 = getLogger("main/ipc");
-const app9 = rawApp5;
-let dcController;
+var __dirname5 = dirname5(fileURLToPath6(import.meta.url));
+var log16 = getLogger("main/ipc");
+var app9 = rawApp5;
+var dcController;
 function getDCJsonrpcClient() {
   return dcController.jsonrpcRemote.rpc;
 }
@@ -5933,8 +5982,8 @@ async function removeTempFile(path4) {
 init_cjs_shim();
 import { platform as platform10 } from "os";
 import { app as app10, Notification, nativeImage as nativeImage4, ipcMain as ipcMain7 } from "electron";
-const log17 = getLogger("main/notifications");
-const isMac = platform10() === "darwin";
+var log17 = getLogger("main/notifications");
+var isMac = platform10() === "darwin";
 if (Notification.isSupported()) {
   ipcMain7.handle("notifications.show", showNotification);
   ipcMain7.handle("notifications.clear", clearNotificationsForChat);
@@ -5983,7 +6032,7 @@ function onClickNotification(accountId, chatId, msgId, _ev) {
   app10.focus();
   window2?.focus();
 }
-const notifications = {};
+var notifications = {};
 function showNotification(_event, data) {
   const { chatId, accountId } = data;
   log17.debug(
@@ -6047,7 +6096,7 @@ import { app as app11 } from "electron";
 import { mkdir as mkdir3, readdir as readdir5, rm as rm3, rmdir as rmdir3 } from "fs/promises";
 import { join as join15 } from "path";
 import { readdirSync } from "fs";
-const log18 = getLogger("main/cleanup_temp_dir");
+var log18 = getLogger("main/cleanup_temp_dir");
 async function cleanupDraftTempDir() {
   try {
     const path4 = getDraftTempDir();
@@ -6108,7 +6157,7 @@ async function cleanupInternalTempDirs() {
 console.time("init");
 import { mkdirSync, watchFile as watchFile2 } from "fs";
 import { app as rawApp6, dialog as dialog5, ipcMain as ipcMain8, protocol as protocol2 } from "electron";
-const hostRules = "MAP * ~NOTFOUND, EXCLUDE *.openstreetmap.org";
+var hostRules = "MAP * ~NOTFOUND, EXCLUDE *.openstreetmap.org";
 rawApp6.commandLine.appendSwitch("host-resolver-rules", hostRules);
 rawApp6.commandLine.appendSwitch("host-rules", hostRules);
 rawApp6.commandLine.appendSwitch("disable-features", "IsolateSandboxedIframes");
@@ -6153,7 +6202,7 @@ protocol2.registerSchemesAsPrivileged([
     }
   }
 ]);
-const app12 = rawApp6;
+var app12 = rawApp6;
 app12.rc = rc_default;
 if (!process.mas && !app12.requestSingleInstanceLock() && !process.env.DC_TEST_DIR) {
   console.error("Only one instance allowed. Quitting.");
@@ -6163,8 +6212,8 @@ if (!process.mas && !app12.requestSingleInstanceLock() && !process.env.DC_TEST_D
 mkdirSync(getConfigPath(), { recursive: true });
 mkdirSync(getLogsPath(), { recursive: true });
 mkdirSync(getCustomThemesPath(), { recursive: true });
-const logHandler = createLogHandler();
-const log19 = getLogger("main/index");
+var logHandler = createLogHandler();
+var log19 = getLogger("main/index");
 setLogHandler(logHandler.log, rc_default);
 log19.info(
   `Deltachat Version ${BuildInfo.VERSION} ${BuildInfo.GIT_REF} ${BuildInfo.BUILD_TIMESTAMP}`
@@ -6201,7 +6250,7 @@ Also make sure you are not trying to run multiple instances of deltachat.`
   );
   process.exit(1);
 });
-let ipc_shutdown_function = null;
+var ipc_shutdown_function = null;
 async function onReady([_appReady, _loadedState, _appx, _webxdc_cleanup]) {
   acceptThemeCLI();
   setLanguage(DesktopSettings.state.locale || app12.getLocale());
