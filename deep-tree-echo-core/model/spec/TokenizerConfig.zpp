@@ -1,0 +1,273 @@
+(*
+ * TokenizerConfig.zpp - Tokenizer Configuration State and Invariants
+ * Z++ Formal Specification for Deltecho Model Package
+ * 
+ * Defines the formal specification for tokenizer configuration,
+ * including vocabulary management, special tokens, and encoding settings.
+ *)
+
+SCHEMA TokenizerConfig
+IMPORTS Types
+
+(* ═══════════════════════════════════════════════════════════════════════════
+   SECTION 1: Tokenizer Type Definitions
+   ═══════════════════════════════════════════════════════════════════════════ *)
+
+TYPE TokenizerType ::=
+    BPE |                              (* Byte-Pair Encoding *)
+    WordPiece |                        (* WordPiece tokenization *)
+    Unigram |                          (* Unigram language model *)
+    SentencePiece                      (* SentencePiece unified *)
+
+TYPE NormalizerType ::=
+    NFD |                              (* Unicode NFD normalization *)
+    NFC |                              (* Unicode NFC normalization *)
+    NFKD |                             (* Unicode NFKD normalization *)
+    NFKC |                             (* Unicode NFKC normalization *)
+    Lowercase |                        (* Lowercase conversion *)
+    StripAccents |                     (* Remove diacritical marks *)
+    None                               (* No normalization *)
+
+TYPE PreTokenizerType ::=
+    Whitespace |                       (* Split on whitespace *)
+    ByteLevel |                        (* Byte-level BPE *)
+    Metaspace |                        (* SentencePiece style *)
+    Punctuation |                      (* Split on punctuation *)
+    Digits |                           (* Split on digits *)
+    None                               (* No pre-tokenization *)
+
+TYPE PaddingStrategy ::=
+    Longest |                          (* Pad to longest in batch *)
+    MaxLength |                        (* Pad to max_length *)
+    DoNotPad                           (* No padding *)
+
+TYPE TruncationStrategy ::=
+    LongestFirst |                     (* Truncate longest sequence *)
+    OnlyFirst |                        (* Truncate first sequence *)
+    OnlySecond |                       (* Truncate second sequence *)
+    DoNotTruncate                      (* No truncation *)
+
+(* ═══════════════════════════════════════════════════════════════════════════
+   SECTION 2: Special Tokens Configuration
+   ═══════════════════════════════════════════════════════════════════════════ *)
+
+TYPE SpecialToken == ⟦
+    content: seq₁ CHAR,                (* Token string, non-empty *)
+    id: TokenId,                       (* Token ID in vocabulary *)
+    single_word: 𝔹,                    (* Is single word token *)
+    lstrip: 𝔹,                         (* Strip left whitespace *)
+    rstrip: 𝔹,                         (* Strip right whitespace *)
+    normalized: 𝔹                      (* Apply normalization *)
+⟧
+
+TYPE SpecialTokensMap == ⟦
+    pad_token: SpecialToken,
+    unk_token: SpecialToken,
+    bos_token: SpecialToken,
+    eos_token: SpecialToken,
+    sep_token: optional SpecialToken,
+    cls_token: optional SpecialToken,
+    mask_token: optional SpecialToken,
+    (* Cognitive stream tokens *)
+    stream_1_token: optional SpecialToken,
+    stream_2_token: optional SpecialToken,
+    stream_3_token: optional SpecialToken,
+    pivot_token: optional SpecialToken,
+    afford_token: optional SpecialToken,
+    salience_token: optional SpecialToken,
+    (* Additional special tokens *)
+    additional_special_tokens: seq SpecialToken
+⟧
+
+(* ═══════════════════════════════════════════════════════════════════════════
+   SECTION 3: Tokenizer Configuration State
+   ═══════════════════════════════════════════════════════════════════════════ *)
+
+STATE TokenizerConfigState == ⟦
+    (* Core configuration *)
+    tokenizer_type: TokenizerType,
+    vocab_size: VocabSize,
+    model_max_length: SeqLen,
+    
+    (* Normalization and pre-tokenization *)
+    normalizer: NormalizerType,
+    pre_tokenizer: PreTokenizerType,
+    
+    (* Special tokens *)
+    special_tokens: SpecialTokensMap,
+    
+    (* Padding configuration *)
+    padding_side: {Left, Right},
+    padding_strategy: PaddingStrategy,
+    pad_to_multiple_of: optional ℕ₁,
+    
+    (* Truncation configuration *)
+    truncation_side: {Left, Right},
+    truncation_strategy: TruncationStrategy,
+    
+    (* Encoding options *)
+    add_bos_token: 𝔹,
+    add_eos_token: 𝔹,
+    clean_up_tokenization_spaces: 𝔹,
+    split_special_tokens: 𝔹,
+    
+    (* Byte-level BPE specific *)
+    byte_fallback: 𝔹,
+    add_prefix_space: 𝔹,
+    
+    (* Chat template *)
+    chat_template: optional seq CHAR,
+    
+    (* Cognitive architecture integration *)
+    cognitive_tokens_enabled: 𝔹,
+    stream_interleaving: 𝔹
+⟧
+
+(* ═══════════════════════════════════════════════════════════════════════════
+   SECTION 4: Invariant Predicates
+   ═══════════════════════════════════════════════════════════════════════════ *)
+
+PRED ValidSpecialToken(t: SpecialToken, vocab_size: VocabSize) ≜
+    #t.content > 0 ∧
+    t.id < vocab_size
+
+PRED ValidSpecialTokensMap(m: SpecialTokensMap, vocab_size: VocabSize) ≜
+    ValidSpecialToken(m.pad_token, vocab_size) ∧
+    ValidSpecialToken(m.unk_token, vocab_size) ∧
+    ValidSpecialToken(m.bos_token, vocab_size) ∧
+    ValidSpecialToken(m.eos_token, vocab_size) ∧
+    (* All token IDs must be unique *)
+    m.pad_token.id ≠ m.unk_token.id ∧
+    m.pad_token.id ≠ m.bos_token.id ∧
+    m.pad_token.id ≠ m.eos_token.id ∧
+    m.unk_token.id ≠ m.bos_token.id ∧
+    m.unk_token.id ≠ m.eos_token.id ∧
+    m.bos_token.id ≠ m.eos_token.id
+
+PRED ValidCognitiveTokens(m: SpecialTokensMap, vocab_size: VocabSize) ≜
+    (m.stream_1_token ≠ ⊥ ⇒ ValidSpecialToken(m.stream_1_token!, vocab_size)) ∧
+    (m.stream_2_token ≠ ⊥ ⇒ ValidSpecialToken(m.stream_2_token!, vocab_size)) ∧
+    (m.stream_3_token ≠ ⊥ ⇒ ValidSpecialToken(m.stream_3_token!, vocab_size)) ∧
+    (m.pivot_token ≠ ⊥ ⇒ ValidSpecialToken(m.pivot_token!, vocab_size)) ∧
+    (m.afford_token ≠ ⊥ ⇒ ValidSpecialToken(m.afford_token!, vocab_size)) ∧
+    (m.salience_token ≠ ⊥ ⇒ ValidSpecialToken(m.salience_token!, vocab_size))
+
+(* ═══════════════════════════════════════════════════════════════════════════
+   SECTION 5: State Invariants
+   ═══════════════════════════════════════════════════════════════════════════ *)
+
+INVARIANT TokenizerConfigInvariant
+    ∀ config: TokenizerConfigState •
+        (* Vocabulary size constraints *)
+        ValidVocabSize(config.vocab_size) ∧
+        
+        (* Sequence length constraints *)
+        ValidSeqLen(config.model_max_length) ∧
+        
+        (* Special tokens validity *)
+        ValidSpecialTokensMap(config.special_tokens, config.vocab_size) ∧
+        
+        (* Cognitive tokens validity when enabled *)
+        (config.cognitive_tokens_enabled ⇒ 
+            ValidCognitiveTokens(config.special_tokens, config.vocab_size)) ∧
+        
+        (* Padding multiple constraint *)
+        (config.pad_to_multiple_of ≠ ⊥ ⇒ config.pad_to_multiple_of! > 0) ∧
+        
+        (* Stream interleaving requires cognitive tokens *)
+        (config.stream_interleaving ⇒ config.cognitive_tokens_enabled)
+
+(* ═══════════════════════════════════════════════════════════════════════════
+   SECTION 6: Default Configuration
+   ═══════════════════════════════════════════════════════════════════════════ *)
+
+CONST DEFAULT_TOKENIZER_CONFIG: TokenizerConfigState = ⟦
+    tokenizer_type ↦ BPE,
+    vocab_size ↦ DEFAULT_VOCAB_SIZE,
+    model_max_length ↦ DEFAULT_SEQ_LEN,
+    normalizer ↦ NFC,
+    pre_tokenizer ↦ ByteLevel,
+    special_tokens ↦ ⟦
+        pad_token ↦ ⟦content ↦ "<pad>", id ↦ PAD_TOKEN_ID, 
+                     single_word ↦ true, lstrip ↦ false, rstrip ↦ false, normalized ↦ false⟧,
+        unk_token ↦ ⟦content ↦ "<unk>", id ↦ UNK_TOKEN_ID,
+                     single_word ↦ true, lstrip ↦ false, rstrip ↦ false, normalized ↦ false⟧,
+        bos_token ↦ ⟦content ↦ "<s>", id ↦ BOS_TOKEN_ID,
+                     single_word ↦ true, lstrip ↦ false, rstrip ↦ false, normalized ↦ false⟧,
+        eos_token ↦ ⟦content ↦ "</s>", id ↦ EOS_TOKEN_ID,
+                     single_word ↦ true, lstrip ↦ false, rstrip ↦ false, normalized ↦ false⟧,
+        sep_token ↦ ⊥,
+        cls_token ↦ ⊥,
+        mask_token ↦ ⊥,
+        stream_1_token ↦ ⟦content ↦ "<|stream1|>", id ↦ STREAM_1_TOKEN_ID,
+                         single_word ↦ true, lstrip ↦ false, rstrip ↦ false, normalized ↦ false⟧,
+        stream_2_token ↦ ⟦content ↦ "<|stream2|>", id ↦ STREAM_2_TOKEN_ID,
+                         single_word ↦ true, lstrip ↦ false, rstrip ↦ false, normalized ↦ false⟧,
+        stream_3_token ↦ ⟦content ↦ "<|stream3|>", id ↦ STREAM_3_TOKEN_ID,
+                         single_word ↦ true, lstrip ↦ false, rstrip ↦ false, normalized ↦ false⟧,
+        pivot_token ↦ ⟦content ↦ "<|pivot|>", id ↦ PIVOT_TOKEN_ID,
+                       single_word ↦ true, lstrip ↦ false, rstrip ↦ false, normalized ↦ false⟧,
+        afford_token ↦ ⟦content ↦ "<|afford|>", id ↦ AFFORD_TOKEN_ID,
+                        single_word ↦ true, lstrip ↦ false, rstrip ↦ false, normalized ↦ false⟧,
+        salience_token ↦ ⟦content ↦ "<|salience|>", id ↦ SALIENCE_TOKEN_ID,
+                          single_word ↦ true, lstrip ↦ false, rstrip ↦ false, normalized ↦ false⟧,
+        additional_special_tokens ↦ ⟨⟩
+    ⟧,
+    padding_side ↦ Right,
+    padding_strategy ↦ Longest,
+    pad_to_multiple_of ↦ ⊥,
+    truncation_side ↦ Right,
+    truncation_strategy ↦ LongestFirst,
+    add_bos_token ↦ true,
+    add_eos_token ↦ true,
+    clean_up_tokenization_spaces ↦ true,
+    split_special_tokens ↦ false,
+    byte_fallback ↦ true,
+    add_prefix_space ↦ false,
+    chat_template ↦ ⊥,
+    cognitive_tokens_enabled ↦ true,
+    stream_interleaving ↦ true
+⟧
+
+(* ═══════════════════════════════════════════════════════════════════════════
+   SECTION 7: Configuration Operations
+   ═══════════════════════════════════════════════════════════════════════════ *)
+
+OP SetVocabSize
+    ΔSTATE TokenizerConfigState
+    new_vocab_size?: VocabSize
+    
+    PRE ValidVocabSize(new_vocab_size?)
+    POST vocab_size' = new_vocab_size?
+
+OP SetModelMaxLength
+    ΔSTATE TokenizerConfigState
+    new_max_length?: SeqLen
+    
+    PRE ValidSeqLen(new_max_length?)
+    POST model_max_length' = new_max_length?
+
+OP EnableCognitiveTokens
+    ΔSTATE TokenizerConfigState
+    
+    PRE ¬cognitive_tokens_enabled
+    POST cognitive_tokens_enabled' = true ∧
+         ValidCognitiveTokens(special_tokens', vocab_size')
+
+OP DisableCognitiveTokens
+    ΔSTATE TokenizerConfigState
+    
+    PRE cognitive_tokens_enabled
+    POST cognitive_tokens_enabled' = false ∧
+         stream_interleaving' = false
+
+OP AddSpecialToken
+    ΔSTATE TokenizerConfigState
+    new_token?: SpecialToken
+    
+    PRE ValidSpecialToken(new_token?, vocab_size) ∧
+        new_token?.id ∉ {t.id | t ∈ ran special_tokens.additional_special_tokens}
+    POST special_tokens'.additional_special_tokens = 
+         special_tokens.additional_special_tokens ⁀ ⟨new_token?⟩
+
+END TokenizerConfig

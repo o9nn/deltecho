@@ -1,0 +1,442 @@
+(*
+ * Model.zpp - Parameter Shapes and Forward/Sampling Contracts
+ * Z++ Formal Specification for Deltecho Model Package
+ * 
+ * Defines the formal contracts for model parameters, forward pass,
+ * attention computation, and sampling strategies.
+ *)
+
+SCHEMA Model
+IMPORTS Types, ModelConfig
+
+(* ═══════════════════════════════════════════════════════════════════════════
+   SECTION 1: Parameter Shape Types
+   ═══════════════════════════════════════════════════════════════════════════ *)
+
+TYPE EmbeddingParams == ⟦
+    weight: Tensor2D[VocabSize, EmbedDim]
+⟧
+
+TYPE AttentionParams == ⟦
+    q_proj: Tensor2D[HiddenDim, HiddenDim],
+    k_proj: Tensor2D[HiddenDim, HiddenDim],
+    v_proj: Tensor2D[HiddenDim, HiddenDim],
+    o_proj: Tensor2D[HiddenDim, HiddenDim],
+    
+    (* Optional biases *)
+    q_bias: optional Tensor1D[HiddenDim],
+    k_bias: optional Tensor1D[HiddenDim],
+    v_bias: optional Tensor1D[HiddenDim],
+    o_bias: optional Tensor1D[HiddenDim]
+⟧
+
+TYPE FFNParams == ⟦
+    gate_proj: Tensor2D[HiddenDim, ℕ₁],      (* Hidden → Intermediate *)
+    up_proj: Tensor2D[HiddenDim, ℕ₁],        (* Hidden → Intermediate *)
+    down_proj: Tensor2D[ℕ₁, HiddenDim],      (* Intermediate → Hidden *)
+    
+    (* Optional biases *)
+    gate_bias: optional Tensor1D[ℕ₁],
+    up_bias: optional Tensor1D[ℕ₁],
+    down_bias: optional Tensor1D[HiddenDim]
+⟧
+
+TYPE NormParams == ⟦
+    weight: Tensor1D[HiddenDim],
+    bias: optional Tensor1D[HiddenDim]
+⟧
+
+TYPE TransformerLayerParams == ⟦
+    input_layernorm: NormParams,
+    self_attn: AttentionParams,
+    post_attention_layernorm: NormParams,
+    mlp: FFNParams
+⟧
+
+TYPE CognitiveStreamParams == ⟦
+    stream_embedding: Tensor2D[COGNITIVE_STREAMS, HiddenDim],
+    step_embedding: Tensor2D[COGNITIVE_STEPS, HiddenDim],
+    cross_stream_attn: AttentionParams,
+    stream_gate: Tensor2D[HiddenDim, HiddenDim]
+⟧
+
+TYPE LMHeadParams == ⟦
+    weight: Tensor2D[HiddenDim, VocabSize],
+    bias: optional Tensor1D[VocabSize]
+⟧
+
+(* ═══════════════════════════════════════════════════════════════════════════
+   SECTION 2: Complete Model Parameters
+   ═══════════════════════════════════════════════════════════════════════════ *)
+
+TYPE ModelParams == ⟦
+    (* Embeddings *)
+    embed_tokens: EmbeddingParams,
+    
+    (* Transformer layers *)
+    layers: seq TransformerLayerParams,
+    
+    (* Final normalization *)
+    norm: NormParams,
+    
+    (* Language model head *)
+    lm_head: LMHeadParams,
+    
+    (* Cognitive architecture *)
+    cognitive: optional CognitiveStreamParams,
+    
+    (* Rotary embeddings (precomputed) *)
+    rotary_emb: optional ⟦
+        cos_cached: Tensor2D[SeqLen, ℕ₁],
+        sin_cached: Tensor2D[SeqLen, ℕ₁]
+    ⟧
+⟧
+
+(* ═══════════════════════════════════════════════════════════════════════════
+   SECTION 3: Model State
+   ═══════════════════════════════════════════════════════════════════════════ *)
+
+TYPE KVCache == ⟦
+    key_cache: seq Tensor3D[BatchSize, SeqLen, HiddenDim],
+    value_cache: seq Tensor3D[BatchSize, SeqLen, HiddenDim],
+    seen_tokens: ℕ
+⟧
+
+TYPE CognitiveState == ⟦
+    stream_states: seq StreamState,
+    current_stream: StreamId,
+    current_step: StepId,
+    stream_hidden: Tensor2D[COGNITIVE_STREAMS, HiddenDim]
+⟧
+
+STATE ModelState == ⟦
+    config: ModelConfigState,
+    params: ModelParams,
+    kv_cache: optional KVCache,
+    cognitive_state: optional CognitiveState,
+    
+    (* Training state *)
+    is_training: 𝔹,
+    gradient_checkpointing: 𝔹
+⟧
+
+(* ═══════════════════════════════════════════════════════════════════════════
+   SECTION 4: Forward Pass Types
+   ═══════════════════════════════════════════════════════════════════════════ *)
+
+TYPE ModelInput == ⟦
+    input_ids: Tensor2D[BatchSize, SeqLen],
+    attention_mask: optional Tensor2D[BatchSize, SeqLen],
+    position_ids: optional Tensor2D[BatchSize, SeqLen],
+    past_key_values: optional KVCache,
+    inputs_embeds: optional Tensor3D[BatchSize, SeqLen, HiddenDim],
+    use_cache: 𝔹,
+    output_attentions: 𝔹,
+    output_hidden_states: 𝔹,
+    
+    (* Cognitive inputs *)
+    stream_ids: optional Tensor1D[BatchSize],
+    step_ids: optional Tensor1D[BatchSize]
+⟧
+
+TYPE ModelOutput == ⟦
+    logits: Tensor3D[BatchSize, SeqLen, VocabSize],
+    past_key_values: optional KVCache,
+    hidden_states: optional seq Tensor3D[BatchSize, SeqLen, HiddenDim],
+    attentions: optional seq Tensor3D[BatchSize, NumHeads, SeqLen, SeqLen],
+    
+    (* Cognitive outputs *)
+    stream_outputs: optional seq Tensor3D[BatchSize, SeqLen, HiddenDim],
+    cognitive_attention: optional Tensor3D[COGNITIVE_STREAMS, SeqLen, SeqLen]
+⟧
+
+TYPE LossOutput == ⟦
+    loss: ℝ,
+    logits: Tensor3D[BatchSize, SeqLen, VocabSize],
+    past_key_values: optional KVCache
+⟧
+
+(* ═══════════════════════════════════════════════════════════════════════════
+   SECTION 5: Invariant Predicates
+   ═══════════════════════════════════════════════════════════════════════════ *)
+
+PRED ValidModelParams(p: ModelParams, c: ModelConfigState) ≜
+    (* Embedding dimensions *)
+    dim₁(p.embed_tokens.weight) = c.vocab_size ∧
+    dim₂(p.embed_tokens.weight) = c.hidden_size ∧
+    
+    (* Number of layers *)
+    #p.layers = c.num_hidden_layers ∧
+    
+    (* Each layer has correct dimensions *)
+    (∀ layer ∈ ran p.layers •
+        dim₁(layer.self_attn.q_proj) = c.hidden_size ∧
+        dim₂(layer.self_attn.q_proj) = c.hidden_size ∧
+        dim₁(layer.mlp.gate_proj) = c.hidden_size ∧
+        dim₂(layer.mlp.gate_proj) = c.ffn.intermediate_size) ∧
+    
+    (* LM head dimensions *)
+    dim₁(p.lm_head.weight) = c.hidden_size ∧
+    dim₂(p.lm_head.weight) = c.vocab_size ∧
+    
+    (* Cognitive params if enabled *)
+    (c.cognitive.memory_attention ⇒ p.cognitive ≠ ⊥)
+
+PRED ValidKVCache(cache: KVCache, c: ModelConfigState) ≜
+    #cache.key_cache = c.num_hidden_layers ∧
+    #cache.value_cache = c.num_hidden_layers ∧
+    cache.seen_tokens ≤ c.max_position_embeddings
+
+PRED ValidModelInput(input: ModelInput, c: ModelConfigState) ≜
+    (* Input IDs within vocabulary *)
+    (∀ i: 1..dim₁(input.input_ids); j: 1..dim₂(input.input_ids) •
+        input.input_ids[i][j] < c.vocab_size) ∧
+    
+    (* Attention mask matches input shape *)
+    (input.attention_mask ≠ ⊥ ⇒
+        dim₁(input.attention_mask!) = dim₁(input.input_ids) ∧
+        dim₂(input.attention_mask!) = dim₂(input.input_ids)) ∧
+    
+    (* Position IDs within bounds *)
+    (input.position_ids ≠ ⊥ ⇒
+        ∀ i: 1..dim₁(input.position_ids!); j: 1..dim₂(input.position_ids!) •
+            input.position_ids![i][j] < c.max_position_embeddings) ∧
+    
+    (* Cognitive inputs valid *)
+    (input.stream_ids ≠ ⊥ ⇒
+        ∀ s ∈ ran input.stream_ids! • 1 ≤ s ≤ COGNITIVE_STREAMS) ∧
+    (input.step_ids ≠ ⊥ ⇒
+        ∀ s ∈ ran input.step_ids! • 1 ≤ s ≤ COGNITIVE_STEPS)
+
+PRED ValidModelOutput(output: ModelOutput, input: ModelInput, c: ModelConfigState) ≜
+    (* Logits shape *)
+    dim₁(output.logits) = dim₁(input.input_ids) ∧
+    dim₂(output.logits) = dim₂(input.input_ids) ∧
+    dim₃(output.logits) = c.vocab_size ∧
+    
+    (* Hidden states if requested *)
+    (input.output_hidden_states ⇒
+        output.hidden_states ≠ ⊥ ∧
+        #output.hidden_states! = c.num_hidden_layers + 1) ∧
+    
+    (* Attentions if requested *)
+    (input.output_attentions ⇒
+        output.attentions ≠ ⊥ ∧
+        #output.attentions! = c.num_hidden_layers)
+
+(* ═══════════════════════════════════════════════════════════════════════════
+   SECTION 6: State Invariants
+   ═══════════════════════════════════════════════════════════════════════════ *)
+
+INVARIANT ModelStateInvariant
+    ∀ state: ModelState •
+        ValidModelParams(state.params, state.config) ∧
+        (state.kv_cache ≠ ⊥ ⇒ ValidKVCache(state.kv_cache!, state.config)) ∧
+        (state.cognitive_state ≠ ⊥ ⇒
+            #state.cognitive_state!.stream_states = COGNITIVE_STREAMS ∧
+            1 ≤ state.cognitive_state!.current_stream ≤ COGNITIVE_STREAMS ∧
+            1 ≤ state.cognitive_state!.current_step ≤ COGNITIVE_STEPS)
+
+(* ═══════════════════════════════════════════════════════════════════════════
+   SECTION 7: Forward Pass Operations
+   ═══════════════════════════════════════════════════════════════════════════ *)
+
+OP Forward
+    ΔSTATE ModelState
+    input?: ModelInput
+    output!: ModelOutput
+    
+    PRE 
+        ValidModelInput(input?, config) ∧
+        ¬is_training
+    POST
+        ValidModelOutput(output!, input?, config) ∧
+        
+        (* KV cache updated if used *)
+        (input?.use_cache ⇒ 
+            kv_cache' ≠ ⊥ ∧
+            kv_cache'!.seen_tokens = 
+                (IF input?.past_key_values ≠ ⊥ 
+                 THEN input?.past_key_values!.seen_tokens 
+                 ELSE 0) + dim₂(input?.input_ids)) ∧
+        
+        (* Cognitive state updated if enabled *)
+        (cognitive_state ≠ ⊥ ∧ input?.stream_ids ≠ ⊥ ⇒
+            cognitive_state'!.current_step = 
+                ((cognitive_state!.current_step - 1 + 1) mod COGNITIVE_STEPS) + 1)
+
+OP ForwardWithLoss
+    ΔSTATE ModelState
+    input?: ModelInput
+    labels?: Tensor2D[BatchSize, SeqLen]
+    output!: LossOutput
+    
+    PRE 
+        ValidModelInput(input?, config) ∧
+        dim₁(labels?) = dim₁(input?.input_ids) ∧
+        dim₂(labels?) = dim₂(input?.input_ids) ∧
+        (∀ i: 1..dim₁(labels?); j: 1..dim₂(labels?) •
+            labels?[i][j] < config.vocab_size ∨ labels?[i][j] = -100)
+    POST
+        output!.loss ≥ 0 ∧
+        dim₁(output!.logits) = dim₁(input?.input_ids) ∧
+        dim₂(output!.logits) = dim₂(input?.input_ids) ∧
+        dim₃(output!.logits) = config.vocab_size
+
+(* ═══════════════════════════════════════════════════════════════════════════
+   SECTION 8: Attention Operations
+   ═══════════════════════════════════════════════════════════════════════════ *)
+
+OP ComputeAttention
+    ΞSTATE ModelState
+    query?: Tensor3D[BatchSize, SeqLen, HiddenDim]
+    key?: Tensor3D[BatchSize, SeqLen, HiddenDim]
+    value?: Tensor3D[BatchSize, SeqLen, HiddenDim]
+    attention_mask?: optional Tensor2D[BatchSize, SeqLen]
+    output!: Tensor3D[BatchSize, SeqLen, HiddenDim]
+    attention_weights!: optional Tensor3D[BatchSize, NumHeads, SeqLen, SeqLen]
+    
+    PRE 
+        dim₁(query?) = dim₁(key?) ∧
+        dim₁(query?) = dim₁(value?) ∧
+        dim₂(query?) = dim₂(key?) ∧
+        dim₂(query?) = dim₂(value?) ∧
+        dim₃(query?) = config.hidden_size
+    POST
+        dim₁(output!) = dim₁(query?) ∧
+        dim₂(output!) = dim₂(query?) ∧
+        dim₃(output!) = config.hidden_size ∧
+        
+        (* Attention weights are valid probabilities *)
+        (attention_weights! ≠ ⊥ ⇒
+            ∀ b: 1..dim₁(attention_weights!!); 
+              h: 1..dim₂(attention_weights!!);
+              i: 1..dim₃(attention_weights!!) •
+                Σⱼ attention_weights!![b][h][i][j] = 1.0)
+
+OP ComputeCrossStreamAttention
+    ΔSTATE ModelState
+    stream_hidden?: Tensor2D[COGNITIVE_STREAMS, HiddenDim]
+    output!: Tensor2D[COGNITIVE_STREAMS, HiddenDim]
+    
+    PRE 
+        cognitive_state ≠ ⊥ ∧
+        dim₁(stream_hidden?) = COGNITIVE_STREAMS ∧
+        dim₂(stream_hidden?) = config.cognitive.stream_hidden_dim
+    POST
+        dim₁(output!) = COGNITIVE_STREAMS ∧
+        dim₂(output!) = config.cognitive.stream_hidden_dim ∧
+        cognitive_state'!.stream_hidden = output!
+
+(* ═══════════════════════════════════════════════════════════════════════════
+   SECTION 9: Sampling Operations
+   ═══════════════════════════════════════════════════════════════════════════ *)
+
+TYPE SamplingConfig == ⟦
+    temperature: Temperature,
+    top_k: optional ℕ₁,
+    top_p: optional Probability,
+    repetition_penalty: optional ℝ,
+    do_sample: 𝔹,
+    num_beams: ℕ₁,
+    max_new_tokens: ℕ₁,
+    min_new_tokens: optional ℕ,
+    eos_token_id: TokenId,
+    pad_token_id: TokenId
+⟧
+
+OP SampleNextToken
+    ΞSTATE ModelState
+    logits?: Tensor2D[BatchSize, VocabSize]
+    sampling_config?: SamplingConfig
+    past_tokens?: optional seq TokenSequence
+    next_token!: Tensor1D[BatchSize]
+    
+    PRE 
+        dim₂(logits?) = config.vocab_size ∧
+        sampling_config?.temperature > 0
+    POST
+        (* All sampled tokens are valid *)
+        ∀ t ∈ ran next_token! • t < config.vocab_size ∧
+        
+        (* Greedy if not sampling *)
+        (¬sampling_config?.do_sample ⇒
+            ∀ b: 1..dim₁(logits?) •
+                next_token![b] = argmax(logits?[b]))
+
+OP ApplyTemperature
+    logits?: Tensor2D[BatchSize, VocabSize]
+    temperature?: Temperature
+    output!: Tensor2D[BatchSize, VocabSize]
+    
+    PRE temperature? > 0
+    POST 
+        ∀ b: 1..dim₁(logits?); v: 1..dim₂(logits?) •
+            output![b][v] = logits?[b][v] / temperature?
+
+OP ApplyTopK
+    logits?: Tensor2D[BatchSize, VocabSize]
+    k?: ℕ₁
+    output!: Tensor2D[BatchSize, VocabSize]
+    
+    PRE k? > 0 ∧ k? ≤ dim₂(logits?)
+    POST 
+        (* Only top-k logits remain, rest are -∞ *)
+        ∀ b: 1..dim₁(logits?) •
+            #{v: 1..dim₂(output!) | output![b][v] > -∞} ≤ k?
+
+OP ApplyTopP
+    probs?: Tensor2D[BatchSize, VocabSize]
+    p?: Probability
+    output!: Tensor2D[BatchSize, VocabSize]
+    
+    PRE 
+        0 < p? ≤ 1 ∧
+        (* Input must be valid probability distribution *)
+        ∀ b: 1..dim₁(probs?) • Σᵥ probs?[b][v] ≈ 1.0
+    POST 
+        (* Cumulative probability of kept tokens ≥ p *)
+        ∀ b: 1..dim₁(output!) •
+            Σ{v: 1..dim₂(output!) | output![b][v] > 0} output![b][v] ≥ p?
+
+OP ApplyRepetitionPenalty
+    logits?: Tensor2D[BatchSize, VocabSize]
+    past_tokens?: seq TokenSequence
+    penalty?: ℝ
+    output!: Tensor2D[BatchSize, VocabSize]
+    
+    PRE penalty? > 0
+    POST 
+        (* Tokens in past_tokens have reduced logits *)
+        ∀ b: 1..dim₁(logits?); t ∈ ran past_tokens?[b] •
+            output![b][t] ≤ logits?[b][t]
+
+(* ═══════════════════════════════════════════════════════════════════════════
+   SECTION 10: Theorems and Properties
+   ═══════════════════════════════════════════════════════════════════════════ *)
+
+THEOREM AttentionNormalization:
+    ∀ weights: Tensor3D[BatchSize, NumHeads, SeqLen, SeqLen] •
+        (* Attention weights sum to 1 along last dimension *)
+        ∀ b, h, i • Σⱼ weights[b][h][i][j] = 1.0
+
+THEOREM LogitsDimensionPreservation:
+    ∀ input: ModelInput; output: ModelOutput; state: ModelState •
+        ValidModelInput(input, state.config) ∧
+        ValidModelOutput(output, input, state.config) ⇒
+        dim₁(output.logits) = dim₁(input.input_ids) ∧
+        dim₂(output.logits) = dim₂(input.input_ids)
+
+THEOREM CausalMasking:
+    ∀ weights: Tensor3D[BatchSize, NumHeads, SeqLen, SeqLen] •
+        (* No attention to future positions *)
+        ∀ b, h, i, j • j > i ⇒ weights[b][h][i][j] = 0
+
+THEOREM CognitiveStreamPhasing:
+    ∀ state: CognitiveState •
+        (* Streams are phased PHASE_OFFSET apart *)
+        ∀ s₁, s₂: StreamId • s₁ ≠ s₂ ⇒
+            |state.stream_states[s₁].current_step - 
+             state.stream_states[s₂].current_step| mod PHASE_OFFSET = 0
+
+END Model

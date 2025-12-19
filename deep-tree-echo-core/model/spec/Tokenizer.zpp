@@ -1,0 +1,348 @@
+(*
+ * Tokenizer.zpp - Tokenization and Detokenization Contracts
+ * Z++ Formal Specification for Deltecho Model Package
+ * 
+ * Defines the formal contracts for tokenization operations,
+ * including encoding, decoding, and cognitive stream token handling.
+ *)
+
+SCHEMA Tokenizer
+IMPORTS Types, TokenizerConfig
+
+(* ═══════════════════════════════════════════════════════════════════════════
+   SECTION 1: Input/Output Types
+   ═══════════════════════════════════════════════════════════════════════════ *)
+
+TYPE TextInput == seq CHAR             (* Raw text input *)
+TYPE TokenSequence == seq TokenId      (* Sequence of token IDs *)
+TYPE AttentionMask == seq {0, 1}       (* Binary attention mask *)
+
+TYPE EncodedOutput == ⟦
+    input_ids: TokenSequence,
+    attention_mask: AttentionMask,
+    token_type_ids: optional seq ℕ,
+    special_tokens_mask: optional seq {0, 1},
+    length: ℕ
+⟧
+
+TYPE BatchEncodedOutput == ⟦
+    input_ids: seq TokenSequence,
+    attention_mask: seq AttentionMask,
+    token_type_ids: optional seq (seq ℕ),
+    special_tokens_mask: optional seq (seq {0, 1}),
+    lengths: seq ℕ
+⟧
+
+TYPE DecodedOutput == ⟦
+    text: TextInput,
+    offsets: optional seq (ℕ × ℕ),     (* Character offsets *)
+    tokens: optional seq TextInput      (* Individual token strings *)
+⟧
+
+(* ═══════════════════════════════════════════════════════════════════════════
+   SECTION 2: Cognitive Stream Types
+   ═══════════════════════════════════════════════════════════════════════════ *)
+
+TYPE StreamMarker == ⟦
+    stream_id: StreamId,
+    position: ℕ,
+    token_id: TokenId
+⟧
+
+TYPE CognitiveAnnotation == ⟦
+    stream_markers: seq StreamMarker,
+    pivot_positions: seq ℕ,
+    affordance_positions: seq ℕ,
+    salience_positions: seq ℕ,
+    current_step: StepId,
+    current_mode: CognitiveMode
+⟧
+
+TYPE CognitiveEncodedOutput == ⟦
+    base: EncodedOutput,
+    cognitive: CognitiveAnnotation
+⟧
+
+(* ═══════════════════════════════════════════════════════════════════════════
+   SECTION 3: Tokenizer State
+   ═══════════════════════════════════════════════════════════════════════════ *)
+
+STATE TokenizerState == ⟦
+    config: TokenizerConfigState,
+    vocabulary: TokenId ⇸ TextInput,   (* Partial function: ID → token string *)
+    merges: seq (TextInput × TextInput), (* BPE merge rules *)
+    
+    (* Cognitive state *)
+    cognitive_enabled: 𝔹,
+    current_stream: StreamId,
+    current_step: StepId
+⟧
+
+(* ═══════════════════════════════════════════════════════════════════════════
+   SECTION 4: Invariant Predicates
+   ═══════════════════════════════════════════════════════════════════════════ *)
+
+PRED ValidTokenSequence(tokens: TokenSequence, vocab_size: VocabSize) ≜
+    ∀ t ∈ ran tokens • t < vocab_size
+
+PRED ValidEncodedOutput(output: EncodedOutput, config: TokenizerConfigState) ≜
+    ValidTokenSequence(output.input_ids, config.vocab_size) ∧
+    #output.input_ids = #output.attention_mask ∧
+    output.length = #output.input_ids ∧
+    output.length ≤ config.model_max_length ∧
+    (output.token_type_ids ≠ ⊥ ⇒ #output.token_type_ids! = output.length) ∧
+    (output.special_tokens_mask ≠ ⊥ ⇒ #output.special_tokens_mask! = output.length)
+
+PRED ValidBatchEncodedOutput(output: BatchEncodedOutput, config: TokenizerConfigState) ≜
+    #output.input_ids = #output.attention_mask ∧
+    #output.input_ids = #output.lengths ∧
+    ∀ i: 1..#output.input_ids •
+        ValidTokenSequence(output.input_ids[i], config.vocab_size) ∧
+        #output.input_ids[i] = #output.attention_mask[i] ∧
+        output.lengths[i] = #output.input_ids[i]
+
+PRED ValidCognitiveAnnotation(ann: CognitiveAnnotation, seq_len: ℕ) ≜
+    (* All positions must be within sequence *)
+    (∀ m ∈ ran ann.stream_markers • m.position < seq_len) ∧
+    (∀ p ∈ ran ann.pivot_positions • p < seq_len) ∧
+    (∀ p ∈ ran ann.affordance_positions • p < seq_len) ∧
+    (∀ p ∈ ran ann.salience_positions • p < seq_len) ∧
+    
+    (* Step must be valid *)
+    1 ≤ ann.current_step ≤ COGNITIVE_STEPS
+
+(* ═══════════════════════════════════════════════════════════════════════════
+   SECTION 5: State Invariants
+   ═══════════════════════════════════════════════════════════════════════════ *)
+
+INVARIANT TokenizerStateInvariant
+    ∀ state: TokenizerState •
+        (* Vocabulary size must match config *)
+        #dom state.vocabulary = state.config.vocab_size ∧
+        
+        (* All special tokens must be in vocabulary *)
+        state.config.special_tokens.pad_token.id ∈ dom state.vocabulary ∧
+        state.config.special_tokens.unk_token.id ∈ dom state.vocabulary ∧
+        state.config.special_tokens.bos_token.id ∈ dom state.vocabulary ∧
+        state.config.special_tokens.eos_token.id ∈ dom state.vocabulary ∧
+        
+        (* Cognitive state constraints *)
+        (state.cognitive_enabled ⇒ state.config.cognitive_tokens_enabled) ∧
+        1 ≤ state.current_stream ≤ COGNITIVE_STREAMS ∧
+        1 ≤ state.current_step ≤ COGNITIVE_STEPS
+
+(* ═══════════════════════════════════════════════════════════════════════════
+   SECTION 6: Tokenization Operations
+   ═══════════════════════════════════════════════════════════════════════════ *)
+
+OP Encode
+    ΞSTATE TokenizerState
+    text?: TextInput
+    add_special_tokens?: 𝔹
+    padding?: PaddingStrategy
+    truncation?: TruncationStrategy
+    max_length?: optional SeqLen
+    output!: EncodedOutput
+    
+    PRE 
+        (* Input text can be empty *)
+        true
+    POST
+        (* Output must be valid *)
+        ValidEncodedOutput(output!, config) ∧
+        
+        (* BOS token added if configured *)
+        (add_special_tokens? ∧ config.add_bos_token ⇒ 
+            output!.input_ids[1] = config.special_tokens.bos_token.id) ∧
+        
+        (* EOS token added if configured *)
+        (add_special_tokens? ∧ config.add_eos_token ⇒ 
+            output!.input_ids[output!.length] = config.special_tokens.eos_token.id) ∧
+        
+        (* Length respects max_length *)
+        (max_length? ≠ ⊥ ⇒ output!.length ≤ max_length?!) ∧
+        
+        (* Truncation applied if needed *)
+        (truncation? ≠ DoNotTruncate ∧ max_length? ≠ ⊥ ⇒ 
+            output!.length ≤ max_length?!)
+
+OP EncodeBatch
+    ΞSTATE TokenizerState
+    texts?: seq TextInput
+    add_special_tokens?: 𝔹
+    padding?: PaddingStrategy
+    truncation?: TruncationStrategy
+    max_length?: optional SeqLen
+    output!: BatchEncodedOutput
+    
+    PRE 
+        #texts? > 0
+    POST
+        ValidBatchEncodedOutput(output!, config) ∧
+        #output!.input_ids = #texts? ∧
+        
+        (* All sequences same length if padding *)
+        (padding? ≠ DoNotPad ⇒ 
+            ∀ i, j: 1..#output!.input_ids • 
+                #output!.input_ids[i] = #output!.input_ids[j])
+
+OP Decode
+    ΞSTATE TokenizerState
+    token_ids?: TokenSequence
+    skip_special_tokens?: 𝔹
+    clean_up_tokenization_spaces?: 𝔹
+    output!: DecodedOutput
+    
+    PRE 
+        ValidTokenSequence(token_ids?, config.vocab_size)
+    POST
+        (* All tokens must map to strings *)
+        ∀ t ∈ ran token_ids? • 
+            (skip_special_tokens? ∧ IsSpecialToken(t) ⇒ true) ∨
+            t ∈ dom vocabulary
+
+OP DecodeBatch
+    ΞSTATE TokenizerState
+    batch_token_ids?: seq TokenSequence
+    skip_special_tokens?: 𝔹
+    clean_up_tokenization_spaces?: 𝔹
+    outputs!: seq DecodedOutput
+    
+    PRE 
+        #batch_token_ids? > 0 ∧
+        ∀ tokens ∈ ran batch_token_ids? • 
+            ValidTokenSequence(tokens, config.vocab_size)
+    POST
+        #outputs! = #batch_token_ids?
+
+(* ═══════════════════════════════════════════════════════════════════════════
+   SECTION 7: Cognitive Stream Operations
+   ═══════════════════════════════════════════════════════════════════════════ *)
+
+OP EncodeWithCognitive
+    ΔSTATE TokenizerState
+    text?: TextInput
+    stream_id?: StreamId
+    step_id?: StepId
+    output!: CognitiveEncodedOutput
+    
+    PRE 
+        cognitive_enabled ∧
+        1 ≤ stream_id? ≤ COGNITIVE_STREAMS ∧
+        1 ≤ step_id? ≤ COGNITIVE_STEPS
+    POST
+        ValidEncodedOutput(output!.base, config) ∧
+        ValidCognitiveAnnotation(output!.cognitive, output!.base.length) ∧
+        
+        (* Stream marker inserted *)
+        ∃ m ∈ ran output!.cognitive.stream_markers • 
+            m.stream_id = stream_id? ∧
+            m.token_id = GetStreamToken(stream_id?) ∧
+        
+        (* State updated *)
+        current_stream' = stream_id? ∧
+        current_step' = step_id?
+
+OP InsertPivotToken
+    ΔSTATE TokenizerState
+    tokens?: TokenSequence
+    position?: ℕ
+    output!: TokenSequence
+    
+    PRE 
+        cognitive_enabled ∧
+        position? ≤ #tokens?
+    POST
+        #output! = #tokens? + 1 ∧
+        output![position? + 1] = config.special_tokens.pivot_token!.id
+
+OP InsertAffordanceToken
+    ΔSTATE TokenizerState
+    tokens?: TokenSequence
+    position?: ℕ
+    output!: TokenSequence
+    
+    PRE 
+        cognitive_enabled ∧
+        position? ≤ #tokens?
+    POST
+        #output! = #tokens? + 1 ∧
+        output![position? + 1] = config.special_tokens.afford_token!.id
+
+OP InsertSalienceToken
+    ΔSTATE TokenizerState
+    tokens?: TokenSequence
+    position?: ℕ
+    output!: TokenSequence
+    
+    PRE 
+        cognitive_enabled ∧
+        position? ≤ #tokens?
+    POST
+        #output! = #tokens? + 1 ∧
+        output![position? + 1] = config.special_tokens.salience_token!.id
+
+OP AdvanceCognitiveStep
+    ΔSTATE TokenizerState
+    
+    PRE cognitive_enabled
+    POST
+        current_step' = ((current_step - 1 + 1) mod COGNITIVE_STEPS) + 1 ∧
+        (* Stream advances every PHASE_OFFSET steps *)
+        (current_step' mod PHASE_OFFSET = 1 ⇒ 
+            current_stream' = ((current_stream - 1 + 1) mod COGNITIVE_STREAMS) + 1)
+
+(* ═══════════════════════════════════════════════════════════════════════════
+   SECTION 8: Helper Functions
+   ═══════════════════════════════════════════════════════════════════════════ *)
+
+FUNC IsSpecialToken(t: TokenId): 𝔹 ≜
+    t = config.special_tokens.pad_token.id ∨
+    t = config.special_tokens.unk_token.id ∨
+    t = config.special_tokens.bos_token.id ∨
+    t = config.special_tokens.eos_token.id ∨
+    (config.special_tokens.stream_1_token ≠ ⊥ ∧ t = config.special_tokens.stream_1_token!.id) ∨
+    (config.special_tokens.stream_2_token ≠ ⊥ ∧ t = config.special_tokens.stream_2_token!.id) ∨
+    (config.special_tokens.stream_3_token ≠ ⊥ ∧ t = config.special_tokens.stream_3_token!.id) ∨
+    (config.special_tokens.pivot_token ≠ ⊥ ∧ t = config.special_tokens.pivot_token!.id) ∨
+    (config.special_tokens.afford_token ≠ ⊥ ∧ t = config.special_tokens.afford_token!.id) ∨
+    (config.special_tokens.salience_token ≠ ⊥ ∧ t = config.special_tokens.salience_token!.id)
+
+FUNC GetStreamToken(stream: StreamId): TokenId ≜
+    CASE stream OF
+        1 → config.special_tokens.stream_1_token!.id
+        2 → config.special_tokens.stream_2_token!.id
+        3 → config.special_tokens.stream_3_token!.id
+    END
+
+FUNC GetCurrentMode(step: StepId): CognitiveMode ≜
+    IF step ≤ EXPRESSIVE_STEPS THEN Expressive ELSE Reflective
+
+FUNC GetCurrentPhase(stream: StreamId, step: StepId): CognitivePhase ≜
+    LET offset = (stream - 1) * PHASE_OFFSET IN
+    LET adjusted_step = ((step - 1 + offset) mod COGNITIVE_STEPS) + 1 IN
+    CASE adjusted_step mod 4 OF
+        1 → Perception
+        2 → Action
+        3 → Simulation
+        0 → Simulation  (* Step 12 maps to Simulation *)
+    END
+
+(* ═══════════════════════════════════════════════════════════════════════════
+   SECTION 9: Roundtrip Properties
+   ═══════════════════════════════════════════════════════════════════════════ *)
+
+THEOREM EncodeDecodeRoundtrip:
+    ∀ text: TextInput; state: TokenizerState •
+        LET encoded = Encode(text, false, DoNotPad, DoNotTruncate, ⊥) IN
+        LET decoded = Decode(encoded.input_ids, false, false) IN
+        decoded.text = text
+
+THEOREM BatchConsistency:
+    ∀ texts: seq TextInput; state: TokenizerState •
+        LET batch = EncodeBatch(texts, true, DoNotPad, DoNotTruncate, ⊥) IN
+        ∀ i: 1..#texts •
+            LET single = Encode(texts[i], true, DoNotPad, DoNotTruncate, ⊥) IN
+            batch.input_ids[i] = single.input_ids
+
+END Tokenizer

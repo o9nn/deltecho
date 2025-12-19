@@ -1,0 +1,383 @@
+(*
+ * ModelConfig.zpp - Model Configuration State and Invariants
+ * Z++ Formal Specification for Deltecho Model Package
+ * 
+ * Defines the formal specification for model architecture configuration,
+ * including transformer parameters, attention mechanisms, and cognitive
+ * architecture integration.
+ *)
+
+SCHEMA ModelConfig
+IMPORTS Types
+
+(* ═══════════════════════════════════════════════════════════════════════════
+   SECTION 1: Architecture Type Definitions
+   ═══════════════════════════════════════════════════════════════════════════ *)
+
+TYPE ArchitectureType ::=
+    DeltechoTransformer |              (* Primary Deltecho architecture *)
+    DeltechoMoE |                      (* Mixture of Experts variant *)
+    DeltechoHybrid                     (* Hybrid attention variant *)
+
+TYPE AttentionType ::=
+    MultiHeadAttention |               (* Standard MHA *)
+    GroupedQueryAttention |            (* GQA for efficiency *)
+    MultiQueryAttention |              (* MQA single KV head *)
+    SlidingWindowAttention |           (* Local attention window *)
+    CognitiveStreamAttention           (* Cross-stream attention *)
+
+TYPE PositionEmbeddingType ::=
+    Absolute |                         (* Learned absolute positions *)
+    RoPE |                             (* Rotary Position Embedding *)
+    ALiBi |                            (* Attention with Linear Biases *)
+    NoPE                               (* No position embedding *)
+
+TYPE ActivationType ::=
+    GELU |                             (* Gaussian Error Linear Unit *)
+    SiLU |                             (* Sigmoid Linear Unit / Swish *)
+    ReLU |                             (* Rectified Linear Unit *)
+    QuickGELU                          (* Approximated GELU *)
+
+TYPE NormalizationType ::=
+    LayerNorm |                        (* Layer Normalization *)
+    RMSNorm |                          (* Root Mean Square Norm *)
+    GroupNorm                          (* Group Normalization *)
+
+TYPE InitializationType ::=
+    Xavier |                           (* Xavier/Glorot initialization *)
+    Kaiming |                          (* He initialization *)
+    Orthogonal |                       (* Orthogonal initialization *)
+    Normal                             (* Normal distribution *)
+
+(* ═══════════════════════════════════════════════════════════════════════════
+   SECTION 2: Attention Configuration
+   ═══════════════════════════════════════════════════════════════════════════ *)
+
+TYPE AttentionConfig == ⟦
+    attention_type: AttentionType,
+    num_attention_heads: NumHeads,
+    num_key_value_heads: NumHeads,     (* For GQA/MQA *)
+    head_dim: ℕ₁,
+    attention_dropout: Probability,
+    attention_bias: 𝔹,
+    
+    (* Sliding window parameters *)
+    sliding_window: optional ℕ₁,
+    
+    (* RoPE parameters *)
+    rope_theta: optional ℝ,
+    rope_scaling: optional ⟦
+        type: {Linear, Dynamic, YaRN},
+        factor: ℝ
+    ⟧,
+    
+    (* Cognitive stream attention *)
+    cross_stream_attention: 𝔹,
+    stream_attention_heads: optional ℕ₁
+⟧
+
+(* ═══════════════════════════════════════════════════════════════════════════
+   SECTION 3: Feed-Forward Configuration
+   ═══════════════════════════════════════════════════════════════════════════ *)
+
+TYPE FFNConfig == ⟦
+    intermediate_size: ℕ₁,
+    activation_function: ActivationType,
+    ffn_dropout: Probability,
+    ffn_bias: 𝔹,
+    
+    (* MoE parameters *)
+    is_moe: 𝔹,
+    num_experts: optional ℕ₁,
+    num_experts_per_tok: optional ℕ₁,
+    expert_capacity: optional ℕ₁
+⟧
+
+(* ═══════════════════════════════════════════════════════════════════════════
+   SECTION 4: Cognitive Architecture Configuration
+   ═══════════════════════════════════════════════════════════════════════════ *)
+
+TYPE CognitiveConfig == ⟦
+    (* Stream configuration *)
+    num_streams: ℕ₁,
+    stream_hidden_dim: HiddenDim,
+    stream_interleave_layers: seq ℕ₁,
+    
+    (* Cognitive loop parameters *)
+    cognitive_steps: ℕ₁,
+    phase_offset: ℕ₁,
+    
+    (* Mode distribution *)
+    expressive_steps: ℕ₁,
+    reflective_steps: ℕ₁,
+    
+    (* Nested shell structure *)
+    nest_levels: ℕ₁,
+    nest_terms: seq ℕ₁,
+    
+    (* Memory integration *)
+    memory_attention: 𝔹,
+    memory_slots: optional ℕ₁,
+    memory_dim: optional HiddenDim
+⟧
+
+(* ═══════════════════════════════════════════════════════════════════════════
+   SECTION 5: Model Configuration State
+   ═══════════════════════════════════════════════════════════════════════════ *)
+
+STATE ModelConfigState == ⟦
+    (* Model identification *)
+    model_type: seq₁ CHAR,
+    architectures: seq₁ ArchitectureType,
+    
+    (* Core dimensions *)
+    vocab_size: VocabSize,
+    hidden_size: HiddenDim,
+    num_hidden_layers: NumLayers,
+    
+    (* Attention configuration *)
+    attention: AttentionConfig,
+    
+    (* Feed-forward configuration *)
+    ffn: FFNConfig,
+    
+    (* Position embedding *)
+    position_embedding_type: PositionEmbeddingType,
+    max_position_embeddings: SeqLen,
+    
+    (* Normalization *)
+    normalization_type: NormalizationType,
+    layer_norm_eps: ℝ,
+    
+    (* Embedding *)
+    tie_word_embeddings: 𝔹,
+    embedding_dropout: Probability,
+    
+    (* Initialization *)
+    initializer_range: ℝ,
+    initialization_type: InitializationType,
+    
+    (* Cognitive architecture *)
+    cognitive: CognitiveConfig,
+    
+    (* Training configuration *)
+    use_cache: 𝔹,
+    output_attentions: 𝔹,
+    output_hidden_states: 𝔹,
+    
+    (* Precision *)
+    torch_dtype: {float16, bfloat16, float32},
+    
+    (* Tokenizer reference *)
+    bos_token_id: TokenId,
+    eos_token_id: TokenId,
+    pad_token_id: TokenId
+⟧
+
+(* ═══════════════════════════════════════════════════════════════════════════
+   SECTION 6: Invariant Predicates
+   ═══════════════════════════════════════════════════════════════════════════ *)
+
+PRED ValidAttentionConfig(a: AttentionConfig, h: HiddenDim) ≜
+    (* Head dimension must divide hidden size *)
+    h mod a.num_attention_heads = 0 ∧
+    a.head_dim = h div a.num_attention_heads ∧
+    
+    (* KV heads must divide attention heads *)
+    a.num_attention_heads mod a.num_key_value_heads = 0 ∧
+    
+    (* Sliding window constraints *)
+    (a.sliding_window ≠ ⊥ ⇒ a.sliding_window! > 0) ∧
+    
+    (* RoPE constraints *)
+    (a.rope_theta ≠ ⊥ ⇒ a.rope_theta! > 0) ∧
+    
+    (* Cross-stream attention requires stream heads *)
+    (a.cross_stream_attention ⇒ a.stream_attention_heads ≠ ⊥)
+
+PRED ValidFFNConfig(f: FFNConfig, h: HiddenDim) ≜
+    (* Intermediate size typically 4x hidden *)
+    f.intermediate_size ≥ h ∧
+    
+    (* MoE constraints *)
+    (f.is_moe ⇒ 
+        f.num_experts ≠ ⊥ ∧
+        f.num_experts_per_tok ≠ ⊥ ∧
+        f.num_experts! > 0 ∧
+        f.num_experts_per_tok! > 0 ∧
+        f.num_experts_per_tok! ≤ f.num_experts!)
+
+PRED ValidCognitiveConfig(c: CognitiveConfig) ≜
+    (* Must match cognitive architecture constants *)
+    c.num_streams = COGNITIVE_STREAMS ∧
+    c.cognitive_steps = COGNITIVE_STEPS ∧
+    c.phase_offset = PHASE_OFFSET ∧
+    
+    (* Mode distribution must sum to total steps *)
+    c.expressive_steps + c.reflective_steps = c.cognitive_steps ∧
+    c.expressive_steps = EXPRESSIVE_STEPS ∧
+    c.reflective_steps = REFLECTIVE_STEPS ∧
+    
+    (* Nested shell structure *)
+    c.nest_levels = NEST_LEVELS ∧
+    #c.nest_terms = c.nest_levels ∧
+    c.nest_terms = NEST_TERMS ∧
+    
+    (* Stream hidden dim constraints *)
+    ValidHiddenDim(c.stream_hidden_dim) ∧
+    
+    (* Memory constraints *)
+    (c.memory_attention ⇒ 
+        c.memory_slots ≠ ⊥ ∧ 
+        c.memory_dim ≠ ⊥ ∧
+        c.memory_slots! > 0)
+
+(* ═══════════════════════════════════════════════════════════════════════════
+   SECTION 7: State Invariants
+   ═══════════════════════════════════════════════════════════════════════════ *)
+
+INVARIANT ModelConfigInvariant
+    ∀ config: ModelConfigState •
+        (* Core dimension constraints *)
+        ValidVocabSize(config.vocab_size) ∧
+        ValidHiddenDim(config.hidden_size) ∧
+        MIN_NUM_LAYERS ≤ config.num_hidden_layers ≤ MAX_NUM_LAYERS ∧
+        
+        (* Attention validity *)
+        ValidAttentionConfig(config.attention, config.hidden_size) ∧
+        
+        (* FFN validity *)
+        ValidFFNConfig(config.ffn, config.hidden_size) ∧
+        
+        (* Cognitive architecture validity *)
+        ValidCognitiveConfig(config.cognitive) ∧
+        
+        (* Position embedding constraints *)
+        ValidSeqLen(config.max_position_embeddings) ∧
+        
+        (* Layer norm epsilon must be positive *)
+        config.layer_norm_eps > 0 ∧
+        
+        (* Initializer range must be positive *)
+        config.initializer_range > 0 ∧
+        
+        (* Token IDs must be valid *)
+        config.bos_token_id < config.vocab_size ∧
+        config.eos_token_id < config.vocab_size ∧
+        config.pad_token_id < config.vocab_size
+
+(* ═══════════════════════════════════════════════════════════════════════════
+   SECTION 8: Default Configuration
+   ═══════════════════════════════════════════════════════════════════════════ *)
+
+CONST DEFAULT_MODEL_CONFIG: ModelConfigState = ⟦
+    model_type ↦ "deltecho",
+    architectures ↦ ⟨DeltechoTransformer⟩,
+    
+    vocab_size ↦ DEFAULT_VOCAB_SIZE,
+    hidden_size ↦ DEFAULT_HIDDEN_DIM,
+    num_hidden_layers ↦ DEFAULT_NUM_LAYERS,
+    
+    attention ↦ ⟦
+        attention_type ↦ GroupedQueryAttention,
+        num_attention_heads ↦ DEFAULT_NUM_HEADS,
+        num_key_value_heads ↦ 8,
+        head_dim ↦ DEFAULT_HIDDEN_DIM div DEFAULT_NUM_HEADS,
+        attention_dropout ↦ 0.0,
+        attention_bias ↦ false,
+        sliding_window ↦ ⊥,
+        rope_theta ↦ 10000.0,
+        rope_scaling ↦ ⊥,
+        cross_stream_attention ↦ true,
+        stream_attention_heads ↦ 4
+    ⟧,
+    
+    ffn ↦ ⟦
+        intermediate_size ↦ 14336,
+        activation_function ↦ SiLU,
+        ffn_dropout ↦ 0.0,
+        ffn_bias ↦ false,
+        is_moe ↦ false,
+        num_experts ↦ ⊥,
+        num_experts_per_tok ↦ ⊥,
+        expert_capacity ↦ ⊥
+    ⟧,
+    
+    position_embedding_type ↦ RoPE,
+    max_position_embeddings ↦ DEFAULT_SEQ_LEN,
+    
+    normalization_type ↦ RMSNorm,
+    layer_norm_eps ↦ 1e-5,
+    
+    tie_word_embeddings ↦ false,
+    embedding_dropout ↦ 0.0,
+    
+    initializer_range ↦ 0.02,
+    initialization_type ↦ Normal,
+    
+    cognitive ↦ ⟦
+        num_streams ↦ COGNITIVE_STREAMS,
+        stream_hidden_dim ↦ 1024,
+        stream_interleave_layers ↦ ⟨8, 16, 24⟩,
+        cognitive_steps ↦ COGNITIVE_STEPS,
+        phase_offset ↦ PHASE_OFFSET,
+        expressive_steps ↦ EXPRESSIVE_STEPS,
+        reflective_steps ↦ REFLECTIVE_STEPS,
+        nest_levels ↦ NEST_LEVELS,
+        nest_terms ↦ NEST_TERMS,
+        memory_attention ↦ true,
+        memory_slots ↦ 256,
+        memory_dim ↦ 1024
+    ⟧,
+    
+    use_cache ↦ true,
+    output_attentions ↦ false,
+    output_hidden_states ↦ false,
+    
+    torch_dtype ↦ bfloat16,
+    
+    bos_token_id ↦ BOS_TOKEN_ID,
+    eos_token_id ↦ EOS_TOKEN_ID,
+    pad_token_id ↦ PAD_TOKEN_ID
+⟧
+
+(* ═══════════════════════════════════════════════════════════════════════════
+   SECTION 9: Configuration Operations
+   ═══════════════════════════════════════════════════════════════════════════ *)
+
+OP SetHiddenSize
+    ΔSTATE ModelConfigState
+    new_hidden_size?: HiddenDim
+    
+    PRE ValidHiddenDim(new_hidden_size?) ∧
+        new_hidden_size? mod attention.num_attention_heads = 0
+    POST hidden_size' = new_hidden_size? ∧
+         attention'.head_dim = new_hidden_size? div attention.num_attention_heads
+
+OP SetNumLayers
+    ΔSTATE ModelConfigState
+    new_num_layers?: NumLayers
+    
+    PRE MIN_NUM_LAYERS ≤ new_num_layers? ≤ MAX_NUM_LAYERS
+    POST num_hidden_layers' = new_num_layers?
+
+OP EnableMoE
+    ΔSTATE ModelConfigState
+    num_experts?: ℕ₁
+    experts_per_tok?: ℕ₁
+    
+    PRE num_experts? > 0 ∧ 
+        experts_per_tok? > 0 ∧ 
+        experts_per_tok? ≤ num_experts?
+    POST ffn'.is_moe = true ∧
+         ffn'.num_experts = num_experts? ∧
+         ffn'.num_experts_per_tok = experts_per_tok?
+
+OP SetCognitiveStreamLayers
+    ΔSTATE ModelConfigState
+    interleave_layers?: seq ℕ₁
+    
+    PRE ∀ l ∈ ran interleave_layers? • l ≤ num_hidden_layers
+    POST cognitive'.stream_interleave_layers = interleave_layers?
+
+END ModelConfig

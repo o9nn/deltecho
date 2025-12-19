@@ -1,0 +1,477 @@
+(*
+ * InferencePipe.zpp - End-to-End Generation Contract
+ * Z++ Formal Specification for Deltecho Model Package
+ * 
+ * Defines the formal contracts for the complete inference pipeline,
+ * from text input through tokenization, model forward pass, sampling,
+ * and detokenization to final text output.
+ *)
+
+SCHEMA InferencePipe
+IMPORTS Types, TokenizerConfig, ModelConfig, Tokenizer, Model
+
+(* ═══════════════════════════════════════════════════════════════════════════
+   SECTION 1: Pipeline Configuration Types
+   ═══════════════════════════════════════════════════════════════════════════ *)
+
+TYPE GenerationConfig == ⟦
+    (* Length parameters *)
+    max_new_tokens: ℕ₁,
+    min_new_tokens: ℕ,
+    max_length: optional SeqLen,
+    
+    (* Sampling parameters *)
+    do_sample: 𝔹,
+    temperature: Temperature,
+    top_k: optional ℕ₁,
+    top_p: optional Probability,
+    typical_p: optional Probability,
+    
+    (* Beam search parameters *)
+    num_beams: ℕ₁,
+    num_beam_groups: ℕ₁,
+    diversity_penalty: ℝ,
+    length_penalty: ℝ,
+    early_stopping: 𝔹,
+    
+    (* Repetition control *)
+    repetition_penalty: ℝ,
+    no_repeat_ngram_size: ℕ,
+    encoder_repetition_penalty: ℝ,
+    
+    (* Special tokens *)
+    bos_token_id: TokenId,
+    eos_token_id: TokenId,
+    pad_token_id: TokenId,
+    
+    (* Stopping criteria *)
+    stop_strings: seq TextInput,
+    stop_token_ids: seq TokenId,
+    
+    (* Cognitive generation *)
+    cognitive_mode: optional CognitiveMode,
+    stream_interleave: 𝔹,
+    relevance_threshold: optional Probability
+⟧
+
+TYPE StreamingConfig == ⟦
+    stream_output: 𝔹,
+    chunk_size: ℕ₁,
+    yield_on_token: 𝔹,
+    yield_on_sentence: 𝔹
+⟧
+
+(* ═══════════════════════════════════════════════════════════════════════════
+   SECTION 2: Pipeline Input/Output Types
+   ═══════════════════════════════════════════════════════════════════════════ *)
+
+TYPE PipelineInput == ⟦
+    (* Text inputs *)
+    prompt: TextInput,
+    system_prompt: optional TextInput,
+    
+    (* Chat format *)
+    messages: optional seq ⟦
+        role: {system, user, assistant},
+        content: TextInput
+    ⟧,
+    
+    (* Generation config *)
+    generation_config: GenerationConfig,
+    streaming_config: optional StreamingConfig,
+    
+    (* Cognitive parameters *)
+    initial_stream: optional StreamId,
+    initial_step: optional StepId
+⟧
+
+TYPE PipelineOutput == ⟦
+    (* Generated text *)
+    generated_text: TextInput,
+    
+    (* Token information *)
+    input_tokens: TokenSequence,
+    output_tokens: TokenSequence,
+    total_tokens: ℕ,
+    
+    (* Generation metadata *)
+    finish_reason: {length, eos_token, stop_string, stop_token},
+    generation_time_ms: ℕ,
+    tokens_per_second: ℝ,
+    
+    (* Cognitive metadata *)
+    cognitive_trace: optional seq ⟦
+        step: StepId,
+        stream: StreamId,
+        mode: CognitiveMode,
+        phase: CognitivePhase,
+        relevance_score: optional Probability
+    ⟧,
+    
+    (* Logprobs if requested *)
+    logprobs: optional seq ⟦
+        token: TokenId,
+        logprob: LogProb,
+        top_logprobs: seq ⟦token: TokenId, logprob: LogProb⟧
+    ⟧
+⟧
+
+TYPE StreamChunk == ⟦
+    text: TextInput,
+    token_ids: TokenSequence,
+    is_final: 𝔹,
+    finish_reason: optional {length, eos_token, stop_string, stop_token},
+    cognitive_state: optional ⟦
+        step: StepId,
+        stream: StreamId,
+        mode: CognitiveMode
+    ⟧
+⟧
+
+(* ═══════════════════════════════════════════════════════════════════════════
+   SECTION 3: Pipeline State
+   ═══════════════════════════════════════════════════════════════════════════ *)
+
+STATE PipelineState == ⟦
+    (* Component states *)
+    tokenizer: TokenizerState,
+    model: ModelState,
+    
+    (* Generation state *)
+    is_generating: 𝔹,
+    generated_tokens: TokenSequence,
+    generated_length: ℕ,
+    
+    (* Cognitive state *)
+    cognitive_enabled: 𝔹,
+    current_stream: StreamId,
+    current_step: StepId,
+    cognitive_history: seq ⟦
+        step: StepId,
+        stream: StreamId,
+        mode: CognitiveMode,
+        phase: CognitivePhase
+    ⟧,
+    
+    (* Stopping state *)
+    should_stop: 𝔹,
+    stop_reason: optional {length, eos_token, stop_string, stop_token}
+⟧
+
+(* ═══════════════════════════════════════════════════════════════════════════
+   SECTION 4: Invariant Predicates
+   ═══════════════════════════════════════════════════════════════════════════ *)
+
+PRED ValidGenerationConfig(g: GenerationConfig, m: ModelConfigState, t: TokenizerConfigState) ≜
+    (* Length constraints *)
+    g.max_new_tokens > 0 ∧
+    g.min_new_tokens ≤ g.max_new_tokens ∧
+    (g.max_length ≠ ⊥ ⇒ g.max_length! ≤ m.max_position_embeddings) ∧
+    
+    (* Sampling constraints *)
+    g.temperature > 0 ∧
+    (g.top_k ≠ ⊥ ⇒ g.top_k! > 0 ∧ g.top_k! ≤ t.vocab_size) ∧
+    (g.top_p ≠ ⊥ ⇒ 0 < g.top_p! ≤ 1) ∧
+    (g.typical_p ≠ ⊥ ⇒ 0 < g.typical_p! ≤ 1) ∧
+    
+    (* Beam search constraints *)
+    g.num_beams ≥ 1 ∧
+    g.num_beam_groups ≥ 1 ∧
+    g.num_beams mod g.num_beam_groups = 0 ∧
+    
+    (* Repetition constraints *)
+    g.repetition_penalty > 0 ∧
+    
+    (* Token ID validity *)
+    g.bos_token_id < t.vocab_size ∧
+    g.eos_token_id < t.vocab_size ∧
+    g.pad_token_id < t.vocab_size ∧
+    (∀ t ∈ ran g.stop_token_ids • t < t.vocab_size) ∧
+    
+    (* Cognitive constraints *)
+    (g.relevance_threshold ≠ ⊥ ⇒ 0 ≤ g.relevance_threshold! ≤ 1)
+
+PRED ValidPipelineInput(input: PipelineInput, state: PipelineState) ≜
+    (* Must have either prompt or messages *)
+    (#input.prompt > 0 ∨ input.messages ≠ ⊥) ∧
+    
+    (* Messages must be non-empty if provided *)
+    (input.messages ≠ ⊥ ⇒ #input.messages! > 0) ∧
+    
+    (* Generation config must be valid *)
+    ValidGenerationConfig(input.generation_config, 
+                         state.model.config, 
+                         state.tokenizer.config) ∧
+    
+    (* Cognitive parameters valid *)
+    (input.initial_stream ≠ ⊥ ⇒ 
+        1 ≤ input.initial_stream! ≤ COGNITIVE_STREAMS) ∧
+    (input.initial_step ≠ ⊥ ⇒ 
+        1 ≤ input.initial_step! ≤ COGNITIVE_STEPS)
+
+PRED ValidPipelineOutput(output: PipelineOutput, input: PipelineInput) ≜
+    (* Generated text is non-empty unless stopped immediately *)
+    (output.finish_reason ≠ length ∨ #output.generated_text > 0) ∧
+    
+    (* Token counts are consistent *)
+    output.total_tokens = #output.input_tokens + #output.output_tokens ∧
+    
+    (* Generation time is positive *)
+    output.generation_time_ms > 0 ∧
+    
+    (* Tokens per second is consistent *)
+    output.tokens_per_second = 
+        (#output.output_tokens * 1000) / output.generation_time_ms ∧
+    
+    (* Cognitive trace matches output length if enabled *)
+    (output.cognitive_trace ≠ ⊥ ⇒ 
+        #output.cognitive_trace! = #output.output_tokens)
+
+(* ═══════════════════════════════════════════════════════════════════════════
+   SECTION 5: State Invariants
+   ═══════════════════════════════════════════════════════════════════════════ *)
+
+INVARIANT PipelineStateInvariant
+    ∀ state: PipelineState •
+        (* Generated tokens match length *)
+        #state.generated_tokens = state.generated_length ∧
+        
+        (* Cognitive state consistency *)
+        (state.cognitive_enabled ⇒
+            1 ≤ state.current_stream ≤ COGNITIVE_STREAMS ∧
+            1 ≤ state.current_step ≤ COGNITIVE_STEPS) ∧
+        
+        (* Stop reason set iff should_stop *)
+        (state.should_stop ⇔ state.stop_reason ≠ ⊥)
+
+(* ═══════════════════════════════════════════════════════════════════════════
+   SECTION 6: Pipeline Operations
+   ═══════════════════════════════════════════════════════════════════════════ *)
+
+OP Generate
+    ΔSTATE PipelineState
+    input?: PipelineInput
+    output!: PipelineOutput
+    
+    PRE 
+        ¬is_generating ∧
+        ValidPipelineInput(input?, θPipelineState)
+    POST
+        ValidPipelineOutput(output!, input?) ∧
+        ¬is_generating' ∧
+        
+        (* Output respects length constraints *)
+        #output!.output_tokens ≤ input?.generation_config.max_new_tokens ∧
+        #output!.output_tokens ≥ input?.generation_config.min_new_tokens ∧
+        
+        (* Finish reason is valid *)
+        (output!.finish_reason = length ⇒ 
+            #output!.output_tokens = input?.generation_config.max_new_tokens) ∧
+        (output!.finish_reason = eos_token ⇒ 
+            last(output!.output_tokens) = input?.generation_config.eos_token_id) ∧
+        
+        (* State is reset *)
+        generated_tokens' = ⟨⟩ ∧
+        generated_length' = 0 ∧
+        should_stop' = false ∧
+        stop_reason' = ⊥
+
+OP GenerateStreaming
+    ΔSTATE PipelineState
+    input?: PipelineInput
+    chunks!: seq StreamChunk
+    
+    PRE 
+        ¬is_generating ∧
+        ValidPipelineInput(input?, θPipelineState) ∧
+        input?.streaming_config ≠ ⊥
+    POST
+        #chunks! > 0 ∧
+        
+        (* Last chunk is final *)
+        last(chunks!).is_final = true ∧
+        last(chunks!).finish_reason ≠ ⊥ ∧
+        
+        (* Concatenated chunks equal full output *)
+        (⁀ᵢ chunks![i].text) = 
+            (LET full = Generate(input?) IN full.generated_text) ∧
+        
+        (* State is reset *)
+        ¬is_generating' ∧
+        generated_tokens' = ⟨⟩
+
+OP GenerateStep
+    ΔSTATE PipelineState
+    next_token!: TokenId
+    chunk!: optional StreamChunk
+    
+    PRE 
+        is_generating ∧
+        ¬should_stop
+    POST
+        (* Token is valid *)
+        next_token! < tokenizer.config.vocab_size ∧
+        
+        (* Token added to sequence *)
+        generated_tokens' = generated_tokens ⁀ ⟨next_token!⟩ ∧
+        generated_length' = generated_length + 1 ∧
+        
+        (* Cognitive state advanced *)
+        (cognitive_enabled ⇒
+            current_step' = ((current_step - 1 + 1) mod COGNITIVE_STEPS) + 1 ∧
+            (current_step' mod PHASE_OFFSET = 1 ⇒
+                current_stream' = ((current_stream - 1 + 1) mod COGNITIVE_STREAMS) + 1))
+
+(* ═══════════════════════════════════════════════════════════════════════════
+   SECTION 7: Stopping Criteria Operations
+   ═══════════════════════════════════════════════════════════════════════════ *)
+
+OP CheckStoppingCriteria
+    ΔSTATE PipelineState
+    config?: GenerationConfig
+    
+    PRE is_generating
+    POST
+        (* Check max length *)
+        (generated_length ≥ config?.max_new_tokens ⇒
+            should_stop' = true ∧ stop_reason' = length) ∧
+        
+        (* Check EOS token *)
+        (generated_length > 0 ∧ 
+         last(generated_tokens) = config?.eos_token_id ⇒
+            should_stop' = true ∧ stop_reason' = eos_token) ∧
+        
+        (* Check stop tokens *)
+        (∃ t ∈ ran config?.stop_token_ids • 
+         generated_length > 0 ∧ last(generated_tokens) = t ⇒
+            should_stop' = true ∧ stop_reason' = stop_token)
+
+OP CheckStopStrings
+    ΔSTATE PipelineState
+    config?: GenerationConfig
+    decoded_text?: TextInput
+    
+    PRE is_generating
+    POST
+        (* Check if any stop string is suffix of decoded text *)
+        (∃ s ∈ ran config?.stop_strings • 
+         IsSuffix(s, decoded_text?) ⇒
+            should_stop' = true ∧ stop_reason' = stop_string)
+
+(* ═══════════════════════════════════════════════════════════════════════════
+   SECTION 8: Cognitive Pipeline Operations
+   ═══════════════════════════════════════════════════════════════════════════ *)
+
+OP InitializeCognitiveState
+    ΔSTATE PipelineState
+    initial_stream?: StreamId
+    initial_step?: StepId
+    
+    PRE 
+        cognitive_enabled ∧
+        1 ≤ initial_stream? ≤ COGNITIVE_STREAMS ∧
+        1 ≤ initial_step? ≤ COGNITIVE_STEPS
+    POST
+        current_stream' = initial_stream? ∧
+        current_step' = initial_step? ∧
+        cognitive_history' = ⟨⟩
+
+OP RecordCognitiveStep
+    ΔSTATE PipelineState
+    
+    PRE cognitive_enabled ∧ is_generating
+    POST
+        cognitive_history' = cognitive_history ⁀ ⟨⟦
+            step ↦ current_step,
+            stream ↦ current_stream,
+            mode ↦ GetCurrentMode(current_step),
+            phase ↦ GetCurrentPhase(current_stream, current_step)
+        ⟧⟩
+
+OP ComputeRelevanceScore
+    ΞSTATE PipelineState
+    hidden_state?: Tensor2D[SeqLen, HiddenDim]
+    relevance!: Probability
+    
+    PRE cognitive_enabled
+    POST
+        0 ≤ relevance! ≤ 1 ∧
+        (* Relevance computed from cross-stream attention *)
+        true
+
+OP ApplyRelevanceGating
+    ΔSTATE PipelineState
+    logits?: Tensor2D[BatchSize, VocabSize]
+    relevance?: Probability
+    threshold?: Probability
+    gated_logits!: Tensor2D[BatchSize, VocabSize]
+    
+    PRE 
+        cognitive_enabled ∧
+        0 ≤ relevance? ≤ 1 ∧
+        0 ≤ threshold? ≤ 1
+    POST
+        (* If relevance below threshold, bias toward reflection tokens *)
+        (relevance? < threshold? ⇒
+            gated_logits![1][PIVOT_TOKEN_ID] > logits?[1][PIVOT_TOKEN_ID])
+
+(* ═══════════════════════════════════════════════════════════════════════════
+   SECTION 9: Helper Functions
+   ═══════════════════════════════════════════════════════════════════════════ *)
+
+FUNC IsSuffix(suffix: TextInput, text: TextInput): 𝔹 ≜
+    #suffix ≤ #text ∧
+    (∀ i: 1..#suffix • suffix[i] = text[#text - #suffix + i])
+
+FUNC FormatChatPrompt(messages: seq ⟦role: {system, user, assistant}, content: TextInput⟧,
+                      template: TextInput): TextInput ≜
+    (* Apply chat template to format messages *)
+    (* Implementation depends on template format *)
+    ⁀ᵢ FormatMessage(messages[i], template)
+
+FUNC FormatMessage(msg: ⟦role: {system, user, assistant}, content: TextInput⟧,
+                   template: TextInput): TextInput ≜
+    CASE msg.role OF
+        system → "<|system|>" ⁀ msg.content ⁀ "<|end|>"
+        user → "<|user|>" ⁀ msg.content ⁀ "<|end|>"
+        assistant → "<|assistant|>" ⁀ msg.content ⁀ "<|end|>"
+    END
+
+(* ═══════════════════════════════════════════════════════════════════════════
+   SECTION 10: End-to-End Theorems
+   ═══════════════════════════════════════════════════════════════════════════ *)
+
+THEOREM GenerationTerminates:
+    ∀ input: PipelineInput; state: PipelineState •
+        ValidPipelineInput(input, state) ⇒
+        ∃ output: PipelineOutput • 
+            Generate(input) = output ∧
+            ValidPipelineOutput(output, input)
+
+THEOREM StreamingConsistency:
+    ∀ input: PipelineInput; state: PipelineState •
+        ValidPipelineInput(input, state) ∧ input.streaming_config ≠ ⊥ ⇒
+        LET chunks = GenerateStreaming(input) IN
+        LET full = Generate(input) IN
+        (⁀ᵢ chunks[i].text) = full.generated_text
+
+THEOREM CognitiveLoopContinuity:
+    ∀ state: PipelineState •
+        state.cognitive_enabled ⇒
+        ∀ i: 1..#state.cognitive_history - 1 •
+            LET curr = state.cognitive_history[i] IN
+            LET next = state.cognitive_history[i+1] IN
+            next.step = ((curr.step - 1 + 1) mod COGNITIVE_STEPS) + 1
+
+THEOREM TokenCountInvariant:
+    ∀ input: PipelineInput; output: PipelineOutput •
+        ValidPipelineOutput(output, input) ⇒
+        output.total_tokens = #output.input_tokens + #output.output_tokens
+
+THEOREM MinLengthRespected:
+    ∀ input: PipelineInput; output: PipelineOutput •
+        ValidPipelineOutput(output, input) ∧
+        output.finish_reason ≠ length ⇒
+        #output.output_tokens ≥ input.generation_config.min_new_tokens
+
+END InferencePipe

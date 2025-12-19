@@ -1,0 +1,217 @@
+{
+  "$schema": "https://huggingface.co/docs/transformers/main/en/model_doc/auto#transformers.AutoTokenizer",
+  "_zpp_spec": {
+    "version": "1.0.0",
+    "spec_files": {
+      "types": "spec/Types.zpp",
+      "tokenizer_config": "spec/TokenizerConfig.zpp",
+      "tokenizer": "spec/Tokenizer.zpp"
+    },
+    "schema": "TokenizerConfigState",
+    "invariants": ["TokenizerConfigInvariant"],
+    "operations": [
+      "Encode",
+      "EncodeBatch",
+      "Decode",
+      "DecodeBatch",
+      "EncodeWithCognitive",
+      "InsertPivotToken",
+      "InsertAffordanceToken",
+      "InsertSalienceToken",
+      "AdvanceCognitiveStep"
+    ],
+    "theorems": [
+      "EncodeDecodeRoundtrip",
+      "BatchConsistency"
+    ]
+  },
+  "tokenizer_class": "DeltechoTokenizer",
+  "tokenizer_type": "BPE",
+  "vocab_size": 32000,
+  "model_max_length": 4096,
+  "padding_side": "right",
+  "truncation_side": "right",
+  "add_bos_token": true,
+  "add_eos_token": true,
+  "clean_up_tokenization_spaces": true,
+  "split_special_tokens": false,
+  "use_default_system_prompt": false,
+  "legacy": false,
+  "bos_token": {
+    "__type": "AddedToken",
+    "content": "<s>",
+    "lstrip": false,
+    "normalized": false,
+    "rstrip": false,
+    "single_word": true
+  },
+  "eos_token": {
+    "__type": "AddedToken",
+    "content": "</s>",
+    "lstrip": false,
+    "normalized": false,
+    "rstrip": false,
+    "single_word": true
+  },
+  "pad_token": {
+    "__type": "AddedToken",
+    "content": "<pad>",
+    "lstrip": false,
+    "normalized": false,
+    "rstrip": false,
+    "single_word": true
+  },
+  "unk_token": {
+    "__type": "AddedToken",
+    "content": "<unk>",
+    "lstrip": false,
+    "normalized": false,
+    "rstrip": false,
+    "single_word": true
+  },
+  "cognitive_tokens": {
+    "_zpp_note": "Cognitive stream tokens as defined in Types.zpp",
+    "enabled": true,
+    "stream_interleaving": true,
+    "stream_1_token": {
+      "__type": "AddedToken",
+      "content": "<|stream1|>",
+      "lstrip": false,
+      "normalized": false,
+      "rstrip": false,
+      "single_word": true,
+      "_zpp_id": "STREAM_1_TOKEN_ID"
+    },
+    "stream_2_token": {
+      "__type": "AddedToken",
+      "content": "<|stream2|>",
+      "lstrip": false,
+      "normalized": false,
+      "rstrip": false,
+      "single_word": true,
+      "_zpp_id": "STREAM_2_TOKEN_ID"
+    },
+    "stream_3_token": {
+      "__type": "AddedToken",
+      "content": "<|stream3|>",
+      "lstrip": false,
+      "normalized": false,
+      "rstrip": false,
+      "single_word": true,
+      "_zpp_id": "STREAM_3_TOKEN_ID"
+    },
+    "pivot_token": {
+      "__type": "AddedToken",
+      "content": "<|pivot|>",
+      "lstrip": false,
+      "normalized": false,
+      "rstrip": false,
+      "single_word": true,
+      "_zpp_id": "PIVOT_TOKEN_ID",
+      "_zpp_note": "Pivotal relevance realization marker"
+    },
+    "afford_token": {
+      "__type": "AddedToken",
+      "content": "<|afford|>",
+      "lstrip": false,
+      "normalized": false,
+      "rstrip": false,
+      "single_word": true,
+      "_zpp_id": "AFFORD_TOKEN_ID",
+      "_zpp_note": "Affordance interaction marker"
+    },
+    "salience_token": {
+      "__type": "AddedToken",
+      "content": "<|salience|>",
+      "lstrip": false,
+      "normalized": false,
+      "rstrip": false,
+      "single_word": true,
+      "_zpp_id": "SALIENCE_TOKEN_ID",
+      "_zpp_note": "Salience simulation marker"
+    }
+  },
+  "chat_template": "{% for message in messages %}{% if message['role'] == 'system' %}<|system|>{{ message['content'] }}<|end|>{% elif message['role'] == 'user' %}<|user|>{{ message['content'] }}<|end|>{% elif message['role'] == 'assistant' %}<|assistant|>{{ message['content'] }}<|end|>{% endif %}{% endfor %}{% if add_generation_prompt %}<|assistant|>{% endif %}",
+  "added_tokens_decoder": {
+    "0": {
+      "content": "<pad>",
+      "lstrip": false,
+      "normalized": false,
+      "rstrip": false,
+      "single_word": true,
+      "special": true
+    },
+    "1": {
+      "content": "<unk>",
+      "lstrip": false,
+      "normalized": false,
+      "rstrip": false,
+      "single_word": true,
+      "special": true
+    },
+    "2": {
+      "content": "<s>",
+      "lstrip": false,
+      "normalized": false,
+      "rstrip": false,
+      "single_word": true,
+      "special": true
+    },
+    "3": {
+      "content": "</s>",
+      "lstrip": false,
+      "normalized": false,
+      "rstrip": false,
+      "single_word": true,
+      "special": true
+    },
+    "4": {
+      "content": "<|stream1|>",
+      "lstrip": false,
+      "normalized": false,
+      "rstrip": false,
+      "single_word": true,
+      "special": true
+    },
+    "5": {
+      "content": "<|stream2|>",
+      "lstrip": false,
+      "normalized": false,
+      "rstrip": false,
+      "single_word": true,
+      "special": true
+    },
+    "6": {
+      "content": "<|stream3|>",
+      "lstrip": false,
+      "normalized": false,
+      "rstrip": false,
+      "single_word": true,
+      "special": true
+    },
+    "7": {
+      "content": "<|pivot|>",
+      "lstrip": false,
+      "normalized": false,
+      "rstrip": false,
+      "single_word": true,
+      "special": true
+    },
+    "8": {
+      "content": "<|afford|>",
+      "lstrip": false,
+      "normalized": false,
+      "rstrip": false,
+      "single_word": true,
+      "special": true
+    },
+    "9": {
+      "content": "<|salience|>",
+      "lstrip": false,
+      "normalized": false,
+      "rstrip": false,
+      "single_word": true,
+      "special": true
+    }
+  }
+}

@@ -1,0 +1,229 @@
+(*
+ * Types.zpp - Global Constants and Type Aliases
+ * Z++ Formal Specification for Deltecho Model Package
+ * 
+ * This module defines the foundational types, constants, and mathematical
+ * structures used throughout the Deltecho cognitive architecture.
+ * 
+ * Based on the 12-step cognitive loop with 3 concurrent inference streams
+ * following the OEIS A000081 nested shell structure.
+ *)
+
+SCHEMA Types
+
+(* ═══════════════════════════════════════════════════════════════════════════
+   SECTION 1: Primitive Type Aliases
+   ═══════════════════════════════════════════════════════════════════════════ *)
+
+TYPE TokenId == ℕ                     (* Non-negative integer token identifier *)
+TYPE VocabSize == ℕ₁                  (* Positive integer vocabulary size *)
+TYPE SeqLen == ℕ                      (* Sequence length, 0 ≤ n ≤ MAX_SEQ_LEN *)
+TYPE BatchSize == ℕ₁                  (* Positive batch size *)
+TYPE HiddenDim == ℕ₁                  (* Hidden dimension size *)
+TYPE NumHeads == ℕ₁                   (* Number of attention heads *)
+TYPE NumLayers == ℕ₁                  (* Number of transformer layers *)
+TYPE EmbedDim == ℕ₁                   (* Embedding dimension *)
+
+TYPE Probability == {p: ℝ | 0 ≤ p ≤ 1}
+TYPE Temperature == {t: ℝ | t > 0}
+TYPE LogProb == {l: ℝ | l ≤ 0}
+
+(* ═══════════════════════════════════════════════════════════════════════════
+   SECTION 2: Global Constants - Cognitive Architecture
+   ═══════════════════════════════════════════════════════════════════════════ *)
+
+(* Cognitive Loop Constants - Based on Echobeats Architecture *)
+CONST COGNITIVE_STREAMS: ℕ₁ = 3       (* 3 concurrent inference engines *)
+CONST COGNITIVE_STEPS: ℕ₁ = 12        (* 12-step cognitive loop *)
+CONST PHASE_OFFSET: ℕ₁ = 4            (* 120° phase offset between streams *)
+
+(* OEIS A000081 Nested Shell Structure *)
+CONST NEST_LEVELS: ℕ₁ = 4             (* Maximum nesting depth *)
+CONST NEST_TERMS: seq ℕ₁ = ⟨1, 2, 4, 9⟩  (* Terms per nesting level *)
+
+(* Step Triads - Groups occurring every 4 steps *)
+CONST TRIAD_1: set ℕ₁ = {1, 5, 9}
+CONST TRIAD_2: set ℕ₁ = {2, 6, 10}
+CONST TRIAD_3: set ℕ₁ = {3, 7, 11}
+CONST TRIAD_4: set ℕ₁ = {4, 8, 12}
+
+(* Cognitive Mode Distribution: 7 expressive + 5 reflective = 12 *)
+CONST EXPRESSIVE_STEPS: ℕ₁ = 7
+CONST REFLECTIVE_STEPS: ℕ₁ = 5
+CONST TWIN_PRIME_MEAN: ℕ₁ = 6         (* Mean of 5/7 twin primes *)
+
+(* ═══════════════════════════════════════════════════════════════════════════
+   SECTION 3: Global Constants - Model Architecture
+   ═══════════════════════════════════════════════════════════════════════════ *)
+
+(* Tokenizer Constants *)
+CONST MAX_VOCAB_SIZE: VocabSize = 128000
+CONST MIN_VOCAB_SIZE: VocabSize = 256
+CONST DEFAULT_VOCAB_SIZE: VocabSize = 32000
+
+(* Sequence Length Constants *)
+CONST MAX_SEQ_LEN: SeqLen = 131072    (* 128K context window *)
+CONST DEFAULT_SEQ_LEN: SeqLen = 4096
+CONST MIN_SEQ_LEN: SeqLen = 1
+
+(* Model Dimension Constants *)
+CONST MAX_HIDDEN_DIM: HiddenDim = 16384
+CONST DEFAULT_HIDDEN_DIM: HiddenDim = 4096
+CONST MIN_HIDDEN_DIM: HiddenDim = 64
+
+(* Attention Constants *)
+CONST MAX_NUM_HEADS: NumHeads = 128
+CONST DEFAULT_NUM_HEADS: NumHeads = 32
+CONST MIN_NUM_HEADS: NumHeads = 1
+
+(* Layer Constants *)
+CONST MAX_NUM_LAYERS: NumLayers = 128
+CONST DEFAULT_NUM_LAYERS: NumLayers = 32
+CONST MIN_NUM_LAYERS: NumLayers = 1
+
+(* ═══════════════════════════════════════════════════════════════════════════
+   SECTION 4: Special Token Constants
+   ═══════════════════════════════════════════════════════════════════════════ *)
+
+CONST PAD_TOKEN_ID: TokenId = 0
+CONST UNK_TOKEN_ID: TokenId = 1
+CONST BOS_TOKEN_ID: TokenId = 2       (* Beginning of sequence *)
+CONST EOS_TOKEN_ID: TokenId = 3       (* End of sequence *)
+
+(* Cognitive Stream Tokens *)
+CONST STREAM_1_TOKEN_ID: TokenId = 4  (* Perception stream marker *)
+CONST STREAM_2_TOKEN_ID: TokenId = 5  (* Action stream marker *)
+CONST STREAM_3_TOKEN_ID: TokenId = 6  (* Simulation stream marker *)
+
+(* Relevance Realization Tokens *)
+CONST PIVOT_TOKEN_ID: TokenId = 7     (* Pivotal relevance marker *)
+CONST AFFORD_TOKEN_ID: TokenId = 8    (* Affordance interaction marker *)
+CONST SALIENCE_TOKEN_ID: TokenId = 9  (* Salience simulation marker *)
+
+(* ═══════════════════════════════════════════════════════════════════════════
+   SECTION 5: Tensor Type Definitions
+   ═══════════════════════════════════════════════════════════════════════════ *)
+
+(* Generic Tensor Types *)
+TYPE Tensor1D[n: ℕ₁] == seq[n] ℝ
+TYPE Tensor2D[m, n: ℕ₁] == seq[m] (seq[n] ℝ)
+TYPE Tensor3D[b, m, n: ℕ₁] == seq[b] (seq[m] (seq[n] ℝ))
+
+(* Specific Tensor Types for Model *)
+TYPE EmbeddingMatrix == Tensor2D[VocabSize, EmbedDim]
+TYPE HiddenState == Tensor2D[SeqLen, HiddenDim]
+TYPE AttentionWeights == Tensor3D[NumHeads, SeqLen, SeqLen]
+TYPE LogitsTensor == Tensor2D[SeqLen, VocabSize]
+
+(* Probability Distributions *)
+TYPE ProbDist[n: ℕ₁] == {p: seq[n] Probability | Σᵢ p[i] = 1}
+TYPE LogProbDist[n: ℕ₁] == seq[n] LogProb
+
+(* ═══════════════════════════════════════════════════════════════════════════
+   SECTION 6: Cognitive State Types
+   ═══════════════════════════════════════════════════════════════════════════ *)
+
+(* Cognitive Stream State *)
+TYPE StreamId == {s: ℕ₁ | s ∈ {1, 2, 3}}
+TYPE StepId == {s: ℕ₁ | 1 ≤ s ≤ COGNITIVE_STEPS}
+
+TYPE CognitiveMode ::= 
+    Expressive |                      (* 7 steps: affordance interaction *)
+    Reflective                        (* 5 steps: salience simulation *)
+
+TYPE CognitivePhase ::=
+    Perception |                      (* Stream 1 primary *)
+    Action |                          (* Stream 2 primary *)
+    Simulation                        (* Stream 3 primary *)
+
+(* Stream State Record *)
+TYPE StreamState == ⟦
+    stream_id: StreamId,
+    current_step: StepId,
+    mode: CognitiveMode,
+    phase: CognitivePhase,
+    hidden_state: HiddenState,
+    attention_cache: seq AttentionWeights
+⟧
+
+(* ═══════════════════════════════════════════════════════════════════════════
+   SECTION 7: Memory Type Definitions
+   ═══════════════════════════════════════════════════════════════════════════ *)
+
+TYPE MemoryId == seq₁ CHAR             (* Non-empty string identifier *)
+TYPE Timestamp == ℕ                    (* Unix timestamp in milliseconds *)
+TYPE EmotionalWeight == {w: ℝ | 0 ≤ w ≤ 10}
+
+TYPE MemoryType ::=
+    Semantic |                         (* Factual knowledge *)
+    Episodic |                         (* Event memories *)
+    Procedural                         (* Task knowledge *)
+
+TYPE Memory == ⟦
+    id: MemoryId,
+    timestamp: Timestamp,
+    memory_type: MemoryType,
+    content: seq CHAR,
+    embedding: Tensor1D[EmbedDim],
+    emotional_weight: EmotionalWeight
+⟧
+
+(* ═══════════════════════════════════════════════════════════════════════════
+   SECTION 8: Invariant Predicates
+   ═══════════════════════════════════════════════════════════════════════════ *)
+
+(* Cognitive Architecture Invariants *)
+PRED ValidCognitiveLoop ≜
+    COGNITIVE_STREAMS = 3 ∧
+    COGNITIVE_STEPS = 12 ∧
+    PHASE_OFFSET = 4 ∧
+    EXPRESSIVE_STEPS + REFLECTIVE_STEPS = COGNITIVE_STEPS
+
+PRED ValidNestedShells ≜
+    #NEST_TERMS = NEST_LEVELS ∧
+    NEST_TERMS[1] = 1 ∧
+    NEST_TERMS[2] = 2 ∧
+    NEST_TERMS[3] = 4 ∧
+    NEST_TERMS[4] = 9
+
+PRED ValidTriadPartition ≜
+    TRIAD_1 ∪ TRIAD_2 ∪ TRIAD_3 ∪ TRIAD_4 = {1..12} ∧
+    TRIAD_1 ∩ TRIAD_2 = ∅ ∧
+    TRIAD_1 ∩ TRIAD_3 = ∅ ∧
+    TRIAD_1 ∩ TRIAD_4 = ∅ ∧
+    TRIAD_2 ∩ TRIAD_3 = ∅ ∧
+    TRIAD_2 ∩ TRIAD_4 = ∅ ∧
+    TRIAD_3 ∩ TRIAD_4 = ∅
+
+(* Model Architecture Invariants *)
+PRED ValidVocabSize(v: VocabSize) ≜
+    MIN_VOCAB_SIZE ≤ v ≤ MAX_VOCAB_SIZE
+
+PRED ValidSeqLen(s: SeqLen) ≜
+    MIN_SEQ_LEN ≤ s ≤ MAX_SEQ_LEN
+
+PRED ValidHiddenDim(h: HiddenDim) ≜
+    MIN_HIDDEN_DIM ≤ h ≤ MAX_HIDDEN_DIM ∧
+    h mod 64 = 0  (* Must be divisible by 64 for efficiency *)
+
+PRED ValidNumHeads(n: NumHeads, h: HiddenDim) ≜
+    MIN_NUM_HEADS ≤ n ≤ MAX_NUM_HEADS ∧
+    h mod n = 0   (* Hidden dim must be divisible by num heads *)
+
+(* ═══════════════════════════════════════════════════════════════════════════
+   SECTION 9: Axioms
+   ═══════════════════════════════════════════════════════════════════════════ *)
+
+AXIOM CognitiveArchitectureValid:
+    ValidCognitiveLoop ∧ ValidNestedShells ∧ ValidTriadPartition
+
+AXIOM StreamPhaseRelation:
+    ∀ s: StreamId; step: StepId •
+        (s = 1 ∧ step ∈ TRIAD_1 ⇒ phase = Perception) ∧
+        (s = 2 ∧ step ∈ TRIAD_2 ⇒ phase = Action) ∧
+        (s = 3 ∧ step ∈ TRIAD_3 ⇒ phase = Simulation)
+
+AXIOM TwinPrimeMean:
+    (EXPRESSIVE_STEPS + REFLECTIVE_STEPS) / 2 = TWIN_PRIME_MEAN
+
+END Types

@@ -1,0 +1,180 @@
+{
+  "_zpp_spec": {
+    "version": "1.0.0",
+    "spec_files": {
+      "types": "spec/Types.zpp",
+      "tokenizer_config": "spec/TokenizerConfig.zpp"
+    },
+    "schema": "SpecialTokensMap",
+    "predicates": [
+      "ValidSpecialToken",
+      "ValidSpecialTokensMap",
+      "ValidCognitiveTokens"
+    ],
+    "constants": {
+      "PAD_TOKEN_ID": 0,
+      "UNK_TOKEN_ID": 1,
+      "BOS_TOKEN_ID": 2,
+      "EOS_TOKEN_ID": 3,
+      "STREAM_1_TOKEN_ID": 4,
+      "STREAM_2_TOKEN_ID": 5,
+      "STREAM_3_TOKEN_ID": 6,
+      "PIVOT_TOKEN_ID": 7,
+      "AFFORD_TOKEN_ID": 8,
+      "SALIENCE_TOKEN_ID": 9
+    },
+    "cognitive_architecture": {
+      "description": "12-step cognitive loop with 3 concurrent streams",
+      "streams": {
+        "stream_1": "Perception - conditioning past performance",
+        "stream_2": "Action - orienting present commitment",
+        "stream_3": "Simulation - anticipating future potential"
+      },
+      "modes": {
+        "expressive": "7 steps - affordance interaction",
+        "reflective": "5 steps - salience simulation"
+      },
+      "markers": {
+        "pivot": "Pivotal relevance realization (2 per cycle)",
+        "afford": "Actual affordance interaction (5 per cycle)",
+        "salience": "Virtual salience simulation (5 per cycle)"
+      }
+    }
+  },
+  "bos_token": {
+    "content": "<s>",
+    "lstrip": false,
+    "normalized": false,
+    "rstrip": false,
+    "single_word": true,
+    "_zpp_id": "BOS_TOKEN_ID",
+    "_zpp_type": "SpecialToken"
+  },
+  "eos_token": {
+    "content": "</s>",
+    "lstrip": false,
+    "normalized": false,
+    "rstrip": false,
+    "single_word": true,
+    "_zpp_id": "EOS_TOKEN_ID",
+    "_zpp_type": "SpecialToken"
+  },
+  "pad_token": {
+    "content": "<pad>",
+    "lstrip": false,
+    "normalized": false,
+    "rstrip": false,
+    "single_word": true,
+    "_zpp_id": "PAD_TOKEN_ID",
+    "_zpp_type": "SpecialToken"
+  },
+  "unk_token": {
+    "content": "<unk>",
+    "lstrip": false,
+    "normalized": false,
+    "rstrip": false,
+    "single_word": true,
+    "_zpp_id": "UNK_TOKEN_ID",
+    "_zpp_type": "SpecialToken"
+  },
+  "additional_special_tokens": [
+    {
+      "content": "<|stream1|>",
+      "lstrip": false,
+      "normalized": false,
+      "rstrip": false,
+      "single_word": true,
+      "_zpp_id": "STREAM_1_TOKEN_ID",
+      "_zpp_type": "SpecialToken",
+      "_zpp_role": "cognitive_stream",
+      "_zpp_description": "Perception stream marker - Stream 1 primary in triads {1,5,9}"
+    },
+    {
+      "content": "<|stream2|>",
+      "lstrip": false,
+      "normalized": false,
+      "rstrip": false,
+      "single_word": true,
+      "_zpp_id": "STREAM_2_TOKEN_ID",
+      "_zpp_type": "SpecialToken",
+      "_zpp_role": "cognitive_stream",
+      "_zpp_description": "Action stream marker - Stream 2 primary in triads {2,6,10}"
+    },
+    {
+      "content": "<|stream3|>",
+      "lstrip": false,
+      "normalized": false,
+      "rstrip": false,
+      "single_word": true,
+      "_zpp_id": "STREAM_3_TOKEN_ID",
+      "_zpp_type": "SpecialToken",
+      "_zpp_role": "cognitive_stream",
+      "_zpp_description": "Simulation stream marker - Stream 3 primary in triads {3,7,11}"
+    },
+    {
+      "content": "<|pivot|>",
+      "lstrip": false,
+      "normalized": false,
+      "rstrip": false,
+      "single_word": true,
+      "_zpp_id": "PIVOT_TOKEN_ID",
+      "_zpp_type": "SpecialToken",
+      "_zpp_role": "relevance_realization",
+      "_zpp_description": "Pivotal relevance realization - orienting present commitment"
+    },
+    {
+      "content": "<|afford|>",
+      "lstrip": false,
+      "normalized": false,
+      "rstrip": false,
+      "single_word": true,
+      "_zpp_id": "AFFORD_TOKEN_ID",
+      "_zpp_type": "SpecialToken",
+      "_zpp_role": "affordance_interaction",
+      "_zpp_description": "Actual affordance interaction - conditioning past performance"
+    },
+    {
+      "content": "<|salience|>",
+      "lstrip": false,
+      "normalized": false,
+      "rstrip": false,
+      "single_word": true,
+      "_zpp_id": "SALIENCE_TOKEN_ID",
+      "_zpp_type": "SpecialToken",
+      "_zpp_role": "salience_simulation",
+      "_zpp_description": "Virtual salience simulation - anticipating future potential"
+    },
+    {
+      "content": "<|system|>",
+      "lstrip": false,
+      "normalized": false,
+      "rstrip": false,
+      "single_word": true,
+      "_zpp_role": "chat_template"
+    },
+    {
+      "content": "<|user|>",
+      "lstrip": false,
+      "normalized": false,
+      "rstrip": false,
+      "single_word": true,
+      "_zpp_role": "chat_template"
+    },
+    {
+      "content": "<|assistant|>",
+      "lstrip": false,
+      "normalized": false,
+      "rstrip": false,
+      "single_word": true,
+      "_zpp_role": "chat_template"
+    },
+    {
+      "content": "<|end|>",
+      "lstrip": false,
+      "normalized": false,
+      "rstrip": false,
+      "single_word": true,
+      "_zpp_role": "chat_template"
+    }
+  ]
+}
