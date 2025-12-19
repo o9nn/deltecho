@@ -36,8 +36,8 @@
     "react": "^18.0.0"
   },
   "dependencies": {
-    "@deltecho/cognitive": "workspace:*",
-    "@deltecho/shared": "workspace:*"
+    "@deltecho/cognitive": "file:../cognitive",
+    "@deltecho/shared": "file:../shared"
   },
   "devDependencies": {
     "@types/node": "^20.0.0",

@@ -2,7 +2,7 @@
  * Unified cognitive system types
  */
 
-import type { Dove9Message, CognitiveState } from 'dove9'
+import type { MessageProcess, CognitiveContext } from 'dove9'
 
 /**
  * Deep Tree Echo bot configuration
@@ -36,7 +36,7 @@ export interface UnifiedMessage {
   role: 'user' | 'assistant' | 'system'
   timestamp: number
   metadata?: MessageMetadata
-  dove9Message?: Dove9Message
+  dove9Message?: MessageProcess
 }
 
 /**
@@ -54,7 +54,10 @@ export interface MessageMetadata {
 /**
  * Unified cognitive state across all subsystems
  */
-export interface UnifiedCognitiveState extends CognitiveState {
+export interface UnifiedCognitiveState {
+  // Cognitive context from dove9
+  cognitiveContext?: CognitiveContext
+  // Subsystem states
   persona: PersonaState
   memories: MemoryState
   reasoning: ReasoningState

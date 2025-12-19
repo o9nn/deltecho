@@ -53,11 +53,15 @@ export class CognitiveOrchestrator {
         attentionFocus: [],
         confidenceLevel: 0.5
       },
-      // CognitiveState from dove9
-      currentPhase: 'sense',
-      phaseHistory: [],
-      processingQueue: [],
-      activeThreads: new Map()
+      // Cognitive context from dove9
+      cognitiveContext: {
+        relevantMemories: [],
+        emotionalValence: 0,
+        emotionalArousal: 0,
+        salienceScore: 0.5,
+        attentionWeight: 0.5,
+        activeCouplings: []
+      }
     }
   }
 
