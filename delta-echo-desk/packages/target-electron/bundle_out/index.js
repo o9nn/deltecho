@@ -7,8 +7,7 @@ var __hasOwnProp = Object.prototype.hasOwnProperty;
 var __require = /* @__PURE__ */ ((x) => typeof require !== "undefined" ? require : typeof Proxy !== "undefined" ? new Proxy(x, {
   get: (a, b) => (typeof require !== "undefined" ? require : a)[b]
 }) : x)(function(x) {
-  if (typeof require !== "undefined")
-    return require.apply(this, arguments);
+  if (typeof require !== "undefined") return require.apply(this, arguments);
   throw Error('Dynamic require of "' + x + '" is not supported');
 });
 var __esm = (fn, res) => function __init() {
@@ -51,9 +50,9 @@ var init_cjs_shim = __esm({
   }
 });
 
-// ../../../node_modules/.pnpm/ini@1.3.8/node_modules/ini/ini.js
+// ../../node_modules/.pnpm/ini@1.3.8/node_modules/ini/ini.js
 var require_ini = __commonJS({
-  "../../../node_modules/.pnpm/ini@1.3.8/node_modules/ini/ini.js"(exports) {
+  "../../node_modules/.pnpm/ini@1.3.8/node_modules/ini/ini.js"(exports) {
     init_cjs_shim();
     exports.parse = exports.decode = decode;
     exports.stringify = exports.encode = encode;
@@ -214,9 +213,9 @@ var require_ini = __commonJS({
   }
 });
 
-// ../../../node_modules/.pnpm/strip-json-comments@2.0.1/node_modules/strip-json-comments/index.js
+// ../../node_modules/.pnpm/strip-json-comments@2.0.1/node_modules/strip-json-comments/index.js
 var require_strip_json_comments = __commonJS({
-  "../../../node_modules/.pnpm/strip-json-comments@2.0.1/node_modules/strip-json-comments/index.js"(exports, module) {
+  "../../node_modules/.pnpm/strip-json-comments@2.0.1/node_modules/strip-json-comments/index.js"(exports, module) {
     "use strict";
     init_cjs_shim();
     var singleComment = 1;
@@ -282,9 +281,9 @@ var require_strip_json_comments = __commonJS({
   }
 });
 
-// ../../../node_modules/.pnpm/rc@1.2.8/node_modules/rc/lib/utils.js
+// ../../node_modules/.pnpm/rc@1.2.8/node_modules/rc/lib/utils.js
 var require_utils = __commonJS({
-  "../../../node_modules/.pnpm/rc@1.2.8/node_modules/rc/lib/utils.js"(exports) {
+  "../../node_modules/.pnpm/rc@1.2.8/node_modules/rc/lib/utils.js"(exports) {
     "use strict";
     init_cjs_shim();
     var fs2 = __require("fs");
@@ -357,9 +356,9 @@ var require_utils = __commonJS({
   }
 });
 
-// ../../../node_modules/.pnpm/deep-extend@0.6.0/node_modules/deep-extend/lib/deep-extend.js
+// ../../node_modules/.pnpm/deep-extend@0.6.0/node_modules/deep-extend/lib/deep-extend.js
 var require_deep_extend = __commonJS({
-  "../../../node_modules/.pnpm/deep-extend@0.6.0/node_modules/deep-extend/lib/deep-extend.js"(exports, module) {
+  "../../node_modules/.pnpm/deep-extend@0.6.0/node_modules/deep-extend/lib/deep-extend.js"(exports, module) {
     "use strict";
     init_cjs_shim();
     function isSpecificValue(val) {
@@ -440,56 +439,24 @@ var require_deep_extend = __commonJS({
   }
 });
 
-// ../../../node_modules/.pnpm/minimist@1.2.8/node_modules/minimist/index.js
+// ../../node_modules/.pnpm/minimist@1.2.6/node_modules/minimist/index.js
 var require_minimist = __commonJS({
-  "../../../node_modules/.pnpm/minimist@1.2.8/node_modules/minimist/index.js"(exports, module) {
-    "use strict";
+  "../../node_modules/.pnpm/minimist@1.2.6/node_modules/minimist/index.js"(exports, module) {
     init_cjs_shim();
-    function hasKey(obj, keys) {
-      var o = obj;
-      keys.slice(0, -1).forEach(function(key2) {
-        o = o[key2] || {};
-      });
-      var key = keys[keys.length - 1];
-      return key in o;
-    }
-    function isNumber(x) {
-      if (typeof x === "number") {
-        return true;
-      }
-      if (/^0x[0-9a-f]+$/i.test(x)) {
-        return true;
-      }
-      return /^[-+]?(?:\d+(?:\.\d*)?|\.\d+)(e[-+]?\d+)?$/.test(x);
-    }
-    function isConstructorOrProto(obj, key) {
-      return key === "constructor" && typeof obj[key] === "function" || key === "__proto__";
-    }
     module.exports = function(args, opts) {
-      if (!opts) {
-        opts = {};
+      if (!opts) opts = {};
+      var flags = { bools: {}, strings: {}, unknownFn: null };
+      if (typeof opts["unknown"] === "function") {
+        flags.unknownFn = opts["unknown"];
       }
-      var flags = {
-        bools: {},
-        strings: {},
-        unknownFn: null
-      };
-      if (typeof opts.unknown === "function") {
-        flags.unknownFn = opts.unknown;
-      }
-      if (typeof opts.boolean === "boolean" && opts.boolean) {
+      if (typeof opts["boolean"] === "boolean" && opts["boolean"]) {
         flags.allBools = true;
       } else {
-        [].concat(opts.boolean).filter(Boolean).forEach(function(key2) {
+        [].concat(opts["boolean"]).filter(Boolean).forEach(function(key2) {
           flags.bools[key2] = true;
         });
       }
       var aliases = {};
-      function aliasIsBoolean(key2) {
-        return aliases[key2].some(function(x) {
-          return flags.bools[x];
-        });
-      }
       Object.keys(opts.alias || {}).forEach(function(key2) {
         aliases[key2] = [].concat(opts.alias[key2]);
         aliases[key2].forEach(function(x) {
@@ -501,64 +468,11 @@ var require_minimist = __commonJS({
       [].concat(opts.string).filter(Boolean).forEach(function(key2) {
         flags.strings[key2] = true;
         if (aliases[key2]) {
-          [].concat(aliases[key2]).forEach(function(k) {
-            flags.strings[k] = true;
-          });
+          flags.strings[aliases[key2]] = true;
         }
       });
-      var defaults2 = opts.default || {};
+      var defaults2 = opts["default"] || {};
       var argv = { _: [] };
-      function argDefined(key2, arg2) {
-        return flags.allBools && /^--[^=]+$/.test(arg2) || flags.strings[key2] || flags.bools[key2] || aliases[key2];
-      }
-      function setKey(obj, keys, value2) {
-        var o = obj;
-        for (var i2 = 0; i2 < keys.length - 1; i2++) {
-          var key2 = keys[i2];
-          if (isConstructorOrProto(o, key2)) {
-            return;
-          }
-          if (o[key2] === void 0) {
-            o[key2] = {};
-          }
-          if (o[key2] === Object.prototype || o[key2] === Number.prototype || o[key2] === String.prototype) {
-            o[key2] = {};
-          }
-          if (o[key2] === Array.prototype) {
-            o[key2] = [];
-          }
-          o = o[key2];
-        }
-        var lastKey = keys[keys.length - 1];
-        if (isConstructorOrProto(o, lastKey)) {
-          return;
-        }
-        if (o === Object.prototype || o === Number.prototype || o === String.prototype) {
-          o = {};
-        }
-        if (o === Array.prototype) {
-          o = [];
-        }
-        if (o[lastKey] === void 0 || flags.bools[lastKey] || typeof o[lastKey] === "boolean") {
-          o[lastKey] = value2;
-        } else if (Array.isArray(o[lastKey])) {
-          o[lastKey].push(value2);
-        } else {
-          o[lastKey] = [o[lastKey], value2];
-        }
-      }
-      function setArg(key2, val, arg2) {
-        if (arg2 && flags.unknownFn && !argDefined(key2, arg2)) {
-          if (flags.unknownFn(arg2) === false) {
-            return;
-          }
-        }
-        var value2 = !flags.strings[key2] && isNumber(val) ? Number(val) : val;
-        setKey(argv, key2.split("."), value2);
-        (aliases[key2] || []).forEach(function(x) {
-          setKey(argv, x.split("."), value2);
-        });
-      }
       Object.keys(flags.bools).forEach(function(key2) {
         setArg(key2, defaults2[key2] === void 0 ? false : defaults2[key2]);
       });
@@ -567,30 +481,68 @@ var require_minimist = __commonJS({
         notFlags = args.slice(args.indexOf("--") + 1);
         args = args.slice(0, args.indexOf("--"));
       }
+      function argDefined(key2, arg2) {
+        return flags.allBools && /^--[^=]+$/.test(arg2) || flags.strings[key2] || flags.bools[key2] || aliases[key2];
+      }
+      function setArg(key2, val, arg2) {
+        if (arg2 && flags.unknownFn && !argDefined(key2, arg2)) {
+          if (flags.unknownFn(arg2) === false) return;
+        }
+        var value2 = !flags.strings[key2] && isNumber(val) ? Number(val) : val;
+        setKey(argv, key2.split("."), value2);
+        (aliases[key2] || []).forEach(function(x) {
+          setKey(argv, x.split("."), value2);
+        });
+      }
+      function setKey(obj, keys, value2) {
+        var o = obj;
+        for (var i2 = 0; i2 < keys.length - 1; i2++) {
+          var key2 = keys[i2];
+          if (isConstructorOrProto(o, key2)) return;
+          if (o[key2] === void 0) o[key2] = {};
+          if (o[key2] === Object.prototype || o[key2] === Number.prototype || o[key2] === String.prototype) o[key2] = {};
+          if (o[key2] === Array.prototype) o[key2] = [];
+          o = o[key2];
+        }
+        var key2 = keys[keys.length - 1];
+        if (isConstructorOrProto(o, key2)) return;
+        if (o === Object.prototype || o === Number.prototype || o === String.prototype) o = {};
+        if (o === Array.prototype) o = [];
+        if (o[key2] === void 0 || flags.bools[key2] || typeof o[key2] === "boolean") {
+          o[key2] = value2;
+        } else if (Array.isArray(o[key2])) {
+          o[key2].push(value2);
+        } else {
+          o[key2] = [o[key2], value2];
+        }
+      }
+      function aliasIsBoolean(key2) {
+        return aliases[key2].some(function(x) {
+          return flags.bools[x];
+        });
+      }
       for (var i = 0; i < args.length; i++) {
         var arg = args[i];
-        var key;
-        var next;
         if (/^--.+=/.test(arg)) {
           var m = arg.match(/^--([^=]+)=([\s\S]*)$/);
-          key = m[1];
+          var key = m[1];
           var value = m[2];
           if (flags.bools[key]) {
             value = value !== "false";
           }
           setArg(key, value, arg);
         } else if (/^--no-.+/.test(arg)) {
-          key = arg.match(/^--no-(.+)/)[1];
+          var key = arg.match(/^--no-(.+)/)[1];
           setArg(key, false, arg);
         } else if (/^--.+/.test(arg)) {
-          key = arg.match(/^--(.+)/)[1];
-          next = args[i + 1];
-          if (next !== void 0 && !/^(-|--)[^-]/.test(next) && !flags.bools[key] && !flags.allBools && (aliases[key] ? !aliasIsBoolean(key) : true)) {
+          var key = arg.match(/^--(.+)/)[1];
+          var next = args[i + 1];
+          if (next !== void 0 && !/^-/.test(next) && !flags.bools[key] && !flags.allBools && (aliases[key] ? !aliasIsBoolean(key) : true)) {
             setArg(key, next, arg);
-            i += 1;
+            i++;
           } else if (/^(true|false)$/.test(next)) {
             setArg(key, next === "true", arg);
-            i += 1;
+            i++;
           } else {
             setArg(key, flags.strings[key] ? "" : true, arg);
           }
@@ -598,13 +550,13 @@ var require_minimist = __commonJS({
           var letters = arg.slice(1, -1).split("");
           var broken = false;
           for (var j = 0; j < letters.length; j++) {
-            next = arg.slice(j + 2);
+            var next = arg.slice(j + 2);
             if (next === "-") {
               setArg(letters[j], next, arg);
               continue;
             }
-            if (/[A-Za-z]/.test(letters[j]) && next[0] === "=") {
-              setArg(letters[j], next.slice(1), arg);
+            if (/[A-Za-z]/.test(letters[j]) && /=/.test(next)) {
+              setArg(letters[j], next.split("=")[1], arg);
               broken = true;
               break;
             }
@@ -621,21 +573,23 @@ var require_minimist = __commonJS({
               setArg(letters[j], flags.strings[letters[j]] ? "" : true, arg);
             }
           }
-          key = arg.slice(-1)[0];
+          var key = arg.slice(-1)[0];
           if (!broken && key !== "-") {
             if (args[i + 1] && !/^(-|--)[^-]/.test(args[i + 1]) && !flags.bools[key] && (aliases[key] ? !aliasIsBoolean(key) : true)) {
               setArg(key, args[i + 1], arg);
-              i += 1;
+              i++;
             } else if (args[i + 1] && /^(true|false)$/.test(args[i + 1])) {
               setArg(key, args[i + 1] === "true", arg);
-              i += 1;
+              i++;
             } else {
               setArg(key, flags.strings[key] ? "" : true, arg);
             }
           }
         } else {
           if (!flags.unknownFn || flags.unknownFn(arg) !== false) {
-            argv._.push(flags.strings._ || !isNumber(arg) ? arg : Number(arg));
+            argv._.push(
+              flags.strings["_"] || !isNumber(arg) ? arg : Number(arg)
+            );
           }
           if (opts.stopEarly) {
             argv._.push.apply(argv._, args.slice(i + 1));
@@ -643,29 +597,48 @@ var require_minimist = __commonJS({
           }
         }
       }
-      Object.keys(defaults2).forEach(function(k) {
-        if (!hasKey(argv, k.split("."))) {
-          setKey(argv, k.split("."), defaults2[k]);
-          (aliases[k] || []).forEach(function(x) {
-            setKey(argv, x.split("."), defaults2[k]);
+      Object.keys(defaults2).forEach(function(key2) {
+        if (!hasKey(argv, key2.split("."))) {
+          setKey(argv, key2.split("."), defaults2[key2]);
+          (aliases[key2] || []).forEach(function(x) {
+            setKey(argv, x.split("."), defaults2[key2]);
           });
         }
       });
       if (opts["--"]) {
-        argv["--"] = notFlags.slice();
+        argv["--"] = new Array();
+        notFlags.forEach(function(key2) {
+          argv["--"].push(key2);
+        });
       } else {
-        notFlags.forEach(function(k) {
-          argv._.push(k);
+        notFlags.forEach(function(key2) {
+          argv._.push(key2);
         });
       }
       return argv;
     };
+    function hasKey(obj, keys) {
+      var o = obj;
+      keys.slice(0, -1).forEach(function(key2) {
+        o = o[key2] || {};
+      });
+      var key = keys[keys.length - 1];
+      return key in o;
+    }
+    function isNumber(x) {
+      if (typeof x === "number") return true;
+      if (/^0x[0-9a-f]+$/i.test(x)) return true;
+      return /^[-+]?(?:\d+(?:\.\d*)?|\.\d+)(e[-+]?\d+)?$/.test(x);
+    }
+    function isConstructorOrProto(obj, key) {
+      return key === "constructor" && typeof obj[key] === "function" || key === "__proto__";
+    }
   }
 });
 
-// ../../../node_modules/.pnpm/rc@1.2.8/node_modules/rc/index.js
+// ../../node_modules/.pnpm/rc@1.2.8/node_modules/rc/index.js
 var require_rc = __commonJS({
-  "../../../node_modules/.pnpm/rc@1.2.8/node_modules/rc/index.js"(exports, module) {
+  "../../node_modules/.pnpm/rc@1.2.8/node_modules/rc/index.js"(exports, module) {
     init_cjs_shim();
     var cc = require_utils();
     var join17 = __require("path").join;
@@ -684,8 +657,7 @@ var require_rc = __commonJS({
       var configs = [defaults2];
       var configFiles = [];
       function addConfigFile(file) {
-        if (configFiles.indexOf(file) >= 0)
-          return;
+        if (configFiles.indexOf(file) >= 0) return;
         var fileConfig = cc.file(file);
         if (fileConfig) {
           configs.push(parse(fileConfig));
@@ -705,10 +677,8 @@ var require_rc = __commonJS({
           join17(home, "." + name + "rc")
         ].forEach(addConfigFile);
       addConfigFile(cc.find("." + name + "rc"));
-      if (env.config)
-        addConfigFile(env.config);
-      if (argv.config)
-        addConfigFile(argv.config);
+      if (env.config) addConfigFile(env.config);
+      if (argv.config) addConfigFile(argv.config);
       return deepExtend.apply(null, configs.concat([
         env,
         argv,
@@ -718,9 +688,9 @@ var require_rc = __commonJS({
   }
 });
 
-// ../../../node_modules/.pnpm/stackframe@1.3.4/node_modules/stackframe/stackframe.js
+// ../../node_modules/.pnpm/stackframe@1.3.4/node_modules/stackframe/stackframe.js
 var require_stackframe = __commonJS({
-  "../../../node_modules/.pnpm/stackframe@1.3.4/node_modules/stackframe/stackframe.js"(exports, module) {
+  "../../node_modules/.pnpm/stackframe@1.3.4/node_modules/stackframe/stackframe.js"(exports, module) {
     init_cjs_shim();
     (function(root, factory) {
       "use strict";
@@ -751,8 +721,7 @@ var require_stackframe = __commonJS({
       var objectProps = ["evalOrigin"];
       var props = booleanProps.concat(numericProps, stringProps, arrayProps, objectProps);
       function StackFrame2(obj) {
-        if (!obj)
-          return;
+        if (!obj) return;
         for (var i2 = 0; i2 < props.length; i2++) {
           if (obj[props[i2]] !== void 0) {
             this["set" + _capitalize(props[i2])](obj[props[i2]]);
@@ -850,9 +819,9 @@ var require_stackframe = __commonJS({
   }
 });
 
-// ../../../node_modules/.pnpm/error-stack-parser@2.1.4/node_modules/error-stack-parser/error-stack-parser.js
+// ../../node_modules/.pnpm/error-stack-parser@2.1.4/node_modules/error-stack-parser/error-stack-parser.js
 var require_error_stack_parser = __commonJS({
-  "../../../node_modules/.pnpm/error-stack-parser@2.1.4/node_modules/error-stack-parser/error-stack-parser.js"(exports, module) {
+  "../../node_modules/.pnpm/error-stack-parser@2.1.4/node_modules/error-stack-parser/error-stack-parser.js"(exports, module) {
     init_cjs_shim();
     (function(root, factory) {
       "use strict";
@@ -1019,12 +988,12 @@ var require_error_stack_parser = __commonJS({
   }
 });
 
-// ../../../node_modules/.pnpm/dotenv@16.6.1/node_modules/dotenv/package.json
+// ../../node_modules/.pnpm/dotenv@16.4.5/node_modules/dotenv/package.json
 var require_package = __commonJS({
-  "../../../node_modules/.pnpm/dotenv@16.6.1/node_modules/dotenv/package.json"(exports, module) {
+  "../../node_modules/.pnpm/dotenv@16.4.5/node_modules/dotenv/package.json"(exports, module) {
     module.exports = {
       name: "dotenv",
-      version: "16.6.1",
+      version: "16.4.5",
       description: "Loads environment variables from .env file",
       main: "lib/main.js",
       types: "lib/main.d.ts",
@@ -1045,9 +1014,10 @@ var require_package = __commonJS({
       scripts: {
         "dts-check": "tsc --project tests/types/tsconfig.json",
         lint: "standard",
+        "lint-readme": "standard-markdown",
         pretest: "npm run lint && npm run dts-check",
-        test: "tap run --allow-empty-coverage --disable-coverage --timeout=60000",
-        "test:coverage": "tap run --show-full-coverage --timeout=60000 --coverage-report=text --coverage-report=lcov",
+        test: "tap tests/*.js --100 -Rspec",
+        "test:coverage": "tap --coverage-report=lcov",
         prerelease: "npm test",
         release: "standard-version"
       },
@@ -1055,7 +1025,6 @@ var require_package = __commonJS({
         type: "git",
         url: "git://github.com/motdotla/dotenv.git"
       },
-      homepage: "https://github.com/motdotla/dotenv#readme",
       funding: "https://dotenvx.com",
       keywords: [
         "dotenv",
@@ -1069,12 +1038,15 @@ var require_package = __commonJS({
       readmeFilename: "README.md",
       license: "BSD-2-Clause",
       devDependencies: {
+        "@definitelytyped/dtslint": "^0.0.133",
         "@types/node": "^18.11.3",
-        decache: "^4.6.2",
+        decache: "^4.6.1",
         sinon: "^14.0.1",
         standard: "^17.0.0",
+        "standard-markdown": "^7.1.0",
         "standard-version": "^9.5.0",
-        tap: "^19.2.0",
+        tap: "^16.3.0",
+        tar: "^6.1.11",
         typescript: "^4.8.4"
       },
       engines: {
@@ -1087,9 +1059,9 @@ var require_package = __commonJS({
   }
 });
 
-// ../../../node_modules/.pnpm/dotenv@16.6.1/node_modules/dotenv/lib/main.js
+// ../../node_modules/.pnpm/dotenv@16.4.5/node_modules/dotenv/lib/main.js
 var require_main = __commonJS({
-  "../../../node_modules/.pnpm/dotenv@16.6.1/node_modules/dotenv/lib/main.js"(exports, module) {
+  "../../node_modules/.pnpm/dotenv@16.4.5/node_modules/dotenv/lib/main.js"(exports, module) {
     init_cjs_shim();
     var fs2 = __require("fs");
     var path4 = __require("path");
@@ -1118,10 +1090,8 @@ var require_main = __commonJS({
       return obj;
     }
     function _parseVault(options) {
-      options = options || {};
       const vaultPath = _vaultPath(options);
-      options.path = vaultPath;
-      const result = DotenvModule.configDotenv(options);
+      const result = DotenvModule.configDotenv({ path: vaultPath });
       if (!result.parsed) {
         const err = new Error(`MISSING_DATA: Cannot parse ${vaultPath} for an unknown reason`);
         err.code = "MISSING_DATA";
@@ -1144,14 +1114,14 @@ var require_main = __commonJS({
       }
       return DotenvModule.parse(decrypted);
     }
+    function _log(message) {
+      console.log(`[dotenv@${version}][INFO] ${message}`);
+    }
     function _warn(message) {
       console.log(`[dotenv@${version}][WARN] ${message}`);
     }
     function _debug(message) {
       console.log(`[dotenv@${version}][DEBUG] ${message}`);
-    }
-    function _log(message) {
-      console.log(`[dotenv@${version}] ${message}`);
     }
     function _dotenvKey(options) {
       if (options && options.DOTENV_KEY && options.DOTENV_KEY.length > 0) {
@@ -1219,11 +1189,7 @@ var require_main = __commonJS({
       return envPath[0] === "~" ? path4.join(os.homedir(), envPath.slice(1)) : envPath;
     }
     function _configVault(options) {
-      const debug = Boolean(options && options.debug);
-      const quiet = options && "quiet" in options ? options.quiet : true;
-      if (debug || !quiet) {
-        _log("Loading env from encrypted .env.vault");
-      }
+      _log("Loading env from encrypted .env.vault");
       const parsed = DotenvModule._parseVault(options);
       let processEnv = process.env;
       if (options && options.processEnv != null) {
@@ -1236,7 +1202,6 @@ var require_main = __commonJS({
       const dotenvPath = path4.resolve(process.cwd(), ".env");
       let encoding = "utf8";
       const debug = Boolean(options && options.debug);
-      const quiet = options && "quiet" in options ? options.quiet : true;
       if (options && options.encoding) {
         encoding = options.encoding;
       } else {
@@ -1273,22 +1238,6 @@ var require_main = __commonJS({
         processEnv = options.processEnv;
       }
       DotenvModule.populate(processEnv, parsedAll, options);
-      if (debug || !quiet) {
-        const keysCount = Object.keys(parsedAll).length;
-        const shortPaths = [];
-        for (const filePath of optionPaths) {
-          try {
-            const relative = path4.relative(process.cwd(), filePath);
-            shortPaths.push(relative);
-          } catch (e) {
-            if (debug) {
-              _debug(`Failed to load ${filePath} ${e.message}`);
-            }
-            lastError = e;
-          }
-        }
-        _log(`injecting env (${keysCount}) from ${shortPaths.join(",")}`);
-      }
       if (lastError) {
         return { parsed: parsedAll, error: lastError };
       } else {
@@ -1378,26 +1327,26 @@ var require_main = __commonJS({
   }
 });
 
-// ../../../node_modules/.pnpm/application-config-path@0.1.1/node_modules/application-config-path/index.js
+// ../../node_modules/.pnpm/application-config-path@0.1.0/node_modules/application-config-path/index.js
 var require_application_config_path = __commonJS({
-  "../../../node_modules/.pnpm/application-config-path@0.1.1/node_modules/application-config-path/index.js"(exports, module) {
+  "../../node_modules/.pnpm/application-config-path@0.1.0/node_modules/application-config-path/index.js"(exports, module) {
     init_cjs_shim();
     var os = __require("os");
     var path4 = __require("path");
     function darwin(name) {
-      return path4.join(process.env.HOME, "Library", "Application Support", name);
+      return path4.join(process.env["HOME"], "Library", "Application Support", name);
     }
-    function xdg(name) {
-      if (process.env.XDG_CONFIG_HOME) {
-        return path4.join(process.env.XDG_CONFIG_HOME, name);
+    function linux(name) {
+      if (process.env["XDG_CONFIG_HOME"]) {
+        return path4.join(process.env["XDG_CONFIG_HOME"], name);
       }
-      return path4.join(process.env.HOME, ".config", name);
+      return path4.join(process.env["HOME"], ".config", name);
     }
     function win32(name) {
-      if (process.env.LOCALAPPDATA) {
-        return path4.join(process.env.LOCALAPPDATA, name);
+      if (process.env["LOCALAPPDATA"]) {
+        return path4.join(process.env["LOCALAPPDATA"], name);
       }
-      return path4.join(process.env.USERPROFILE, "Local Settings", "Application Data", name);
+      return path4.join(process.env["USERPROFILE"], "Local Settings", "Application Data", name);
     }
     function applicationConfigPath(name) {
       if (typeof name !== "string") {
@@ -1406,10 +1355,8 @@ var require_application_config_path = __commonJS({
       switch (os.platform()) {
         case "darwin":
           return darwin(name);
-        case "freebsd":
-        case "openbsd":
         case "linux":
-          return xdg(name);
+          return linux(name);
         case "win32":
           return win32(name);
       }
@@ -1419,9 +1366,9 @@ var require_application_config_path = __commonJS({
   }
 });
 
-// ../../../node_modules/.pnpm/mkdirp@0.5.6/node_modules/mkdirp/index.js
+// ../../node_modules/.pnpm/mkdirp@0.5.6/node_modules/mkdirp/index.js
 var require_mkdirp = __commonJS({
-  "../../../node_modules/.pnpm/mkdirp@0.5.6/node_modules/mkdirp/index.js"(exports, module) {
+  "../../node_modules/.pnpm/mkdirp@0.5.6/node_modules/mkdirp/index.js"(exports, module) {
     init_cjs_shim();
     var path4 = __require("path");
     var fs2 = __require("fs");
@@ -1439,8 +1386,7 @@ var require_mkdirp = __commonJS({
       if (mode === void 0) {
         mode = _0777;
       }
-      if (!made)
-        made = null;
+      if (!made) made = null;
       var cb = f || /* istanbul ignore next */
       function() {
       };
@@ -1452,21 +1398,19 @@ var require_mkdirp = __commonJS({
         }
         switch (er.code) {
           case "ENOENT":
-            if (path4.dirname(p) === p)
-              return cb(er);
+            if (path4.dirname(p) === p) return cb(er);
             mkdirP(path4.dirname(p), opts, function(er2, made2) {
-              if (er2)
-                cb(er2, made2);
-              else
-                mkdirP(p, opts, cb, made2);
+              if (er2) cb(er2, made2);
+              else mkdirP(p, opts, cb, made2);
             });
             break;
+          // In the case of any other error, just see if there's a dir
+          // there already.  If so, then hooray!  If not, then something
+          // is borked.
           default:
             xfs.stat(p, function(er2, stat4) {
-              if (er2 || !stat4.isDirectory())
-                cb(er, made);
-              else
-                cb(null, made);
+              if (er2 || !stat4.isDirectory()) cb(er, made);
+              else cb(null, made);
             });
             break;
         }
@@ -1481,8 +1425,7 @@ var require_mkdirp = __commonJS({
       if (mode === void 0) {
         mode = _0777;
       }
-      if (!made)
-        made = null;
+      if (!made) made = null;
       p = path4.resolve(p);
       try {
         xfs.mkdirSync(p, mode);
@@ -1493,6 +1436,9 @@ var require_mkdirp = __commonJS({
             made = sync(path4.dirname(p), opts, made);
             sync(p, opts, made);
             break;
+          // In the case of any other error, just see if there's a dir
+          // there already.  If so, then hooray!  If not, then something
+          // is borked.
           default:
             var stat4;
             try {
@@ -1500,8 +1446,7 @@ var require_mkdirp = __commonJS({
             } catch (err1) {
               throw err0;
             }
-            if (!stat4.isDirectory())
-              throw err0;
+            if (!stat4.isDirectory()) throw err0;
             break;
         }
       }
@@ -1510,9 +1455,9 @@ var require_mkdirp = __commonJS({
   }
 });
 
-// ../../../node_modules/.pnpm/application-config@1.0.1/node_modules/application-config/index.js
+// ../../node_modules/.pnpm/application-config@1.0.1/node_modules/application-config/index.js
 var require_application_config = __commonJS({
-  "../../../node_modules/.pnpm/application-config@1.0.1/node_modules/application-config/index.js"(exports, module) {
+  "../../node_modules/.pnpm/application-config@1.0.1/node_modules/application-config/index.js"(exports, module) {
     init_cjs_shim();
     var fs2 = __require("fs");
     var path4 = __require("path");
@@ -1523,10 +1468,8 @@ var require_application_config = __commonJS({
     ApplicationConfig.prototype.read = function(cb) {
       var self = this;
       fs2.readFile(self.filePath, function(err, raw) {
-        if (err && err.code === "ENOENT")
-          return cb(null, {});
-        if (err)
-          return cb(err);
+        if (err && err.code === "ENOENT") return cb(null, {});
+        if (err) return cb(err);
         var data;
         try {
           data = JSON.parse(raw.toString());
@@ -1559,12 +1502,10 @@ var require_application_config = __commonJS({
     ApplicationConfig.prototype.trash = function(cb) {
       var self = this;
       fs2.unlink(self.filePath, function(err) {
-        if (err && err.code !== "ENOENT")
-          return cb(err);
+        if (err && err.code !== "ENOENT") return cb(err);
         var directoryPath = path4.dirname(self.filePath);
         fs2.rmdir(directoryPath, function(err2) {
-          if (err2 && err2.code !== "ENOENT")
-            return cb(err2);
+          if (err2 && err2.code !== "ENOENT") return cb(err2);
           cb(null);
         });
       });
@@ -1575,14 +1516,13 @@ var require_application_config = __commonJS({
   }
 });
 
-// ../../../node_modules/.pnpm/debounce@1.2.1/node_modules/debounce/index.js
+// ../../node_modules/.pnpm/debounce@1.2.1/node_modules/debounce/index.js
 var require_debounce = __commonJS({
-  "../../../node_modules/.pnpm/debounce@1.2.1/node_modules/debounce/index.js"(exports, module) {
+  "../../node_modules/.pnpm/debounce@1.2.1/node_modules/debounce/index.js"(exports, module) {
     init_cjs_shim();
     function debounce3(func, wait, immediate) {
       var timeout, args, context, timestamp, result;
-      if (null == wait)
-        wait = 100;
+      if (null == wait) wait = 100;
       function later() {
         var last = Date.now() - timestamp;
         if (last < wait && last >= 0) {
@@ -1601,8 +1541,7 @@ var require_debounce = __commonJS({
         args = arguments;
         timestamp = Date.now();
         var callNow = immediate && !timeout;
-        if (!timeout)
-          timeout = setTimeout(later, wait);
+        if (!timeout) timeout = setTimeout(later, wait);
         if (callNow) {
           result = func.apply(context, args);
           context = args = null;
@@ -1823,8 +1762,7 @@ var Logger = class {
 ${s.toString()}`).join();
   }
   debug(...args) {
-    if (!rc2["log-debug"])
-      return;
+    if (!rc2["log-debug"]) return;
     log(this, 0, "", args);
   }
   info(...args) {
@@ -1875,10 +1813,8 @@ function translate(locale, messages) {
   function getMessage(key, substitutions, raw_opts) {
     const translationKey = key;
     let opts = {};
-    if (typeof raw_opts === "string")
-      opts = { quantity: raw_opts };
-    else
-      opts = Object.assign({}, raw_opts);
+    if (typeof raw_opts === "string") opts = { quantity: raw_opts };
+    else opts = Object.assign({}, raw_opts);
     const entry = messages[translationKey];
     if (!entry) {
       log2.error(`Missing translation for key '${translationKey}'`);
@@ -2280,8 +2216,7 @@ function hideDeltaChat(minimize) {
     window2.minimize();
   }
   window2.hide();
-  if (process.platform === "linux")
-    tray?.setContextMenu(getTrayMenu());
+  if (process.platform === "linux") tray?.setContextMenu(getTrayMenu());
 }
 function showDeltaChat() {
   if (!window2) {
@@ -2298,8 +2233,7 @@ function quitDeltaChat() {
 }
 function updateTrayIcon() {
   if (!app2.rc["minimized"] && DesktopSettings.state.minimizeToTray !== true) {
-    if (tray != null)
-      destroyTrayIcon();
+    if (tray != null) destroyTrayIcon();
     return;
   }
   renderTrayIcon();
@@ -2310,8 +2244,7 @@ function destroyTrayIcon() {
   tray = null;
 }
 function getTrayMenu() {
-  if (tray === null)
-    return;
+  if (tray === null) return;
   if (process.platform === "darwin") {
     contextMenu = Menu.buildFromTemplate([
       mainWindowIsVisible() ? {
@@ -2496,8 +2429,7 @@ function init(options) {
   session.defaultSession.setSpellCheckerDictionaryDownloadURL("https://00.00/");
   window2.loadFile(join4(htmlDistDir(), defaults2.main));
   window2.once("ready-to-show", () => {
-    if (!options.hidden)
-      mainWindow.show();
+    if (!options.hidden) mainWindow.show();
     if (process.env.NODE_ENV === "test") {
       mainWindow.maximize();
     }
@@ -2669,8 +2601,7 @@ function show() {
   window2?.show();
 }
 function toggleAlwaysOnTop() {
-  if (!window2)
-    return;
+  if (!window2) return;
   const flag = !window2.isAlwaysOnTop();
   log6.info(`toggleAlwaysOnTop ${flag}`);
   window2.setAlwaysOnTop(flag);
@@ -2679,8 +2610,7 @@ function isAlwaysOnTop() {
   return window2 ? window2.isAlwaysOnTop() : false;
 }
 function toggleDevTools() {
-  if (!window2)
-    return;
+  if (!window2) return;
   log6.info("toggleDevTools");
   if (window2.webContents.isDevToolsOpened()) {
     window2.webContents.closeDevTools();
@@ -2809,8 +2739,7 @@ function refresh() {
   const template = getMenuTemplate(logHandlerRef);
   const menu = Menu2.buildFromTemplate(template);
   const item = getMenuItem(menu, tx("global_menu_view_floatontop_desktop"));
-  if (item)
-    item.checked = isAlwaysOnTop();
+  if (item) item.checked = isAlwaysOnTop();
   const isMac2 = process.platform === "darwin";
   if (isMac2 === true) {
     Menu2.setApplicationMenu(menu);
@@ -3107,8 +3036,7 @@ function getMenuItem(menu, label) {
     const menuItem = menu.items[i].submenu?.items.find(function(item) {
       return item.label === label;
     });
-    if (menuItem)
-      return menuItem;
+    if (menuItem) return menuItem;
   }
 }
 
@@ -3173,8 +3101,7 @@ function retrieveLocaleFile(locale) {
   return path2.join(getLocaleDirectoryPath(), onDiskLocale + ".json");
 }
 function getLocaleMessages(file) {
-  if (!fs.existsSync(file))
-    return false;
+  if (!fs.existsSync(file)) return false;
   try {
     return JSON.parse(fs.readFileSync(file, "utf-8"));
   } catch (err) {
@@ -3764,8 +3691,7 @@ var open_url = function(url2) {
     }
   };
   log10.debug("open-url: sending to frontend:", url2);
-  if (app4.ipcReady)
-    return sendOpenUrlEvent();
+  if (app4.ipcReady) return sendOpenUrlEvent();
   log10.debug("open-url: Waiting for ipc to be ready before opening url.");
   app4.once("ipcReady", () => {
     log10.debug("open-url: IPC ready.");
@@ -3809,32 +3735,31 @@ app4.on("open-file", async (event, path4) => {
   handleWebxdcFileOpen(path4);
 });
 function openUrlsAndFilesFromArgv(argv) {
-  args_loop:
-    for (let i = 1; i < argv.length; i++) {
-      const arg = argv[i];
-      if (arg.endsWith(".xdc")) {
-        log10.debug(
-          "open-url: process something that looks like it could be a webxc file:",
-          arg
-        );
-        handleWebxdcFileOpen(arg);
-        continue;
-      }
-      if (!arg.includes(":")) {
-        continue;
-      }
+  args_loop: for (let i = 1; i < argv.length; i++) {
+    const arg = argv[i];
+    if (arg.endsWith(".xdc")) {
       log10.debug(
-        "open-url: process something that looks like it could be a scheme:",
+        "open-url: process something that looks like it could be a webxc file:",
         arg
       );
-      for (const expectedScheme of supportedURISchemes) {
-        if (arg.startsWith(expectedScheme.toUpperCase()) || arg.startsWith(expectedScheme.toLowerCase())) {
-          log10.debug("open-url: Detected URI: ", arg);
-          open_url(arg);
-          continue args_loop;
-        }
+      handleWebxdcFileOpen(arg);
+      continue;
+    }
+    if (!arg.includes(":")) {
+      continue;
+    }
+    log10.debug(
+      "open-url: process something that looks like it could be a scheme:",
+      arg
+    );
+    for (const expectedScheme of supportedURISchemes) {
+      if (arg.startsWith(expectedScheme.toUpperCase()) || arg.startsWith(expectedScheme.toLowerCase())) {
+        log10.debug("open-url: Detected URI: ", arg);
+        open_url(arg);
+        continue args_loop;
       }
     }
+  }
 }
 app4.on("second-instance", (_event, argv) => {
   log10.debug("Someone tried to run a second instance");
@@ -4276,8 +4201,7 @@ function openHtmlEmailWindow(account_id, message_id, isContactRequest, subject, 
     );
     window3.contentView.addChildView(sandboxedView);
     context_menu_handle = createContextMenu(window3, sandboxedView.webContents);
-    if (bounds)
-      sandboxedView.setBounds(bounds);
+    if (bounds) sandboxedView.setBounds(bounds);
   };
   window3.webContents.ipc.handle("html-view:change-network", update_restrictions);
   window3.loadFile(
@@ -5275,7 +5199,7 @@ init_cjs_shim();
 
 // src/get-build-info.ts
 init_cjs_shim();
-var BuildInfo = JSON.parse('{"VERSION":"1.58.2","BUILD_TIMESTAMP":1765963401498,"GIT_REF":"v1.0.0"}');
+var BuildInfo = JSON.parse('{"VERSION":"1.58.2","BUILD_TIMESTAMP":1766135454195,"GIT_REF":"v1.0.0-2-g0983749"}');
 
 // src/deltachat/stdio_server.ts
 import { spawn } from "child_process";
@@ -5444,8 +5368,7 @@ async function migrateAccountsIfNeeded(cwd, log20, treatFailedMigrationAsError =
     if (migrateFromFormat2) {
       for (const entry of await readdir4(pathAccountsOld)) {
         const stat_result = await stat3(join13(pathAccountsOld, entry));
-        if (!stat_result.isDirectory())
-          continue;
+        if (!stat_result.isDirectory()) continue;
         log20.debug(`migrating account "${join13(pathAccountsOld, entry)}"`);
         const path_dbfile = join13(pathAccountsOld, entry, "db.sqlite");
         if (!existsSync5(path_dbfile)) {
@@ -6313,8 +6236,7 @@ app12.once("ipcReady", () => {
   });
 });
 function quit(e) {
-  if (app12.isQuitting)
-    return;
+  if (app12.isQuitting) return;
   app12.isQuitting = true;
   e?.preventDefault();
   log19.info("Starting app shutdown process");

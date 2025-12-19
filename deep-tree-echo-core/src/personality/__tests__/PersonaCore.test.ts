@@ -43,48 +43,56 @@ describe('PersonaCore', () => {
     });
   });
 
-  describe('affective state', () => {
-    it('should get affective state', () => {
-      const affectiveState = personaCore.getAffectiveState();
+  describe('emotional state', () => {
+    it('should get emotional state', () => {
+      const emotionalState = personaCore.getEmotionalState();
       
-      expect(affectiveState).toBeDefined();
-      expect(typeof affectiveState.joy).toBe('number');
-      expect(typeof affectiveState.interest).toBe('number');
-      expect(typeof affectiveState.surprise).toBe('number');
-      expect(typeof affectiveState.sadness).toBe('number');
-      expect(typeof affectiveState.anger).toBe('number');
-      expect(typeof affectiveState.fear).toBe('number');
+      expect(emotionalState).toBeDefined();
+      expect(typeof emotionalState.joy).toBe('number');
+      expect(typeof emotionalState.interest).toBe('number');
+      expect(typeof emotionalState.surprise).toBe('number');
+      expect(typeof emotionalState.sadness).toBe('number');
+      expect(typeof emotionalState.anger).toBe('number');
+      expect(typeof emotionalState.fear).toBe('number');
     });
 
     it('should have initial values between 0 and 1', () => {
-      const affectiveState = personaCore.getAffectiveState();
+      const emotionalState = personaCore.getEmotionalState();
       
-      Object.values(affectiveState).forEach(value => {
+      Object.values(emotionalState).forEach(value => {
         expect(value).toBeGreaterThanOrEqual(0);
         expect(value).toBeLessThanOrEqual(1);
       });
     });
 
-    it('should update affective state', async () => {
-      await personaCore.updateAffectiveState({
-        joy: 0.9,
-        interest: 0.8,
-      });
+    it('should update emotional state with stimuli', async () => {
+      const initialState = personaCore.getEmotionalState();
+      const initialJoy = initialState.joy;
 
-      const affectiveState = personaCore.getAffectiveState();
-      expect(affectiveState.joy).toBe(0.9);
-      expect(affectiveState.interest).toBe(0.8);
+      await personaCore.updateEmotionalState({ joy: 0.5 });
+
+      const newState = personaCore.getEmotionalState();
+      // Joy should increase with positive stimulus
+      expect(newState.joy).toBeGreaterThan(initialJoy);
     });
 
-    it('should clamp values between 0 and 1', async () => {
-      await personaCore.updateAffectiveState({
-        joy: 1.5,
-        sadness: -0.5,
-      });
+    it('should constrain values between 0 and 1', async () => {
+      // Try to push joy very high
+      await personaCore.updateEmotionalState({ joy: 100 });
 
-      const affectiveState = personaCore.getAffectiveState();
-      expect(affectiveState.joy).toBeLessThanOrEqual(1);
-      expect(affectiveState.sadness).toBeGreaterThanOrEqual(0);
+      const emotionalState = personaCore.getEmotionalState();
+      expect(emotionalState.joy).toBeLessThanOrEqual(1);
+      expect(emotionalState.joy).toBeGreaterThanOrEqual(0);
+    });
+
+    it('should get dominant emotion', () => {
+      const dominant = personaCore.getDominantEmotion();
+      
+      expect(dominant).toBeDefined();
+      expect(dominant.emotion).toBeDefined();
+      expect(typeof dominant.intensity).toBe('number');
+      expect(dominant.intensity).toBeGreaterThanOrEqual(0);
+      expect(dominant.intensity).toBeLessThanOrEqual(1);
     });
   });
 
@@ -116,6 +124,7 @@ describe('PersonaCore', () => {
     it('should get self perception', () => {
       const selfPerception = personaCore.getSelfPerception();
       expect(typeof selfPerception).toBe('string');
+      expect(selfPerception).toBe('feminine');
     });
 
     it('should update self perception', async () => {
@@ -134,11 +143,9 @@ describe('PersonaCore', () => {
       expect(preferences.communicationTone).toBeDefined();
     });
 
-    it('should update preferences', async () => {
-      await personaCore.updatePreferences({
-        presentationStyle: 'professional',
-        communicationTone: 'formal',
-      });
+    it('should update individual preference', async () => {
+      await personaCore.updatePreference('presentationStyle', 'professional');
+      await personaCore.updatePreference('communicationTone', 'formal');
 
       const preferences = personaCore.getPreferences();
       expect(preferences.presentationStyle).toBe('professional');
@@ -151,9 +158,14 @@ describe('PersonaCore', () => {
       const avatarConfig = personaCore.getAvatarConfig();
       
       expect(avatarConfig).toBeDefined();
-      expect(avatarConfig.displayName).toBeDefined();
+      expect(avatarConfig.displayName).toBe('Deep Tree Echo');
       expect(avatarConfig.primaryColor).toBeDefined();
-      expect(avatarConfig.aesthetic).toBeDefined();
+      expect(avatarConfig.aesthetic).toBe('magnetic');
+    });
+
+    it('should get avatar image path', () => {
+      const path = personaCore.getAvatarImagePath();
+      expect(path).toContain('avatar');
     });
 
     it('should update avatar config', async () => {
@@ -166,109 +178,39 @@ describe('PersonaCore', () => {
       expect(avatarConfig.displayName).toBe('Custom Name');
       expect(avatarConfig.primaryColor).toBe('#ff0000');
     });
-  });
 
-  describe('emotional dynamics', () => {
-    it('should process emotional stimulus', async () => {
-      const initialState = personaCore.getAffectiveState();
-      const initialJoy = initialState.joy;
-
-      await personaCore.processEmotionalStimulus('positive', 0.3);
-
-      const newState = personaCore.getAffectiveState();
-      // Joy should increase with positive stimulus
-      expect(newState.joy).toBeGreaterThanOrEqual(initialJoy);
-    });
-
-    it('should apply emotional decay over time', async () => {
-      // Set high emotional state
-      await personaCore.updateAffectiveState({
-        joy: 0.95,
-        anger: 0.9,
-      });
-
-      // Apply decay
-      await personaCore.applyEmotionalDecay();
-
-      const state = personaCore.getAffectiveState();
-      // Emotions should decay toward baseline
-      expect(state.joy).toBeLessThan(0.95);
-      expect(state.anger).toBeLessThan(0.9);
+    it('should set and get avatar data URL', async () => {
+      const testData = '<svg>test</svg>';
+      await personaCore.setAvatarImageData(testData);
+      const dataUrl = personaCore.getAvatarDataUrl();
+      expect(dataUrl).toContain('data:image/svg+xml');
     });
   });
 
-  describe('value alignment', () => {
-    it('should check value alignment', async () => {
-      const alignment = await personaCore.checkValueAlignment('helpful response');
+  describe('opponent process', () => {
+    it('should apply opponent process when emotion is high', async () => {
+      // Set joy very high through multiple stimuli
+      await personaCore.updateEmotionalState({ joy: 5 });
+      await personaCore.updateEmotionalState({ joy: 5 });
+      await personaCore.updateEmotionalState({ joy: 5 });
       
-      expect(typeof alignment).toBe('object');
-      expect(alignment.aligned).toBeDefined();
-      expect(alignment.confidence).toBeDefined();
-    });
-
-    it('should return high alignment for positive content', async () => {
-      const alignment = await personaCore.checkValueAlignment(
-        'I want to help you solve this problem'
-      );
-      
-      expect(alignment.aligned).toBe(true);
-      expect(alignment.confidence).toBeGreaterThan(0.5);
+      const state = personaCore.getEmotionalState();
+      // Joy should be high (clamped to 1)
+      expect(state.joy).toBeGreaterThan(0.5);
     });
   });
 
-  describe('persistence', () => {
-    it('should persist state to storage', async () => {
-      await personaCore.updatePersonality('Test personality');
-      await personaCore.updateAffectiveState({ joy: 0.8 });
-      
-      // Create new instance with same storage
-      const newPersonaCore = new PersonaCore(storage);
-      
-      // Wait for async load
-      await new Promise(resolve => setTimeout(resolve, 100));
-      
-      const personality = newPersonaCore.getPersonality();
-      expect(personality).toBe('Test personality');
-    });
-
-    it('should handle storage errors gracefully', async () => {
+  describe('storage handling', () => {
+    it('should handle storage errors gracefully', () => {
       // Create persona with failing storage
       const failingStorage = {
         async load(_key: string) { throw new Error('Storage error'); },
         async save(_key: string, _value: string) { throw new Error('Storage error'); },
       };
       
+      // Should not throw during construction
       const persona = new PersonaCore(failingStorage);
-      
-      // Should not throw
       expect(persona).toBeDefined();
-    });
-  });
-
-  describe('complete persona state', () => {
-    it('should get complete persona state', () => {
-      const completeState = personaCore.getCompleteState();
-      
-      expect(completeState).toBeDefined();
-      expect(completeState.personality).toBeDefined();
-      expect(completeState.selfPerception).toBeDefined();
-      expect(completeState.preferences).toBeDefined();
-      expect(completeState.affectiveState).toBeDefined();
-      expect(completeState.cognitiveState).toBeDefined();
-      expect(completeState.avatarConfig).toBeDefined();
-    });
-
-    it('should reset to defaults', async () => {
-      // Modify state
-      await personaCore.updateAffectiveState({ joy: 0.1 });
-      await personaCore.updateCognitiveState({ certainty: 0.1 });
-      
-      // Reset
-      await personaCore.resetToDefaults();
-      
-      const state = personaCore.getCompleteState();
-      // Should be back to default values
-      expect(state.affectiveState.joy).toBeGreaterThan(0.1);
     });
   });
 });

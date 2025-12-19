@@ -14,4 +14,6 @@ export * from './security';
 export * from './embodiment';
 // Export utility modules  
 export * from './utils/logger';
+// Export configuration modules
+export * from './config';
 //# sourceMappingURL=index.js.map

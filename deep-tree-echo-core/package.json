@@ -37,12 +37,18 @@
     "./integration": {
       "import": "./dist/integration/index.js",
       "types": "./dist/integration/index.d.ts"
+    },
+    "./config": {
+      "import": "./dist/config/index.js",
+      "types": "./dist/config/index.d.ts"
     }
   },
   "scripts": {
     "build": "tsc",
     "check:types": "tsc --noEmit",
-    "clean": "rm -rf dist"
+    "clean": "rm -rf dist",
+    "test": "NODE_OPTIONS='--experimental-vm-modules' jest",
+    "test:coverage": "NODE_OPTIONS='--experimental-vm-modules' jest --coverage"
   },
   "keywords": [
     "ai",
@@ -54,7 +60,10 @@
   "author": "",
   "license": "GPL-3.0-or-later",
   "devDependencies": {
+    "@types/jest": "^30.0.0",
     "@types/node": "^25.0.2",
+    "jest": "^30.2.0",
+    "ts-jest": "^29.4.6",
     "typescript": "^5.4.5"
   }
 }
