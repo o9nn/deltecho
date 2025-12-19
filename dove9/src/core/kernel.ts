@@ -19,7 +19,6 @@ import {
   ProcessState,
   CognitiveContext,
   StreamId,
-  CouplingType,
   KernelState,
   KernelMetrics,
   KernelEvent,
