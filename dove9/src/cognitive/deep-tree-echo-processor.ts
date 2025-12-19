@@ -76,7 +76,6 @@ export class DeepTreeEchoProcessor implements CognitiveProcessor {
 
   // Processing state
   private currentPerception?: any
-  private currentThoughts?: any
   private pendingActions: any[] = []
 
   constructor(
@@ -436,7 +435,6 @@ Generate a thoughtful response or insight.`
    */
   public clearState(): void {
     this.currentPerception = undefined
-    this.currentThoughts = undefined
     this.pendingActions = []
   }
 }

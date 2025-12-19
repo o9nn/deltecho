@@ -79,9 +79,6 @@ const DEFAULT_BRIDGE_CONFIG: OrchestratorBridgeConfig = {
 export class OrchestratorBridge extends EventEmitter {
   private dove9: Dove9System | null = null
   private config: OrchestratorBridgeConfig
-  private llmService: LLMServiceInterface | null = null
-  private memoryStore: MemoryStoreInterface | null = null
-  private personaCore: PersonaCoreInterface | null = null
   private running: boolean = false
 
   // Response queue
@@ -100,13 +97,20 @@ export class OrchestratorBridge extends EventEmitter {
     memoryStore: MemoryStoreInterface,
     personaCore: PersonaCoreInterface
   ): void {
-    this.llmService = llmService
-    this.memoryStore = memoryStore
-    this.personaCore = personaCore
+    // Create Dove9 system with full configuration
+    const dove9Config: Dove9Config = {
+      stepDuration: this.config.stepDuration ?? DEFAULT_DOVE9_CONFIG.stepDuration,
+      maxConcurrentProcesses: this.config.maxConcurrentProcesses ?? DEFAULT_DOVE9_CONFIG.maxConcurrentProcesses,
+      maxQueueDepth: this.config.maxQueueDepth ?? DEFAULT_DOVE9_CONFIG.maxQueueDepth,
+      enableMilter: this.config.enableMilter ?? DEFAULT_DOVE9_CONFIG.enableMilter,
+      enableLMTP: this.config.enableLMTP ?? DEFAULT_DOVE9_CONFIG.enableLMTP,
+      enableDeltaChat: this.config.enableDeltaChat ?? DEFAULT_DOVE9_CONFIG.enableDeltaChat,
+      enableParallelCognition: this.config.enableParallelCognition ?? DEFAULT_DOVE9_CONFIG.enableParallelCognition,
+      defaultSalienceThreshold: this.config.defaultSalienceThreshold ?? DEFAULT_DOVE9_CONFIG.defaultSalienceThreshold,
+    }
 
-    // Create Dove9 system
     this.dove9 = new Dove9System({
-      ...this.config,
+      ...dove9Config,
       llmService,
       memoryStore,
       personaCore,
