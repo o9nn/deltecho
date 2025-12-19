@@ -3,6 +3,7 @@ import * as net from 'net';
 import * as fs from 'fs';
 import * as path from 'path';
 import { EventEmitter } from 'events';
+import { StorageManager } from './storage-manager.js';
 
 const log = getLogger('deep-tree-echo-orchestrator/IPCServer');
 
@@ -16,6 +17,13 @@ export enum IPCMessageType {
   REQUEST_PERSONA = 'request_persona',
   REQUEST_STATUS = 'request_status',
   REQUEST_CONFIG = 'request_config',
+  
+  // Storage request types
+  REQUEST_STORAGE_GET = 'request_storage_get',
+  REQUEST_STORAGE_SET = 'request_storage_set',
+  REQUEST_STORAGE_DELETE = 'request_storage_delete',
+  REQUEST_STORAGE_CLEAR = 'request_storage_clear',
+  REQUEST_STORAGE_KEYS = 'request_storage_keys',
   
   // Response types
   RESPONSE_SUCCESS = 'response_success',
@@ -77,10 +85,12 @@ export class IPCServer extends EventEmitter {
   private subscriptions: Map<string, Set<string>> = new Map(); // eventType -> clientIds
   private running: boolean = false;
   private clientIdCounter: number = 0;
+  private storageManager: StorageManager;
 
   constructor(config: Partial<IPCServerConfig> = {}) {
     super();
     this.config = { ...DEFAULT_CONFIG, ...config };
+    this.storageManager = new StorageManager();
     this.setupDefaultHandlers();
   }
 
@@ -117,6 +127,37 @@ export class IPCServer extends EventEmitter {
       const { clientId, eventType } = payload;
       this.subscriptions.get(eventType)?.delete(clientId);
       return { unsubscribed: true, eventType };
+    });
+
+    // Storage handlers
+    this.registerHandler(IPCMessageType.REQUEST_STORAGE_GET, async (payload) => {
+      const { key } = payload;
+      const value = await this.storageManager.get(key);
+      return { value };
+    });
+
+    this.registerHandler(IPCMessageType.REQUEST_STORAGE_SET, async (payload) => {
+      const { key, value } = payload;
+      await this.storageManager.set(key, value);
+      return { success: true };
+    });
+
+    this.registerHandler(IPCMessageType.REQUEST_STORAGE_DELETE, async (payload) => {
+      const { key } = payload;
+      await this.storageManager.delete(key);
+      return { success: true };
+    });
+
+    this.registerHandler(IPCMessageType.REQUEST_STORAGE_CLEAR, async (payload) => {
+      const { prefix } = payload;
+      await this.storageManager.clear(prefix);
+      return { success: true };
+    });
+
+    this.registerHandler(IPCMessageType.REQUEST_STORAGE_KEYS, async (payload) => {
+      const { prefix } = payload;
+      const keys = await this.storageManager.keys(prefix);
+      return { keys };
     });
   }
 
