@@ -1,0 +1,577 @@
+(*
+ * DataLoader.zpp - Data Loading Contracts for Training Pipeline
+ * Z++ Formal Specification for Deltecho Model Package
+ * 
+ * Defines the formal contracts for data loading, batching, sampling,
+ * and cognitive-aware data preparation for the training pipeline.
+ *)
+
+SCHEMA DataLoader
+IMPORTS Types, TokenizerConfig, Tokenizer
+
+(* ═══════════════════════════════════════════════════════════════════════════
+   SECTION 1: Dataset Type Definitions
+   ═══════════════════════════════════════════════════════════════════════════ *)
+
+TYPE DatasetId == seq₁ CHAR            (* Non-empty dataset identifier *)
+TYPE SampleId == ℕ                     (* Sample index in dataset *)
+TYPE EpochId == ℕ                      (* Training epoch number *)
+TYPE ShardId == ℕ                      (* Data shard identifier *)
+
+TYPE DataFormat ::=
+    TextPlain |                        (* Raw text files *)
+    JsonLines |                        (* JSON Lines format *)
+    Parquet |                          (* Apache Parquet *)
+    Arrow |                            (* Apache Arrow *)
+    TokenizedBinary                    (* Pre-tokenized binary *)
+
+TYPE SamplingStrategy ::=
+    Sequential |                       (* In-order sampling *)
+    RandomShuffle |                    (* Random permutation *)
+    WeightedSampling |                 (* Probability-weighted *)
+    CurriculumLearning |               (* Difficulty-ordered *)
+    CognitiveBalanced                  (* Balance cognitive modes *)
+
+TYPE PackingStrategy ::=
+    NoPacking |                        (* One sample per sequence *)
+    ConcatPacking |                    (* Concatenate with separator *)
+    BestFitPacking |                   (* Bin-packing optimization *)
+    CognitiveAlignedPacking            (* Align to cognitive steps *)
+
+(* ═══════════════════════════════════════════════════════════════════════════
+   SECTION 2: Sample and Batch Types
+   ═══════════════════════════════════════════════════════════════════════════ *)
+
+TYPE RawSample == ⟦
+    id: SampleId,
+    text: TextInput,
+    metadata: optional ⟦
+        source: seq CHAR,
+        quality_score: optional Probability,
+        difficulty: optional ℝ,
+        cognitive_mode: optional CognitiveMode,
+        domain: optional seq CHAR
+    ⟧
+⟧
+
+TYPE TokenizedSample == ⟦
+    id: SampleId,
+    input_ids: TokenSequence,
+    attention_mask: AttentionMask,
+    labels: TokenSequence,
+    
+    (* Cognitive annotations *)
+    cognitive_markers: optional seq ⟦
+        position: ℕ,
+        marker_type: {stream, pivot, afford, salience},
+        stream_id: optional StreamId,
+        step_id: optional StepId
+    ⟧,
+    
+    (* Training metadata *)
+    loss_mask: optional seq {0, 1},
+    sample_weight: optional ℝ
+⟧
+
+TYPE TrainingBatch == ⟦
+    batch_id: ℕ,
+    batch_size: BatchSize,
+    
+    (* Tensor data *)
+    input_ids: Tensor2D[BatchSize, SeqLen],
+    attention_mask: Tensor2D[BatchSize, SeqLen],
+    labels: Tensor2D[BatchSize, SeqLen],
+    position_ids: optional Tensor2D[BatchSize, SeqLen],
+    
+    (* Loss masking *)
+    loss_mask: optional Tensor2D[BatchSize, SeqLen],
+    sample_weights: optional Tensor1D[BatchSize],
+    
+    (* Cognitive batch data *)
+    cognitive_stream_ids: optional Tensor1D[BatchSize],
+    cognitive_step_ids: optional Tensor1D[BatchSize],
+    cognitive_mode_ids: optional Tensor1D[BatchSize],
+    
+    (* Metadata *)
+    sample_ids: seq SampleId,
+    total_tokens: ℕ,
+    padding_tokens: ℕ
+⟧
+
+(* ═══════════════════════════════════════════════════════════════════════════
+   SECTION 3: Dataset Configuration
+   ═══════════════════════════════════════════════════════════════════════════ *)
+
+TYPE DatasetConfig == ⟦
+    dataset_id: DatasetId,
+    data_format: DataFormat,
+    data_paths: seq₁ seq CHAR,
+    
+    (* Tokenization *)
+    max_seq_length: SeqLen,
+    truncation: TruncationStrategy,
+    padding: PaddingStrategy,
+    
+    (* Sampling *)
+    sampling_strategy: SamplingStrategy,
+    shuffle_seed: optional ℕ,
+    sample_weights: optional seq ℝ,
+    
+    (* Packing *)
+    packing_strategy: PackingStrategy,
+    pack_separator_token: optional TokenId,
+    
+    (* Filtering *)
+    min_length: optional ℕ,
+    max_length: optional ℕ,
+    quality_threshold: optional Probability,
+    
+    (* Cognitive configuration *)
+    cognitive_annotation: 𝔹,
+    cognitive_mode_balance: optional ⟦
+        expressive_ratio: Probability,
+        reflective_ratio: Probability
+    ⟧,
+    
+    (* Sharding *)
+    num_shards: ℕ₁,
+    shard_id: optional ShardId
+⟧
+
+TYPE DataLoaderConfig == ⟦
+    batch_size: BatchSize,
+    num_workers: ℕ,
+    prefetch_factor: ℕ₁,
+    pin_memory: 𝔹,
+    drop_last: 𝔹,
+    
+    (* Distributed training *)
+    world_size: ℕ₁,
+    rank: ℕ,
+    
+    (* Memory management *)
+    max_tokens_per_batch: optional ℕ,
+    dynamic_batching: 𝔹
+⟧
+
+(* ═══════════════════════════════════════════════════════════════════════════
+   SECTION 4: DataLoader State
+   ═══════════════════════════════════════════════════════════════════════════ *)
+
+STATE DataLoaderState == ⟦
+    (* Configuration *)
+    dataset_config: DatasetConfig,
+    loader_config: DataLoaderConfig,
+    tokenizer: TokenizerState,
+    
+    (* Dataset state *)
+    total_samples: ℕ,
+    sample_indices: seq SampleId,
+    current_index: ℕ,
+    
+    (* Epoch state *)
+    current_epoch: EpochId,
+    samples_seen_epoch: ℕ,
+    samples_seen_total: ℕ,
+    
+    (* Batch state *)
+    batches_yielded: ℕ,
+    tokens_processed: ℕ,
+    
+    (* Cognitive state *)
+    cognitive_mode_counts: ⟦
+        expressive: ℕ,
+        reflective: ℕ
+    ⟧,
+    
+    (* Buffer state *)
+    prefetch_buffer: seq TrainingBatch,
+    buffer_size: ℕ,
+    
+    (* RNG state *)
+    rng_state: seq ℕ
+⟧
+
+(* ═══════════════════════════════════════════════════════════════════════════
+   SECTION 5: Invariant Predicates
+   ═══════════════════════════════════════════════════════════════════════════ *)
+
+PRED ValidDatasetConfig(c: DatasetConfig) ≜
+    #c.data_paths > 0 ∧
+    ValidSeqLen(c.max_seq_length) ∧
+    c.num_shards > 0 ∧
+    (c.shard_id ≠ ⊥ ⇒ c.shard_id! < c.num_shards) ∧
+    (c.min_length ≠ ⊥ ∧ c.max_length ≠ ⊥ ⇒ c.min_length! ≤ c.max_length!) ∧
+    (c.quality_threshold ≠ ⊥ ⇒ 0 ≤ c.quality_threshold! ≤ 1) ∧
+    (c.cognitive_mode_balance ≠ ⊥ ⇒
+        c.cognitive_mode_balance!.expressive_ratio + 
+        c.cognitive_mode_balance!.reflective_ratio = 1)
+
+PRED ValidDataLoaderConfig(c: DataLoaderConfig) ≜
+    c.batch_size > 0 ∧
+    c.prefetch_factor > 0 ∧
+    c.world_size > 0 ∧
+    c.rank < c.world_size
+
+PRED ValidTokenizedSample(s: TokenizedSample, config: DatasetConfig, tok: TokenizerConfigState) ≜
+    #s.input_ids = #s.attention_mask ∧
+    #s.input_ids = #s.labels ∧
+    #s.input_ids ≤ config.max_seq_length ∧
+    ValidTokenSequence(s.input_ids, tok.vocab_size) ∧
+    ValidTokenSequence(s.labels, tok.vocab_size) ∧
+    (s.loss_mask ≠ ⊥ ⇒ #s.loss_mask! = #s.input_ids) ∧
+    (s.sample_weight ≠ ⊥ ⇒ s.sample_weight! > 0)
+
+PRED ValidTrainingBatch(b: TrainingBatch, config: DataLoaderConfig) ≜
+    b.batch_size = config.batch_size ∧
+    dim₁(b.input_ids) = b.batch_size ∧
+    dim₁(b.attention_mask) = b.batch_size ∧
+    dim₁(b.labels) = b.batch_size ∧
+    dim₂(b.input_ids) = dim₂(b.attention_mask) ∧
+    dim₂(b.input_ids) = dim₂(b.labels) ∧
+    #b.sample_ids = b.batch_size ∧
+    b.total_tokens = b.batch_size * dim₂(b.input_ids) ∧
+    b.padding_tokens ≤ b.total_tokens
+
+PRED ValidCognitiveBatch(b: TrainingBatch) ≜
+    (b.cognitive_stream_ids ≠ ⊥ ⇒
+        #b.cognitive_stream_ids! = b.batch_size ∧
+        ∀ s ∈ ran b.cognitive_stream_ids! • 1 ≤ s ≤ COGNITIVE_STREAMS) ∧
+    (b.cognitive_step_ids ≠ ⊥ ⇒
+        #b.cognitive_step_ids! = b.batch_size ∧
+        ∀ s ∈ ran b.cognitive_step_ids! • 1 ≤ s ≤ COGNITIVE_STEPS) ∧
+    (b.cognitive_mode_ids ≠ ⊥ ⇒
+        #b.cognitive_mode_ids! = b.batch_size ∧
+        ∀ m ∈ ran b.cognitive_mode_ids! • m ∈ {0, 1})
+
+(* ═══════════════════════════════════════════════════════════════════════════
+   SECTION 6: State Invariants
+   ═══════════════════════════════════════════════════════════════════════════ *)
+
+INVARIANT DataLoaderStateInvariant
+    ∀ state: DataLoaderState •
+        ValidDatasetConfig(state.dataset_config) ∧
+        ValidDataLoaderConfig(state.loader_config) ∧
+        
+        (* Index bounds *)
+        state.current_index ≤ state.total_samples ∧
+        state.samples_seen_epoch ≤ state.total_samples ∧
+        
+        (* Sample indices valid *)
+        #state.sample_indices = state.total_samples ∧
+        (∀ i ∈ ran state.sample_indices • i < state.total_samples) ∧
+        
+        (* Buffer constraints *)
+        state.buffer_size = #state.prefetch_buffer ∧
+        state.buffer_size ≤ state.loader_config.prefetch_factor ∧
+        
+        (* Cognitive mode balance *)
+        state.cognitive_mode_counts.expressive + 
+        state.cognitive_mode_counts.reflective = state.samples_seen_total ∧
+        
+        (* Distributed training constraints *)
+        (state.loader_config.world_size > 1 ⇒
+            state.total_samples mod state.loader_config.world_size = 0)
+
+(* ═══════════════════════════════════════════════════════════════════════════
+   SECTION 7: Data Loading Operations
+   ═══════════════════════════════════════════════════════════════════════════ *)
+
+OP Initialize
+    ΔSTATE DataLoaderState
+    dataset_config?: DatasetConfig
+    loader_config?: DataLoaderConfig
+    tokenizer?: TokenizerState
+    
+    PRE 
+        ValidDatasetConfig(dataset_config?) ∧
+        ValidDataLoaderConfig(loader_config?)
+    POST
+        dataset_config' = dataset_config? ∧
+        loader_config' = loader_config? ∧
+        tokenizer' = tokenizer? ∧
+        current_epoch' = 0 ∧
+        current_index' = 0 ∧
+        samples_seen_epoch' = 0 ∧
+        samples_seen_total' = 0 ∧
+        batches_yielded' = 0 ∧
+        tokens_processed' = 0 ∧
+        cognitive_mode_counts' = ⟦expressive ↦ 0, reflective ↦ 0⟧ ∧
+        prefetch_buffer' = ⟨⟩ ∧
+        buffer_size' = 0
+
+OP LoadDataset
+    ΔSTATE DataLoaderState
+    total_samples!: ℕ
+    
+    PRE true
+    POST
+        total_samples! = total_samples' ∧
+        total_samples' > 0 ∧
+        #sample_indices' = total_samples' ∧
+        (* Initial indices are sequential *)
+        (∀ i: 0..total_samples' - 1 • sample_indices'[i + 1] = i)
+
+OP ShuffleIndices
+    ΔSTATE DataLoaderState
+    seed?: ℕ
+    
+    PRE total_samples > 0
+    POST
+        (* Indices are a permutation *)
+        ran sample_indices' = ran sample_indices ∧
+        #sample_indices' = #sample_indices ∧
+        (* RNG state updated *)
+        rng_state' ≠ rng_state
+
+OP GetNextBatch
+    ΔSTATE DataLoaderState
+    batch!: TrainingBatch
+    
+    PRE 
+        current_index < total_samples ∧
+        current_index + loader_config.batch_size ≤ total_samples
+    POST
+        ValidTrainingBatch(batch!, loader_config) ∧
+        
+        (* Index advanced *)
+        current_index' = current_index + loader_config.batch_size ∧
+        
+        (* Counters updated *)
+        samples_seen_epoch' = samples_seen_epoch + loader_config.batch_size ∧
+        samples_seen_total' = samples_seen_total + loader_config.batch_size ∧
+        batches_yielded' = batches_yielded + 1 ∧
+        tokens_processed' = tokens_processed + batch!.total_tokens ∧
+        
+        (* Sample IDs from current indices *)
+        batch!.sample_ids = ⟨sample_indices[current_index + i] | i: 1..loader_config.batch_size⟩
+
+OP GetNextBatchDynamic
+    ΔSTATE DataLoaderState
+    max_tokens?: ℕ
+    batch!: TrainingBatch
+    actual_batch_size!: BatchSize
+    
+    PRE 
+        current_index < total_samples ∧
+        loader_config.dynamic_batching ∧
+        loader_config.max_tokens_per_batch ≠ ⊥
+    POST
+        batch!.total_tokens ≤ max_tokens? ∧
+        actual_batch_size! = batch!.batch_size ∧
+        current_index' = current_index + actual_batch_size!
+
+OP StartNewEpoch
+    ΔSTATE DataLoaderState
+    
+    PRE true
+    POST
+        current_epoch' = current_epoch + 1 ∧
+        current_index' = 0 ∧
+        samples_seen_epoch' = 0 ∧
+        (* Shuffle if configured *)
+        (dataset_config.sampling_strategy = RandomShuffle ⇒
+            ran sample_indices' = ran sample_indices)
+
+OP PrefetchBatches
+    ΔSTATE DataLoaderState
+    num_batches?: ℕ₁
+    
+    PRE 
+        buffer_size < loader_config.prefetch_factor ∧
+        current_index < total_samples
+    POST
+        buffer_size' = min(buffer_size + num_batches?, loader_config.prefetch_factor) ∧
+        #prefetch_buffer' = buffer_size' ∧
+        (∀ b ∈ ran prefetch_buffer' • ValidTrainingBatch(b, loader_config))
+
+(* ═══════════════════════════════════════════════════════════════════════════
+   SECTION 8: Tokenization Operations
+   ═══════════════════════════════════════════════════════════════════════════ *)
+
+OP TokenizeSample
+    ΞSTATE DataLoaderState
+    raw_sample?: RawSample
+    tokenized!: TokenizedSample
+    
+    PRE #raw_sample?.text > 0
+    POST
+        ValidTokenizedSample(tokenized!, dataset_config, tokenizer.config) ∧
+        tokenized!.id = raw_sample?.id ∧
+        
+        (* Labels are shifted input_ids for causal LM *)
+        (∀ i: 1..#tokenized!.labels - 1 • 
+            tokenized!.labels[i] = tokenized!.input_ids[i + 1]) ∧
+        
+        (* Cognitive markers if enabled *)
+        (dataset_config.cognitive_annotation ⇒ 
+            tokenized!.cognitive_markers ≠ ⊥)
+
+OP TokenizeBatch
+    ΞSTATE DataLoaderState
+    raw_samples?: seq RawSample
+    tokenized!: seq TokenizedSample
+    
+    PRE 
+        #raw_samples? > 0 ∧
+        ∀ s ∈ ran raw_samples? • #s.text > 0
+    POST
+        #tokenized! = #raw_samples? ∧
+        ∀ i: 1..#tokenized! • 
+            ValidTokenizedSample(tokenized![i], dataset_config, tokenizer.config) ∧
+            tokenized![i].id = raw_samples?[i].id
+
+OP PackSamples
+    ΞSTATE DataLoaderState
+    samples?: seq TokenizedSample
+    max_length?: SeqLen
+    packed!: seq TokenizedSample
+    
+    PRE 
+        #samples? > 0 ∧
+        dataset_config.packing_strategy ≠ NoPacking
+    POST
+        (* Total tokens preserved *)
+        Σᵢ #packed![i].input_ids ≥ Σᵢ #samples?[i].input_ids ∧
+        
+        (* Each packed sample respects max length *)
+        ∀ p ∈ ran packed! • #p.input_ids ≤ max_length? ∧
+        
+        (* Cognitive alignment if configured *)
+        (dataset_config.packing_strategy = CognitiveAlignedPacking ⇒
+            ∀ p ∈ ran packed! • 
+                #p.input_ids mod COGNITIVE_STEPS = 0)
+
+(* ═══════════════════════════════════════════════════════════════════════════
+   SECTION 9: Cognitive-Aware Operations
+   ═══════════════════════════════════════════════════════════════════════════ *)
+
+OP AnnotateCognitiveMarkers
+    ΞSTATE DataLoaderState
+    sample?: TokenizedSample
+    annotated!: TokenizedSample
+    
+    PRE dataset_config.cognitive_annotation
+    POST
+        annotated!.id = sample?.id ∧
+        annotated!.input_ids = sample?.input_ids ∧
+        annotated!.cognitive_markers ≠ ⊥ ∧
+        
+        (* Markers distributed across sequence *)
+        #annotated!.cognitive_markers! > 0 ∧
+        (∀ m ∈ ran annotated!.cognitive_markers! • 
+            m.position < #annotated!.input_ids)
+
+OP BalanceCognitiveModes
+    ΔSTATE DataLoaderState
+    batch?: seq TokenizedSample
+    balanced!: seq TokenizedSample
+    
+    PRE 
+        dataset_config.cognitive_mode_balance ≠ ⊥ ∧
+        #batch? > 0
+    POST
+        #balanced! = #batch? ∧
+        
+        (* Mode ratio approximately matches target *)
+        LET expressive_count = #{s ∈ ran balanced! | 
+            s.cognitive_markers ≠ ⊥ ∧ 
+            HasExpressiveMode(s.cognitive_markers!)} IN
+        LET target_ratio = dataset_config.cognitive_mode_balance!.expressive_ratio IN
+        |expressive_count / #balanced! - target_ratio| < 0.1
+
+OP AssignCognitiveStream
+    ΞSTATE DataLoaderState
+    sample_index?: ℕ
+    stream_id!: StreamId
+    step_id!: StepId
+    
+    PRE sample_index? < total_samples
+    POST
+        1 ≤ stream_id! ≤ COGNITIVE_STREAMS ∧
+        1 ≤ step_id! ≤ COGNITIVE_STEPS ∧
+        
+        (* Deterministic assignment based on index *)
+        stream_id! = ((sample_index? mod COGNITIVE_STREAMS) + 1) ∧
+        step_id! = ((sample_index? mod COGNITIVE_STEPS) + 1)
+
+(* ═══════════════════════════════════════════════════════════════════════════
+   SECTION 10: Distributed Training Operations
+   ═══════════════════════════════════════════════════════════════════════════ *)
+
+OP ShardDataset
+    ΔSTATE DataLoaderState
+    world_size?: ℕ₁
+    rank?: ℕ
+    
+    PRE 
+        rank? < world_size? ∧
+        total_samples mod world_size? = 0
+    POST
+        LET shard_size = total_samples div world_size? IN
+        #sample_indices' = shard_size ∧
+        total_samples' = shard_size ∧
+        
+        (* Each rank gets disjoint subset *)
+        (∀ i: 1..shard_size • 
+            sample_indices'[i] = sample_indices[rank? * shard_size + i])
+
+OP SyncEpochState
+    ΔSTATE DataLoaderState
+    global_samples_seen?: ℕ
+    
+    PRE loader_config.world_size > 1
+    POST
+        (* All ranks have consistent epoch state *)
+        samples_seen_total' = global_samples_seen?
+
+(* ═══════════════════════════════════════════════════════════════════════════
+   SECTION 11: Helper Functions
+   ═══════════════════════════════════════════════════════════════════════════ *)
+
+FUNC HasExpressiveMode(markers: seq ⟦position: ℕ, marker_type: {stream, pivot, afford, salience}, 
+                                   stream_id: optional StreamId, step_id: optional StepId⟧): 𝔹 ≜
+    ∃ m ∈ ran markers • m.marker_type = afford
+
+FUNC ComputePaddingEfficiency(batch: TrainingBatch): Probability ≜
+    1 - (batch.padding_tokens / batch.total_tokens)
+
+FUNC EstimateBatchTokens(samples: seq TokenizedSample, max_length: SeqLen): ℕ ≜
+    #samples * max_length
+
+(* ═══════════════════════════════════════════════════════════════════════════
+   SECTION 12: Theorems and Properties
+   ═══════════════════════════════════════════════════════════════════════════ *)
+
+THEOREM DataPreservation:
+    ∀ state: DataLoaderState; epoch: EpochId •
+        (* All samples seen exactly once per epoch *)
+        (state.current_epoch = epoch ∧ state.samples_seen_epoch = state.total_samples) ⇒
+        (∀ i: 0..state.total_samples - 1 • i ∈ ran state.sample_indices)
+
+THEOREM ShufflePermutation:
+    ∀ state, state': DataLoaderState •
+        ShuffleIndices(state, state', seed) ⇒
+        ran state'.sample_indices = ran state.sample_indices
+
+THEOREM BatchCompleteness:
+    ∀ state: DataLoaderState; batch: TrainingBatch •
+        GetNextBatch(state, batch) ⇒
+        #batch.sample_ids = state.loader_config.batch_size
+
+THEOREM CognitiveModeBalance:
+    ∀ state: DataLoaderState •
+        state.dataset_config.cognitive_mode_balance ≠ ⊥ ∧
+        state.samples_seen_total > 100 ⇒
+        LET ratio = state.cognitive_mode_counts.expressive / state.samples_seen_total IN
+        |ratio - state.dataset_config.cognitive_mode_balance!.expressive_ratio| < 0.15
+
+THEOREM DistributedConsistency:
+    ∀ states: seq DataLoaderState •
+        (#states = states[1].loader_config.world_size ∧
+         ∀ s ∈ ran states • s.current_epoch = states[1].current_epoch) ⇒
+        (* Total samples across all ranks equals original dataset *)
+        Σᵢ states[i].total_samples = 
+            states[1].total_samples * states[1].loader_config.world_size
+
+END DataLoader

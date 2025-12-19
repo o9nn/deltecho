@@ -1,0 +1,680 @@
+(*
+ * LossFunction.zpp - Loss Function Contracts for Training Pipeline
+ * Z++ Formal Specification for Deltecho Model Package
+ * 
+ * Defines the formal contracts for loss computation, including cross-entropy,
+ * cognitive-aware losses, auxiliary losses, and loss aggregation strategies.
+ *)
+
+SCHEMA LossFunction
+IMPORTS Types, ModelConfig, Model
+
+(* ═══════════════════════════════════════════════════════════════════════════
+   SECTION 1: Loss Type Definitions
+   ═══════════════════════════════════════════════════════════════════════════ *)
+
+TYPE LossValue == ℝ                    (* Non-negative loss value *)
+TYPE GradientValue == ℝ                (* Gradient component *)
+TYPE LossWeight == ℝ                   (* Loss term weight, typically [0, 1] *)
+
+TYPE LossReduction ::=
+    None |                             (* Return per-sample losses *)
+    Mean |                             (* Average over samples *)
+    Sum |                              (* Sum over samples *)
+    WeightedMean                       (* Weighted average *)
+
+TYPE LossType ::=
+    CrossEntropy |                     (* Standard cross-entropy *)
+    LabelSmoothedCE |                  (* Label smoothing cross-entropy *)
+    FocalLoss |                        (* Focal loss for imbalanced data *)
+    CognitiveLoss |                    (* Cognitive-aware composite loss *)
+    ContrastiveLoss |                  (* Contrastive learning loss *)
+    KLDivergence |                     (* KL divergence loss *)
+    MSELoss                            (* Mean squared error *)
+
+(* ═══════════════════════════════════════════════════════════════════════════
+   SECTION 2: Loss Configuration Types
+   ═══════════════════════════════════════════════════════════════════════════ *)
+
+TYPE CrossEntropyConfig == ⟦
+    reduction: LossReduction,
+    ignore_index: TokenId,
+    label_smoothing: optional ℝ,
+    weight: optional Tensor1D[VocabSize]
+⟧
+
+TYPE FocalLossConfig == ⟦
+    reduction: LossReduction,
+    alpha: ℝ,
+    gamma: ℝ,
+    ignore_index: TokenId
+⟧
+
+TYPE CognitiveLossConfig == ⟦
+    (* Base loss *)
+    base_loss_type: LossType,
+    base_loss_weight: LossWeight,
+    
+    (* Stream coherence loss *)
+    stream_coherence_enabled: 𝔹,
+    stream_coherence_weight: LossWeight,
+    
+    (* Mode transition loss *)
+    mode_transition_enabled: 𝔹,
+    mode_transition_weight: LossWeight,
+    
+    (* Relevance realization loss *)
+    relevance_loss_enabled: 𝔹,
+    relevance_loss_weight: LossWeight,
+    
+    (* Cross-stream attention loss *)
+    cross_stream_loss_enabled: 𝔹,
+    cross_stream_loss_weight: LossWeight,
+    
+    (* Nested shell consistency loss *)
+    nested_shell_loss_enabled: 𝔹,
+    nested_shell_loss_weight: LossWeight,
+    nest_levels: ℕ₁
+⟧
+
+TYPE AuxiliaryLossConfig == ⟦
+    (* Router loss for MoE *)
+    router_z_loss_enabled: 𝔹,
+    router_z_loss_weight: LossWeight,
+    
+    (* Load balancing loss *)
+    load_balance_loss_enabled: 𝔹,
+    load_balance_loss_weight: LossWeight,
+    
+    (* Attention entropy loss *)
+    attention_entropy_enabled: 𝔹,
+    attention_entropy_weight: LossWeight,
+    attention_entropy_target: ℝ,
+    
+    (* Hidden state regularization *)
+    hidden_state_reg_enabled: 𝔹,
+    hidden_state_reg_weight: LossWeight,
+    hidden_state_reg_type: {L1, L2, Spectral}
+⟧
+
+TYPE LossFunctionConfig == ⟦
+    primary_loss_type: LossType,
+    cross_entropy_config: optional CrossEntropyConfig,
+    focal_loss_config: optional FocalLossConfig,
+    cognitive_loss_config: optional CognitiveLossConfig,
+    auxiliary_loss_config: optional AuxiliaryLossConfig,
+    
+    (* Gradient scaling *)
+    loss_scale: ℝ,
+    gradient_clipping: optional ℝ,
+    
+    (* Numerical stability *)
+    eps: ℝ,
+    log_softmax_dim: ℤ
+⟧
+
+(* ═══════════════════════════════════════════════════════════════════════════
+   SECTION 3: Loss Input/Output Types
+   ═══════════════════════════════════════════════════════════════════════════ *)
+
+TYPE LossInput == ⟦
+    (* Model outputs *)
+    logits: Tensor3D[BatchSize, SeqLen, VocabSize],
+    labels: Tensor2D[BatchSize, SeqLen],
+    
+    (* Masking *)
+    attention_mask: optional Tensor2D[BatchSize, SeqLen],
+    loss_mask: optional Tensor2D[BatchSize, SeqLen],
+    
+    (* Cognitive state *)
+    cognitive_hidden_states: optional seq Tensor3D[BatchSize, SeqLen, HiddenDim],
+    stream_ids: optional Tensor1D[BatchSize],
+    step_ids: optional Tensor1D[BatchSize],
+    mode_ids: optional Tensor1D[BatchSize],
+    
+    (* Auxiliary outputs *)
+    router_logits: optional seq Tensor3D[BatchSize, SeqLen, NumExperts],
+    attention_weights: optional seq Tensor4D[BatchSize, NumHeads, SeqLen, SeqLen]
+⟧
+
+TYPE LossOutput == ⟦
+    (* Primary loss *)
+    total_loss: LossValue,
+    
+    (* Component losses *)
+    primary_loss: LossValue,
+    auxiliary_loss: optional LossValue,
+    cognitive_loss: optional LossValue,
+    
+    (* Detailed breakdown *)
+    loss_components: ⟦
+        cross_entropy: optional LossValue,
+        stream_coherence: optional LossValue,
+        mode_transition: optional LossValue,
+        relevance_realization: optional LossValue,
+        cross_stream_attention: optional LossValue,
+        nested_shell_consistency: optional LossValue,
+        router_z_loss: optional LossValue,
+        load_balance_loss: optional LossValue,
+        attention_entropy: optional LossValue,
+        hidden_state_reg: optional LossValue
+    ⟧,
+    
+    (* Metrics *)
+    perplexity: ℝ,
+    accuracy: Probability,
+    tokens_evaluated: ℕ
+⟧
+
+(* ═══════════════════════════════════════════════════════════════════════════
+   SECTION 4: Loss Function State
+   ═══════════════════════════════════════════════════════════════════════════ *)
+
+STATE LossFunctionState == ⟦
+    config: LossFunctionConfig,
+    
+    (* Running statistics *)
+    total_loss_accumulated: ℝ,
+    steps_accumulated: ℕ,
+    tokens_accumulated: ℕ,
+    
+    (* Component statistics *)
+    component_losses_accumulated: ⟦
+        cross_entropy: ℝ,
+        stream_coherence: ℝ,
+        mode_transition: ℝ,
+        relevance_realization: ℝ,
+        cross_stream_attention: ℝ,
+        nested_shell_consistency: ℝ,
+        router_z_loss: ℝ,
+        load_balance_loss: ℝ
+    ⟧,
+    
+    (* Cognitive mode statistics *)
+    expressive_loss_accumulated: ℝ,
+    reflective_loss_accumulated: ℝ,
+    expressive_tokens: ℕ,
+    reflective_tokens: ℕ
+⟧
+
+(* ═══════════════════════════════════════════════════════════════════════════
+   SECTION 5: Invariant Predicates
+   ═══════════════════════════════════════════════════════════════════════════ *)
+
+PRED ValidLossConfig(c: LossFunctionConfig) ≜
+    c.loss_scale > 0 ∧
+    c.eps > 0 ∧
+    (c.gradient_clipping ≠ ⊥ ⇒ c.gradient_clipping! > 0) ∧
+    
+    (* Cross-entropy config valid *)
+    (c.cross_entropy_config ≠ ⊥ ⇒
+        (c.cross_entropy_config!.label_smoothing ≠ ⊥ ⇒
+            0 ≤ c.cross_entropy_config!.label_smoothing! < 1)) ∧
+    
+    (* Focal loss config valid *)
+    (c.focal_loss_config ≠ ⊥ ⇒
+        c.focal_loss_config!.alpha > 0 ∧
+        c.focal_loss_config!.gamma ≥ 0) ∧
+    
+    (* Cognitive loss weights sum to reasonable value *)
+    (c.cognitive_loss_config ≠ ⊥ ⇒
+        c.cognitive_loss_config!.base_loss_weight > 0 ∧
+        c.cognitive_loss_config!.stream_coherence_weight ≥ 0 ∧
+        c.cognitive_loss_config!.mode_transition_weight ≥ 0 ∧
+        c.cognitive_loss_config!.relevance_loss_weight ≥ 0 ∧
+        c.cognitive_loss_config!.cross_stream_loss_weight ≥ 0 ∧
+        c.cognitive_loss_config!.nested_shell_loss_weight ≥ 0)
+
+PRED ValidLossInput(input: LossInput) ≜
+    dim₁(input.logits) = dim₁(input.labels) ∧
+    dim₂(input.logits) = dim₂(input.labels) ∧
+    (input.attention_mask ≠ ⊥ ⇒
+        dim₁(input.attention_mask!) = dim₁(input.labels) ∧
+        dim₂(input.attention_mask!) = dim₂(input.labels)) ∧
+    (input.loss_mask ≠ ⊥ ⇒
+        dim₁(input.loss_mask!) = dim₁(input.labels) ∧
+        dim₂(input.loss_mask!) = dim₂(input.labels)) ∧
+    (input.stream_ids ≠ ⊥ ⇒
+        #input.stream_ids! = dim₁(input.labels) ∧
+        ∀ s ∈ ran input.stream_ids! • 1 ≤ s ≤ COGNITIVE_STREAMS) ∧
+    (input.step_ids ≠ ⊥ ⇒
+        #input.step_ids! = dim₁(input.labels) ∧
+        ∀ s ∈ ran input.step_ids! • 1 ≤ s ≤ COGNITIVE_STEPS)
+
+PRED ValidLossOutput(output: LossOutput) ≜
+    output.total_loss ≥ 0 ∧
+    output.primary_loss ≥ 0 ∧
+    (output.auxiliary_loss ≠ ⊥ ⇒ output.auxiliary_loss! ≥ 0) ∧
+    (output.cognitive_loss ≠ ⊥ ⇒ output.cognitive_loss! ≥ 0) ∧
+    output.perplexity ≥ 1 ∧
+    0 ≤ output.accuracy ≤ 1 ∧
+    output.tokens_evaluated > 0
+
+(* ═══════════════════════════════════════════════════════════════════════════
+   SECTION 6: State Invariants
+   ═══════════════════════════════════════════════════════════════════════════ *)
+
+INVARIANT LossFunctionStateInvariant
+    ∀ state: LossFunctionState •
+        ValidLossConfig(state.config) ∧
+        state.steps_accumulated ≥ 0 ∧
+        state.tokens_accumulated ≥ 0 ∧
+        (state.steps_accumulated > 0 ⇒ state.tokens_accumulated > 0) ∧
+        state.expressive_tokens + state.reflective_tokens ≤ state.tokens_accumulated
+
+(* ═══════════════════════════════════════════════════════════════════════════
+   SECTION 7: Primary Loss Operations
+   ═══════════════════════════════════════════════════════════════════════════ *)
+
+OP ComputeCrossEntropyLoss
+    ΞSTATE LossFunctionState
+    logits?: Tensor3D[BatchSize, SeqLen, VocabSize]
+    labels?: Tensor2D[BatchSize, SeqLen]
+    mask?: optional Tensor2D[BatchSize, SeqLen]
+    loss!: LossValue
+    per_token_loss!: optional Tensor2D[BatchSize, SeqLen]
+    
+    PRE 
+        dim₁(logits?) = dim₁(labels?) ∧
+        dim₂(logits?) = dim₂(labels?)
+    POST
+        loss! ≥ 0 ∧
+        
+        (* Loss computed as negative log likelihood *)
+        (* loss = -Σ log(softmax(logits)[label]) / num_tokens *)
+        
+        (* Masked tokens excluded *)
+        (mask? ≠ ⊥ ⇒
+            per_token_loss! ≠ ⊥ ∧
+            ∀ i, j • mask?![i][j] = 0 ⇒ per_token_loss![i][j] = 0) ∧
+        
+        (* Label smoothing applied if configured *)
+        (config.cross_entropy_config ≠ ⊥ ∧
+         config.cross_entropy_config!.label_smoothing ≠ ⊥ ⇒
+            (* Smoothed distribution: (1-ε)·one_hot + ε/V *)
+            true)
+
+OP ComputeLabelSmoothedLoss
+    ΞSTATE LossFunctionState
+    logits?: Tensor3D[BatchSize, SeqLen, VocabSize]
+    labels?: Tensor2D[BatchSize, SeqLen]
+    smoothing?: ℝ
+    loss!: LossValue
+    
+    PRE 
+        0 ≤ smoothing? < 1 ∧
+        dim₁(logits?) = dim₁(labels?)
+    POST
+        loss! ≥ 0 ∧
+        (* Loss interpolates between CE and uniform distribution *)
+        (* loss = (1-ε)·CE(logits, labels) + ε·H(uniform) *)
+        true
+
+OP ComputeFocalLoss
+    ΞSTATE LossFunctionState
+    logits?: Tensor3D[BatchSize, SeqLen, VocabSize]
+    labels?: Tensor2D[BatchSize, SeqLen]
+    alpha?: ℝ
+    gamma?: ℝ
+    loss!: LossValue
+    
+    PRE 
+        alpha? > 0 ∧
+        gamma? ≥ 0 ∧
+        dim₁(logits?) = dim₁(labels?)
+    POST
+        loss! ≥ 0 ∧
+        (* Focal loss: -α·(1-p)^γ·log(p) *)
+        (* Down-weights well-classified examples *)
+        true
+
+(* ═══════════════════════════════════════════════════════════════════════════
+   SECTION 8: Cognitive Loss Operations
+   ═══════════════════════════════════════════════════════════════════════════ *)
+
+OP ComputeStreamCoherenceLoss
+    ΞSTATE LossFunctionState
+    hidden_states?: seq Tensor3D[BatchSize, SeqLen, HiddenDim]
+    stream_ids?: Tensor1D[BatchSize]
+    loss!: LossValue
+    
+    PRE 
+        #hidden_states? = COGNITIVE_STREAMS ∧
+        ∀ s ∈ ran stream_ids? • 1 ≤ s ≤ COGNITIVE_STREAMS
+    POST
+        loss! ≥ 0 ∧
+        (* Encourages coherent representations within each stream *)
+        (* loss = Σ_stream variance(hidden_states[stream]) *)
+        true
+
+OP ComputeModeTransitionLoss
+    ΞSTATE LossFunctionState
+    hidden_states?: Tensor3D[BatchSize, SeqLen, HiddenDim]
+    mode_ids?: Tensor1D[BatchSize]
+    loss!: LossValue
+    
+    PRE 
+        ∀ m ∈ ran mode_ids? • m ∈ {0, 1}  (* 0=expressive, 1=reflective *)
+    POST
+        loss! ≥ 0 ∧
+        (* Encourages smooth transitions between cognitive modes *)
+        (* Penalizes abrupt representation changes at mode boundaries *)
+        true
+
+OP ComputeRelevanceRealizationLoss
+    ΞSTATE LossFunctionState
+    hidden_states?: Tensor3D[BatchSize, SeqLen, HiddenDim]
+    step_ids?: Tensor1D[BatchSize]
+    pivot_positions?: seq ℕ
+    loss!: LossValue
+    
+    PRE 
+        ∀ s ∈ ran step_ids? • 1 ≤ s ≤ COGNITIVE_STEPS ∧
+        ∀ p ∈ ran pivot_positions? • p < dim₂(hidden_states?)
+    POST
+        loss! ≥ 0 ∧
+        (* Encourages pivotal relevance at designated steps *)
+        (* Pivot steps should have high attention to salient features *)
+        true
+
+OP ComputeCrossStreamAttentionLoss
+    ΞSTATE LossFunctionState
+    attention_weights?: seq Tensor4D[BatchSize, NumHeads, SeqLen, SeqLen]
+    stream_ids?: Tensor1D[BatchSize]
+    loss!: LossValue
+    
+    PRE 
+        #attention_weights? > 0 ∧
+        ∀ s ∈ ran stream_ids? • 1 ≤ s ≤ COGNITIVE_STREAMS
+    POST
+        loss! ≥ 0 ∧
+        (* Encourages appropriate cross-stream attention patterns *)
+        (* Stream 1 should attend to Stream 2's action *)
+        (* Stream 3 should reflect on simulation of action *)
+        true
+
+OP ComputeNestedShellConsistencyLoss
+    ΞSTATE LossFunctionState
+    hidden_states?: seq Tensor3D[BatchSize, SeqLen, HiddenDim]
+    nest_levels?: ℕ₁
+    loss!: LossValue
+    
+    PRE 
+        nest_levels? ≤ 4 ∧
+        #hidden_states? ≥ nest_levels?
+    POST
+        loss! ≥ 0 ∧
+        (* Enforces OEIS A000081 nested shell structure *)
+        (* Level 1: 1 term, Level 2: 2 terms, Level 3: 4 terms, Level 4: 9 terms *)
+        (* Encourages hierarchical representation consistency *)
+        true
+
+OP ComputeTriadAlignmentLoss
+    ΞSTATE LossFunctionState
+    hidden_states?: Tensor3D[BatchSize, SeqLen, HiddenDim]
+    step_ids?: Tensor1D[BatchSize]
+    loss!: LossValue
+    
+    PRE 
+        ∀ s ∈ ran step_ids? • 1 ≤ s ≤ COGNITIVE_STEPS
+    POST
+        loss! ≥ 0 ∧
+        (* Encourages alignment within triads: {1,5,9}, {2,6,10}, {3,7,11}, {4,8,12} *)
+        (* Steps within same triad should have similar representations *)
+        true
+
+OP ComputeCognitiveLoss
+    ΞSTATE LossFunctionState
+    input?: LossInput
+    cognitive_loss!: LossValue
+    components!: ⟦
+        stream_coherence: LossValue,
+        mode_transition: LossValue,
+        relevance_realization: LossValue,
+        cross_stream_attention: LossValue,
+        nested_shell_consistency: LossValue
+    ⟧
+    
+    PRE 
+        config.cognitive_loss_config ≠ ⊥ ∧
+        input?.cognitive_hidden_states ≠ ⊥
+    POST
+        cognitive_loss! ≥ 0 ∧
+        
+        (* Weighted sum of cognitive loss components *)
+        cognitive_loss! = 
+            config.cognitive_loss_config!.stream_coherence_weight * components!.stream_coherence +
+            config.cognitive_loss_config!.mode_transition_weight * components!.mode_transition +
+            config.cognitive_loss_config!.relevance_loss_weight * components!.relevance_realization +
+            config.cognitive_loss_config!.cross_stream_loss_weight * components!.cross_stream_attention +
+            config.cognitive_loss_config!.nested_shell_loss_weight * components!.nested_shell_consistency
+
+(* ═══════════════════════════════════════════════════════════════════════════
+   SECTION 9: Auxiliary Loss Operations
+   ═══════════════════════════════════════════════════════════════════════════ *)
+
+OP ComputeRouterZLoss
+    ΞSTATE LossFunctionState
+    router_logits?: seq Tensor3D[BatchSize, SeqLen, NumExperts]
+    loss!: LossValue
+    
+    PRE 
+        config.auxiliary_loss_config ≠ ⊥ ∧
+        config.auxiliary_loss_config!.router_z_loss_enabled ∧
+        #router_logits? > 0
+    POST
+        loss! ≥ 0 ∧
+        (* Z-loss encourages router logits to stay small *)
+        (* loss = mean(log(Σ exp(router_logits))²) *)
+        true
+
+OP ComputeLoadBalanceLoss
+    ΞSTATE LossFunctionState
+    router_logits?: seq Tensor3D[BatchSize, SeqLen, NumExperts]
+    loss!: LossValue
+    
+    PRE 
+        config.auxiliary_loss_config ≠ ⊥ ∧
+        config.auxiliary_loss_config!.load_balance_loss_enabled ∧
+        #router_logits? > 0
+    POST
+        loss! ≥ 0 ∧
+        (* Encourages uniform expert utilization *)
+        (* loss = num_experts · Σ(fraction_routed · mean_routing_prob) *)
+        true
+
+OP ComputeAttentionEntropyLoss
+    ΞSTATE LossFunctionState
+    attention_weights?: seq Tensor4D[BatchSize, NumHeads, SeqLen, SeqLen]
+    target_entropy?: ℝ
+    loss!: LossValue
+    
+    PRE 
+        config.auxiliary_loss_config ≠ ⊥ ∧
+        config.auxiliary_loss_config!.attention_entropy_enabled ∧
+        #attention_weights? > 0 ∧
+        target_entropy? > 0
+    POST
+        loss! ≥ 0 ∧
+        (* Encourages attention entropy close to target *)
+        (* loss = |H(attention) - target_entropy|² *)
+        true
+
+OP ComputeHiddenStateRegularization
+    ΞSTATE LossFunctionState
+    hidden_states?: Tensor3D[BatchSize, SeqLen, HiddenDim]
+    reg_type?: {L1, L2, Spectral}
+    loss!: LossValue
+    
+    PRE 
+        config.auxiliary_loss_config ≠ ⊥ ∧
+        config.auxiliary_loss_config!.hidden_state_reg_enabled
+    POST
+        loss! ≥ 0 ∧
+        CASE reg_type? OF
+            L1 → (* loss = mean(|hidden_states|) *)
+            L2 → (* loss = mean(hidden_states²) *)
+            Spectral → (* loss = spectral_norm(hidden_states) *)
+        END
+
+(* ═══════════════════════════════════════════════════════════════════════════
+   SECTION 10: Loss Aggregation Operations
+   ═══════════════════════════════════════════════════════════════════════════ *)
+
+OP ComputeTotalLoss
+    ΔSTATE LossFunctionState
+    input?: LossInput
+    output!: LossOutput
+    
+    PRE ValidLossInput(input?)
+    POST
+        ValidLossOutput(output!) ∧
+        
+        (* Total loss is weighted sum of components *)
+        output!.total_loss = 
+            output!.primary_loss +
+            (output!.auxiliary_loss ≠ ⊥ ? output!.auxiliary_loss! : 0) +
+            (output!.cognitive_loss ≠ ⊥ ? output!.cognitive_loss! : 0) ∧
+        
+        (* Perplexity computed from cross-entropy *)
+        output!.perplexity = exp(output!.loss_components.cross_entropy!) ∧
+        
+        (* Statistics updated *)
+        total_loss_accumulated' = total_loss_accumulated + output!.total_loss ∧
+        steps_accumulated' = steps_accumulated + 1 ∧
+        tokens_accumulated' = tokens_accumulated + output!.tokens_evaluated
+
+OP ReduceLoss
+    ΞSTATE LossFunctionState
+    per_sample_losses?: Tensor1D[BatchSize]
+    sample_weights?: optional Tensor1D[BatchSize]
+    reduction?: LossReduction
+    reduced_loss!: LossValue
+    
+    PRE 
+        #per_sample_losses? > 0 ∧
+        (sample_weights? ≠ ⊥ ⇒ #sample_weights?! = #per_sample_losses?)
+    POST
+        reduced_loss! ≥ 0 ∧
+        CASE reduction? OF
+            None → reduced_loss! = per_sample_losses?[1]
+            Mean → reduced_loss! = mean(per_sample_losses?)
+            Sum → reduced_loss! = sum(per_sample_losses?)
+            WeightedMean → 
+                sample_weights? ≠ ⊥ ∧
+                reduced_loss! = sum(per_sample_losses? * sample_weights?!) / sum(sample_weights?!)
+        END
+
+OP ScaleLoss
+    ΞSTATE LossFunctionState
+    loss?: LossValue
+    scaled_loss!: LossValue
+    
+    PRE loss? ≥ 0
+    POST
+        scaled_loss! = loss? * config.loss_scale ∧
+        scaled_loss! ≥ 0
+
+OP GetAverageLoss
+    ΞSTATE LossFunctionState
+    average_loss!: LossValue
+    
+    PRE steps_accumulated > 0
+    POST
+        average_loss! = total_loss_accumulated / steps_accumulated
+
+OP ResetStatistics
+    ΔSTATE LossFunctionState
+    
+    PRE true
+    POST
+        total_loss_accumulated' = 0 ∧
+        steps_accumulated' = 0 ∧
+        tokens_accumulated' = 0 ∧
+        component_losses_accumulated' = ⟦
+            cross_entropy ↦ 0,
+            stream_coherence ↦ 0,
+            mode_transition ↦ 0,
+            relevance_realization ↦ 0,
+            cross_stream_attention ↦ 0,
+            nested_shell_consistency ↦ 0,
+            router_z_loss ↦ 0,
+            load_balance_loss ↦ 0
+        ⟧ ∧
+        expressive_loss_accumulated' = 0 ∧
+        reflective_loss_accumulated' = 0 ∧
+        expressive_tokens' = 0 ∧
+        reflective_tokens' = 0
+
+(* ═══════════════════════════════════════════════════════════════════════════
+   SECTION 11: Helper Functions
+   ═══════════════════════════════════════════════════════════════════════════ *)
+
+FUNC LogSoftmax(logits: Tensor1D[VocabSize], dim: ℤ): Tensor1D[VocabSize] ≜
+    (* log_softmax(x) = x - log(Σ exp(x)) *)
+    LET max_val = max(logits) IN
+    LET shifted = logits - max_val IN
+    LET log_sum_exp = log(Σᵢ exp(shifted[i])) IN
+    ⟨shifted[i] - log_sum_exp | i: 1..#logits⟩
+
+FUNC Softmax(logits: Tensor1D[VocabSize]): Tensor1D[VocabSize] ≜
+    LET max_val = max(logits) IN
+    LET exp_shifted = ⟨exp(logits[i] - max_val) | i: 1..#logits⟩ IN
+    LET sum_exp = Σᵢ exp_shifted[i] IN
+    ⟨exp_shifted[i] / sum_exp | i: 1..#logits⟩
+
+FUNC Entropy(probs: Tensor1D[N]): ℝ ≜
+    -Σᵢ (probs[i] > 0 ? probs[i] * log(probs[i]) : 0)
+
+FUNC KLDivergence(p: Tensor1D[N], q: Tensor1D[N]): ℝ ≜
+    Σᵢ (p[i] > 0 ? p[i] * log(p[i] / q[i]) : 0)
+
+FUNC GetTriadForStep(step: StepId): {1, 2, 3, 4} ≜
+    CASE step OF
+        1, 5, 9 → 1
+        2, 6, 10 → 2
+        3, 7, 11 → 3
+        4, 8, 12 → 4
+    END
+
+FUNC GetModeForStep(step: StepId): CognitiveMode ≜
+    IF step ∈ {1, 2, 3, 4, 5, 8, 9} THEN Expressive
+    ELSE Reflective
+
+(* ═══════════════════════════════════════════════════════════════════════════
+   SECTION 12: Theorems and Properties
+   ═══════════════════════════════════════════════════════════════════════════ *)
+
+THEOREM LossNonNegativity:
+    ∀ input: LossInput; output: LossOutput; state: LossFunctionState •
+        ValidLossInput(input) ∧ ComputeTotalLoss(state, input, output) ⇒
+        output.total_loss ≥ 0
+
+THEOREM PerplexityBound:
+    ∀ output: LossOutput •
+        ValidLossOutput(output) ⇒
+        output.perplexity ≥ 1
+
+THEOREM LossDecomposition:
+    ∀ output: LossOutput •
+        ValidLossOutput(output) ⇒
+        output.total_loss = output.primary_loss + 
+            (output.auxiliary_loss ≠ ⊥ ? output.auxiliary_loss! : 0) +
+            (output.cognitive_loss ≠ ⊥ ? output.cognitive_loss! : 0)
+
+THEOREM CognitiveModeConsistency:
+    ∀ state: LossFunctionState •
+        state.expressive_tokens + state.reflective_tokens ≤ state.tokens_accumulated
+
+THEOREM ReductionConsistency:
+    ∀ losses: Tensor1D[N]; weights: Tensor1D[N] •
+        (∀ w ∈ ran weights • w > 0) ⇒
+        ReduceLoss(losses, weights, WeightedMean) ≤ max(losses)
+
+THEOREM LabelSmoothingBound:
+    ∀ logits: Tensor3D[B, S, V]; labels: Tensor2D[B, S]; ε: ℝ •
+        0 ≤ ε < 1 ⇒
+        ComputeLabelSmoothedLoss(logits, labels, ε) ≤ 
+            ComputeCrossEntropyLoss(logits, labels) + ε * log(V)
+
+END LossFunction

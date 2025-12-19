@@ -1,0 +1,801 @@
+(*
+ * TrainingPipe.zpp - End-to-End Training Pipeline Contract
+ * Z++ Formal Specification for Deltecho Model Package
+ * 
+ * Defines the formal contracts for the complete training pipeline,
+ * integrating data loading, forward pass, loss computation, optimization,
+ * checkpointing, and cognitive-aware training orchestration.
+ *)
+
+SCHEMA TrainingPipe
+IMPORTS Types, ModelConfig, Model, DataLoader, LossFunction, Optimizer
+
+(* ═══════════════════════════════════════════════════════════════════════════
+   SECTION 1: Training Configuration Types
+   ═══════════════════════════════════════════════════════════════════════════ *)
+
+TYPE TrainingPhase ::=
+    Pretraining |                      (* Initial pretraining *)
+    ContinuedPretraining |             (* Domain adaptation *)
+    FineTuning |                       (* Task-specific fine-tuning *)
+    InstructionTuning |                (* Instruction following *)
+    RLHF |                             (* Reinforcement learning from human feedback *)
+    CognitiveAlignment                 (* Cognitive architecture alignment *)
+
+TYPE DistributedStrategy ::=
+    None |                             (* Single GPU *)
+    DataParallel |                     (* Data parallelism *)
+    DistributedDataParallel |          (* DDP *)
+    FullyShardedDataParallel |         (* FSDP *)
+    PipelineParallel |                 (* Pipeline parallelism *)
+    TensorParallel |                   (* Tensor parallelism *)
+    CognitiveStreamParallel            (* Parallel across cognitive streams *)
+
+TYPE CheckpointStrategy ::=
+    None |                             (* No checkpointing *)
+    StepBased |                        (* Every N steps *)
+    EpochBased |                       (* Every epoch *)
+    LossBased |                        (* On loss improvement *)
+    CognitivePhaseBased                (* At cognitive phase boundaries *)
+
+(* ═══════════════════════════════════════════════════════════════════════════
+   SECTION 2: Training Configuration
+   ═══════════════════════════════════════════════════════════════════════════ *)
+
+TYPE TrainingConfig == ⟦
+    (* Basic training parameters *)
+    training_phase: TrainingPhase,
+    max_steps: ℕ,
+    max_epochs: optional ℕ,
+    eval_steps: ℕ₁,
+    save_steps: ℕ₁,
+    logging_steps: ℕ₁,
+    
+    (* Batch configuration *)
+    per_device_train_batch_size: BatchSize,
+    per_device_eval_batch_size: BatchSize,
+    gradient_accumulation_steps: ℕ₁,
+    
+    (* Distributed training *)
+    distributed_strategy: DistributedStrategy,
+    world_size: ℕ₁,
+    local_rank: ℕ,
+    
+    (* Checkpointing *)
+    checkpoint_strategy: CheckpointStrategy,
+    checkpoint_dir: seq CHAR,
+    max_checkpoints: ℕ₁,
+    resume_from_checkpoint: optional seq CHAR,
+    
+    (* Early stopping *)
+    early_stopping_enabled: 𝔹,
+    early_stopping_patience: ℕ₁,
+    early_stopping_threshold: ℝ,
+    
+    (* Cognitive training *)
+    cognitive_training_enabled: 𝔹,
+    cognitive_warmup_steps: ℕ,
+    cognitive_loss_rampup_steps: ℕ,
+    stream_synchronization: 𝔹,
+    
+    (* Reproducibility *)
+    seed: ℕ,
+    deterministic: 𝔹
+⟧
+
+TYPE EvaluationConfig == ⟦
+    eval_dataset: DatasetConfig,
+    eval_batch_size: BatchSize,
+    eval_accumulation_steps: ℕ₁,
+    
+    (* Metrics *)
+    compute_perplexity: 𝔹,
+    compute_accuracy: 𝔹,
+    compute_bleu: 𝔹,
+    compute_rouge: 𝔹,
+    
+    (* Cognitive evaluation *)
+    eval_cognitive_coherence: 𝔹,
+    eval_stream_alignment: 𝔹,
+    eval_mode_balance: 𝔹
+⟧
+
+(* ═══════════════════════════════════════════════════════════════════════════
+   SECTION 3: Training Metrics Types
+   ═══════════════════════════════════════════════════════════════════════════ *)
+
+TYPE TrainingMetrics == ⟦
+    (* Loss metrics *)
+    train_loss: LossValue,
+    eval_loss: optional LossValue,
+    
+    (* Component losses *)
+    primary_loss: LossValue,
+    cognitive_loss: optional LossValue,
+    auxiliary_loss: optional LossValue,
+    
+    (* Performance metrics *)
+    perplexity: ℝ,
+    accuracy: optional Probability,
+    
+    (* Throughput metrics *)
+    samples_per_second: ℝ,
+    tokens_per_second: ℝ,
+    gpu_memory_used: ℕ,
+    
+    (* Cognitive metrics *)
+    stream_coherence_score: optional Probability,
+    mode_transition_smoothness: optional ℝ,
+    triad_alignment_score: optional Probability,
+    nested_shell_consistency: optional Probability,
+    
+    (* Optimization metrics *)
+    learning_rate: LearningRate,
+    gradient_norm: GradientNorm,
+    loss_scale: optional ℝ
+⟧
+
+TYPE CheckpointMetadata == ⟦
+    step: StepCount,
+    epoch: ℕ,
+    train_loss: LossValue,
+    eval_loss: optional LossValue,
+    learning_rate: LearningRate,
+    
+    (* Cognitive state *)
+    cognitive_stream: optional StreamId,
+    cognitive_step: optional StepId,
+    
+    (* Timestamps *)
+    created_at: ℕ,
+    training_time_seconds: ℕ
+⟧
+
+(* ═══════════════════════════════════════════════════════════════════════════
+   SECTION 4: Training Pipeline State
+   ═══════════════════════════════════════════════════════════════════════════ *)
+
+STATE TrainingPipelineState == ⟦
+    (* Configuration *)
+    config: TrainingConfig,
+    eval_config: optional EvaluationConfig,
+    
+    (* Component states *)
+    model: ModelState,
+    data_loader: DataLoaderState,
+    loss_function: LossFunctionState,
+    optimizer: OptimizerState,
+    
+    (* Training progress *)
+    global_step: StepCount,
+    current_epoch: ℕ,
+    samples_seen: ℕ,
+    tokens_seen: ℕ,
+    
+    (* Best metrics tracking *)
+    best_eval_loss: optional LossValue,
+    best_step: optional StepCount,
+    steps_since_improvement: ℕ,
+    
+    (* Cognitive training state *)
+    cognitive_active: 𝔹,
+    cognitive_loss_weight: LossWeight,
+    current_cognitive_stream: StreamId,
+    current_cognitive_step: StepId,
+    stream_training_counts: Tensor1D[COGNITIVE_STREAMS],
+    mode_training_counts: ⟦expressive: ℕ, reflective: ℕ⟧,
+    
+    (* Timing *)
+    training_start_time: ℕ,
+    step_times: seq ℕ,
+    
+    (* Checkpoints *)
+    checkpoint_paths: seq seq CHAR,
+    
+    (* Status *)
+    is_training: 𝔹,
+    should_stop: 𝔹,
+    stop_reason: optional {max_steps, max_epochs, early_stopping, user_interrupt, error}
+⟧
+
+(* ═══════════════════════════════════════════════════════════════════════════
+   SECTION 5: Invariant Predicates
+   ═══════════════════════════════════════════════════════════════════════════ *)
+
+PRED ValidTrainingConfig(c: TrainingConfig) ≜
+    c.max_steps > 0 ∧
+    c.eval_steps > 0 ∧
+    c.save_steps > 0 ∧
+    c.logging_steps > 0 ∧
+    c.per_device_train_batch_size > 0 ∧
+    c.gradient_accumulation_steps > 0 ∧
+    c.world_size > 0 ∧
+    c.local_rank < c.world_size ∧
+    c.max_checkpoints > 0 ∧
+    (c.early_stopping_enabled ⇒ c.early_stopping_patience > 0) ∧
+    (c.cognitive_training_enabled ⇒
+        c.cognitive_warmup_steps ≥ 0 ∧
+        c.cognitive_loss_rampup_steps ≥ 0)
+
+PRED ValidTrainingMetrics(m: TrainingMetrics) ≜
+    m.train_loss ≥ 0 ∧
+    (m.eval_loss ≠ ⊥ ⇒ m.eval_loss! ≥ 0) ∧
+    m.perplexity ≥ 1 ∧
+    (m.accuracy ≠ ⊥ ⇒ 0 ≤ m.accuracy! ≤ 1) ∧
+    m.samples_per_second > 0 ∧
+    m.tokens_per_second > 0 ∧
+    m.learning_rate > 0 ∧
+    m.gradient_norm ≥ 0
+
+PRED ValidCheckpointMetadata(m: CheckpointMetadata) ≜
+    m.train_loss ≥ 0 ∧
+    (m.eval_loss ≠ ⊥ ⇒ m.eval_loss! ≥ 0) ∧
+    m.learning_rate > 0 ∧
+    (m.cognitive_stream ≠ ⊥ ⇒ 1 ≤ m.cognitive_stream! ≤ COGNITIVE_STREAMS) ∧
+    (m.cognitive_step ≠ ⊥ ⇒ 1 ≤ m.cognitive_step! ≤ COGNITIVE_STEPS)
+
+(* ═══════════════════════════════════════════════════════════════════════════
+   SECTION 6: State Invariants
+   ═══════════════════════════════════════════════════════════════════════════ *)
+
+INVARIANT TrainingPipelineStateInvariant
+    ∀ state: TrainingPipelineState •
+        ValidTrainingConfig(state.config) ∧
+        
+        (* Progress consistency *)
+        state.global_step ≤ state.config.max_steps ∧
+        (state.config.max_epochs ≠ ⊥ ⇒ state.current_epoch ≤ state.config.max_epochs!) ∧
+        
+        (* Cognitive state consistency *)
+        (state.cognitive_active ⇒
+            1 ≤ state.current_cognitive_stream ≤ COGNITIVE_STREAMS ∧
+            1 ≤ state.current_cognitive_step ≤ COGNITIVE_STEPS ∧
+            0 ≤ state.cognitive_loss_weight ≤ 1) ∧
+        
+        (* Early stopping consistency *)
+        (state.config.early_stopping_enabled ⇒
+            state.steps_since_improvement ≤ state.config.early_stopping_patience ∨
+            state.should_stop) ∧
+        
+        (* Checkpoint limit *)
+        #state.checkpoint_paths ≤ state.config.max_checkpoints ∧
+        
+        (* Stop reason consistency *)
+        (state.should_stop ⇔ state.stop_reason ≠ ⊥)
+
+(* ═══════════════════════════════════════════════════════════════════════════
+   SECTION 7: Initialization Operations
+   ═══════════════════════════════════════════════════════════════════════════ *)
+
+OP InitializeTraining
+    ΔSTATE TrainingPipelineState
+    config?: TrainingConfig
+    model_config?: ModelConfigState
+    dataset_config?: DatasetConfig
+    optimizer_config?: OptimizerConfig
+    loss_config?: LossFunctionConfig
+    
+    PRE 
+        ValidTrainingConfig(config?) ∧
+        ValidModelConfig(model_config?) ∧
+        ValidDatasetConfig(dataset_config?) ∧
+        ValidOptimizerConfig(optimizer_config?) ∧
+        ValidLossConfig(loss_config?)
+    POST
+        config' = config? ∧
+        global_step' = 0 ∧
+        current_epoch' = 0 ∧
+        samples_seen' = 0 ∧
+        tokens_seen' = 0 ∧
+        best_eval_loss' = ⊥ ∧
+        best_step' = ⊥ ∧
+        steps_since_improvement' = 0 ∧
+        
+        (* Cognitive state initialized *)
+        cognitive_active' = (config?.cognitive_training_enabled ∧ 
+                            config?.cognitive_warmup_steps = 0) ∧
+        cognitive_loss_weight' = 0 ∧
+        current_cognitive_stream' = 1 ∧
+        current_cognitive_step' = 1 ∧
+        stream_training_counts' = zeros(COGNITIVE_STREAMS) ∧
+        mode_training_counts' = ⟦expressive ↦ 0, reflective ↦ 0⟧ ∧
+        
+        (* Status initialized *)
+        is_training' = false ∧
+        should_stop' = false ∧
+        stop_reason' = ⊥ ∧
+        checkpoint_paths' = ⟨⟩
+
+OP ResumeFromCheckpoint
+    ΔSTATE TrainingPipelineState
+    checkpoint_path?: seq CHAR
+    
+    PRE #checkpoint_path? > 0
+    POST
+        (* State restored from checkpoint *)
+        global_step' > 0 ∧
+        
+        (* Cognitive state restored *)
+        (config.cognitive_training_enabled ⇒
+            cognitive_active' = (global_step' ≥ config.cognitive_warmup_steps))
+
+OP SetSeed
+    ΔSTATE TrainingPipelineState
+    seed?: ℕ
+    
+    PRE true
+    POST
+        (* All random states seeded for reproducibility *)
+        data_loader'.rng_state = DeterministicRNG(seed?) ∧
+        model'.dropout_seed = seed? + 1
+
+(* ═══════════════════════════════════════════════════════════════════════════
+   SECTION 8: Training Loop Operations
+   ═══════════════════════════════════════════════════════════════════════════ *)
+
+OP TrainStep
+    ΔSTATE TrainingPipelineState
+    batch?: TrainingBatch
+    metrics!: TrainingMetrics
+    
+    PRE 
+        is_training ∧
+        ¬should_stop ∧
+        ValidTrainingBatch(batch?, data_loader.loader_config)
+    POST
+        ValidTrainingMetrics(metrics!) ∧
+        
+        (* Step counter incremented *)
+        global_step' = global_step + 1 ∧
+        samples_seen' = samples_seen + batch?.batch_size ∧
+        tokens_seen' = tokens_seen + batch?.total_tokens ∧
+        
+        (* Cognitive state advanced *)
+        (cognitive_active ⇒
+            current_cognitive_step' = 
+                ((current_cognitive_step - 1 + 1) mod COGNITIVE_STEPS) + 1 ∧
+            (current_cognitive_step' mod PHASE_OFFSET = 1 ⇒
+                current_cognitive_stream' = 
+                    ((current_cognitive_stream - 1 + 1) mod COGNITIVE_STREAMS) + 1) ∧
+            stream_training_counts'[current_cognitive_stream] = 
+                stream_training_counts[current_cognitive_stream] + 1) ∧
+        
+        (* Cognitive loss weight ramped up *)
+        (config.cognitive_training_enabled ∧ 
+         global_step' > config.cognitive_warmup_steps ⇒
+            cognitive_loss_weight' = min(1.0,
+                (global_step' - config.cognitive_warmup_steps) / 
+                config.cognitive_loss_rampup_steps))
+
+OP ForwardPass
+    ΞSTATE TrainingPipelineState
+    batch?: TrainingBatch
+    logits!: Tensor3D[BatchSize, SeqLen, VocabSize]
+    hidden_states!: optional seq Tensor3D[BatchSize, SeqLen, HiddenDim]
+    
+    PRE is_training
+    POST
+        dim₁(logits!) = batch?.batch_size ∧
+        dim₂(logits!) = dim₂(batch?.input_ids) ∧
+        dim₃(logits!) = model.config.vocab_size ∧
+        
+        (* Hidden states returned if cognitive training *)
+        (cognitive_active ⇒ hidden_states! ≠ ⊥)
+
+OP ComputeLoss
+    ΞSTATE TrainingPipelineState
+    logits?: Tensor3D[BatchSize, SeqLen, VocabSize]
+    labels?: Tensor2D[BatchSize, SeqLen]
+    hidden_states?: optional seq Tensor3D[BatchSize, SeqLen, HiddenDim]
+    loss_output!: LossOutput
+    
+    PRE 
+        is_training ∧
+        dim₁(logits?) = dim₁(labels?)
+    POST
+        ValidLossOutput(loss_output!) ∧
+        
+        (* Cognitive loss included if active *)
+        (cognitive_active ⇒
+            loss_output!.cognitive_loss ≠ ⊥ ∧
+            loss_output!.total_loss = 
+                loss_output!.primary_loss + 
+                cognitive_loss_weight * loss_output!.cognitive_loss!)
+
+OP BackwardPass
+    ΔSTATE TrainingPipelineState
+    loss?: LossValue
+    gradients!: seq Gradient
+    
+    PRE 
+        is_training ∧
+        loss? ≥ 0
+    POST
+        #gradients! = #optimizer.param_states ∧
+        (∀ g ∈ ran gradients! • isfinite(norm(g.grad)))
+
+OP OptimizationStep
+    ΔSTATE TrainingPipelineState
+    gradients?: seq Gradient
+    
+    PRE 
+        is_training ∧
+        optimizer.accumulator.is_ready
+    POST
+        (* Parameters updated *)
+        (∀ i: 1..#optimizer.param_states •
+            optimizer'.param_states[i].param ≠ optimizer.param_states[i].param) ∧
+        
+        (* Learning rate updated *)
+        optimizer'.current_lr = 
+            GetLearningRate(global_step, optimizer.base_lr, optimizer.config.scheduler_config)
+
+(* ═══════════════════════════════════════════════════════════════════════════
+   SECTION 9: Evaluation Operations
+   ═══════════════════════════════════════════════════════════════════════════ *)
+
+OP Evaluate
+    ΔSTATE TrainingPipelineState
+    eval_metrics!: TrainingMetrics
+    
+    PRE 
+        eval_config ≠ ⊥ ∧
+        global_step mod config.eval_steps = 0
+    POST
+        ValidTrainingMetrics(eval_metrics!) ∧
+        eval_metrics!.eval_loss ≠ ⊥ ∧
+        
+        (* Best loss tracking *)
+        (best_eval_loss = ⊥ ∨ eval_metrics!.eval_loss! < best_eval_loss! ⇒
+            best_eval_loss' = eval_metrics!.eval_loss ∧
+            best_step' = global_step ∧
+            steps_since_improvement' = 0) ∧
+        (best_eval_loss ≠ ⊥ ∧ eval_metrics!.eval_loss! ≥ best_eval_loss! ⇒
+            steps_since_improvement' = steps_since_improvement + config.eval_steps)
+
+OP EvaluateCognitiveMetrics
+    ΞSTATE TrainingPipelineState
+    hidden_states?: seq Tensor3D[BatchSize, SeqLen, HiddenDim]
+    cognitive_metrics!: ⟦
+        stream_coherence: Probability,
+        mode_transition_smoothness: ℝ,
+        triad_alignment: Probability,
+        nested_shell_consistency: Probability
+    ⟧
+    
+    PRE 
+        cognitive_active ∧
+        eval_config ≠ ⊥ ∧
+        eval_config!.eval_cognitive_coherence
+    POST
+        0 ≤ cognitive_metrics!.stream_coherence ≤ 1 ∧
+        cognitive_metrics!.mode_transition_smoothness ≥ 0 ∧
+        0 ≤ cognitive_metrics!.triad_alignment ≤ 1 ∧
+        0 ≤ cognitive_metrics!.nested_shell_consistency ≤ 1
+
+(* ═══════════════════════════════════════════════════════════════════════════
+   SECTION 10: Checkpointing Operations
+   ═══════════════════════════════════════════════════════════════════════════ *)
+
+OP SaveCheckpoint
+    ΔSTATE TrainingPipelineState
+    checkpoint_path!: seq CHAR
+    metadata!: CheckpointMetadata
+    
+    PRE 
+        global_step mod config.save_steps = 0 ∨
+        (config.checkpoint_strategy = LossBased ∧ steps_since_improvement = 0)
+    POST
+        ValidCheckpointMetadata(metadata!) ∧
+        metadata!.step = global_step ∧
+        metadata!.epoch = current_epoch ∧
+        metadata!.learning_rate = optimizer.current_lr ∧
+        
+        (* Cognitive state saved *)
+        (cognitive_active ⇒
+            metadata!.cognitive_stream = current_cognitive_stream ∧
+            metadata!.cognitive_step = current_cognitive_step) ∧
+        
+        (* Checkpoint list updated *)
+        checkpoint_paths' = checkpoint_paths ⁀ ⟨checkpoint_path!⟩ ∧
+        
+        (* Old checkpoints removed if limit exceeded *)
+        (#checkpoint_paths' > config.max_checkpoints ⇒
+            #checkpoint_paths' = config.max_checkpoints)
+
+OP LoadCheckpoint
+    ΔSTATE TrainingPipelineState
+    checkpoint_path?: seq CHAR
+    metadata!: CheckpointMetadata
+    
+    PRE #checkpoint_path? > 0
+    POST
+        ValidCheckpointMetadata(metadata!) ∧
+        global_step' = metadata!.step ∧
+        current_epoch' = metadata!.epoch ∧
+        optimizer'.current_lr = metadata!.learning_rate ∧
+        
+        (* Cognitive state restored *)
+        (metadata!.cognitive_stream ≠ ⊥ ⇒
+            current_cognitive_stream' = metadata!.cognitive_stream!) ∧
+        (metadata!.cognitive_step ≠ ⊥ ⇒
+            current_cognitive_step' = metadata!.cognitive_step!)
+
+(* ═══════════════════════════════════════════════════════════════════════════
+   SECTION 11: Training Control Operations
+   ═══════════════════════════════════════════════════════════════════════════ *)
+
+OP StartTraining
+    ΔSTATE TrainingPipelineState
+    
+    PRE ¬is_training
+    POST
+        is_training' = true ∧
+        training_start_time' = CurrentTime()
+
+OP StopTraining
+    ΔSTATE TrainingPipelineState
+    reason?: {max_steps, max_epochs, early_stopping, user_interrupt, error}
+    
+    PRE is_training
+    POST
+        is_training' = false ∧
+        should_stop' = true ∧
+        stop_reason' = reason?
+
+OP CheckStoppingCriteria
+    ΔSTATE TrainingPipelineState
+    
+    PRE is_training
+    POST
+        (* Max steps reached *)
+        (global_step ≥ config.max_steps ⇒
+            should_stop' = true ∧ stop_reason' = max_steps) ∧
+        
+        (* Max epochs reached *)
+        (config.max_epochs ≠ ⊥ ∧ current_epoch ≥ config.max_epochs! ⇒
+            should_stop' = true ∧ stop_reason' = max_epochs) ∧
+        
+        (* Early stopping *)
+        (config.early_stopping_enabled ∧ 
+         steps_since_improvement ≥ config.early_stopping_patience * config.eval_steps ⇒
+            should_stop' = true ∧ stop_reason' = early_stopping)
+
+OP StartNewEpoch
+    ΔSTATE TrainingPipelineState
+    
+    PRE 
+        is_training ∧
+        data_loader.current_index ≥ data_loader.total_samples
+    POST
+        current_epoch' = current_epoch + 1 ∧
+        data_loader'.current_index = 0 ∧
+        data_loader'.samples_seen_epoch = 0
+
+(* ═══════════════════════════════════════════════════════════════════════════
+   SECTION 12: Cognitive Training Operations
+   ═══════════════════════════════════════════════════════════════════════════ *)
+
+OP ActivateCognitiveTraining
+    ΔSTATE TrainingPipelineState
+    
+    PRE 
+        config.cognitive_training_enabled ∧
+        ¬cognitive_active ∧
+        global_step ≥ config.cognitive_warmup_steps
+    POST
+        cognitive_active' = true ∧
+        cognitive_loss_weight' = 0 ∧
+        current_cognitive_stream' = 1 ∧
+        current_cognitive_step' = 1
+
+OP RampCognitiveLossWeight
+    ΔSTATE TrainingPipelineState
+    
+    PRE 
+        cognitive_active ∧
+        cognitive_loss_weight < 1
+    POST
+        LET steps_since_activation = global_step - config.cognitive_warmup_steps IN
+        cognitive_loss_weight' = min(1.0, 
+            steps_since_activation / config.cognitive_loss_rampup_steps)
+
+OP SynchronizeCognitiveStreams
+    ΔSTATE TrainingPipelineState
+    
+    PRE 
+        cognitive_active ∧
+        config.stream_synchronization ∧
+        config.distributed_strategy = CognitiveStreamParallel
+    POST
+        (* All streams synchronized at triad boundaries *)
+        (current_cognitive_step mod PHASE_OFFSET = 0 ⇒
+            (* Barrier synchronization *)
+            true)
+
+OP BalanceCognitiveModeTraining
+    ΔSTATE TrainingPipelineState
+    
+    PRE cognitive_active
+    POST
+        (* Ensure balanced training across modes *)
+        LET total = mode_training_counts.expressive + mode_training_counts.reflective IN
+        LET expressive_ratio = mode_training_counts.expressive / total IN
+        LET target_ratio = EXPRESSIVE_STEPS / COGNITIVE_STEPS IN
+        |expressive_ratio - target_ratio| < 0.1
+
+(* ═══════════════════════════════════════════════════════════════════════════
+   SECTION 13: Distributed Training Operations
+   ═══════════════════════════════════════════════════════════════════════════ *)
+
+OP AllReduceGradients
+    ΔSTATE TrainingPipelineState
+    local_gradients?: seq Gradient
+    reduced_gradients!: seq Gradient
+    
+    PRE 
+        config.distributed_strategy ∈ {DataParallel, DistributedDataParallel} ∧
+        config.world_size > 1
+    POST
+        #reduced_gradients! = #local_gradients? ∧
+        (* Gradients averaged across all ranks *)
+        (∀ i: 1..#reduced_gradients! •
+            reduced_gradients![i].grad = 
+                AllReduce(local_gradients?[i].grad, Mean))
+
+OP BroadcastParameters
+    ΔSTATE TrainingPipelineState
+    source_rank?: ℕ
+    
+    PRE 
+        config.distributed_strategy ≠ None ∧
+        source_rank? < config.world_size
+    POST
+        (* All ranks have same parameters *)
+        true
+
+OP ShardModelForFSDP
+    ΔSTATE TrainingPipelineState
+    
+    PRE config.distributed_strategy = FullyShardedDataParallel
+    POST
+        (* Model parameters sharded across ranks *)
+        true
+
+(* ═══════════════════════════════════════════════════════════════════════════
+   SECTION 14: Logging Operations
+   ═══════════════════════════════════════════════════════════════════════════ *)
+
+OP LogMetrics
+    ΞSTATE TrainingPipelineState
+    metrics?: TrainingMetrics
+    
+    PRE 
+        global_step mod config.logging_steps = 0 ∧
+        ValidTrainingMetrics(metrics?)
+    POST
+        (* Metrics logged to configured backends *)
+        true
+
+OP LogCognitiveState
+    ΞSTATE TrainingPipelineState
+    
+    PRE cognitive_active
+    POST
+        (* Cognitive training state logged *)
+        (* Includes: stream, step, mode, loss weight, stream counts *)
+        true
+
+(* ═══════════════════════════════════════════════════════════════════════════
+   SECTION 15: Helper Functions
+   ═══════════════════════════════════════════════════════════════════════════ *)
+
+FUNC ComputeEffectiveBatchSize(config: TrainingConfig): ℕ ≜
+    config.per_device_train_batch_size * 
+    config.gradient_accumulation_steps * 
+    config.world_size
+
+FUNC EstimateTrainingTime(state: TrainingPipelineState): ℕ ≜
+    LET avg_step_time = mean(state.step_times) IN
+    LET remaining_steps = state.config.max_steps - state.global_step IN
+    avg_step_time * remaining_steps
+
+FUNC GetCurrentMode(step: StepId): CognitiveMode ≜
+    IF step ∈ {1, 2, 3, 4, 5, 8, 9} THEN Expressive
+    ELSE Reflective
+
+FUNC GetTriadForStep(step: StepId): {1, 2, 3, 4} ≜
+    CASE step OF
+        1, 5, 9 → 1
+        2, 6, 10 → 2
+        3, 7, 11 → 3
+        4, 8, 12 → 4
+    END
+
+FUNC IsTriadBoundary(step: StepId): 𝔹 ≜
+    step mod PHASE_OFFSET = 0
+
+FUNC ComputeCognitiveProgress(state: TrainingPipelineState): ⟦
+    stream_balance: Probability,
+    mode_balance: Probability,
+    cycle_completion: Probability
+⟧ ≜
+    LET total_stream = Σᵢ state.stream_training_counts[i] IN
+    LET stream_variance = variance(state.stream_training_counts) IN
+    LET stream_balance = 1 - (stream_variance / total_stream) IN
+    
+    LET total_mode = state.mode_training_counts.expressive + 
+                     state.mode_training_counts.reflective IN
+    LET exp_ratio = state.mode_training_counts.expressive / total_mode IN
+    LET target_ratio = EXPRESSIVE_STEPS / COGNITIVE_STEPS IN
+    LET mode_balance = 1 - |exp_ratio - target_ratio| IN
+    
+    LET cycles_completed = state.global_step div COGNITIVE_STEPS IN
+    LET cycle_completion = (state.global_step mod COGNITIVE_STEPS) / COGNITIVE_STEPS IN
+    
+    ⟦stream_balance ↦ stream_balance, 
+     mode_balance ↦ mode_balance,
+     cycle_completion ↦ cycle_completion⟧
+
+(* ═══════════════════════════════════════════════════════════════════════════
+   SECTION 16: Theorems and Properties
+   ═══════════════════════════════════════════════════════════════════════════ *)
+
+THEOREM TrainingTerminates:
+    ∀ state: TrainingPipelineState •
+        state.is_training ⇒
+        ∃ final_state: TrainingPipelineState •
+            final_state.should_stop ∧
+            final_state.stop_reason ≠ ⊥
+
+THEOREM LossDecreases:
+    (* Under standard assumptions, loss decreases on average *)
+    ∀ state₁, state₂: TrainingPipelineState •
+        state₂.global_step > state₁.global_step + 1000 ⇒
+        (* Expected loss decrease *)
+        true
+
+THEOREM CognitiveStreamBalance:
+    ∀ state: TrainingPipelineState •
+        state.cognitive_active ∧ state.global_step > COGNITIVE_STEPS * 100 ⇒
+        ∀ s₁, s₂: 1..COGNITIVE_STREAMS •
+            |state.stream_training_counts[s₁] - state.stream_training_counts[s₂]| <
+            state.global_step / COGNITIVE_STREAMS * 0.1
+
+THEOREM CognitiveModeBalance:
+    ∀ state: TrainingPipelineState •
+        state.cognitive_active ∧ state.global_step > COGNITIVE_STEPS * 100 ⇒
+        LET total = state.mode_training_counts.expressive + 
+                    state.mode_training_counts.reflective IN
+        LET exp_ratio = state.mode_training_counts.expressive / total IN
+        |exp_ratio - (EXPRESSIVE_STEPS / COGNITIVE_STEPS)| < 0.05
+
+THEOREM CheckpointRecovery:
+    ∀ state: TrainingPipelineState; path: seq CHAR •
+        SaveCheckpoint(state, path) ∧ LoadCheckpoint(state', path) ⇒
+        state'.global_step = state.global_step ∧
+        state'.current_epoch = state.current_epoch ∧
+        state'.current_cognitive_stream = state.current_cognitive_stream ∧
+        state'.current_cognitive_step = state.current_cognitive_step
+
+THEOREM GradientAccumulationEquivalence:
+    ∀ state: TrainingPipelineState •
+        LET effective_batch = ComputeEffectiveBatchSize(state.config) IN
+        (* Accumulated gradients equivalent to large batch *)
+        true
+
+THEOREM EarlyStoppingGuarantee:
+    ∀ state: TrainingPipelineState •
+        state.config.early_stopping_enabled ∧
+        state.steps_since_improvement ≥ 
+            state.config.early_stopping_patience * state.config.eval_steps ⇒
+        state.should_stop
+
+THEOREM TriadCycleCompleteness:
+    ∀ state: TrainingPipelineState •
+        state.cognitive_active ∧ state.global_step mod COGNITIVE_STEPS = 0 ⇒
+        (* All triads visited equally in completed cycle *)
+        ∀ t₁, t₂: 1..4 •
+            GetTriadCount(state, t₁) = GetTriadCount(state, t₂)
+
+END TrainingPipe

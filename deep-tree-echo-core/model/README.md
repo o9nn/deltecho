@@ -33,48 +33,87 @@ The Deltecho model implements a **12-step cognitive loop** with **3 concurrent i
 
 ## Specification Files
 
-### `spec/Types.zpp`
+### Inference Specifications
+
+#### `spec/Types.zpp`
 Global constants and type aliases defining:
 - Primitive types (TokenId, VocabSize, SeqLen, etc.)
 - Cognitive architecture constants (streams, steps, triads)
 - Tensor type definitions
 - Memory and state types
 
-### `spec/TokenizerConfig.zpp`
+#### `spec/TokenizerConfig.zpp`
 Tokenizer configuration state and invariants:
 - Tokenizer type definitions (BPE, WordPiece, etc.)
 - Special tokens configuration
 - Padding and truncation strategies
 - Cognitive token integration
 
-### `spec/ModelConfig.zpp`
+#### `spec/ModelConfig.zpp`
 Model configuration state and invariants:
 - Architecture types (DeltechoTransformer, MoE, Hybrid)
 - Attention configuration (MHA, GQA, MQA)
 - Feed-forward configuration
 - Cognitive architecture configuration
 
-### `spec/Tokenizer.zpp`
+#### `spec/Tokenizer.zpp`
 Tokenization and detokenization contracts:
 - Encode/Decode operations
 - Batch processing
 - Cognitive stream token handling
 - Roundtrip properties
 
-### `spec/Model.zpp`
+#### `spec/Model.zpp`
 Parameter shapes and forward/sampling contracts:
 - Model parameter definitions
 - Forward pass operations
 - Attention computation
 - Sampling strategies (temperature, top-k, top-p)
 
-### `spec/InferencePipe.zpp`
+#### `spec/InferencePipe.zpp`
 End-to-end generation contract:
 - Pipeline configuration
 - Generation operations
 - Streaming support
 - Cognitive state management
 - Stopping criteria
+
+### Training Specifications
+
+#### `spec/DataLoader.zpp`
+Data loading contracts for training pipeline:
+- Dataset configuration and validation
+- Batch construction with cognitive awareness
+- Shuffling and sampling strategies
+- Multi-stream data loading
+- Curriculum learning support
+- Memory-mapped and streaming datasets
+
+#### `spec/LossFunction.zpp`
+Loss function contracts for training:
+- Cross-entropy and label smoothing
+- Cognitive coherence loss (stream alignment, mode consistency)
+- Auxiliary losses (load balancing, router z-loss)
+- Multi-task loss aggregation
+- Gradient scaling and stability
+
+#### `spec/Optimizer.zpp`
+Optimization contracts:
+- Adam, AdamW, Lion, SGD implementations
+- **CognitiveAdam**: Stream-aware learning rates, mode-specific scaling
+- Learning rate schedulers (cosine, linear, polynomial, warmup)
+- Gradient clipping and accumulation
+- Mixed precision (FP16/BF16) support
+- Cross-stream gradient synchronization
+
+#### `spec/TrainingPipe.zpp`
+End-to-end training pipeline contract:
+- Training loop orchestration
+- Distributed training (DDP, FSDP, CognitiveStreamParallel)
+- Checkpointing and recovery
+- Early stopping
+- Cognitive training activation and loss ramping
+- Evaluation and metrics logging
 
 ## Configuration Files
 
@@ -138,6 +177,24 @@ ModelConfigInvariant ≜
     ValidCognitiveConfig(cognitive)
 ```
 
+### Training Pipeline Invariants
+```
+TrainingPipelineStateInvariant ≜
+    ValidTrainingConfig(config) ∧
+    global_step ≤ max_steps ∧
+    (cognitive_active ⇒
+        1 ≤ current_stream ≤ COGNITIVE_STREAMS ∧
+        1 ≤ current_step ≤ COGNITIVE_STEPS)
+```
+
+### Optimizer Invariants
+```
+OptimizerStateInvariant ≜
+    current_lr > 0 ∧
+    loss_scale > 0 ∧
+    ValidGradientAccumulator(accumulator)
+```
+
 ## Key Theorems
 
 ### Encode-Decode Roundtrip
@@ -159,6 +216,77 @@ ModelConfigInvariant ≜
     ∃ output: PipelineOutput • Generate(input) terminates
 ```
 
+### Training Termination
+```
+∀ state: TrainingPipelineState •
+    state.is_training ⇒
+    ∃ final_state • final_state.should_stop
+```
+
+### Cognitive Stream Balance (Training)
+```
+∀ state: TrainingPipelineState •
+    cognitive_active ∧ global_step > COGNITIVE_STEPS * 100 ⇒
+    ∀ s₁, s₂: StreamId •
+        |stream_counts[s₁] - stream_counts[s₂]| < global_step / COGNITIVE_STREAMS * 0.1
+```
+
+### Learning Rate Bounded
+```
+∀ step: StepCount •
+    step ≤ total_steps ⇒
+    min_lr ≤ GetLearningRate(step) ≤ base_lr
+```
+
+### Gradient Clipping Bound
+```
+∀ grads, clipped: seq Gradient •
+    ClipGradientsByNorm(grads, max_norm, clipped) ⇒
+    norm(clipped) ≤ max_norm
+```
+
+### Checkpoint Recovery
+```
+∀ state: TrainingPipelineState; path: seq CHAR •
+    SaveCheckpoint(state, path) ∧ LoadCheckpoint(state', path) ⇒
+    state'.global_step = state.global_step ∧
+    state'.cognitive_state = state.cognitive_state
+```
+
+## Cognitive-Aware Training
+
+### CognitiveAdam Optimizer
+
+The `CognitiveAdam` optimizer extends Adam with cognitive architecture awareness:
+
+```
+CognitiveAdamStep:
+    stream_lr = base_lr × stream_multiplier[stream_id]
+    mode_lr = stream_lr × mode_multiplier[mode]
+    nest_decay = nest_decay_factors[nest_level]
+    
+    param' = param × (1 - mode_lr × weight_decay × nest_decay) -
+             mode_lr × m_hat / (√v_hat + ε)
+```
+
+### Cognitive Loss Components
+
+| Loss Component | Weight | Purpose |
+|----------------|--------|---------|
+| Primary (CE) | 1.0 | Language modeling |
+| Stream Coherence | 0.1 | Cross-stream alignment |
+| Mode Consistency | 0.05 | Expressive/Reflective balance |
+| Triad Alignment | 0.05 | Triad synchronization |
+| Nested Shell | 0.02 | OEIS A000081 structure |
+
+### Training Phases
+
+| Phase | Cognitive Active | Loss Weight |
+|-------|------------------|-------------|
+| Warmup | No | 0.0 |
+| Ramp-up | Yes | 0.0 → 1.0 |
+| Full Training | Yes | 1.0 |
+
 ## Usage
 
 ### Verifying Specifications
@@ -179,9 +307,62 @@ When implementing the model:
 3. Check preconditions before operations
 4. Guarantee postconditions after operations
 
+### Training Pipeline Usage
+
+```python
+# Initialize training pipeline
+pipeline = TrainingPipeline(
+    config=TrainingConfig(
+        training_phase=TrainingPhase.Pretraining,
+        cognitive_training_enabled=True,
+        cognitive_warmup_steps=1000,
+        cognitive_loss_rampup_steps=5000,
+    ),
+    optimizer_config=OptimizerConfig(
+        optimizer_type=OptimizerType.CognitiveAdam,
+        cognitive_adam_config=CognitiveAdamConfig(
+            stream_lr_multipliers=[1.0, 1.0, 1.0],
+            mode_lr_multipliers={'expressive': 1.0, 'reflective': 0.8},
+            triad_momentum_scaling=True,
+            nested_shell_decay=True,
+        ),
+    ),
+)
+
+# Training loop
+for batch in data_loader:
+    metrics = pipeline.train_step(batch)
+    
+    # Cognitive state automatically advances
+    # Stream balance automatically maintained
+```
+
+## File Structure
+
+```
+model/
+├── README.md                    # This file
+├── config.json                  # Model configuration
+├── tokenizer_config.json        # Tokenizer configuration
+├── special_tokens_map.json      # Special tokens mapping
+└── spec/
+    ├── Types.zpp               # Global types and constants
+    ├── TokenizerConfig.zpp     # Tokenizer configuration
+    ├── ModelConfig.zpp         # Model configuration
+    ├── Tokenizer.zpp           # Tokenization contracts
+    ├── Model.zpp               # Model forward/sampling
+    ├── InferencePipe.zpp       # Inference pipeline
+    ├── DataLoader.zpp          # Data loading contracts
+    ├── LossFunction.zpp        # Loss function contracts
+    ├── Optimizer.zpp           # Optimization contracts
+    └── TrainingPipe.zpp        # Training pipeline
+```
+
 ## References
 
 - OEIS A000081: Number of rooted trees with n nodes
 - Echobeats Architecture: 3-stream cognitive loop
 - Kawaii Hexapod System 4: 12-step cognitive architecture
 - Twin Prime Mean: 5/7 distribution (mean = 6)
+- AdamW: Decoupled Weight Decay Regularization
+- Lion: Evolved Sign Momentum Optimizer

@@ -1,0 +1,800 @@
+(*
+ * Optimizer.zpp - Optimization Contracts for Training Pipeline
+ * Z++ Formal Specification for Deltecho Model Package
+ * 
+ * Defines the formal contracts for gradient computation, parameter updates,
+ * learning rate scheduling, and cognitive-aware optimization strategies.
+ *)
+
+SCHEMA Optimizer
+IMPORTS Types, ModelConfig, Model, LossFunction
+
+(* ═══════════════════════════════════════════════════════════════════════════
+   SECTION 1: Optimizer Type Definitions
+   ═══════════════════════════════════════════════════════════════════════════ *)
+
+TYPE LearningRate == ℝ                 (* Positive learning rate *)
+TYPE Momentum == ℝ                     (* Momentum coefficient [0, 1) *)
+TYPE WeightDecay == ℝ                  (* Weight decay coefficient ≥ 0 *)
+TYPE GradientNorm == ℝ                 (* Non-negative gradient norm *)
+TYPE StepCount == ℕ                    (* Optimization step counter *)
+
+TYPE OptimizerType ::=
+    SGD |                              (* Stochastic Gradient Descent *)
+    Adam |                             (* Adam optimizer *)
+    AdamW |                            (* Adam with decoupled weight decay *)
+    LAMB |                             (* Layer-wise Adaptive Moments *)
+    Adafactor |                        (* Memory-efficient Adam variant *)
+    Lion |                             (* Evolved Sign Momentum *)
+    CognitiveAdam                      (* Cognitive-aware Adam variant *)
+
+TYPE SchedulerType ::=
+    Constant |                         (* Fixed learning rate *)
+    Linear |                           (* Linear warmup/decay *)
+    Cosine |                           (* Cosine annealing *)
+    CosineWithRestarts |               (* Cosine with warm restarts *)
+    Polynomial |                       (* Polynomial decay *)
+    InverseSqrt |                      (* Inverse square root decay *)
+    OneCycle |                         (* One-cycle policy *)
+    CognitiveAdaptive                  (* Cognitive-aware scheduling *)
+
+(* ═══════════════════════════════════════════════════════════════════════════
+   SECTION 2: Optimizer Configuration Types
+   ═══════════════════════════════════════════════════════════════════════════ *)
+
+TYPE AdamConfig == ⟦
+    lr: LearningRate,
+    beta1: Momentum,
+    beta2: Momentum,
+    eps: ℝ,
+    weight_decay: WeightDecay,
+    amsgrad: 𝔹,
+    fused: 𝔹
+⟧
+
+TYPE SGDConfig == ⟦
+    lr: LearningRate,
+    momentum: Momentum,
+    dampening: ℝ,
+    weight_decay: WeightDecay,
+    nesterov: 𝔹
+⟧
+
+TYPE LionConfig == ⟦
+    lr: LearningRate,
+    beta1: Momentum,
+    beta2: Momentum,
+    weight_decay: WeightDecay
+⟧
+
+TYPE CognitiveAdamConfig == ⟦
+    (* Base Adam parameters *)
+    lr: LearningRate,
+    beta1: Momentum,
+    beta2: Momentum,
+    eps: ℝ,
+    weight_decay: WeightDecay,
+    
+    (* Cognitive-specific parameters *)
+    stream_lr_multipliers: Tensor1D[COGNITIVE_STREAMS],
+    mode_lr_multipliers: ⟦expressive: ℝ, reflective: ℝ⟧,
+    triad_momentum_scaling: 𝔹,
+    nested_shell_decay: 𝔹,
+    nest_decay_factors: Tensor1D[4],
+    
+    (* Cross-stream gradient coordination *)
+    cross_stream_gradient_sync: 𝔹,
+    stream_gradient_weights: Tensor1D[COGNITIVE_STREAMS]
+⟧
+
+TYPE SchedulerConfig == ⟦
+    scheduler_type: SchedulerType,
+    
+    (* Warmup *)
+    warmup_steps: ℕ,
+    warmup_ratio: optional Probability,
+    warmup_type: {linear, exponential, constant},
+    
+    (* Decay *)
+    total_steps: ℕ,
+    min_lr: LearningRate,
+    min_lr_ratio: optional Probability,
+    
+    (* Cosine-specific *)
+    num_cycles: optional ℕ₁,
+    cycle_mult: optional ℝ,
+    
+    (* Polynomial-specific *)
+    power: optional ℝ,
+    
+    (* Cognitive-specific *)
+    cognitive_phase_scaling: optional 𝔹,
+    phase_lr_factors: optional Tensor1D[COGNITIVE_STEPS]
+⟧
+
+TYPE GradientConfig == ⟦
+    (* Gradient clipping *)
+    max_grad_norm: optional GradientNorm,
+    max_grad_value: optional ℝ,
+    
+    (* Gradient accumulation *)
+    accumulation_steps: ℕ₁,
+    
+    (* Mixed precision *)
+    fp16: 𝔹,
+    bf16: 𝔹,
+    loss_scale: optional ℝ,
+    dynamic_loss_scaling: 𝔹,
+    
+    (* Gradient checkpointing *)
+    gradient_checkpointing: 𝔹,
+    checkpoint_layers: optional seq ℕ
+⟧
+
+TYPE OptimizerConfig == ⟦
+    optimizer_type: OptimizerType,
+    adam_config: optional AdamConfig,
+    sgd_config: optional SGDConfig,
+    lion_config: optional LionConfig,
+    cognitive_adam_config: optional CognitiveAdamConfig,
+    scheduler_config: SchedulerConfig,
+    gradient_config: GradientConfig,
+    
+    (* Parameter groups *)
+    param_groups: seq ⟦
+        name: seq CHAR,
+        params: seq seq CHAR,
+        lr_mult: ℝ,
+        weight_decay_mult: ℝ
+    ⟧
+⟧
+
+(* ═══════════════════════════════════════════════════════════════════════════
+   SECTION 3: Gradient and Parameter Types
+   ═══════════════════════════════════════════════════════════════════════════ *)
+
+TYPE Gradient == ⟦
+    param_name: seq CHAR,
+    grad: Tensor,
+    shape: seq ℕ₁,
+    dtype: {float16, bfloat16, float32}
+⟧
+
+TYPE ParameterState == ⟦
+    param_name: seq CHAR,
+    param: Tensor,
+    grad: optional Tensor,
+    
+    (* Optimizer state *)
+    exp_avg: optional Tensor,          (* First moment estimate *)
+    exp_avg_sq: optional Tensor,       (* Second moment estimate *)
+    max_exp_avg_sq: optional Tensor,   (* AMSGrad max *)
+    momentum_buffer: optional Tensor,  (* SGD momentum *)
+    
+    (* Cognitive state *)
+    stream_gradients: optional seq Tensor,
+    mode_gradients: optional ⟦expressive: Tensor, reflective: Tensor⟧,
+    triad_momentum: optional Tensor1D[4]
+⟧
+
+TYPE GradientAccumulator == ⟦
+    accumulated_grads: seq Gradient,
+    accumulation_count: ℕ,
+    target_accumulation: ℕ₁,
+    is_ready: 𝔹
+⟧
+
+(* ═══════════════════════════════════════════════════════════════════════════
+   SECTION 4: Optimizer State
+   ═══════════════════════════════════════════════════════════════════════════ *)
+
+STATE OptimizerState == ⟦
+    config: OptimizerConfig,
+    
+    (* Step tracking *)
+    global_step: StepCount,
+    local_step: StepCount,
+    epoch: ℕ,
+    
+    (* Learning rate state *)
+    current_lr: LearningRate,
+    base_lr: LearningRate,
+    
+    (* Parameter states *)
+    param_states: seq ParameterState,
+    param_groups: seq ⟦
+        name: seq CHAR,
+        lr: LearningRate,
+        weight_decay: WeightDecay
+    ⟧,
+    
+    (* Gradient accumulation *)
+    accumulator: GradientAccumulator,
+    
+    (* Mixed precision state *)
+    loss_scale: ℝ,
+    scale_growth_tracker: ℕ,
+    
+    (* Cognitive optimization state *)
+    cognitive_enabled: 𝔹,
+    current_stream: StreamId,
+    current_step: StepId,
+    stream_update_counts: Tensor1D[COGNITIVE_STREAMS],
+    mode_update_counts: ⟦expressive: ℕ, reflective: ℕ⟧,
+    
+    (* Statistics *)
+    grad_norm_history: seq GradientNorm,
+    lr_history: seq LearningRate,
+    loss_scale_history: seq ℝ
+⟧
+
+(* ═══════════════════════════════════════════════════════════════════════════
+   SECTION 5: Invariant Predicates
+   ═══════════════════════════════════════════════════════════════════════════ *)
+
+PRED ValidAdamConfig(c: AdamConfig) ≜
+    c.lr > 0 ∧
+    0 ≤ c.beta1 < 1 ∧
+    0 ≤ c.beta2 < 1 ∧
+    c.eps > 0 ∧
+    c.weight_decay ≥ 0
+
+PRED ValidSchedulerConfig(c: SchedulerConfig) ≜
+    c.total_steps > 0 ∧
+    c.warmup_steps ≤ c.total_steps ∧
+    c.min_lr ≥ 0 ∧
+    (c.warmup_ratio ≠ ⊥ ⇒ 0 ≤ c.warmup_ratio! ≤ 1) ∧
+    (c.num_cycles ≠ ⊥ ⇒ c.num_cycles! > 0) ∧
+    (c.power ≠ ⊥ ⇒ c.power! > 0)
+
+PRED ValidGradientConfig(c: GradientConfig) ≜
+    c.accumulation_steps > 0 ∧
+    (c.max_grad_norm ≠ ⊥ ⇒ c.max_grad_norm! > 0) ∧
+    (c.loss_scale ≠ ⊥ ⇒ c.loss_scale! > 0) ∧
+    ¬(c.fp16 ∧ c.bf16)  (* Cannot use both *)
+
+PRED ValidOptimizerConfig(c: OptimizerConfig) ≜
+    ValidSchedulerConfig(c.scheduler_config) ∧
+    ValidGradientConfig(c.gradient_config) ∧
+    (c.optimizer_type = Adam ∨ c.optimizer_type = AdamW ⇒
+        c.adam_config ≠ ⊥ ∧ ValidAdamConfig(c.adam_config!)) ∧
+    (c.optimizer_type = CognitiveAdam ⇒
+        c.cognitive_adam_config ≠ ⊥)
+
+PRED ValidParameterState(p: ParameterState, opt_type: OptimizerType) ≜
+    (opt_type ∈ {Adam, AdamW, CognitiveAdam} ⇒
+        p.exp_avg ≠ ⊥ ∧ p.exp_avg_sq ≠ ⊥) ∧
+    (opt_type = SGD ⇒ true)
+
+PRED ValidGradientAccumulator(a: GradientAccumulator) ≜
+    a.accumulation_count ≤ a.target_accumulation ∧
+    (a.is_ready ⇔ a.accumulation_count = a.target_accumulation)
+
+(* ═══════════════════════════════════════════════════════════════════════════
+   SECTION 6: State Invariants
+   ═══════════════════════════════════════════════════════════════════════════ *)
+
+INVARIANT OptimizerStateInvariant
+    ∀ state: OptimizerState •
+        ValidOptimizerConfig(state.config) ∧
+        state.current_lr > 0 ∧
+        state.base_lr > 0 ∧
+        state.loss_scale > 0 ∧
+        ValidGradientAccumulator(state.accumulator) ∧
+        
+        (* Cognitive state consistency *)
+        (state.cognitive_enabled ⇒
+            1 ≤ state.current_stream ≤ COGNITIVE_STREAMS ∧
+            1 ≤ state.current_step ≤ COGNITIVE_STEPS) ∧
+        
+        (* History lengths bounded *)
+        #state.grad_norm_history ≤ 1000 ∧
+        #state.lr_history ≤ 1000
+
+(* ═══════════════════════════════════════════════════════════════════════════
+   SECTION 7: Gradient Operations
+   ═══════════════════════════════════════════════════════════════════════════ *)
+
+OP ComputeGradients
+    ΔSTATE OptimizerState
+    loss?: LossValue
+    gradients!: seq Gradient
+    
+    PRE loss? ≥ 0
+    POST
+        #gradients! = #param_states ∧
+        (∀ i: 1..#gradients! • 
+            gradients![i].param_name = param_states[i].param_name ∧
+            gradients![i].shape = shape(param_states[i].param))
+
+OP AccumulateGradients
+    ΔSTATE OptimizerState
+    gradients?: seq Gradient
+    
+    PRE 
+        #gradients? = #param_states ∧
+        accumulator.accumulation_count < accumulator.target_accumulation
+    POST
+        accumulator'.accumulation_count = accumulator.accumulation_count + 1 ∧
+        
+        (* Gradients accumulated *)
+        (∀ i: 1..#gradients? •
+            accumulator'.accumulated_grads[i].grad = 
+                accumulator.accumulated_grads[i].grad + gradients?[i].grad) ∧
+        
+        (* Ready flag updated *)
+        accumulator'.is_ready = 
+            (accumulator'.accumulation_count = accumulator'.target_accumulation)
+
+OP AverageAccumulatedGradients
+    ΔSTATE OptimizerState
+    averaged_gradients!: seq Gradient
+    
+    PRE accumulator.is_ready
+    POST
+        #averaged_gradients! = #accumulator.accumulated_grads ∧
+        (∀ i: 1..#averaged_gradients! •
+            averaged_gradients![i].grad = 
+                accumulator.accumulated_grads[i].grad / accumulator.target_accumulation)
+
+OP ClipGradientsByNorm
+    ΔSTATE OptimizerState
+    gradients?: seq Gradient
+    max_norm?: GradientNorm
+    clipped_gradients!: seq Gradient
+    total_norm!: GradientNorm
+    
+    PRE max_norm? > 0
+    POST
+        (* Compute total gradient norm *)
+        total_norm! = sqrt(Σᵢ norm²(gradients?[i].grad)) ∧
+        
+        (* Clip if necessary *)
+        (total_norm! > max_norm? ⇒
+            ∀ i: 1..#clipped_gradients! •
+                clipped_gradients![i].grad = 
+                    gradients?[i].grad * (max_norm? / total_norm!)) ∧
+        (total_norm! ≤ max_norm? ⇒
+            clipped_gradients! = gradients?) ∧
+        
+        (* History updated *)
+        grad_norm_history' = grad_norm_history ⁀ ⟨total_norm!⟩
+
+OP ClipGradientsByValue
+    ΞSTATE OptimizerState
+    gradients?: seq Gradient
+    max_value?: ℝ
+    clipped_gradients!: seq Gradient
+    
+    PRE max_value? > 0
+    POST
+        #clipped_gradients! = #gradients? ∧
+        (∀ i: 1..#clipped_gradients!; j: 1..size(gradients?[i].grad) •
+            clipped_gradients![i].grad[j] = 
+                clamp(gradients?[i].grad[j], -max_value?, max_value?))
+
+OP ScaleGradientsForMixedPrecision
+    ΔSTATE OptimizerState
+    gradients?: seq Gradient
+    scaled_gradients!: seq Gradient
+    
+    PRE config.gradient_config.fp16 ∨ config.gradient_config.bf16
+    POST
+        #scaled_gradients! = #gradients? ∧
+        (∀ i: 1..#scaled_gradients! •
+            scaled_gradients![i].grad = gradients?[i].grad / loss_scale)
+
+(* ═══════════════════════════════════════════════════════════════════════════
+   SECTION 8: Parameter Update Operations
+   ═══════════════════════════════════════════════════════════════════════════ *)
+
+OP AdamStep
+    ΔSTATE OptimizerState
+    param_idx?: ℕ₁
+    grad?: Tensor
+    
+    PRE 
+        param_idx? ≤ #param_states ∧
+        config.optimizer_type ∈ {Adam, AdamW}
+    POST
+        LET p = param_states[param_idx?] IN
+        LET cfg = config.adam_config! IN
+        LET t = global_step + 1 IN
+        
+        (* Update biased first moment estimate *)
+        p'.exp_avg! = cfg.beta1 * p.exp_avg! + (1 - cfg.beta1) * grad? ∧
+        
+        (* Update biased second moment estimate *)
+        p'.exp_avg_sq! = cfg.beta2 * p.exp_avg_sq! + (1 - cfg.beta2) * grad?² ∧
+        
+        (* Bias correction *)
+        LET m_hat = p'.exp_avg! / (1 - cfg.beta1^t) IN
+        LET v_hat = p'.exp_avg_sq! / (1 - cfg.beta2^t) IN
+        
+        (* Parameter update *)
+        (config.optimizer_type = AdamW ⇒
+            (* Decoupled weight decay *)
+            p'.param = p.param * (1 - current_lr * cfg.weight_decay) - 
+                       current_lr * m_hat / (sqrt(v_hat) + cfg.eps)) ∧
+        (config.optimizer_type = Adam ⇒
+            (* L2 regularization in gradient *)
+            p'.param = p.param - 
+                       current_lr * (m_hat / (sqrt(v_hat) + cfg.eps) + 
+                                    cfg.weight_decay * p.param))
+
+OP SGDStep
+    ΔSTATE OptimizerState
+    param_idx?: ℕ₁
+    grad?: Tensor
+    
+    PRE 
+        param_idx? ≤ #param_states ∧
+        config.optimizer_type = SGD
+    POST
+        LET p = param_states[param_idx?] IN
+        LET cfg = config.sgd_config! IN
+        
+        (* Update momentum buffer *)
+        (cfg.momentum > 0 ⇒
+            p'.momentum_buffer! = cfg.momentum * p.momentum_buffer! + 
+                                  (1 - cfg.dampening) * grad?) ∧
+        
+        (* Compute update direction *)
+        LET d = (cfg.momentum > 0 ? 
+                    (cfg.nesterov ? grad? + cfg.momentum * p'.momentum_buffer! 
+                                 : p'.momentum_buffer!)
+                    : grad?) IN
+        
+        (* Parameter update with weight decay *)
+        p'.param = p.param - current_lr * (d + cfg.weight_decay * p.param)
+
+OP LionStep
+    ΔSTATE OptimizerState
+    param_idx?: ℕ₁
+    grad?: Tensor
+    
+    PRE 
+        param_idx? ≤ #param_states ∧
+        config.optimizer_type = Lion
+    POST
+        LET p = param_states[param_idx?] IN
+        LET cfg = config.lion_config! IN
+        
+        (* Compute update using interpolation and sign *)
+        LET update = sign(cfg.beta1 * p.exp_avg! + (1 - cfg.beta1) * grad?) IN
+        
+        (* Update momentum *)
+        p'.exp_avg! = cfg.beta2 * p.exp_avg! + (1 - cfg.beta2) * grad? ∧
+        
+        (* Parameter update with decoupled weight decay *)
+        p'.param = p.param * (1 - current_lr * cfg.weight_decay) - 
+                   current_lr * update
+
+OP CognitiveAdamStep
+    ΔSTATE OptimizerState
+    param_idx?: ℕ₁
+    grad?: Tensor
+    stream_id?: StreamId
+    step_id?: StepId
+    
+    PRE 
+        param_idx? ≤ #param_states ∧
+        config.optimizer_type = CognitiveAdam ∧
+        1 ≤ stream_id? ≤ COGNITIVE_STREAMS ∧
+        1 ≤ step_id? ≤ COGNITIVE_STEPS
+    POST
+        LET p = param_states[param_idx?] IN
+        LET cfg = config.cognitive_adam_config! IN
+        LET t = global_step + 1 IN
+        
+        (* Stream-specific learning rate *)
+        LET stream_lr = current_lr * cfg.stream_lr_multipliers[stream_id?] IN
+        
+        (* Mode-specific learning rate *)
+        LET mode = GetModeForStep(step_id?) IN
+        LET mode_lr = stream_lr * 
+            (mode = Expressive ? cfg.mode_lr_multipliers.expressive 
+                              : cfg.mode_lr_multipliers.reflective) IN
+        
+        (* Triad momentum scaling *)
+        LET triad = GetTriadForStep(step_id?) IN
+        LET scaled_beta1 = (cfg.triad_momentum_scaling ?
+            cfg.beta1 * (1 + 0.1 * (triad - 1)) : cfg.beta1) IN
+        
+        (* Update moments with cognitive scaling *)
+        p'.exp_avg! = scaled_beta1 * p.exp_avg! + (1 - scaled_beta1) * grad? ∧
+        p'.exp_avg_sq! = cfg.beta2 * p.exp_avg_sq! + (1 - cfg.beta2) * grad?² ∧
+        
+        (* Nested shell decay *)
+        LET nest_level = GetNestLevel(step_id?) IN
+        LET decay_factor = (cfg.nested_shell_decay ?
+            cfg.nest_decay_factors[nest_level] : 1.0) IN
+        
+        (* Bias-corrected estimates *)
+        LET m_hat = p'.exp_avg! / (1 - scaled_beta1^t) IN
+        LET v_hat = p'.exp_avg_sq! / (1 - cfg.beta2^t) IN
+        
+        (* Parameter update *)
+        p'.param = p.param * (1 - mode_lr * cfg.weight_decay * decay_factor) - 
+                   mode_lr * m_hat / (sqrt(v_hat) + cfg.eps) ∧
+        
+        (* Update cognitive statistics *)
+        stream_update_counts'[stream_id?] = stream_update_counts[stream_id?] + 1 ∧
+        (mode = Expressive ⇒ 
+            mode_update_counts'.expressive = mode_update_counts.expressive + 1) ∧
+        (mode = Reflective ⇒ 
+            mode_update_counts'.reflective = mode_update_counts.reflective + 1)
+
+OP Step
+    ΔSTATE OptimizerState
+    
+    PRE accumulator.is_ready
+    POST
+        (* All parameters updated *)
+        (∀ i: 1..#param_states • 
+            param_states'[i].param ≠ param_states[i].param) ∧
+        
+        (* Step counters incremented *)
+        global_step' = global_step + 1 ∧
+        local_step' = local_step + 1 ∧
+        
+        (* Accumulator reset *)
+        accumulator'.accumulation_count = 0 ∧
+        accumulator'.is_ready = false ∧
+        (∀ i: 1..#accumulator'.accumulated_grads •
+            accumulator'.accumulated_grads[i].grad = zeros(shape))
+
+(* ═══════════════════════════════════════════════════════════════════════════
+   SECTION 9: Learning Rate Scheduling Operations
+   ═══════════════════════════════════════════════════════════════════════════ *)
+
+OP GetLearningRate
+    ΞSTATE OptimizerState
+    step?: StepCount
+    lr!: LearningRate
+    
+    PRE step? ≤ config.scheduler_config.total_steps
+    POST
+        lr! > 0 ∧
+        lr! ≥ config.scheduler_config.min_lr ∧
+        
+        CASE config.scheduler_config.scheduler_type OF
+            Constant → lr! = base_lr
+            Linear → lr! = LinearSchedule(step?, base_lr, config.scheduler_config)
+            Cosine → lr! = CosineSchedule(step?, base_lr, config.scheduler_config)
+            CosineWithRestarts → 
+                lr! = CosineWithRestartsSchedule(step?, base_lr, config.scheduler_config)
+            Polynomial → 
+                lr! = PolynomialSchedule(step?, base_lr, config.scheduler_config)
+            InverseSqrt → 
+                lr! = InverseSqrtSchedule(step?, base_lr, config.scheduler_config)
+            OneCycle → 
+                lr! = OneCycleSchedule(step?, base_lr, config.scheduler_config)
+            CognitiveAdaptive → 
+                lr! = CognitiveAdaptiveSchedule(step?, base_lr, config.scheduler_config,
+                                                current_stream, current_step)
+        END
+
+OP UpdateLearningRate
+    ΔSTATE OptimizerState
+    
+    PRE true
+    POST
+        current_lr' = GetLearningRate(global_step) ∧
+        lr_history' = lr_history ⁀ ⟨current_lr'⟩ ∧
+        
+        (* Update all parameter groups *)
+        (∀ i: 1..#param_groups' •
+            param_groups'[i].lr = current_lr' * config.param_groups[i].lr_mult)
+
+OP WarmupLearningRate
+    ΞSTATE OptimizerState
+    step?: StepCount
+    warmup_lr!: LearningRate
+    
+    PRE step? < config.scheduler_config.warmup_steps
+    POST
+        CASE config.scheduler_config.warmup_type OF
+            linear → 
+                warmup_lr! = base_lr * (step? + 1) / config.scheduler_config.warmup_steps
+            exponential → 
+                warmup_lr! = base_lr * (step? + 1)^2 / config.scheduler_config.warmup_steps^2
+            constant → 
+                warmup_lr! = base_lr * 0.1
+        END
+
+(* ═══════════════════════════════════════════════════════════════════════════
+   SECTION 10: Mixed Precision Operations
+   ═══════════════════════════════════════════════════════════════════════════ *)
+
+OP UpdateLossScale
+    ΔSTATE OptimizerState
+    gradients_finite?: 𝔹
+    
+    PRE config.gradient_config.dynamic_loss_scaling
+    POST
+        (gradients_finite? ⇒
+            (* Increase scale after successful steps *)
+            scale_growth_tracker' = scale_growth_tracker + 1 ∧
+            (scale_growth_tracker' ≥ 2000 ⇒
+                loss_scale' = min(loss_scale * 2, 2^16) ∧
+                scale_growth_tracker' = 0)) ∧
+        (¬gradients_finite? ⇒
+            (* Decrease scale on overflow *)
+            loss_scale' = max(loss_scale / 2, 1) ∧
+            scale_growth_tracker' = 0) ∧
+        
+        loss_scale_history' = loss_scale_history ⁀ ⟨loss_scale'⟩
+
+OP CheckGradientOverflow
+    ΞSTATE OptimizerState
+    gradients?: seq Gradient
+    is_finite!: 𝔹
+    
+    PRE config.gradient_config.fp16 ∨ config.gradient_config.bf16
+    POST
+        is_finite! = ∀ g ∈ ran gradients? • 
+            ∀ v ∈ elements(g.grad) • isfinite(v)
+
+(* ═══════════════════════════════════════════════════════════════════════════
+   SECTION 11: Cognitive Optimization Operations
+   ═══════════════════════════════════════════════════════════════════════════ *)
+
+OP SyncCrossStreamGradients
+    ΔSTATE OptimizerState
+    stream_gradients?: seq seq Gradient
+    synced_gradients!: seq Gradient
+    
+    PRE 
+        cognitive_enabled ∧
+        config.cognitive_adam_config ≠ ⊥ ∧
+        config.cognitive_adam_config!.cross_stream_gradient_sync ∧
+        #stream_gradients? = COGNITIVE_STREAMS
+    POST
+        #synced_gradients! = #stream_gradients?[1] ∧
+        
+        (* Weighted average of stream gradients *)
+        (∀ i: 1..#synced_gradients! •
+            synced_gradients![i].grad = 
+                Σⱼ config.cognitive_adam_config!.stream_gradient_weights[j] * 
+                    stream_gradients?[j][i].grad)
+
+OP AdvanceCognitiveState
+    ΔSTATE OptimizerState
+    
+    PRE cognitive_enabled
+    POST
+        current_step' = ((current_step - 1 + 1) mod COGNITIVE_STEPS) + 1 ∧
+        (current_step' mod PHASE_OFFSET = 1 ⇒
+            current_stream' = ((current_stream - 1 + 1) mod COGNITIVE_STREAMS) + 1)
+
+OP GetCognitiveScaledLR
+    ΞSTATE OptimizerState
+    base_lr?: LearningRate
+    stream_id?: StreamId
+    step_id?: StepId
+    scaled_lr!: LearningRate
+    
+    PRE 
+        cognitive_enabled ∧
+        config.cognitive_adam_config ≠ ⊥ ∧
+        1 ≤ stream_id? ≤ COGNITIVE_STREAMS ∧
+        1 ≤ step_id? ≤ COGNITIVE_STEPS
+    POST
+        LET cfg = config.cognitive_adam_config! IN
+        LET stream_mult = cfg.stream_lr_multipliers[stream_id?] IN
+        LET mode = GetModeForStep(step_id?) IN
+        LET mode_mult = (mode = Expressive ? 
+            cfg.mode_lr_multipliers.expressive : 
+            cfg.mode_lr_multipliers.reflective) IN
+        scaled_lr! = base_lr? * stream_mult * mode_mult
+
+(* ═══════════════════════════════════════════════════════════════════════════
+   SECTION 12: Helper Functions
+   ═══════════════════════════════════════════════════════════════════════════ *)
+
+FUNC LinearSchedule(step: StepCount, base_lr: LearningRate, cfg: SchedulerConfig): LearningRate ≜
+    IF step < cfg.warmup_steps THEN
+        base_lr * (step + 1) / cfg.warmup_steps
+    ELSE
+        LET decay_steps = cfg.total_steps - cfg.warmup_steps IN
+        LET decay_progress = (step - cfg.warmup_steps) / decay_steps IN
+        base_lr * (1 - decay_progress) + cfg.min_lr * decay_progress
+
+FUNC CosineSchedule(step: StepCount, base_lr: LearningRate, cfg: SchedulerConfig): LearningRate ≜
+    IF step < cfg.warmup_steps THEN
+        base_lr * (step + 1) / cfg.warmup_steps
+    ELSE
+        LET decay_steps = cfg.total_steps - cfg.warmup_steps IN
+        LET progress = (step - cfg.warmup_steps) / decay_steps IN
+        cfg.min_lr + (base_lr - cfg.min_lr) * (1 + cos(π * progress)) / 2
+
+FUNC CosineWithRestartsSchedule(step: StepCount, base_lr: LearningRate, 
+                                 cfg: SchedulerConfig): LearningRate ≜
+    LET num_cycles = cfg.num_cycles! IN
+    LET cycle_length = cfg.total_steps / num_cycles IN
+    LET cycle_step = step mod cycle_length IN
+    LET progress = cycle_step / cycle_length IN
+    cfg.min_lr + (base_lr - cfg.min_lr) * (1 + cos(π * progress)) / 2
+
+FUNC PolynomialSchedule(step: StepCount, base_lr: LearningRate, 
+                        cfg: SchedulerConfig): LearningRate ≜
+    IF step < cfg.warmup_steps THEN
+        base_lr * (step + 1) / cfg.warmup_steps
+    ELSE
+        LET decay_steps = cfg.total_steps - cfg.warmup_steps IN
+        LET progress = (step - cfg.warmup_steps) / decay_steps IN
+        (base_lr - cfg.min_lr) * (1 - progress)^cfg.power! + cfg.min_lr
+
+FUNC InverseSqrtSchedule(step: StepCount, base_lr: LearningRate, 
+                         cfg: SchedulerConfig): LearningRate ≜
+    IF step < cfg.warmup_steps THEN
+        base_lr * (step + 1) / cfg.warmup_steps
+    ELSE
+        base_lr * sqrt(cfg.warmup_steps / (step + 1))
+
+FUNC GetModeForStep(step: StepId): CognitiveMode ≜
+    IF step ∈ {1, 2, 3, 4, 5, 8, 9} THEN Expressive
+    ELSE Reflective
+
+FUNC GetTriadForStep(step: StepId): {1, 2, 3, 4} ≜
+    CASE step OF
+        1, 5, 9 → 1
+        2, 6, 10 → 2
+        3, 7, 11 → 3
+        4, 8, 12 → 4
+    END
+
+FUNC GetNestLevel(step: StepId): {1, 2, 3, 4} ≜
+    (* Based on OEIS A000081 nested shell structure *)
+    CASE step OF
+        1 → 1
+        2, 3 → 2
+        4, 5, 6, 7 → 3
+        8, 9, 10, 11, 12 → 4
+    END
+
+(* ═══════════════════════════════════════════════════════════════════════════
+   SECTION 13: Theorems and Properties
+   ═══════════════════════════════════════════════════════════════════════════ *)
+
+THEOREM LearningRateBounded:
+    ∀ state: OptimizerState; step: StepCount •
+        step ≤ state.config.scheduler_config.total_steps ⇒
+        state.config.scheduler_config.min_lr ≤ GetLearningRate(step) ≤ state.base_lr
+
+THEOREM GradientClippingBound:
+    ∀ grads: seq Gradient; max_norm: GradientNorm; clipped: seq Gradient •
+        ClipGradientsByNorm(grads, max_norm, clipped) ⇒
+        sqrt(Σᵢ norm²(clipped[i].grad)) ≤ max_norm
+
+THEOREM AdamConvergence:
+    (* Under standard assumptions, Adam converges *)
+    ∀ state: OptimizerState •
+        state.config.optimizer_type ∈ {Adam, AdamW} ∧
+        ValidAdamConfig(state.config.adam_config!) ⇒
+        (* Regret bound: O(sqrt(T)) *)
+        true
+
+THEOREM MomentumPreservation:
+    ∀ state, state': OptimizerState; grad: Tensor •
+        AdamStep(state, state', idx, grad) ⇒
+        (* Momentum is exponential moving average *)
+        state'.param_states[idx].exp_avg! = 
+            state.config.adam_config!.beta1 * state.param_states[idx].exp_avg! +
+            (1 - state.config.adam_config!.beta1) * grad
+
+THEOREM CognitiveStreamBalance:
+    ∀ state: OptimizerState •
+        state.cognitive_enabled ∧ state.global_step > COGNITIVE_STEPS * 10 ⇒
+        (* All streams receive approximately equal updates *)
+        ∀ s₁, s₂: 1..COGNITIVE_STREAMS •
+            |state.stream_update_counts[s₁] - state.stream_update_counts[s₂]| < 
+            state.global_step / COGNITIVE_STREAMS
+
+THEOREM WarmupMonotonicity:
+    ∀ state: OptimizerState; s₁, s₂: StepCount •
+        s₁ < s₂ < state.config.scheduler_config.warmup_steps ⇒
+        WarmupLearningRate(s₁) ≤ WarmupLearningRate(s₂)
+
+END Optimizer
