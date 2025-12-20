@@ -7,3 +7,4 @@
 
 export { ElectronStorageAdapter } from './ElectronStorageAdapter.js';
 export { TauriStorageAdapter } from './TauriStorageAdapter.js';
+export { OrchestratorStorageAdapter } from './OrchestratorStorageAdapter.js';
