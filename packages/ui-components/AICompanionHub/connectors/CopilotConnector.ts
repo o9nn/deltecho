@@ -416,7 +416,7 @@ export class CopilotConnector extends BaseConnector {
               totalTokens: data.usage.total_tokens,
             }
           : undefined,
-        finishReason: choice.finish_reason,
+        finishReason: choice.finish_reason as 'stop' | 'length' | 'content_filter' | 'function_call' | undefined,
       }
     } catch (error) {
       console.error('Copilot response generation error:', error)

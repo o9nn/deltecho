@@ -1,6 +1,5 @@
 import { getLogger } from '@deltecho/shared/logger'
-// TODO: Abstract backend communication
-// import { BackendRemote } from '../../backend-com.js'
+import { BackendRemote, onDCEvent, selectedAccountId } from '@deltecho/shared/backend'
 import { DeepTreeEchoBot } from './DeepTreeEchoBot.js'
 import { getBotInstance } from './DeepTreeEchoIntegration.js'
 
@@ -63,9 +62,10 @@ export class DeltachatBotInterface {
       for (const accountId of accountIds) {
         const accountInfo = await BackendRemote.rpc.getAccountInfo(accountId)
         if (
-          accountInfo.kind === 'Configured' &&
+          accountInfo &&
+          accountInfo.isConfigured &&
           (accountInfo.displayName === 'Deep Tree Echo Bot' ||
-            accountInfo.addr === 'deep-tree-echo-bot@example.com')
+            accountInfo.address === 'deep-tree-echo-bot@example.com')
         ) {
           this.botAccountId = accountId
           log.info(`Found existing bot account: ${accountId}`)
@@ -154,11 +154,11 @@ export class DeltachatBotInterface {
       if (!this.botAccountId) {
         const accountIds = await BackendRemote.rpc.getAllAccountIds()
         if (accountIds.length > 0) {
-          // Create group chat with specified name and false for protected parameter
+          // Create group chat with specified name
           const chatId = await BackendRemote.rpc.createGroupChat(
             accountIds[0],
             name,
-            false
+            [] // Initial members will be added below
           )
 
           // Add members
@@ -191,11 +191,11 @@ export class DeltachatBotInterface {
         }
       } else {
         // Use dedicated bot account
-        // Create group chat with specified name and false for protected parameter
+        // Create group chat with specified name
         const chatId = await BackendRemote.rpc.createGroupChat(
           this.botAccountId,
           name,
-          false
+          [] // Initial members will be added below
         )
 
         // Add members

@@ -4,8 +4,8 @@ import { LLMService } from './LLMService.js'
 import { VisionCapabilities } from './VisionCapabilities.js'
 import { PlaywrightAutomation } from './PlaywrightAutomation.js'
 import { ProprioceptiveEmbodiment } from './ProprioceptiveEmbodiment.js'
-// TODO: Abstract backend communication
-// import { Type as T } from '../../backend-com.js'
+// Type T is now abstracted through @deltecho/shared/backend
+import type { ChatMessage } from '@deltecho/shared/backend'
 
 const log = getLogger('render/components/DeepTreeEchoBot/DeepTreeEchoBot')
 
@@ -78,7 +78,7 @@ export class DeepTreeEchoBot {
   async processMessage(
     accountId: number,
     chatId: number,
-    message: T.Message
+    message: ChatMessage
   ): Promise<string> {
     if (!this.options.enabled) {
       return ''

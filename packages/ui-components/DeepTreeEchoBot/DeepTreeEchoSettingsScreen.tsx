@@ -3,8 +3,7 @@ import { getLogger } from '@deltecho/shared/logger'
 import BotSettings from './BotSettings.js'
 import { saveBotSettings, getBotInstance } from './DeepTreeEchoIntegration.js'
 import { runtime as _runtime } from '@deltecho/shared/runtime'
-// TODO: Abstract screen controller
-// import { selectedAccountId } from '../../ScreenController.js'
+import { selectedAccountId } from '@deltecho/shared/backend'
 
 const log = getLogger(
   'render/components/DeepTreeEchoBot/DeepTreeEchoSettingsScreen'
@@ -24,7 +23,10 @@ const DeepTreeEchoSettingsScreen: React.FC = () => {
       setIsSaving(true)
       setSaveMessage('Saving settings...')
 
-      await saveBotSettings(selectedAccountId(), settings)
+      const accountId = await selectedAccountId()
+      if (accountId) {
+        await saveBotSettings(accountId, settings)
+      }
 
       setSaveMessage('Settings saved successfully!')
 

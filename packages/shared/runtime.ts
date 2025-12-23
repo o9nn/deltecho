@@ -6,6 +6,8 @@
  * (Delta Chat Desktop, standalone web, etc.) without tight coupling.
  */
 
+import type { DesktopSettingsType } from './shared-types.js'
+
 export interface RuntimeInterface {
   /**
    * Get a configuration value
@@ -35,12 +37,15 @@ export interface RuntimeInterface {
   /**
    * Get all desktop settings
    */
-  getDesktopSettings?(): Promise<Record<string, any>>
+  getDesktopSettings?(): Promise<DesktopSettingsType>
   
   /**
    * Set a desktop setting
    */
-  setDesktopSetting?(key: string, value: string): Promise<void>
+  setDesktopSetting?<K extends keyof DesktopSettingsType>(
+    key: K, 
+    value: DesktopSettingsType[K]
+  ): Promise<void>
   
   /**
    * Write to a file (if supported)
@@ -52,6 +57,56 @@ export interface RuntimeInterface {
    */
   readFile?(path: string): Promise<Buffer>
 }
+
+/**
+ * Default desktop settings for standalone operation
+ */
+const defaultDesktopSettings: DesktopSettingsType = {
+  bounds: {},
+  HTMLEmailWindowBounds: undefined,
+  enableAVCalls: false,
+  enableBroadcastLists: false,
+  enableChatAuditLog: false,
+  enableOnDemandLocationStreaming: false,
+  enterKeySends: true,
+  locale: null,
+  notifications: true,
+  showNotificationContent: true,
+  isMentionsEnabled: true,
+  lastChats: {},
+  zoomFactor: 1,
+  activeTheme: 'dc:default',
+  minimizeToTray: false,
+  syncAllAccounts: true,
+  lastSaveDialogLocation: undefined,
+  experimentalEnableMarkdownInMessages: false,
+  enableWebxdcDevTools: false,
+  HTMLEmailAskForRemoteLoadingConfirmation: true,
+  HTMLEmailAlwaysLoadRemoteContent: false,
+  enableRelatedChats: true,
+  galleryImageKeepAspectRatio: true,
+  useSystemUIFont: false,
+  contentProtectionEnabled: false,
+  autostart: false,
+  // Deep Tree Echo Bot settings
+  deepTreeEchoBotEnabled: false,
+  deepTreeEchoBotEnableAsMainUser: false,
+  deepTreeEchoBotApiKey: undefined,
+  deepTreeEchoBotApiEndpoint: undefined,
+  deepTreeEchoBotMemoryEnabled: false,
+  deepTreeEchoBotPersonality: undefined,
+  deepTreeEchoBotVisionEnabled: false,
+  deepTreeEchoBotWebAutomationEnabled: false,
+  deepTreeEchoBotEmbodimentEnabled: false,
+  deepTreeEchoBotUseParallelProcessing: false,
+  deepTreeEchoBotPersonaState: undefined,
+  deepTreeEchoBotMemories: undefined,
+  deepTreeEchoBotReflections: undefined,
+  deepTreeEchoBotCognitiveKeys: undefined
+}
+
+// In-memory settings storage for standalone operation
+let inMemorySettings: DesktopSettingsType = { ...defaultDesktopSettings }
 
 /**
  * Default no-op runtime for environments without runtime support
@@ -85,13 +140,15 @@ export const defaultRuntime: RuntimeInterface = {
     return 'web'
   },
   
-  async getDesktopSettings(): Promise<Record<string, any>> {
-    console.warn('Runtime not configured: getDesktopSettings called')
-    return {}
+  async getDesktopSettings(): Promise<DesktopSettingsType> {
+    return inMemorySettings
   },
   
-  async setDesktopSetting(_key: string, _value: string): Promise<void> {
-    console.warn('Runtime not configured: setDesktopSetting called')
+  async setDesktopSetting<K extends keyof DesktopSettingsType>(
+    key: K, 
+    value: DesktopSettingsType[K]
+  ): Promise<void> {
+    inMemorySettings[key] = value
   }
 }
 
@@ -127,11 +184,17 @@ export const runtime = {
   showNotification: (...args: Parameters<RuntimeInterface['showNotification']>) => 
     runtimeInstance.showNotification(...args),
   getPlatform: () => runtimeInstance.getPlatform(),
-  getDesktopSettings: () => runtimeInstance.getDesktopSettings?.() || Promise.resolve({}),
-  setDesktopSetting: (...args: Parameters<NonNullable<RuntimeInterface['setDesktopSetting']>>) =>
-    runtimeInstance.setDesktopSetting?.(...args) || Promise.resolve(),
+  getDesktopSettings: () => 
+    runtimeInstance.getDesktopSettings?.() || Promise.resolve(defaultDesktopSettings),
+  setDesktopSetting: <K extends keyof DesktopSettingsType>(
+    key: K, 
+    value: DesktopSettingsType[K]
+  ) => runtimeInstance.setDesktopSetting?.(key, value) || Promise.resolve(),
   writeFile: (...args: Parameters<NonNullable<RuntimeInterface['writeFile']>>) => 
     runtimeInstance.writeFile?.(...args),
   readFile: (...args: Parameters<NonNullable<RuntimeInterface['readFile']>>) => 
     runtimeInstance.readFile?.(...args)
 }
+
+// Re-export DesktopSettingsType for convenience
+export type { DesktopSettingsType }

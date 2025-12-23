@@ -1,6 +1,5 @@
 import { getLogger } from '@deltecho/shared/logger'
-// TODO: Abstract backend communication
-// import { BackendRemote } from '../../backend-com.js'
+import { BackendRemote, onDCEvent, selectedAccountId } from '@deltecho/shared/backend'
 import { LLMService, CognitiveFunctionType } from './LLMService.js'
 import { RAGMemoryStore } from './RAGMemoryStore.js'
 import { PersonaCore } from './PersonaCore.js'

@@ -374,7 +374,7 @@ const AICompanionHubContent: React.FC = () => {
                   </button>
                   <button
                     className={`tab ${
-                      view === 'visualization' ? 'active' : ''
+                      (view as string) === 'visualization' ? 'active' : ''
                     }`}
                     onClick={() => setView('visualization')}
                   >
@@ -498,7 +498,7 @@ const AICompanionHubContent: React.FC = () => {
                 )}
               </div>
             </>
-          ) : view === 'visualization' ? (
+          ) : (view as string) === 'visualization' ? (
             <div className='memory-visualization-container'>
               <MemoryVisualization />
             </div>

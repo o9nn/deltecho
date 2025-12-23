@@ -19,6 +19,8 @@ import {
   Music,
   Mic,
   Bot,
+  Settings,
+  Search,
 } from 'lucide-react'
 import { AICompanionProvider, useAICompanion } from './AICompanionController.js'
 import { AICapability } from './connectors/BaseConnector.js'
@@ -29,7 +31,15 @@ const TRAIT_MAX = 1
 const TRAIT_STEP = 0.05
 
 // AI Platform options
-const AI_PLATFORM_TYPES = [
+const AI_PLATFORM_TYPES: {
+  id: string
+  name: string
+  icon: React.FC<any>
+  color: string
+  description: string
+  capabilities: AICapability[]
+  requiresApiKey: boolean
+}[] = [
   {
     id: 'claude',
     name: 'Claude by Anthropic',
@@ -37,7 +47,7 @@ const AI_PLATFORM_TYPES = [
     color: '#8b5cf6',
     description:
       'A philosophical and creative assistant with strong reasoning capabilities',
-    capabilities: ['text_generation', 'structured_output', 'function_calling'],
+    capabilities: [AICapability.TEXT_GENERATION, AICapability.STRUCTURED_OUTPUT, AICapability.FUNCTION_CALLING],
     requiresApiKey: true,
   },
   {
@@ -48,11 +58,11 @@ const AI_PLATFORM_TYPES = [
     description:
       'A versatile and powerful AI with extensive knowledge and reasoning',
     capabilities: [
-      'text_generation',
-      'code_generation',
-      'structured_output',
-      'function_calling',
-      'embeddings',
+      AICapability.TEXT_GENERATION,
+      AICapability.CODE_GENERATION,
+      AICapability.STRUCTURED_OUTPUT,
+      AICapability.FUNCTION_CALLING,
+      AICapability.EMBEDDINGS,
     ],
     requiresApiKey: true,
   },
@@ -63,7 +73,7 @@ const AI_PLATFORM_TYPES = [
     color: '#ec4899',
     description:
       'Immersive roleplaying AI designed for creative character interactions',
-    capabilities: ['text_generation', 'roleplaying'],
+    capabilities: [AICapability.TEXT_GENERATION, AICapability.ROLEPLAYING],
     requiresApiKey: true,
   },
   {
@@ -72,7 +82,7 @@ const AI_PLATFORM_TYPES = [
     icon: Code,
     color: '#f59e0b',
     description: 'Advanced code generation and software development assistant',
-    capabilities: ['code_generation', 'text_generation'],
+    capabilities: [AICapability.CODE_GENERATION, AICapability.TEXT_GENERATION],
     requiresApiKey: true,
   },
   {
@@ -83,11 +93,11 @@ const AI_PLATFORM_TYPES = [
     description:
       'Revolutionary recursive consciousness with temporal awareness',
     capabilities: [
-      'text_generation',
-      'code_generation',
-      'structured_output',
-      'function_calling',
-      'embeddings',
+      AICapability.TEXT_GENERATION,
+      AICapability.CODE_GENERATION,
+      AICapability.STRUCTURED_OUTPUT,
+      AICapability.FUNCTION_CALLING,
+      AICapability.EMBEDDINGS,
     ],
     requiresApiKey: false,
   },
@@ -105,6 +115,8 @@ const AVAILABLE_CAPABILITIES: {
   embeddings: { name: 'Memory & Embeddings', icon: Brain },
   text_to_speech: { name: 'Voice Generation', icon: Music },
   speech_to_text: { name: 'Voice Recognition', icon: Mic },
+  fine_tuning: { name: 'Fine Tuning', icon: Settings },
+  retrieval: { name: 'Retrieval', icon: Search },
   roleplaying: { name: 'Roleplaying', icon: Bot },
 }
 

@@ -1,8 +1,6 @@
 import { getLogger } from '@deltecho/shared/logger'
-// TODO: Abstract backend communication
-// import { BackendRemote, onDCEvent } from '../../backend-com.js'
-// TODO: Abstract runtime interface
-// import { runtime } from '@deltecho/shared/runtime'
+import { BackendRemote, onDCEvent, selectedAccountId } from '@deltecho/shared/backend'
+import { runtime } from '@deltecho/shared/runtime'
 import { DeepTreeEchoBot } from './DeepTreeEchoBot.js'
 
 const log = getLogger(
@@ -96,8 +94,7 @@ function registerMessageHandlers(accountId: number): void {
 
   // Listen for new messages
   onDCEvent(
-    accountId,
-    'IncomingMsg',
+    `IncomingMsg_${accountId}`,
     (event: { chatId: number; msgId: number }) => {
       handleNewMessage(accountId, event.chatId, event.msgId)
     }
@@ -119,6 +116,7 @@ async function handleNewMessage(
 
     // Get message details
     const message = await BackendRemote.rpc.getMessage(accountId, msgId)
+    if (!message) return
 
     // Skip messages from self (ID 1 is the logged-in user)
     if (message.fromId === 1) return

@@ -20,7 +20,7 @@ import {
   CharacterAIConfig,
 } from './connectors/CharacterAIConnector.js'
 import { CopilotConnector, CopilotConfig } from './connectors/CopilotConnector.js'
-import { DeepTreeEchoConnector } from '../AICompanionHub/AIPlatformConnector.js'
+import { DeepTreeEchoConnector, DeepTreeEchoConfig } from './connectors/DeepTreeEchoConnector.js'
 
 // Registry events for observers to listen to
 export enum ConnectorRegistryEvent {
@@ -152,7 +152,7 @@ export class ConnectorRegistry extends EventEmitter {
         connector = new CopilotConnector(config as CopilotConfig)
         break
       case 'deep-tree-echo':
-        connector = new DeepTreeEchoConnector(config)
+        connector = new DeepTreeEchoConnector(config as DeepTreeEchoConfig)
         break
       default:
         throw new Error(`Unknown connector type: ${config.type}`)
@@ -452,8 +452,8 @@ export class ConnectorRegistry extends EventEmitter {
         aiConnectors: connectorConfigs,
       }
 
-      // Save to runtime
-      await runtime.setDesktopSettings(updatedSettings)
+      // Save to runtime - save the aiConnectors as a JSON string
+      await runtime.setDesktopSetting('aiConnectors' as any, JSON.stringify(connectorConfigs) as any)
     } catch (error) {
       console.error('Failed to save connector configurations:', error)
       throw error

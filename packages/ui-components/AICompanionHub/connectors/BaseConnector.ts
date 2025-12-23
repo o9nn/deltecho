@@ -7,6 +7,7 @@ import { AIMemory, MemorySystem, MemoryType } from '../MemoryPersistenceLayer.js
 export interface AIConnectorConfig {
   id: string
   name: string
+  type?: string // Connector type identifier
   avatar?: string
   apiKey?: string
   apiEndpoint?: string
@@ -18,6 +19,7 @@ export interface AIConnectorConfig {
   memoriesPerRequest?: number
   capabilities: AICapability[]
   personalityTraits: Record<string, number> // trait -> value (0-1)
+  characterId?: string // For CharacterAI connector
 }
 
 export enum AICapability {
@@ -31,6 +33,7 @@ export enum AICapability {
   STRUCTURED_OUTPUT = 'structured_output',
   FINE_TUNING = 'fine_tuning',
   RETRIEVAL = 'retrieval',
+  ROLEPLAYING = 'roleplaying',
 }
 
 export interface Message {
@@ -47,6 +50,7 @@ export interface Message {
 
 export interface ConversationContext {
   conversationId: string
+  companionId?: string // ID of the companion in the conversation
   title?: string
   messages: Message[]
   metadata?: Record<string, any>

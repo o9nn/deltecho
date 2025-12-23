@@ -333,8 +333,8 @@ export class MemoryPersistenceLayer extends EventEmitter {
         aiMemories: memoriesArray,
       }
 
-      // Save to runtime storage
-      await runtime.setDesktopSettings(updatedSettings)
+      // Save to runtime storage - save aiMemories as JSON string
+      await runtime.setDesktopSetting('aiMemories' as any, JSON.stringify(memoriesArray) as any)
 
       this.emit('memoriesPersisted', { count: memoriesArray.length })
     } catch (error) {

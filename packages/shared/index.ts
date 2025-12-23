@@ -35,3 +35,6 @@ export * from './parse_mailto.js'
 
 // Export runtime interface
 export * from './runtime.js'
+
+// Export backend interface
+export * from './backend.js'

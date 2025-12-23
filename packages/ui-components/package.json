@@ -36,9 +36,13 @@
     "react": "^18.0.0"
   },
   "dependencies": {
+    "3d-force-graph": "^1.79.0",
     "@deltecho/cognitive": "file:../cognitive",
     "@deltecho/shared": "file:../shared",
-    "lucide-react": "^0.562.0"
+    "@types/three": "^0.182.0",
+    "lucide-react": "^0.562.0",
+    "three": "^0.182.0",
+    "three-spritetext": "^1.10.0"
   },
   "devDependencies": {
     "@types/node": "^20.0.0",

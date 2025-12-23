@@ -13,6 +13,7 @@ import {
   Eye,
   EyeOff,
   Loader,
+  X,
 } from 'lucide-react'
 import { AICompanionProvider, useAICompanion } from './AICompanionController.js'
 import { AIMemory } from './MemoryPersistenceLayer.js'
@@ -32,6 +33,10 @@ interface MemoryNode {
   color: string
   group?: string
   memory?: AIMemory
+  // 3D position coordinates (set by force graph)
+  x?: number
+  y?: number
+  z?: number
 }
 
 interface MemoryLink {
@@ -98,9 +103,9 @@ const MemoryVisualizationContent: React.FC = () => {
       try {
         // Dynamic imports
         const ForceGraph3DModule = await import('3d-force-graph')
-        const ThreeModule = await import('three')
+        const SpriteTextModule = await import('three-spritetext')
         ForceGraph3D = ForceGraph3DModule.default
-        SpriteText = ThreeModule.SpriteText
+        SpriteText = SpriteTextModule.default
 
         setLoading(false)
       } catch (error) {

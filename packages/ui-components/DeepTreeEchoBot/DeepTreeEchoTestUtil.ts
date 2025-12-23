@@ -1,5 +1,4 @@
-// TODO: Abstract backend communication
-// import { BackendRemote } from '../../backend-com.js'
+import { BackendRemote, onDCEvent, selectedAccountId } from '@deltecho/shared/backend'
 import { DeepTreeEchoBot } from './DeepTreeEchoBot.js'
 import {
   getBotInstance,
@@ -23,11 +22,11 @@ export class DeepTreeEchoTestUtil {
     additionalMembers: number[] = []
   ): Promise<number> {
     try {
-      // Create a group chat - using false for protect parameter (not protected)
+      // Create a group chat
       const chatId = await BackendRemote.rpc.createGroupChat(
         accountId,
         groupName,
-        false
+        additionalMembers
       )
       log.info(`Created test group: ${chatId}`)
 
