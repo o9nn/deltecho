@@ -172,6 +172,14 @@ export function getRuntime(): RuntimeInterface {
 }
 
 /**
+ * Reset runtime to default implementation (for testing)
+ */
+export function resetRuntime(): void {
+  runtimeInstance = defaultRuntime
+  inMemorySettings = { ...defaultDesktopSettings }
+}
+
+/**
  * Runtime singleton export for convenience
  */
 export const runtime = {
