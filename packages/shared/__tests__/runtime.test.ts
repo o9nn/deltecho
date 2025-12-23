@@ -5,7 +5,7 @@
  * that provides desktop settings and event handling capabilities.
  */
 
-import { runtime, RuntimeInterface, setRuntime, resetRuntime, defaultRuntime } from '../runtime'
+import { runtime, RuntimeInterface, setRuntime, resetRuntime, defaultRuntime } from '../runtime.js'
 
 describe('Runtime Module', () => {
   beforeEach(() => {

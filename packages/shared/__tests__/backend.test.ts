@@ -15,7 +15,7 @@ import {
   ChatMessage,
   Contact,
   Account,
-} from '../backend'
+} from '../backend.js'
 
 describe('Backend Module', () => {
   // Store original backend to restore after tests

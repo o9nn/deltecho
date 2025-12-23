@@ -5,14 +5,14 @@
  * consistent logging across all Deltecho packages.
  */
 
-import { getLogger, Logger, setLogHandler, LogLevelString } from '../logger'
+import { getLogger, Logger, setLogHandler, LogLevelString } from '../logger.js'
 
 describe('Logger Module', () => {
   // Initialize the log handler before tests
   beforeAll(() => {
     // Set up a mock log handler
     setLogHandler(
-      (channel, level, stacktrace, ...args) => {
+      (channel: string, level: string, stacktrace: string | any[], ...args: any[]) => {
         // Mock handler - just capture the log
       },
       { 'log-to-console': false } as any
