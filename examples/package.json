@@ -1,0 +1,19 @@
+{
+  "name": "@deltecho/examples",
+  "version": "1.0.0",
+  "description": "Example scripts for Deltecho cognitive AI platform",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "basic": "npx ts-node basic-llm-usage.ts",
+    "triadic": "npx ts-node triadic-cognitive-loop.ts",
+    "cycle": "npx ts-node twelve-step-cognitive-cycle.ts"
+  },
+  "dependencies": {
+    "deep-tree-echo-core": "workspace:*"
+  },
+  "devDependencies": {
+    "ts-node": "^10.9.2",
+    "typescript": "^5.3.3"
+  }
+}
