@@ -1,4 +1,4 @@
-import { RAGMemoryStore, Memory as _Memory } from '../RAGMemoryStore'
+import { RAGMemoryStore, Memory as _Memory } from '../RAGMemoryStore.js'
 
 // Mock logger
 jest.mock('@deltachat-desktop/shared/logger', () => ({

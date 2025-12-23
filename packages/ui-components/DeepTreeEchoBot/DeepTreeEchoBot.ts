@@ -1,9 +1,9 @@
 import { getLogger } from '@deltachat-desktop/shared/logger'
-import { BackendRemote } from '../../backend-com'
-import { LLMService, CognitiveFunctionType } from './LLMService'
-import { RAGMemoryStore } from './RAGMemoryStore'
-import { PersonaCore } from './PersonaCore'
-import { SelfReflection } from './SelfReflection'
+import { BackendRemote } from '../../backend-com.js'
+import { LLMService, CognitiveFunctionType } from './LLMService.js'
+import { RAGMemoryStore } from './RAGMemoryStore.js'
+import { PersonaCore } from './PersonaCore.js'
+import { SelfReflection } from './SelfReflection.js'
 
 const log = getLogger('render/components/DeepTreeEchoBot/DeepTreeEchoBot')
 

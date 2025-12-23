@@ -1,7 +1,7 @@
-import { getLogger } from '../../../../shared/logger'
-import { LLMService } from './LLMService'
-import { PersonaCore } from './PersonaCore'
-import { RAGMemoryStore } from './RAGMemoryStore'
+import { getLogger } from '../../../../shared/logger.js'
+import { LLMService } from './LLMService.js'
+import { PersonaCore } from './PersonaCore.js'
+import { RAGMemoryStore } from './RAGMemoryStore.js'
 
 const log = getLogger('render/components/DeepTreeEchoBot/SelfReflection')
 

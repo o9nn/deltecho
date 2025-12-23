@@ -1,4 +1,4 @@
-import { getLogger } from '../../../../shared/logger'
+import { getLogger } from '../../../../shared/logger.js'
 
 const log = getLogger(
   'render/components/DeepTreeEchoBot/ProprioceptiveEmbodiment'

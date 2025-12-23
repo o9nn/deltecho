@@ -1,5 +1,5 @@
-import { getLogger } from '../../../../shared/logger'
-import { Memory as _Memory } from './RAGMemoryStore'
+import { getLogger } from '../../../../shared/logger.js'
+import { Memory as _Memory } from './RAGMemoryStore.js'
 
 const log = getLogger('render/components/DeepTreeEchoBot/LLMService')
 

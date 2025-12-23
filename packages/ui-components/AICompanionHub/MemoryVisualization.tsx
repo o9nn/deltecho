@@ -14,8 +14,8 @@ import {
   EyeOff,
   Loader,
 } from 'lucide-react'
-import { AICompanionProvider, useAICompanion } from './AICompanionController'
-import { AIMemory } from './MemoryPersistenceLayer'
+import { AICompanionProvider, useAICompanion } from './AICompanionController.js'
+import { AIMemory } from './MemoryPersistenceLayer.js'
 
 // Force 3D graph rendering on canvas rather than WebGL when needed
 const forceCanvas = false

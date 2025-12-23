@@ -1,11 +1,11 @@
 import React, { useEffect, useState, useRef, useCallback } from 'react'
 
 // Import all the advanced cognitive modules
-import { HyperDimensionalMemory } from './HyperDimensionalMemory'
-import { AdaptivePersonality } from './AdaptivePersonality'
-import { QuantumBeliefPropagation } from './QuantumBeliefPropagation'
-import { EmotionalIntelligence } from './EmotionalIntelligence'
-import { SecureIntegration, CognitiveDataType } from './SecureIntegration'
+import { HyperDimensionalMemory } from './HyperDimensionalMemory.js'
+import { AdaptivePersonality } from './AdaptivePersonality.js'
+import { QuantumBeliefPropagation } from './QuantumBeliefPropagation.js'
+import { EmotionalIntelligence } from './EmotionalIntelligence.js'
+import { SecureIntegration, CognitiveDataType } from './SecureIntegration.js'
 
 // Cognitive processing states
 enum CognitiveState {

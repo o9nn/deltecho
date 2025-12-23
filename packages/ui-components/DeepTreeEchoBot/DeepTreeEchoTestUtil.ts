@@ -1,10 +1,10 @@
-import { BackendRemote } from '../../backend-com'
-import { DeepTreeEchoBot } from './DeepTreeEchoBot'
+import { BackendRemote } from '../../backend-com.js'
+import { DeepTreeEchoBot } from './DeepTreeEchoBot.js'
 import {
   getBotInstance,
   initDeepTreeEchoBot,
   cleanupBot,
-} from './DeepTreeEchoIntegration'
+} from './DeepTreeEchoIntegration.js'
 import { getLogger } from '@deltachat-desktop/shared/logger'
 
 const log = getLogger('render/components/DeepTreeEchoBot/DeepTreeEchoTestUtil')

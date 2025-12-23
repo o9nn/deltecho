@@ -13,9 +13,9 @@ import {
   ConnectorRegistryInstance,
   ConnectorRegistryEvent,
   ConnectorInfo,
-} from './ConnectorRegistry'
-import { AIMemory } from './MemoryPersistenceLayer'
-import { ConversationContext, Message } from './connectors/BaseConnector'
+} from './ConnectorRegistry.js'
+import { AIMemory } from './MemoryPersistenceLayer.js'
+import { ConversationContext, Message } from './connectors/BaseConnector.js'
 
 // Context type for our magnificent AI Companion ecosystem
 interface AICompanionContextType {

@@ -1,9 +1,9 @@
 import React, { useState } from 'react'
 import { getLogger } from '@deltachat-desktop/shared/logger'
-import BotSettings from './BotSettings'
-import { saveBotSettings, getBotInstance } from './DeepTreeEchoIntegration'
+import BotSettings from './BotSettings.js'
+import { saveBotSettings, getBotInstance } from './DeepTreeEchoIntegration.js'
 import { runtime as _runtime } from '@deltachat-desktop/runtime-interface'
-import { selectedAccountId } from '../../ScreenController'
+import { selectedAccountId } from '../../ScreenController.js'
 
 const log = getLogger(
   'render/components/DeepTreeEchoBot/DeepTreeEchoSettingsScreen'

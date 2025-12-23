@@ -7,7 +7,7 @@ import {
   AICapability,
   ConversationContext,
   AIResponse,
-} from './BaseConnector'
+} from './BaseConnector.js'
 
 // Copilot-specific configuration options
 export interface CopilotConfig extends AIConnectorConfig {

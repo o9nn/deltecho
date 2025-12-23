@@ -7,7 +7,7 @@ import {
   AICapability,
   ConversationContext,
   AIResponse,
-} from './BaseConnector'
+} from './BaseConnector.js'
 
 // Character.AI-specific configuration options
 export interface CharacterAIConfig extends AIConnectorConfig {

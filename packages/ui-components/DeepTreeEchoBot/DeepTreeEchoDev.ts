@@ -1,10 +1,10 @@
-import { getLogger } from '../../../../shared/logger'
-import { RAGMemoryStore, Memory } from './RAGMemoryStore'
-import { LLMService } from './LLMService'
-import { VisionCapabilities } from './VisionCapabilities'
-import { PlaywrightAutomation } from './PlaywrightAutomation'
-import { ProprioceptiveEmbodiment } from './ProprioceptiveEmbodiment'
-import { Type as T } from '../../backend-com'
+import { getLogger } from '../../../../shared/logger.js'
+import { RAGMemoryStore, Memory } from './RAGMemoryStore.js'
+import { LLMService } from './LLMService.js'
+import { VisionCapabilities } from './VisionCapabilities.js'
+import { PlaywrightAutomation } from './PlaywrightAutomation.js'
+import { ProprioceptiveEmbodiment } from './ProprioceptiveEmbodiment.js'
+import { Type as T } from '../../backend-com.js'
 
 const log = getLogger('render/components/DeepTreeEchoBot/DeepTreeEchoBot')
 

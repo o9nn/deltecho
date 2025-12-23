@@ -20,11 +20,11 @@ import {
   X as XIcon,
 } from 'lucide-react'
 
-import { AICompanionProvider, useAICompanion } from './AICompanionController'
-import { ConnectorInfo, ConnectorRegistryEvent } from './ConnectorRegistry'
-import { AIMemory } from './MemoryPersistenceLayer'
-import MemoryVisualization from './MemoryVisualization'
-import AICompanionCreator from './AICompanionCreator'
+import { AICompanionProvider, useAICompanion } from './AICompanionController.js'
+import { ConnectorInfo, ConnectorRegistryEvent } from './ConnectorRegistry.js'
+import { AIMemory } from './MemoryPersistenceLayer.js'
+import MemoryVisualization from './MemoryVisualization.js'
+import AICompanionCreator from './AICompanionCreator.js'
 
 // Companion Card Component
 const CompanionCard: React.FC<{

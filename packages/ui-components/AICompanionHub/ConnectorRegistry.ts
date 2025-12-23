@@ -3,7 +3,7 @@
 
 import { EventEmitter } from 'events'
 import { runtime } from '@deltachat-desktop/runtime-interface'
-import { AIMemory, MemorySystem } from './MemoryPersistenceLayer'
+import { AIMemory, MemorySystem } from './MemoryPersistenceLayer.js'
 
 import {
   BaseConnector,
@@ -11,16 +11,16 @@ import {
   AICapability,
   ConversationContext,
   Message,
-} from './connectors/BaseConnector'
+} from './connectors/BaseConnector.js'
 
-import { ClaudeConnector, ClaudeConfig } from './connectors/ClaudeConnector'
-import { ChatGPTConnector, ChatGPTConfig } from './connectors/ChatGPTConnector'
+import { ClaudeConnector, ClaudeConfig } from './connectors/ClaudeConnector.js'
+import { ChatGPTConnector, ChatGPTConfig } from './connectors/ChatGPTConnector.js'
 import {
   CharacterAIConnector,
   CharacterAIConfig,
-} from './connectors/CharacterAIConnector'
-import { CopilotConnector, CopilotConfig } from './connectors/CopilotConnector'
-import { DeepTreeEchoConnector } from '../AICompanionHub/AIPlatformConnector'
+} from './connectors/CharacterAIConnector.js'
+import { CopilotConnector, CopilotConfig } from './connectors/CopilotConnector.js'
+import { DeepTreeEchoConnector } from '../AICompanionHub/AIPlatformConnector.js'
 
 // Registry events for observers to listen to
 export enum ConnectorRegistryEvent {

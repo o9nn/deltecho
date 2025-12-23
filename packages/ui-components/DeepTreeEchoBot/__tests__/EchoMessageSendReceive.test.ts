@@ -6,7 +6,7 @@
  * 3. Test Echo message send receive - verify message handling
  */
 
-import { DeepTreeEchoBot } from '../DeepTreeEchoBot'
+import { DeepTreeEchoBot } from '../DeepTreeEchoBot.js'
 
 // Mock all the dependencies for testing
 jest.mock('@deltachat-desktop/shared/logger', () => ({
@@ -18,7 +18,7 @@ jest.mock('@deltachat-desktop/shared/logger', () => ({
   })),
 }))
 
-jest.mock('../../../backend-com', () => ({
+jest.mock('../../../backend-com.js.js', () => ({
   BackendRemote: {
     rpc: {
       getMessage: jest.fn().mockResolvedValue({
@@ -32,7 +32,7 @@ jest.mock('../../../backend-com', () => ({
   },
 }))
 
-jest.mock('../LLMService', () => ({
+jest.mock('../LLMService.js', () => ({
   LLMService: {
     getInstance: jest.fn().mockReturnValue({
       setConfig: jest.fn(),
@@ -47,7 +47,7 @@ jest.mock('../LLMService', () => ({
   },
 }))
 
-jest.mock('../RAGMemoryStore', () => ({
+jest.mock('../RAGMemoryStore.js', () => ({
   RAGMemoryStore: {
     getInstance: jest.fn().mockReturnValue({
       storeMemory: jest.fn(),
@@ -60,7 +60,7 @@ jest.mock('../RAGMemoryStore', () => ({
   },
 }))
 
-jest.mock('../PersonaCore', () => ({
+jest.mock('../PersonaCore.js', () => ({
   PersonaCore: {
     getInstance: jest.fn().mockReturnValue({
       getPreferences: jest.fn().mockReturnValue({ communicationTone: 'balanced' }),
@@ -70,7 +70,7 @@ jest.mock('../PersonaCore', () => ({
   },
 }))
 
-jest.mock('../SelfReflection', () => ({
+jest.mock('../SelfReflection.js', () => ({
   SelfReflection: {
     getInstance: jest.fn().mockReturnValue({
       reflectOnAspect: jest.fn().mockResolvedValue('Reflection completed'),

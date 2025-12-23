@@ -9,7 +9,7 @@ import {
   FunctionDefinition,
   AIResponse,
   Message,
-} from './BaseConnector'
+} from './BaseConnector.js'
 
 // ChatGPT-specific configuration options
 export interface ChatGPTConfig extends AIConnectorConfig {

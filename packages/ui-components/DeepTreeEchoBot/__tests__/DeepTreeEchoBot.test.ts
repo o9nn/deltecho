@@ -1,4 +1,4 @@
-import { DeepTreeEchoBot } from '../DeepTreeEchoBot'
+import { DeepTreeEchoBot } from '../DeepTreeEchoBot.js'
 
 // Mock dependencies
 jest.mock('@deltachat-desktop/shared/logger', () => ({
@@ -10,7 +10,7 @@ jest.mock('@deltachat-desktop/shared/logger', () => ({
   })),
 }))
 
-jest.mock('../RAGMemoryStore', () => {
+jest.mock('../RAGMemoryStore.js', () => {
   return {
     RAGMemoryStore: {
       getInstance: jest.fn().mockReturnValue({
@@ -30,7 +30,7 @@ jest.mock('../RAGMemoryStore', () => {
   }
 })
 
-jest.mock('../LLMService', () => {
+jest.mock('../LLMService.js', () => {
   return {
     LLMService: {
       getInstance: jest.fn().mockReturnValue({
@@ -52,7 +52,7 @@ jest.mock('../LLMService', () => {
   }
 })
 
-jest.mock('../VisionCapabilities', () => {
+jest.mock('../VisionCapabilities.js', () => {
   return {
     VisionCapabilities: jest.fn().mockImplementation(() => ({
       initialize: jest.fn().mockResolvedValue(true),
@@ -66,7 +66,7 @@ jest.mock('../VisionCapabilities', () => {
   }
 })
 
-jest.mock('../PlaywrightAutomation', () => {
+jest.mock('../PlaywrightAutomation.js', () => {
   return {
     PlaywrightAutomation: jest.fn().mockImplementation(() => ({
       initialize: jest.fn().mockResolvedValue(true),
@@ -90,7 +90,7 @@ jest.mock('../PlaywrightAutomation', () => {
   }
 })
 
-jest.mock('../ProprioceptiveEmbodiment', () => {
+jest.mock('../ProprioceptiveEmbodiment.js', () => {
   return {
     ProprioceptiveEmbodiment: jest.fn().mockImplementation(() => ({
       initialize: jest.fn().mockResolvedValue(true),
@@ -126,7 +126,7 @@ jest.mock('../ProprioceptiveEmbodiment', () => {
   }
 })
 
-jest.mock('../PersonaCore', () => {
+jest.mock('../PersonaCore.js', () => {
   return {
     PersonaCore: {
       getInstance: jest.fn().mockReturnValue({
@@ -148,7 +148,7 @@ jest.mock('../PersonaCore', () => {
   }
 })
 
-jest.mock('../SelfReflection', () => {
+jest.mock('../SelfReflection.js', () => {
   return {
     SelfReflection: {
       getInstance: jest.fn().mockReturnValue({
@@ -158,7 +158,7 @@ jest.mock('../SelfReflection', () => {
   }
 })
 
-jest.mock('../../../backend-com', () => ({
+jest.mock('../../../backend-com.js.js', () => ({
   BackendRemote: {
     rpc: {
       getMessage: jest.fn().mockResolvedValue({

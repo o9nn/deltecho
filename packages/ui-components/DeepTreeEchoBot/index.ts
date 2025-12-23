@@ -1,27 +1,27 @@
 // Core cognitive modules
-import { HyperDimensionalMemory } from './HyperDimensionalMemory'
-import { AdaptivePersonality } from './AdaptivePersonality'
-import { QuantumBeliefPropagation } from './QuantumBeliefPropagation'
-import { EmotionalIntelligence } from './EmotionalIntelligence'
-import { SecureIntegration } from './SecureIntegration'
+import { HyperDimensionalMemory } from './HyperDimensionalMemory.js'
+import { AdaptivePersonality } from './AdaptivePersonality.js'
+import { QuantumBeliefPropagation } from './QuantumBeliefPropagation.js'
+import { EmotionalIntelligence } from './EmotionalIntelligence.js'
+import { SecureIntegration } from './SecureIntegration.js'
 
 // Import main component and its types
-import { DeepTreeEchoBot, DeepTreeEchoBotOptions } from './DeepTreeEchoBot'
-import DeepTreeEchoHubSimple from './DeepTreeEchoHubSimple'
+import { DeepTreeEchoBot, DeepTreeEchoBotOptions } from './DeepTreeEchoBot.js'
+import DeepTreeEchoHubSimple from './DeepTreeEchoHubSimple.js'
 
 // Import utility modules
-import { LLMService, CognitiveFunctionType } from './LLMService'
-import { PersonaCore } from './PersonaCore'
-import { RAGMemoryStore } from './RAGMemoryStore'
-import { SelfReflection } from './SelfReflection'
-import BotSettings from './BotSettings'
-import DeepTreeEchoSettingsScreen from './DeepTreeEchoSettingsScreen'
+import { LLMService, CognitiveFunctionType } from './LLMService.js'
+import { PersonaCore } from './PersonaCore.js'
+import { RAGMemoryStore } from './RAGMemoryStore.js'
+import { SelfReflection } from './SelfReflection.js'
+import BotSettings from './BotSettings.js'
+import DeepTreeEchoSettingsScreen from './DeepTreeEchoSettingsScreen.js'
 import {
   initDeepTreeEchoBot,
   saveBotSettings,
   getBotInstance,
   cleanupBot,
-} from './DeepTreeEchoIntegration'
+} from './DeepTreeEchoIntegration.js'
 import {
   DeepTreeEchoTestUtil,
   createTestGroup,
@@ -29,7 +29,7 @@ import {
   processMessageWithBot,
   runDemo,
   cleanup as cleanupTestUtil,
-} from './DeepTreeEchoTestUtil'
+} from './DeepTreeEchoTestUtil.js'
 
 export {
   DeepTreeEchoBot,

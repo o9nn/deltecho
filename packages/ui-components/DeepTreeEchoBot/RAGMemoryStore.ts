@@ -1,4 +1,4 @@
-import { getLogger } from '../../../../shared/logger'
+import { getLogger } from '../../../../shared/logger.js'
 import { runtime } from '@deltachat-desktop/runtime-interface'
 
 const log = getLogger('render/components/DeepTreeEchoBot/RAGMemoryStore')

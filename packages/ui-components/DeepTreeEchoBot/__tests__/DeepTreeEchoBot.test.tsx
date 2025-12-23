@@ -1,9 +1,9 @@
 import React from 'react'
 import { render, screen } from '@testing-library/react'
-import DeepTreeEchoBot from '../DeepTreeEchoBot'
+import DeepTreeEchoBot from '../DeepTreeEchoBot.js'
 
 // Mock the cognitive modules to avoid complex initializations in tests
-jest.mock('../HyperDimensionalMemory', () => ({
+jest.mock('../HyperDimensionalMemory.js', () => ({
   HyperDimensionalMemory: class MockHyperDimensionalMemory {
     storeMemory = jest.fn()
     recallMemories = jest.fn().mockReturnValue([])
@@ -12,7 +12,7 @@ jest.mock('../HyperDimensionalMemory', () => ({
   },
 }))
 
-jest.mock('../AdaptivePersonality', () => ({
+jest.mock('../AdaptivePersonality.js', () => ({
   AdaptivePersonality: class MockAdaptivePersonality {
     adaptToSocialContext = jest.fn()
     recordInteraction = jest.fn()
@@ -39,7 +39,7 @@ jest.mock('../AdaptivePersonality', () => ({
   },
 }))
 
-jest.mock('../QuantumBeliefPropagation', () => ({
+jest.mock('../QuantumBeliefPropagation.js', () => ({
   QuantumBeliefPropagation: class MockQuantumBeliefPropagation {
     addBelief = jest.fn()
     getRelevantBeliefs = jest.fn().mockReturnValue([])
@@ -54,7 +54,7 @@ jest.mock('../QuantumBeliefPropagation', () => ({
   },
 }))
 
-jest.mock('../EmotionalIntelligence', () => ({
+jest.mock('../EmotionalIntelligence.js', () => ({
   EmotionalIntelligence: class MockEmotionalIntelligence {
     analyzeEmotion = jest.fn().mockReturnValue({
       arousal: 0.6,
@@ -80,7 +80,7 @@ jest.mock('../EmotionalIntelligence', () => ({
   },
 }))
 
-jest.mock('../SecureIntegration', () => ({
+jest.mock('../SecureIntegration.js', () => ({
   SecureIntegration: class MockSecureIntegration {
     handleUserRequest = jest.fn().mockResolvedValue({
       canProcess: true,

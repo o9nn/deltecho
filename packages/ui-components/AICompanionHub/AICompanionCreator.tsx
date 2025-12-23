@@ -20,8 +20,8 @@ import {
   Mic,
   Bot,
 } from 'lucide-react'
-import { AICompanionProvider, useAICompanion } from './AICompanionController'
-import { AICapability } from './connectors/BaseConnector'
+import { AICompanionProvider, useAICompanion } from './AICompanionController.js'
+import { AICapability } from './connectors/BaseConnector.js'
 
 // Ranges for personality traits
 const TRAIT_MIN = 0

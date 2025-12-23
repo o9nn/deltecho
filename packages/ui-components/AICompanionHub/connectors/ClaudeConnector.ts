@@ -8,7 +8,7 @@ import {
   ConversationContext,
   FunctionDefinition,
   AIResponse,
-} from './BaseConnector'
+} from './BaseConnector.js'
 
 // Claude-specific configuration options
 export interface ClaudeConfig extends AIConnectorConfig {

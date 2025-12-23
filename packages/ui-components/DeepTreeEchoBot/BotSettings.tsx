@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react'
-import { getLogger } from '../../../../shared/logger'
+import { getLogger } from '../../../../shared/logger.js'
 import { runtime } from '@deltachat-desktop/runtime-interface'
-import { CognitiveFunctionType, LLMService } from './LLMService'
+import { CognitiveFunctionType, LLMService } from './LLMService.js'
 
 const log = getLogger('render/components/DeepTreeEchoBot/BotSettings')
 
