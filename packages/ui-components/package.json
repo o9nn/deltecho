@@ -37,7 +37,8 @@
   },
   "dependencies": {
     "@deltecho/cognitive": "file:../cognitive",
-    "@deltecho/shared": "file:../shared"
+    "@deltecho/shared": "file:../shared",
+    "lucide-react": "^0.562.0"
   },
   "devDependencies": {
     "@types/node": "^20.0.0",

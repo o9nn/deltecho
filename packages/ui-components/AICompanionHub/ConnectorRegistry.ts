@@ -2,7 +2,7 @@
 // A breathtaking system for managing AI companion connections across platforms
 
 import { EventEmitter } from 'events'
-import { runtime } from '@deltachat-desktop/runtime-interface'
+import { runtime } from '@deltecho/shared/runtime'
 import { AIMemory, MemorySystem } from './MemoryPersistenceLayer.js'
 
 import {

@@ -1,5 +1,6 @@
-import { getLogger } from '@deltachat-desktop/shared/logger'
-import { BackendRemote } from '../../backend-com.js'
+import { getLogger } from '@deltecho/shared/logger'
+// TODO: Abstract backend communication
+// import { BackendRemote } from '../../backend-com.js'
 import { DeepTreeEchoBot } from './DeepTreeEchoBot.js'
 import { getBotInstance } from './DeepTreeEchoIntegration.js'
 

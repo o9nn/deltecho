@@ -1,10 +1,11 @@
-import { getLogger } from '../../../../shared/logger.js'
+import { getLogger } from '@deltecho/shared/logger'
 import { RAGMemoryStore, Memory } from './RAGMemoryStore.js'
 import { LLMService } from './LLMService.js'
 import { VisionCapabilities } from './VisionCapabilities.js'
 import { PlaywrightAutomation } from './PlaywrightAutomation.js'
 import { ProprioceptiveEmbodiment } from './ProprioceptiveEmbodiment.js'
-import { Type as T } from '../../backend-com.js'
+// TODO: Abstract backend communication
+// import { Type as T } from '../../backend-com.js'
 
 const log = getLogger('render/components/DeepTreeEchoBot/DeepTreeEchoBot')
 

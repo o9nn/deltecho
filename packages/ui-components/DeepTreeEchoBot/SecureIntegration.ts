@@ -7,7 +7,8 @@
  * DeltaChat ecosystem.
  */
 
-import { C as _C } from '@deltachat/jsonrpc-client'
+// TODO: Abstract DeltaChat types
+// // TODO: Abstract DeltaChat types - not needed for standalone operation
 
 // Encryption states for cognitive data
 enum SecureState {

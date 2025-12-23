@@ -1,4 +1,4 @@
-import { getLogger } from '../../../../shared/logger.js'
+import { getLogger } from '@deltecho/shared/logger'
 
 const log = getLogger('render/components/DeepTreeEchoBot/VisionCapabilities')
 

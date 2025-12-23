@@ -1,4 +1,4 @@
-import { getLogger } from '../../../../shared/logger.js'
+import { getLogger } from '@deltecho/shared/logger'
 import { LLMService } from './LLMService.js'
 import { PersonaCore } from './PersonaCore.js'
 import { RAGMemoryStore } from './RAGMemoryStore.js'

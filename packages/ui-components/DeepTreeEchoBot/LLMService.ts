@@ -1,4 +1,4 @@
-import { getLogger } from '../../../../shared/logger.js'
+import { getLogger } from '@deltecho/shared/logger'
 import { Memory as _Memory } from './RAGMemoryStore.js'
 
 const log = getLogger('render/components/DeepTreeEchoBot/LLMService')

@@ -338,7 +338,7 @@ var localStorage = new LocalStorage2(
 );
 
 // src/get-build-info.ts
-var BuildInfo = JSON.parse('{"VERSION":"1.58.2","BUILD_TIMESTAMP":1766135475555,"GIT_REF":"v1.0.0-2-g0983749"}');
+var BuildInfo = JSON.parse('{"VERSION":"1.58.2","BUILD_TIMESTAMP":1766485479357,"GIT_REF":"v1.0.0-alpha.1"}');
 
 // src/rc-config.ts
 var RCConfig = {
@@ -717,7 +717,7 @@ function createLogHandler() {
      * @param stacktrace Stack trace if WARNING, ERROR or CRITICAL
      * @param ...args Variadic parameters. Stringified before logged to file
      */
-    log: (channel, level, stacktrace, ...args) => {
+    log: ((channel, level, stacktrace, ...args) => {
       const timestamp = (/* @__PURE__ */ new Date()).toISOString();
       let line = [timestamp, fillString(channel, 22), level];
       line = line.concat(
@@ -734,7 +734,7 @@ function createLogHandler() {
           stacktrace
         });
       }
-    },
+    }),
     end: () => stream.end(),
     logFilePath: () => fileName
   };

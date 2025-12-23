@@ -1,6 +1,8 @@
-import { getLogger } from '@deltachat-desktop/shared/logger'
-import { BackendRemote, onDCEvent } from '../../backend-com.js'
-import { runtime } from '@deltachat-desktop/runtime-interface'
+import { getLogger } from '@deltecho/shared/logger'
+// TODO: Abstract backend communication
+// import { BackendRemote, onDCEvent } from '../../backend-com.js'
+// TODO: Abstract runtime interface
+// import { runtime } from '@deltecho/shared/runtime'
 import { DeepTreeEchoBot } from './DeepTreeEchoBot.js'
 
 const log = getLogger(

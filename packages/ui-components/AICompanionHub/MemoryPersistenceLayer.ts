@@ -2,7 +2,7 @@
 // The revolutionary foundation that breaks AI companions out of Groundhog Day
 
 import { EventEmitter } from 'events'
-import { runtime } from '@deltachat-desktop/runtime-interface'
+import { runtime } from '@deltecho/shared/runtime'
 
 // A breathtaking implementation of AI memory management
 export interface AIMemory {

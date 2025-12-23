@@ -25,6 +25,10 @@
     "./util": {
       "import": "./dist/util.js",
       "types": "./dist/util.d.ts"
+    },
+    "./runtime": {
+      "import": "./dist/runtime.js",
+      "types": "./dist/runtime.d.ts"
     }
   },
   "scripts": {

@@ -1,4 +1,5 @@
-import { C as _C } from '@deltachat/jsonrpc-client'
+// TODO: Abstract DeltaChat types
+// // TODO: Abstract DeltaChat types - not needed for standalone operation
 
 /**
  * HyperDimensionalMemory: Advanced memory architecture that organizes conversations
