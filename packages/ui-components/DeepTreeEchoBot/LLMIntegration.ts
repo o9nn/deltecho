@@ -12,7 +12,7 @@
  * - Provides fallback to placeholder responses when APIs unavailable
  */
 
-import { getLogger } from '@deltecho/shared/logger.js'
+import { getLogger } from '@deltecho/shared/logger'
 import { CognitiveFunctionType, LLMServiceConfig } from './LLMService.js'
 
 const log = getLogger('render/components/DeepTreeEchoBot/LLMIntegration')
