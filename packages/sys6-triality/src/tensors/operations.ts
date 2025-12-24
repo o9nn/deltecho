@@ -1,6 +1,6 @@
 /**
  * @fileoverview Tensor operations for Sys6 Triality
- * 
+ *
  * Provides ATen-compatible operations for tensor manipulation.
  * These operations mirror PyTorch's ATen library for future portability.
  */
@@ -26,7 +26,7 @@ export function add(a: ShapedTensor, b: ShapedTensor): ShapedTensor {
   validateSameShape(a, b);
   const result = new Array(a.data.length);
   for (let i = 0; i < a.data.length; i++) {
-    result[i] = (a.data[i] as number) + (b.data[i] as number);
+    result[i] = a.data[i] + b.data[i];
   }
   return createTensor(result, [...a.shape], a.dtype);
 }
@@ -38,7 +38,7 @@ export function sub(a: ShapedTensor, b: ShapedTensor): ShapedTensor {
   validateSameShape(a, b);
   const result = new Array(a.data.length);
   for (let i = 0; i < a.data.length; i++) {
-    result[i] = (a.data[i] as number) - (b.data[i] as number);
+    result[i] = a.data[i] - b.data[i];
   }
   return createTensor(result, [...a.shape], a.dtype);
 }
@@ -50,7 +50,7 @@ export function mul(a: ShapedTensor, b: ShapedTensor): ShapedTensor {
   validateSameShape(a, b);
   const result = new Array(a.data.length);
   for (let i = 0; i < a.data.length; i++) {
-    result[i] = (a.data[i] as number) * (b.data[i] as number);
+    result[i] = a.data[i] * b.data[i];
   }
   return createTensor(result, [...a.shape], a.dtype);
 }
@@ -61,7 +61,7 @@ export function mul(a: ShapedTensor, b: ShapedTensor): ShapedTensor {
 export function scale(tensor: ShapedTensor, scalar: number): ShapedTensor {
   const result = new Array(tensor.data.length);
   for (let i = 0; i < tensor.data.length; i++) {
-    result[i] = (tensor.data[i] as number) * scalar;
+    result[i] = tensor.data[i] * scalar;
   }
   return createTensor(result, [...tensor.shape], tensor.dtype);
 }
@@ -74,25 +74,23 @@ export function matmul(a: ShapedTensor, b: ShapedTensor): ShapedTensor {
     throw new Error('matmul requires 2D tensors');
   }
   if (a.shape[1] !== b.shape[0]) {
-    throw new Error(
-      `Matrix dimensions incompatible: ${a.shape} x ${b.shape}`
-    );
+    throw new Error(`Matrix dimensions incompatible: ${a.shape} x ${b.shape}`);
   }
-  
+
   const [m, k] = a.shape;
   const n = b.shape[1];
   const result = new Array(m * n).fill(0);
-  
+
   for (let i = 0; i < m; i++) {
     for (let j = 0; j < n; j++) {
       let sum = 0;
       for (let p = 0; p < k; p++) {
-        sum += (a.data[i * k + p] as number) * (b.data[p * n + j] as number);
+        sum += a.data[i * k + p] * b.data[p * n + j];
       }
       result[i * n + j] = sum;
     }
   }
-  
+
   return createTensor(result, [m, n], a.dtype);
 }
 
@@ -104,10 +102,10 @@ export function dot(a: ShapedTensor, b: ShapedTensor): number {
     throw new Error('dot requires 1D tensors');
   }
   validateSameShape(a, b);
-  
+
   let sum = 0;
   for (let i = 0; i < a.data.length; i++) {
-    sum += (a.data[i] as number) * (b.data[i] as number);
+    sum += a.data[i] * b.data[i];
   }
   return sum;
 }
@@ -119,34 +117,32 @@ export function cat(tensors: ShapedTensor[], dim: number = 0): ShapedTensor {
   if (tensors.length === 0) {
     throw new Error('Cannot concatenate empty array');
   }
-  
+
   const first = tensors[0];
   const ndim = first.shape.length;
-  
+
   // Handle negative dimensions (Python-style)
   if (dim < 0) {
     dim = ndim + dim;
   }
-  
+
   if (dim < 0 || dim >= ndim) {
     throw new Error(`Invalid dimension ${dim} for ${ndim}D tensor`);
   }
-  
+
   // Validate shapes match except for concat dimension
   for (let i = 1; i < tensors.length; i++) {
     for (let d = 0; d < ndim; d++) {
       if (d !== dim && tensors[i].shape[d] !== first.shape[d]) {
-        throw new Error(
-          `Shape mismatch at dimension ${d}: ${first.shape} vs ${tensors[i].shape}`
-        );
+        throw new Error(`Shape mismatch at dimension ${d}: ${first.shape} vs ${tensors[i].shape}`);
       }
     }
   }
-  
+
   // Calculate output shape
   const outputShape = [...first.shape];
   outputShape[dim] = tensors.reduce((sum, t) => sum + t.shape[dim], 0);
-  
+
   // Simple case: concatenating along first dimension
   if (dim === 0) {
     const result: number[] = [];
@@ -155,18 +151,18 @@ export function cat(tensors: ShapedTensor[], dim: number = 0): ShapedTensor {
     }
     return createTensor(result, outputShape, first.dtype);
   }
-  
+
   // General case: more complex indexing needed
   const outputSize = outputShape.reduce((a, b) => a * b, 1);
   const result = new Array(outputSize);
-  
+
   // Calculate strides
   const strides = new Array(ndim);
   strides[ndim - 1] = 1;
   for (let d = ndim - 2; d >= 0; d--) {
     strides[d] = strides[d + 1] * outputShape[d + 1];
   }
-  
+
   let offset = 0;
   for (const t of tensors) {
     // Copy tensor data to appropriate positions
@@ -180,60 +176,56 @@ export function cat(tensors: ShapedTensor[], dim: number = 0): ShapedTensor {
         indices[d] = Math.floor(remaining / stride);
         remaining = remaining % stride;
       }
-      
+
       // Adjust index for concat dimension
       indices[dim] += offset;
-      
+
       // Convert back to flat index in output
       let outIdx = 0;
       for (let d = 0; d < ndim; d++) {
         outIdx += indices[d] * strides[d];
       }
-      
-      result[outIdx] = t.data[i] as number;
+
+      result[outIdx] = t.data[i];
     }
     offset += t.shape[dim];
   }
-  
+
   return createTensor(result, outputShape, first.dtype);
 }
 
 /**
  * Split tensor along a dimension
  */
-export function split(
-  tensor: ShapedTensor,
-  splitSize: number,
-  dim: number = 0
-): ShapedTensor[] {
+export function split(tensor: ShapedTensor, splitSize: number, dim: number = 0): ShapedTensor[] {
   const dimSize = tensor.shape[dim];
   const numSplits = Math.ceil(dimSize / splitSize);
   const results: ShapedTensor[] = [];
-  
+
   for (let i = 0; i < numSplits; i++) {
     const start = i * splitSize;
     const end = Math.min(start + splitSize, dimSize);
     const size = end - start;
-    
+
     const newShape = [...tensor.shape];
     newShape[dim] = size;
-    
+
     // Extract slice
     const sliceData: number[] = [];
     const totalSize = tensor.data.length;
     const dimStride = tensor.shape.slice(dim + 1).reduce((a, b) => a * b, 1);
     const outerStride = tensor.shape.slice(dim).reduce((a, b) => a * b, 1);
-    
+
     for (let j = 0; j < totalSize; j++) {
       const dimIndex = Math.floor((j % outerStride) / dimStride);
       if (dimIndex >= start && dimIndex < end) {
-        sliceData.push(tensor.data[j] as number);
+        sliceData.push(tensor.data[j]);
       }
     }
-    
+
     results.push(createTensor(sliceData, newShape, tensor.dtype));
   }
-  
+
   return results;
 }
 
@@ -247,7 +239,7 @@ export function split(
 export function relu(tensor: ShapedTensor): ShapedTensor {
   const result = new Array(tensor.data.length);
   for (let i = 0; i < tensor.data.length; i++) {
-    result[i] = Math.max(0, tensor.data[i] as number);
+    result[i] = Math.max(0, tensor.data[i]);
   }
   return createTensor(result, [...tensor.shape], tensor.dtype);
 }
@@ -258,9 +250,9 @@ export function relu(tensor: ShapedTensor): ShapedTensor {
 export function gelu(tensor: ShapedTensor): ShapedTensor {
   const result = new Array(tensor.data.length);
   const sqrt2 = Math.sqrt(2);
-  
+
   for (let i = 0; i < tensor.data.length; i++) {
-    const x = tensor.data[i] as number;
+    const x = tensor.data[i];
     // GELU(x) = x * Φ(x) where Φ is the CDF of standard normal
     // Approximation: 0.5 * x * (1 + tanh(sqrt(2/π) * (x + 0.044715 * x^3)))
     const inner = Math.sqrt(2 / Math.PI) * (x + 0.044715 * x * x * x);
@@ -275,7 +267,7 @@ export function gelu(tensor: ShapedTensor): ShapedTensor {
 export function sigmoid(tensor: ShapedTensor): ShapedTensor {
   const result = new Array(tensor.data.length);
   for (let i = 0; i < tensor.data.length; i++) {
-    const x = tensor.data[i] as number;
+    const x = tensor.data[i];
     result[i] = 1 / (1 + Math.exp(-x));
   }
   return createTensor(result, [...tensor.shape], tensor.dtype);
@@ -287,7 +279,7 @@ export function sigmoid(tensor: ShapedTensor): ShapedTensor {
 export function tanh(tensor: ShapedTensor): ShapedTensor {
   const result = new Array(tensor.data.length);
   for (let i = 0; i < tensor.data.length; i++) {
-    result[i] = Math.tanh(tensor.data[i] as number);
+    result[i] = Math.tanh(tensor.data[i]);
   }
   return createTensor(result, [...tensor.shape], tensor.dtype);
 }
@@ -297,30 +289,30 @@ export function tanh(tensor: ShapedTensor): ShapedTensor {
  */
 export function softmax(tensor: ShapedTensor, dim: number = -1): ShapedTensor {
   if (dim < 0) dim = tensor.shape.length + dim;
-  
+
   const result = new Array(tensor.data.length);
   const dimSize = tensor.shape[dim];
   const outerSize = tensor.shape.slice(0, dim).reduce((a, b) => a * b, 1);
   const innerSize = tensor.shape.slice(dim + 1).reduce((a, b) => a * b, 1);
-  
+
   for (let outer = 0; outer < outerSize; outer++) {
     for (let inner = 0; inner < innerSize; inner++) {
       // Find max for numerical stability
       let max = -Infinity;
       for (let d = 0; d < dimSize; d++) {
         const idx = outer * dimSize * innerSize + d * innerSize + inner;
-        max = Math.max(max, tensor.data[idx] as number);
+        max = Math.max(max, tensor.data[idx]);
       }
-      
+
       // Compute exp and sum
       let sum = 0;
       const exps = new Array(dimSize);
       for (let d = 0; d < dimSize; d++) {
         const idx = outer * dimSize * innerSize + d * innerSize + inner;
-        exps[d] = Math.exp((tensor.data[idx] as number) - max);
+        exps[d] = Math.exp(tensor.data[idx] - max);
         sum += exps[d];
       }
-      
+
       // Normalize
       for (let d = 0; d < dimSize; d++) {
         const idx = outer * dimSize * innerSize + d * innerSize + inner;
@@ -328,7 +320,7 @@ export function softmax(tensor: ShapedTensor, dim: number = -1): ShapedTensor {
       }
     }
   }
-  
+
   return createTensor(result, [...tensor.shape], tensor.dtype);
 }
 
@@ -347,32 +339,32 @@ export function layerNorm(
   const result = new Array(tensor.data.length);
   const normalizedSize = normalizedShape.reduce((a, b) => a * b, 1);
   const batchSize = tensor.data.length / normalizedSize;
-  
+
   for (let b = 0; b < batchSize; b++) {
     const start = b * normalizedSize;
-    
+
     // Compute mean
     let mean = 0;
     for (let i = 0; i < normalizedSize; i++) {
-      mean += tensor.data[start + i] as number;
+      mean += tensor.data[start + i];
     }
     mean /= normalizedSize;
-    
+
     // Compute variance
     let variance = 0;
     for (let i = 0; i < normalizedSize; i++) {
-      const diff = (tensor.data[start + i] as number) - mean;
+      const diff = tensor.data[start + i] - mean;
       variance += diff * diff;
     }
     variance /= normalizedSize;
-    
+
     // Normalize
     const std = Math.sqrt(variance + eps);
     for (let i = 0; i < normalizedSize; i++) {
-      result[start + i] = ((tensor.data[start + i] as number) - mean) / std;
+      result[start + i] = (tensor.data[start + i] - mean) / std;
     }
   }
-  
+
   return createTensor(result, [...tensor.shape], tensor.dtype);
 }
 
@@ -422,7 +414,7 @@ export function extractThreadsFromFace(face: TriadicFace): {
   const thread_j = scale(add(face.edge_ij.poleB, face.edge_jk.poleA), 0.5);
   // Thread k = (edge_jk.poleB + edge_ki.poleA) / 2
   const thread_k = scale(add(face.edge_jk.poleB, face.edge_ki.poleA), 0.5);
-  
+
   return { thread_i, thread_j, thread_k };
 }
 
@@ -458,31 +450,31 @@ export function extractVerticesFromBundle(bundle: TetradicBundle): {
   const threads_124 = extractThreadsFromFace(bundle.face_124);
   const threads_134 = extractThreadsFromFace(bundle.face_134);
   const threads_234 = extractThreadsFromFace(bundle.face_234);
-  
+
   // Vertex 1 appears in faces 123, 124, 134
   const vertex1 = scale(
     add(add(threads_123.thread_i, threads_124.thread_i), threads_134.thread_i),
-    1/3
+    1 / 3
   );
-  
+
   // Vertex 2 appears in faces 123, 124, 234
   const vertex2 = scale(
     add(add(threads_123.thread_j, threads_124.thread_j), threads_234.thread_i),
-    1/3
+    1 / 3
   );
-  
+
   // Vertex 3 appears in faces 123, 134, 234
   const vertex3 = scale(
     add(add(threads_123.thread_k, threads_134.thread_j), threads_234.thread_j),
-    1/3
+    1 / 3
   );
-  
+
   // Vertex 4 appears in faces 124, 134, 234
   const vertex4 = scale(
     add(add(threads_124.thread_k, threads_134.thread_k), threads_234.thread_k),
-    1/3
+    1 / 3
   );
-  
+
   return { vertex1, vertex2, vertex3, vertex4 };
 }
 
@@ -510,9 +502,7 @@ export function tetradicIntegrate(
  */
 function validateSameShape(a: ShapedTensor, b: ShapedTensor): void {
   if (a.shape.join(',') !== b.shape.join(',')) {
-    throw new Error(
-      `Shape mismatch: ${a.shape} vs ${b.shape}`
-    );
+    throw new Error(`Shape mismatch: ${a.shape} vs ${b.shape}`);
   }
 }
 
@@ -529,13 +519,13 @@ export function clone(tensor: ShapedTensor): ShapedTensor {
 export function reshape(tensor: ShapedTensor, newShape: number[]): ShapedTensor {
   const oldSize = tensor.shape.reduce((a, b) => a * b, 1);
   const newSize = newShape.reduce((a, b) => a * b, 1);
-  
+
   if (oldSize !== newSize) {
     throw new Error(
       `Cannot reshape tensor of size ${oldSize} to shape ${newShape} (size ${newSize})`
     );
   }
-  
+
   return createTensor([...Array.from(tensor.data)], newShape, tensor.dtype);
 }
 
@@ -546,23 +536,23 @@ export function transpose(tensor: ShapedTensor, dim0: number, dim1: number): Sha
   const ndim = tensor.shape.length;
   if (dim0 < 0) dim0 = ndim + dim0;
   if (dim1 < 0) dim1 = ndim + dim1;
-  
+
   const newShape = [...tensor.shape];
   [newShape[dim0], newShape[dim1]] = [newShape[dim1], newShape[dim0]];
-  
+
   const result = new Array(tensor.data.length);
-  
+
   // Calculate strides for both old and new shapes
   const oldStrides = new Array(ndim);
   const newStrides = new Array(ndim);
   oldStrides[ndim - 1] = 1;
   newStrides[ndim - 1] = 1;
-  
+
   for (let d = ndim - 2; d >= 0; d--) {
     oldStrides[d] = oldStrides[d + 1] * tensor.shape[d + 1];
     newStrides[d] = newStrides[d + 1] * newShape[d + 1];
   }
-  
+
   // Transpose
   for (let i = 0; i < tensor.data.length; i++) {
     // Convert flat index to multi-dimensional
@@ -572,19 +562,19 @@ export function transpose(tensor: ShapedTensor, dim0: number, dim1: number): Sha
       indices[d] = Math.floor(remaining / oldStrides[d]);
       remaining = remaining % oldStrides[d];
     }
-    
+
     // Swap dimensions
     [indices[dim0], indices[dim1]] = [indices[dim1], indices[dim0]];
-    
+
     // Convert back to flat index
     let newIdx = 0;
     for (let d = 0; d < ndim; d++) {
       newIdx += indices[d] * newStrides[d];
     }
-    
-    result[newIdx] = tensor.data[i] as number;
+
+    result[newIdx] = tensor.data[i];
   }
-  
+
   return createTensor(result, newShape, tensor.dtype);
 }
 
@@ -596,38 +586,38 @@ export function sum(tensor: ShapedTensor, dim?: number): ShapedTensor | number {
     // Sum all elements
     let total = 0;
     for (let i = 0; i < tensor.data.length; i++) {
-      total += tensor.data[i] as number;
+      total += tensor.data[i];
     }
     return total;
   }
-  
+
   if (dim < 0) dim = tensor.shape.length + dim;
-  
+
   const newShape = [...tensor.shape];
   newShape.splice(dim, 1);
-  
+
   if (newShape.length === 0) {
     newShape.push(1);
   }
-  
+
   const newSize = newShape.reduce((a, b) => a * b, 1);
   const result = new Array(newSize).fill(0);
-  
+
   const dimSize = tensor.shape[dim];
   const outerSize = tensor.shape.slice(0, dim).reduce((a, b) => a * b, 1);
   const innerSize = tensor.shape.slice(dim + 1).reduce((a, b) => a * b, 1);
-  
+
   for (let outer = 0; outer < outerSize; outer++) {
     for (let inner = 0; inner < innerSize; inner++) {
       let s = 0;
       for (let d = 0; d < dimSize; d++) {
         const idx = outer * dimSize * innerSize + d * innerSize + inner;
-        s += tensor.data[idx] as number;
+        s += tensor.data[idx];
       }
       result[outer * innerSize + inner] = s;
     }
   }
-  
+
   return createTensor(result, newShape, tensor.dtype);
 }
 
@@ -639,7 +629,7 @@ export function mean(tensor: ShapedTensor, dim?: number): ShapedTensor | number 
     const total = sum(tensor) as number;
     return total / tensor.data.length;
   }
-  
+
   const summed = sum(tensor, dim) as ShapedTensor;
   return scale(summed, 1 / tensor.shape[dim]);
 }

@@ -1,6 +1,6 @@
 /**
  * SecureIntegration Module
- * 
+ *
  * Provides security hardening for cognitive services including:
  * - Input validation and sanitization
  * - Rate limiting
@@ -91,8 +91,18 @@ const DEFAULT_CONFIG: SecurityConfig = {
 };
 
 const BUILT_IN_FILTERS: ContentFilter[] = [
-  { name: 'sql_injection', pattern: /(\b(SELECT|INSERT|UPDATE|DELETE|DROP|UNION|ALTER|CREATE|TRUNCATE)\b.*\b(FROM|INTO|TABLE|WHERE|SET)\b)/gi, action: 'block' },
-  { name: 'xss_script', pattern: /<script\b[^<]*(?:(?!<\/script>)<[^<]*)*<\/script>/gi, action: 'sanitize', replacement: '[REMOVED]' },
+  {
+    name: 'sql_injection',
+    pattern:
+      /(\b(SELECT|INSERT|UPDATE|DELETE|DROP|UNION|ALTER|CREATE|TRUNCATE)\b.*\b(FROM|INTO|TABLE|WHERE|SET)\b)/gi,
+    action: 'block',
+  },
+  {
+    name: 'xss_script',
+    pattern: /<script\b[^<]*(?:(?!<\/script>)<[^<]*)*<\/script>/gi,
+    action: 'sanitize',
+    replacement: '[REMOVED]',
+  },
   { name: 'html_injection', pattern: /<[^>]*on\w+\s*=/gi, action: 'sanitize', replacement: '' },
   { name: 'path_traversal', pattern: /\.\.\//gi, action: 'block' },
 ];
@@ -151,7 +161,10 @@ export class SecureIntegration {
               result.warnings.push(`Content triggered warning filter: ${filter.name}`);
               break;
             case 'sanitize':
-              result.sanitized = result.sanitized!.replace(filter.pattern, filter.replacement || '');
+              result.sanitized = result.sanitized!.replace(
+                filter.pattern,
+                filter.replacement || ''
+              );
               result.warnings.push(`Content sanitized by filter: ${filter.name}`);
               break;
           }
@@ -161,7 +174,11 @@ export class SecureIntegration {
     return result;
   }
 
-  public checkRateLimit(clientId: string): { allowed: boolean; remaining: number; resetIn: number } {
+  public checkRateLimit(clientId: string): {
+    allowed: boolean;
+    remaining: number;
+    resetIn: number;
+  } {
     const now = Date.now();
     const windowMs = this.config.rateLimit!.windowMs;
     const maxRequests = this.config.rateLimit!.maxRequests;
@@ -176,7 +193,7 @@ export class SecureIntegration {
       return { allowed: false, remaining: 0, resetIn: state.blockedUntil - now };
     }
 
-    state.requests = state.requests.filter(t => now - t < windowMs);
+    state.requests = state.requests.filter((t) => now - t < windowMs);
     state.blocked = false;
 
     if (state.requests.length >= maxRequests) {
@@ -186,14 +203,22 @@ export class SecureIntegration {
     }
 
     state.requests.push(now);
-    return { allowed: true, remaining: maxRequests - state.requests.length, resetIn: windowMs - (now - state.requests[0]) };
+    return {
+      allowed: true,
+      remaining: maxRequests - state.requests.length,
+      resetIn: windowMs - (now - state.requests[0]),
+    };
   }
 
   public encrypt(data: string): { encrypted: string; iv: string; tag: string } | null {
     if (!this.config.encryption?.enabled || !this.encryptionKey) return null;
     try {
       const iv = crypto.randomBytes(16);
-      const cipher = crypto.createCipheriv(this.config.encryption.algorithm!, this.encryptionKey, iv) as crypto.CipherGCM;
+      const cipher = crypto.createCipheriv(
+        this.config.encryption.algorithm!,
+        this.encryptionKey,
+        iv
+      ) as crypto.CipherGCM;
       let encrypted = cipher.update(data, 'utf8', 'hex');
       encrypted += cipher.final('hex');
       const tag = cipher.getAuthTag();
@@ -207,7 +232,11 @@ export class SecureIntegration {
   public decrypt(encrypted: string, iv: string, tag: string): string | null {
     if (!this.config.encryption?.enabled || !this.encryptionKey) return null;
     try {
-      const decipher = crypto.createDecipheriv(this.config.encryption.algorithm!, this.encryptionKey, Buffer.from(iv, 'hex')) as crypto.DecipherGCM;
+      const decipher = crypto.createDecipheriv(
+        this.config.encryption.algorithm!,
+        this.encryptionKey,
+        Buffer.from(iv, 'hex')
+      ) as crypto.DecipherGCM;
       decipher.setAuthTag(Buffer.from(tag, 'hex'));
       let decrypted = decipher.update(encrypted, 'hex', 'utf8');
       decrypted += decipher.final('utf8');
@@ -265,11 +294,16 @@ export class SecureIntegration {
     return Buffer.from(encrypted, 'base64').toString();
   }
 
-  public getAuditLog(options?: { startTime?: number; endTime?: number; action?: string; limit?: number }): AuditLogEntry[] {
+  public getAuditLog(options?: {
+    startTime?: number;
+    endTime?: number;
+    action?: string;
+    limit?: number;
+  }): AuditLogEntry[] {
     let entries = [...this.auditLog];
-    if (options?.startTime) entries = entries.filter(e => e.timestamp >= options.startTime!);
-    if (options?.endTime) entries = entries.filter(e => e.timestamp <= options.endTime!);
-    if (options?.action) entries = entries.filter(e => e.action === options.action);
+    if (options?.startTime) entries = entries.filter((e) => e.timestamp >= options.startTime!);
+    if (options?.endTime) entries = entries.filter((e) => e.timestamp <= options.endTime!);
+    if (options?.action) entries = entries.filter((e) => e.action === options.action);
     entries.sort((a, b) => b.timestamp - a.timestamp);
     if (options?.limit) entries = entries.slice(0, options.limit);
     return entries;
@@ -293,10 +327,15 @@ export class SecureIntegration {
     else this.rateLimitStates.clear();
   }
 
-  public getStats(): { auditLogSize: number; rateLimitedClients: number; activeFilters: number; encryptionEnabled: boolean } {
+  public getStats(): {
+    auditLogSize: number;
+    rateLimitedClients: number;
+    activeFilters: number;
+    encryptionEnabled: boolean;
+  } {
     return {
       auditLogSize: this.auditLog.length,
-      rateLimitedClients: Array.from(this.rateLimitStates.values()).filter(s => s.blocked).length,
+      rateLimitedClients: Array.from(this.rateLimitStates.values()).filter((s) => s.blocked).length,
       activeFilters: this.filters.length,
       encryptionEnabled: this.config.encryption?.enabled || false,
     };

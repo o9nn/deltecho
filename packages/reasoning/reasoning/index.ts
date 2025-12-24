@@ -6,7 +6,7 @@
  * Attention Allocation for cognitive resource management.
  */
 
-export * from './PLNEngine.js'
-export * from './MOSES.js'
-export * from './OpenPsi.js'
-export * from './AttentionAllocation.js'
+export * from './PLNEngine.js';
+export * from './MOSES.js';
+export * from './OpenPsi.js';
+export * from './AttentionAllocation.js';

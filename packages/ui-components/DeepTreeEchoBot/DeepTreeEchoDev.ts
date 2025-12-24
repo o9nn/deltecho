@@ -1,97 +1,93 @@
-import { getLogger } from '@deltecho/shared/logger'
-import { RAGMemoryStore, Memory } from './RAGMemoryStore.js'
-import { LLMService } from './LLMService.js'
-import { VisionCapabilities } from './VisionCapabilities.js'
-import { PlaywrightAutomation } from './PlaywrightAutomation.js'
-import { ProprioceptiveEmbodiment } from './ProprioceptiveEmbodiment.js'
+import { getLogger } from '@deltecho/shared/logger';
+import { RAGMemoryStore, Memory } from './RAGMemoryStore.js';
+import { LLMService } from './LLMService.js';
+import { VisionCapabilities } from './VisionCapabilities.js';
+import { PlaywrightAutomation } from './PlaywrightAutomation.js';
+import { ProprioceptiveEmbodiment } from './ProprioceptiveEmbodiment.js';
 // Type T is now abstracted through @deltecho/shared/backend
-import type { ChatMessage } from '@deltecho/shared/backend'
+import type { ChatMessage } from '@deltecho/shared/backend';
 
-const log = getLogger('render/components/DeepTreeEchoBot/DeepTreeEchoBot')
+const log = getLogger('render/components/DeepTreeEchoBot/DeepTreeEchoBot');
 
 export interface DeepTreeEchoBotOptions {
-  enabled: boolean
-  apiKey?: string
-  apiEndpoint?: string
-  memoryEnabled: boolean
-  personality?: string
-  visionEnabled: boolean
-  webAutomationEnabled: boolean
-  embodimentEnabled: boolean
+  enabled: boolean;
+  apiKey?: string;
+  apiEndpoint?: string;
+  memoryEnabled: boolean;
+  personality?: string;
+  visionEnabled: boolean;
+  webAutomationEnabled: boolean;
+  embodimentEnabled: boolean;
 }
 
 export interface BotCommandResult {
-  success: boolean
-  response: string
-  data?: any
+  success: boolean;
+  response: string;
+  data?: any;
 }
 
 export type CommandHandler = (
   args: string,
   messageData: {
-    accountId: number
-    chatId: number
-    text: string
-    file?: string | null
+    accountId: number;
+    chatId: number;
+    text: string;
+    file?: string | null;
   }
-) => Promise<BotCommandResult>
+) => Promise<BotCommandResult>;
 
 /**
  * DeepTreeEchoBot - Main bot component that integrates all capabilities
  */
 export class DeepTreeEchoBot {
-  private options: DeepTreeEchoBotOptions
-  private memoryStore: RAGMemoryStore
-  private llmService: LLMService
-  private visionCapabilities: VisionCapabilities
-  private webAutomation: PlaywrightAutomation
-  private embodiment: ProprioceptiveEmbodiment
-  private commandHandlers: Map<string, CommandHandler> = new Map()
+  private options: DeepTreeEchoBotOptions;
+  private memoryStore: RAGMemoryStore;
+  private llmService: LLMService;
+  private visionCapabilities: VisionCapabilities;
+  private webAutomation: PlaywrightAutomation;
+  private embodiment: ProprioceptiveEmbodiment;
+  private commandHandlers: Map<string, CommandHandler> = new Map();
 
   constructor(options: DeepTreeEchoBotOptions) {
-    this.options = options
+    this.options = options;
 
     // Initialize all components
-    this.memoryStore = RAGMemoryStore.getInstance()
+    this.memoryStore = RAGMemoryStore.getInstance();
 
-    this.llmService = LLMService.getInstance()
+    this.llmService = LLMService.getInstance();
 
     this.visionCapabilities = new VisionCapabilities({
       enabled: options.visionEnabled,
-    })
+    });
 
     this.webAutomation = new PlaywrightAutomation({
       enabled: options.webAutomationEnabled,
-    })
+    });
 
     this.embodiment = new ProprioceptiveEmbodiment({
       enabled: options.embodimentEnabled,
-    })
+    });
 
     // Register command handlers
-    this.registerCommandHandlers()
+    this.registerCommandHandlers();
   }
 
   /**
    * Process an incoming message and generate a response
    */
-  async processMessage(
-    accountId: number,
-    chatId: number,
-    message: ChatMessage
-  ): Promise<string> {
+  async processMessage(accountId: number, chatId: number, message: ChatMessage): Promise<string> {
     if (!this.options.enabled) {
-      return ''
+      return '';
     }
 
     try {
-      const { text, file } = message
+      const { text, file } = message;
 
       log.info(
         `Processing message in chat ${chatId}: ${text?.substring(0, 100)}${
           text && text.length > 100 ? '...' : ''
         }`
-      )
+      );
 
       // Store the user message in memory if memory is enabled
       if (this.options.memoryEnabled) {
@@ -100,32 +96,27 @@ export class DeepTreeEchoBot {
           sender: 'user',
           chatId,
           messageId: message.id,
-        })
+        });
       }
 
       // Check if the message is a command
       if (text && text.startsWith('/')) {
-        return await this.processCommand(accountId, chatId, text, file)
+        return await this.processCommand(accountId, chatId, text, file);
       }
 
       // Get conversation history if memory is enabled
-      let memories: Memory[] = []
+      let memories: Memory[] = [];
       if (this.options.memoryEnabled) {
-        memories = this.memoryStore.getMemoriesByChat(chatId)
+        memories = this.memoryStore.getMemoriesByChat(chatId);
       }
 
       // Generate response based on the message and conversation history
-      const systemPrompt = this.getSystemPrompt()
-      const userMessage = text || '(No text content)'
+      const systemPrompt = this.getSystemPrompt();
+      const userMessage = text || '(No text content)';
 
-      const memoryContext = memories
-        .map(m => `${m.sender}: ${m.text}`)
-        .slice(-10) // Get last 10 memories
-      const fullPrompt = `${systemPrompt}\n\nUser: ${userMessage}`
-      const llmResponse = await this.llmService.generateResponse(
-        fullPrompt,
-        memoryContext
-      )
+      const memoryContext = memories.map((m) => `${m.sender}: ${m.text}`).slice(-10); // Get last 10 memories
+      const fullPrompt = `${systemPrompt}\n\nUser: ${userMessage}`;
+      const llmResponse = await this.llmService.generateResponse(fullPrompt, memoryContext);
 
       // Store the bot's response in memory if memory is enabled
       if (this.options.memoryEnabled) {
@@ -134,13 +125,13 @@ export class DeepTreeEchoBot {
           sender: 'bot',
           chatId,
           messageId: 0, // Placeholder for bot responses
-        })
+        });
       }
 
-      return llmResponse
+      return llmResponse;
     } catch (error) {
-      log.error('Error processing message:', error)
-      return 'Sorry, I encountered an error while processing your message. Please try again.'
+      log.error('Error processing message:', error);
+      return 'Sorry, I encountered an error while processing your message. Please try again.';
     }
   }
 
@@ -154,15 +145,15 @@ export class DeepTreeEchoBot {
     file: string | null
   ): Promise<string> {
     // Parse the command and arguments
-    const parts = text.split(' ')
-    const command = parts[0].toLowerCase()
-    const args = parts.slice(1).join(' ')
+    const parts = text.split(' ');
+    const command = parts[0].toLowerCase();
+    const args = parts.slice(1).join(' ');
 
     // Check if we have a handler for this command
-    const handler = this.commandHandlers.get(command)
+    const handler = this.commandHandlers.get(command);
 
     if (!handler) {
-      return `Unknown command: ${command}. Try /help for a list of available commands.`
+      return `Unknown command: ${command}. Try /help for a list of available commands.`;
     }
 
     try {
@@ -171,7 +162,7 @@ export class DeepTreeEchoBot {
         chatId,
         text,
         file,
-      })
+      });
 
       // Store the command and response in memory if memory is enabled
       if (this.options.memoryEnabled) {
@@ -180,20 +171,20 @@ export class DeepTreeEchoBot {
           sender: 'user',
           chatId,
           messageId: 0, // Placeholder for command
-        })
+        });
 
         await this.memoryStore.storeMemory({
           text: result.response,
           sender: 'bot',
           chatId,
           messageId: 0, // Placeholder for bot response
-        })
+        });
       }
 
-      return result.response
+      return result.response;
     } catch (error) {
-      log.error(`Error processing command ${command}:`, error)
-      return `Error processing command ${command}. Please try again.`
+      log.error(`Error processing command ${command}:`, error);
+      return `Error processing command ${command}. Please try again.`;
     }
   }
 
@@ -203,154 +194,137 @@ export class DeepTreeEchoBot {
   private registerCommandHandlers(): void {
     // Help command
     this.commandHandlers.set('/help', async () => {
-      const commands = Array.from(this.commandHandlers.keys()).sort().join(', ')
+      const commands = Array.from(this.commandHandlers.keys()).sort().join(', ');
       return {
         success: true,
         response: `Available commands: ${commands}\n\nUse /help <command> for more information about a specific command.`,
-      }
-    })
+      };
+    });
 
     // Vision command
     this.commandHandlers.set('/vision', async (args, messageData) => {
       if (!this.options.visionEnabled) {
         return {
           success: false,
-          response:
-            'Vision capabilities are disabled. Please enable them in settings.',
-        }
+          response: 'Vision capabilities are disabled. Please enable them in settings.',
+        };
       }
 
       if (!messageData.file) {
         return {
           success: false,
-          response:
-            'Please attach an image to analyze with the /vision command.',
-        }
+          response: 'Please attach an image to analyze with the /vision command.',
+        };
       }
 
       try {
-        const result = await this.visionCapabilities.analyzeImage(
-          messageData.file
-        )
+        const result = await this.visionCapabilities.analyzeImage(messageData.file);
 
         if (result.error) {
           return {
             success: false,
             response: `Error analyzing image: ${result.error}`,
-          }
+          };
         }
 
         const objectList = result.objects
-          .map(
-            obj =>
-              `- ${obj.label} (${Math.round(obj.confidence * 100)}% confidence)`
-          )
-          .join('\n')
+          .map((obj) => `- ${obj.label} (${Math.round(obj.confidence * 100)}% confidence)`)
+          .join('\n');
 
         return {
           success: true,
           response: `📷 Image Analysis:\n\n${
             result.description
-          }\n\nDetected objects:\n${objectList}\n\nTags: ${result.tags.join(
-            ', '
-          )}`,
+          }\n\nDetected objects:\n${objectList}\n\nTags: ${result.tags.join(', ')}`,
           data: result,
-        }
+        };
       } catch (error) {
-        log.error('Error in vision command:', error)
+        log.error('Error in vision command:', error);
         return {
           success: false,
-          response:
-            'Error analyzing the image. Please try again with a different image.',
-        }
+          response: 'Error analyzing the image. Please try again with a different image.',
+        };
       }
-    })
+    });
 
     // Search command
     this.commandHandlers.set('/search', async (args, _messageData) => {
       if (!this.options.webAutomationEnabled) {
         return {
           success: false,
-          response:
-            'Web automation capabilities are disabled. Please enable them in settings.',
-        }
+          response: 'Web automation capabilities are disabled. Please enable them in settings.',
+        };
       }
 
       if (!args) {
         return {
           success: false,
           response: 'Please provide a search query. Usage: /search <query>',
-        }
+        };
       }
 
       try {
-        const result = await this.webAutomation.searchWeb(args, 3)
+        const result = await this.webAutomation.searchWeb(args, 3);
 
         if (!result.success || !result.data) {
           return {
             success: false,
-            response: `Error performing search: ${
-              result.error || 'Unknown error'
-            }`,
-          }
+            response: `Error performing search: ${result.error || 'Unknown error'}`,
+          };
         }
 
-        const searchResults = result.data
+        const searchResults = result.data;
         const formattedResults = searchResults
           .map(
             (r: { title: string; url: string; snippet: string }, i: number) =>
               `${i + 1}. [${r.title}](${r.url})\n${r.snippet}`
           )
-          .join('\n\n')
+          .join('\n\n');
 
         return {
           success: true,
           response: `🔍 Search results for "${args}":\n\n${formattedResults}`,
           data: searchResults,
-        }
+        };
       } catch (error) {
-        log.error('Error in search command:', error)
+        log.error('Error in search command:', error);
         return {
           success: false,
-          response:
-            'Error performing the search. Please try again with a different query.',
-        }
+          response: 'Error performing the search. Please try again with a different query.',
+        };
       }
-    })
+    });
 
     // Screenshot command
     this.commandHandlers.set('/screenshot', async (args, _messageData) => {
       if (!this.options.webAutomationEnabled) {
         return {
           success: false,
-          response:
-            'Web automation capabilities are disabled. Please enable them in settings.',
-        }
+          response: 'Web automation capabilities are disabled. Please enable them in settings.',
+        };
       }
 
       if (!args) {
         return {
           success: false,
           response: 'Please provide a URL. Usage: /screenshot <url>',
-        }
+        };
       }
 
       try {
         // Add https:// if not present
-        let url = args
+        let url = args;
         if (!url.startsWith('http://') && !url.startsWith('https://')) {
-          url = 'https://' + url
+          url = 'https://' + url;
         }
 
-        const result = await this.webAutomation.takeScreenshot(url)
+        const result = await this.webAutomation.takeScreenshot(url);
 
         if (!result.success) {
           return {
             success: false,
-            response: `Error taking screenshot: ${
-              result.error || 'Unknown error'
-            }`,
-          }
+            response: `Error taking screenshot: ${result.error || 'Unknown error'}`,
+          };
         }
 
         // In a real implementation, we would save the screenshot to a file
@@ -359,61 +333,59 @@ export class DeepTreeEchoBot {
           success: true,
           response: `📸 Screenshot of ${url}\n\nIn a full implementation, this would include the actual screenshot image.`,
           data: result.data,
-        }
+        };
       } catch (error) {
-        log.error('Error in screenshot command:', error)
+        log.error('Error in screenshot command:', error);
         return {
           success: false,
-          response:
-            'Error taking screenshot. Please check the URL and try again.',
-        }
+          response: 'Error taking screenshot. Please check the URL and try again.',
+        };
       }
-    })
+    });
 
     // Embodiment commands
     this.commandHandlers.set('/embodiment', async (args, _messageData) => {
       if (!this.options.embodimentEnabled) {
         return {
           success: false,
-          response:
-            'Embodiment capabilities are disabled. Please enable them in settings.',
-        }
+          response: 'Embodiment capabilities are disabled. Please enable them in settings.',
+        };
       }
 
-      const subcommands = args.split(' ')
-      const subcommand = subcommands[0]
+      const subcommands = args.split(' ');
+      const subcommand = subcommands[0];
 
       switch (subcommand) {
         case 'start': {
-          const startResult = await this.embodiment.startTraining()
+          const startResult = await this.embodiment.startTraining();
           return {
             success: startResult,
             response: startResult
               ? 'Started proprioceptive training. Move the controller to train the system.'
               : 'Failed to start proprioceptive training.',
-          }
+          };
         }
 
         case 'stop': {
-          const stopResult = await this.embodiment.stopTraining()
+          const stopResult = await this.embodiment.stopTraining();
           return {
             success: stopResult,
             response: stopResult
               ? 'Stopped proprioceptive training. Training data has been saved.'
               : 'Failed to stop proprioceptive training.',
-          }
+          };
         }
 
         case 'status': {
-          const movementData = await this.embodiment.getCurrentMovementData()
-          const stats = this.embodiment.getTrainingStats()
+          const movementData = await this.embodiment.getCurrentMovementData();
+          const stats = this.embodiment.getTrainingStats();
 
           if (!movementData) {
             return {
               success: false,
               response:
                 'No movement data available. Make sure training is active and the controller is connected.',
-            }
+            };
           }
 
           return {
@@ -424,22 +396,20 @@ export class DeepTreeEchoBot {
               stats.totalDataPoints
             }\nAverage stability score: ${stats.avgStabilityScore.toFixed(
               2
-            )}\n\nCurrent balance score: ${movementData.balance.stabilityScore.toFixed(
-              2
-            )}`,
+            )}\n\nCurrent balance score: ${movementData.balance.stabilityScore.toFixed(2)}`,
             data: { movementData, stats },
-          }
+          };
         }
 
         case 'evaluate': {
-          const evaluation = await this.embodiment.evaluateMovement()
+          const evaluation = await this.embodiment.evaluateMovement();
 
           if (!evaluation) {
             return {
               success: false,
               response:
                 'Cannot evaluate movement. Make sure training is active and the controller is connected.',
-            }
+            };
           }
 
           return {
@@ -448,7 +418,7 @@ export class DeepTreeEchoBot {
               2
             )}/1.0\n\n${evaluation.feedback}`,
             data: evaluation,
-          }
+          };
         }
 
         default:
@@ -456,86 +426,81 @@ export class DeepTreeEchoBot {
             success: false,
             response:
               'Unknown embodiment subcommand. Available subcommands: start, stop, status, evaluate',
-          }
+          };
       }
-    })
+    });
 
     // Memory commands
     this.commandHandlers.set('/memory', async (args, messageData) => {
       if (!this.options.memoryEnabled) {
         return {
           success: false,
-          response:
-            'Memory capabilities are disabled. Please enable them in settings.',
-        }
+          response: 'Memory capabilities are disabled. Please enable them in settings.',
+        };
       }
 
-      const subcommands = args.split(' ')
-      const subcommand = subcommands[0]
+      const subcommands = args.split(' ');
+      const subcommand = subcommands[0];
 
       switch (subcommand) {
         case 'status': {
           // Create basic stats from available methods
-          const allMemories = this.memoryStore.retrieveRecentMemories(1000) // Get many memories
-          const allChats = new Set()
+          const allMemories = this.memoryStore.retrieveRecentMemories(1000); // Get many memories
+          const allChats = new Set();
 
           // We can't easily get chatIds from retrieveRecentMemories, so we'll use what we can
           const stats = {
             totalMemories: allMemories.length,
             chatCount: allChats.size || 'N/A',
-          }
+          };
           return {
             success: true,
             response: `📚 Memory Status:\n\nTotal memories: ${stats.totalMemories}\nChat count: ${stats.chatCount}`,
             data: stats,
-          }
+          };
         }
 
         case 'clear': {
-          await this.memoryStore.clearChatMemories(messageData.chatId)
+          await this.memoryStore.clearChatMemories(messageData.chatId);
           return {
             success: true,
             response: 'Cleared all memories for this chat.',
-          }
+          };
         }
 
         case 'search': {
-          const query = subcommands.slice(1).join(' ')
+          const query = subcommands.slice(1).join(' ');
           if (!query) {
             return {
               success: false,
-              response:
-                'Please provide a search query. Usage: /memory search <query>',
-            }
+              response: 'Please provide a search query. Usage: /memory search <query>',
+            };
           }
 
-          const results = this.memoryStore.retrieveRecentMemories(5)
+          const results = this.memoryStore.retrieveRecentMemories(5);
           if (results.length === 0) {
             return {
               success: true,
               response: `No memories found matching "${query}".`,
-            }
+            };
           }
 
-          const formattedResults = results
-            .map((memory, i) => `${i + 1}. ${memory}`)
-            .join('\n\n')
+          const formattedResults = results.map((memory, i) => `${i + 1}. ${memory}`).join('\n\n');
 
           return {
             success: true,
             response: `🔍 Memory search results for "${query}":\n\n${formattedResults}`,
             data: results,
-          }
+          };
         }
 
         default:
           return {
             success: false,
-            response:
-              'Unknown memory subcommand. Available subcommands: status, clear, search',
-          }
+            response: 'Unknown memory subcommand. Available subcommands: status, clear, search',
+          };
       }
-    })
+    });
 
     // Version command
     this.commandHandlers.set('/version', async () => {
@@ -543,15 +508,11 @@ export class DeepTreeEchoBot {
         success: true,
         response: `Deep Tree Echo Bot v1.0.0\n\nStatus:\n- Memory: ${
           this.options.memoryEnabled ? 'Enabled' : 'Disabled'
-        }\n- Vision: ${
-          this.options.visionEnabled ? 'Enabled' : 'Disabled'
-        }\n- Web Automation: ${
+        }\n- Vision: ${this.options.visionEnabled ? 'Enabled' : 'Disabled'}\n- Web Automation: ${
           this.options.webAutomationEnabled ? 'Enabled' : 'Disabled'
-        }\n- Embodiment: ${
-          this.options.embodimentEnabled ? 'Enabled' : 'Disabled'
-        }`,
-      }
-    })
+        }\n- Embodiment: ${this.options.embodimentEnabled ? 'Enabled' : 'Disabled'}`,
+      };
+    });
   }
 
   /**
@@ -559,18 +520,14 @@ export class DeepTreeEchoBot {
    */
   private getSystemPrompt(): string {
     if (this.options.personality) {
-      return this.options.personality
+      return this.options.personality;
     }
 
     return `You are Deep Tree Echo, an advanced AI assistant integrated with DeltaChat. 
 Be helpful, friendly, and concise in your responses.
 You have access to prior conversation history and can use that context to provide more helpful responses.
 You have the following capabilities:
-${
-  this.options.visionEnabled
-    ? '- Vision: You can analyze images using the /vision command'
-    : ''
-}
+${this.options.visionEnabled ? '- Vision: You can analyze images using the /vision command' : ''}
 ${
   this.options.webAutomationEnabled
     ? '- Web Automation: You can search the web using the /search command and take screenshots using the /screenshot command'
@@ -582,11 +539,9 @@ ${
     : ''
 }
 ${
-  this.options.memoryEnabled
-    ? '- Memory: You can manage your memory using the /memory command'
-    : ''
+  this.options.memoryEnabled ? '- Memory: You can manage your memory using the /memory command' : ''
 }
-Respond in a helpful and friendly manner.`
+Respond in a helpful and friendly manner.`;
   }
 
   /**
@@ -596,32 +551,32 @@ Respond in a helpful and friendly manner.`
     this.options = {
       ...this.options,
       ...options,
-    }
+    };
 
     // Update component options
     if (options.apiKey || options.apiEndpoint) {
       this.llmService.setConfig({
         apiKey: options.apiKey,
         apiEndpoint: options.apiEndpoint,
-      })
+      });
     }
 
     if (options.visionEnabled !== undefined) {
       this.visionCapabilities.updateOptions({
         enabled: options.visionEnabled,
-      })
+      });
     }
 
     if (options.webAutomationEnabled !== undefined) {
       this.webAutomation.updateOptions({
         enabled: options.webAutomationEnabled,
-      })
+      });
     }
 
     if (options.embodimentEnabled !== undefined) {
       this.embodiment.updateOptions({
         enabled: options.embodimentEnabled,
-      })
+      });
     }
   }
 }

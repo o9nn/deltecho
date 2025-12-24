@@ -1,14 +1,12 @@
-import { getLogger } from '@deltecho/shared/logger'
-import { BackendRemote, onDCEvent, selectedAccountId } from '@deltecho/shared/backend'
-import { runtime } from '@deltecho/shared/runtime'
-import { DeepTreeEchoBot } from './DeepTreeEchoBot.js'
+import { getLogger } from '@deltecho/shared/logger';
+import { BackendRemote, onDCEvent, selectedAccountId } from '@deltecho/shared/backend';
+import { runtime } from '@deltecho/shared/runtime';
+import { DeepTreeEchoBot } from './DeepTreeEchoBot.js';
 
-const log = getLogger(
-  'render/components/DeepTreeEchoBot/DeepTreeEchoIntegration'
-)
+const log = getLogger('render/components/DeepTreeEchoBot/DeepTreeEchoIntegration');
 
 // Bot instance (singleton)
-let botInstance: DeepTreeEchoBot | null = null
+let botInstance: DeepTreeEchoBot | null = null;
 
 /**
  * Initialize the Deep Tree Echo Bot
@@ -16,52 +14,48 @@ let botInstance: DeepTreeEchoBot | null = null
 export async function initDeepTreeEchoBot(accountId: number): Promise<void> {
   try {
     // Load settings
-    const desktopSettings = await runtime.getDesktopSettings()
+    const desktopSettings = await runtime.getDesktopSettings();
 
     // Check if bot is enabled
     if (!desktopSettings.deepTreeEchoBotEnabled) {
-      log.info('Deep Tree Echo Bot is disabled in settings')
-      return
+      log.info('Deep Tree Echo Bot is disabled in settings');
+      return;
     }
 
     // Parse cognitive keys if they exist
-    let cognitiveKeys = {}
+    let cognitiveKeys = {};
     if (desktopSettings.deepTreeEchoBotCognitiveKeys) {
       try {
-        cognitiveKeys = JSON.parse(desktopSettings.deepTreeEchoBotCognitiveKeys)
+        cognitiveKeys = JSON.parse(desktopSettings.deepTreeEchoBotCognitiveKeys);
       } catch (error) {
-        log.error('Failed to parse cognitive keys:', error)
+        log.error('Failed to parse cognitive keys:', error);
       }
     }
 
     // Create bot instance with settings from desktop settings
     botInstance = new DeepTreeEchoBot({
       enabled: desktopSettings.deepTreeEchoBotEnabled,
-      enableAsMainUser:
-        desktopSettings.deepTreeEchoBotEnableAsMainUser || false,
+      enableAsMainUser: desktopSettings.deepTreeEchoBotEnableAsMainUser || false,
       apiKey: desktopSettings.deepTreeEchoBotApiKey,
       apiEndpoint: desktopSettings.deepTreeEchoBotApiEndpoint,
       memoryEnabled: desktopSettings.deepTreeEchoBotMemoryEnabled || false,
       personality: desktopSettings.deepTreeEchoBotPersonality,
       visionEnabled: desktopSettings.deepTreeEchoBotVisionEnabled || false,
-      webAutomationEnabled:
-        desktopSettings.deepTreeEchoBotWebAutomationEnabled || false,
-      embodimentEnabled:
-        desktopSettings.deepTreeEchoBotEmbodimentEnabled || false,
-      useParallelProcessing:
-        desktopSettings.deepTreeEchoBotUseParallelProcessing !== false,
+      webAutomationEnabled: desktopSettings.deepTreeEchoBotWebAutomationEnabled || false,
+      embodimentEnabled: desktopSettings.deepTreeEchoBotEmbodimentEnabled || false,
+      useParallelProcessing: desktopSettings.deepTreeEchoBotUseParallelProcessing !== false,
       cognitiveKeys,
-    })
+    });
 
-    log.info('Deep Tree Echo Bot initialized successfully')
+    log.info('Deep Tree Echo Bot initialized successfully');
 
     // Register message event handlers
-    registerMessageHandlers(accountId)
+    registerMessageHandlers(accountId);
 
     // Do an initial self-reflection on startup
-    performStartupReflection()
+    performStartupReflection();
   } catch (error) {
-    log.error('Failed to initialize Deep Tree Echo Bot:', error)
+    log.error('Failed to initialize Deep Tree Echo Bot:', error);
   }
 }
 
@@ -72,17 +66,17 @@ async function performStartupReflection(): Promise<void> {
   try {
     if (botInstance) {
       // Get the self-reflection component from the bot
-      const selfReflection = botInstance['selfReflection']
+      const selfReflection = botInstance['selfReflection'];
       if (selfReflection) {
         await selfReflection.reflectOnAspect(
           'startup',
           'I am being restarted and need to ensure continuity of my identity and memory.'
-        )
-        log.info('Startup reflection completed')
+        );
+        log.info('Startup reflection completed');
       }
     }
   } catch (error) {
-    log.error('Error during startup reflection:', error)
+    log.error('Error during startup reflection:', error);
   }
 }
 
@@ -90,72 +84,57 @@ async function performStartupReflection(): Promise<void> {
  * Register message event handlers for responding to messages
  */
 function registerMessageHandlers(accountId: number): void {
-  if (!botInstance) return
+  if (!botInstance) return;
 
   // Listen for new messages
-  onDCEvent(
-    `IncomingMsg_${accountId}`,
-    (event: { chatId: number; msgId: number }) => {
-      handleNewMessage(accountId, event.chatId, event.msgId)
-    }
-  )
+  onDCEvent(`IncomingMsg_${accountId}`, (event: { chatId: number; msgId: number }) => {
+    handleNewMessage(accountId, event.chatId, event.msgId);
+  });
 
-  log.info('Registered message handlers')
+  log.info('Registered message handlers');
 }
 
 /**
  * Handle a new incoming message
  */
-async function handleNewMessage(
-  accountId: number,
-  chatId: number,
-  msgId: number
-): Promise<void> {
+async function handleNewMessage(accountId: number, chatId: number, msgId: number): Promise<void> {
   try {
-    if (!botInstance || !botInstance.isEnabled()) return
+    if (!botInstance || !botInstance.isEnabled()) return;
 
     // Get message details
-    const message = await BackendRemote.rpc.getMessage(accountId, msgId)
-    if (!message) return
+    const message = await BackendRemote.rpc.getMessage(accountId, msgId);
+    if (!message) return;
 
     // Skip messages from self (ID 1 is the logged-in user)
-    if (message.fromId === 1) return
+    if (message.fromId === 1) return;
 
-    log.info(`Received message in chat ${chatId}, message ID: ${msgId}`)
+    log.info(`Received message in chat ${chatId}, message ID: ${msgId}`);
 
     // Handle the message
-    await botInstance.processMessage(accountId, chatId, msgId, message)
+    await botInstance.processMessage(accountId, chatId, msgId, message);
   } catch (error) {
-    log.error('Error handling new message:', error)
+    log.error('Error handling new message:', error);
   }
 }
 
 /**
  * Save bot settings
  */
-export async function saveBotSettings(
-  accountId: number,
-  settings: any
-): Promise<void> {
+export async function saveBotSettings(accountId: number, settings: any): Promise<void> {
   try {
     // For persona-related settings, check with DeepTreeEcho first if available
     if (settings.personality && botInstance) {
-      const personaCore = botInstance['personaCore']
+      const personaCore = botInstance['personaCore'];
       if (personaCore) {
-        const alignment = personaCore.evaluateSettingAlignment(
-          'personality',
-          settings.personality
-        )
+        const alignment = personaCore.evaluateSettingAlignment('personality', settings.personality);
 
         if (!alignment.approved) {
-          log.warn(
-            `Personality setting rejected by Deep Tree Echo: ${alignment.reasoning}`
-          )
+          log.warn(`Personality setting rejected by Deep Tree Echo: ${alignment.reasoning}`);
           // Remove personality from settings to prevent updating it
-          delete settings.personality
+          delete settings.personality;
         } else {
           // Update personality in persona core
-          await personaCore.updatePersonality(settings.personality)
+          await personaCore.updatePersonality(settings.personality);
         }
       }
     }
@@ -165,39 +144,35 @@ export async function saveBotSettings(
       await runtime.setDesktopSetting(
         'deepTreeEchoBotCognitiveKeys',
         JSON.stringify(settings.cognitiveKeys)
-      )
-      delete settings.cognitiveKeys
+      );
+      delete settings.cognitiveKeys;
     }
 
     // Update desktop settings for all other properties
     for (const [key, value] of Object.entries(settings)) {
       // Convert from camelCase to snake_case with prefix
-      const settingKey = `deepTreeEchoBot${
-        key.charAt(0).toUpperCase() + key.slice(1)
-      }` as any
+      const settingKey = `deepTreeEchoBot${key.charAt(0).toUpperCase() + key.slice(1)}` as any;
       // Ensure value is of correct type for setDesktopSetting
       if (
         value !== undefined &&
-        (typeof value === 'string' ||
-          typeof value === 'number' ||
-          typeof value === 'boolean')
+        (typeof value === 'string' || typeof value === 'number' || typeof value === 'boolean')
       ) {
-        await runtime.setDesktopSetting(settingKey, value)
+        await runtime.setDesktopSetting(settingKey, value);
       }
     }
 
     // Update bot instance if it exists
     if (botInstance) {
-      botInstance.updateOptions(settings)
+      botInstance.updateOptions(settings);
     }
     // Create bot instance if it doesn't exist and is being enabled
     else if (settings.enabled) {
-      await initDeepTreeEchoBot(accountId)
+      await initDeepTreeEchoBot(accountId);
     }
 
-    log.info('Bot settings updated')
+    log.info('Bot settings updated');
   } catch (error) {
-    log.error('Failed to save bot settings:', error)
+    log.error('Failed to save bot settings:', error);
   }
 }
 
@@ -205,15 +180,15 @@ export async function saveBotSettings(
  * Get the bot instance
  */
 export function getBotInstance(): DeepTreeEchoBot | null {
-  return botInstance
+  return botInstance;
 }
 
 /**
  * Clean up the bot resources
  */
 export function cleanupBot(): void {
-  botInstance = null
-  log.info('Bot resources cleaned up')
+  botInstance = null;
+  log.info('Bot resources cleaned up');
 }
 
 // Note: Auto-initialization removed - must be called explicitly with accountId

@@ -1,9 +1,9 @@
 /**
  * @fileoverview Core tensor types for Sys6 Triality architecture
- * 
+ *
  * Implements the mathematical foundation based on LCM(2,3,5) = 30
  * with nested tuple structures following OEIS A000081.
- * 
+ *
  * Key concepts:
  * - Dyadic: Opponent processing (2 poles)
  * - Triadic: Three concurrent streams (120° phase separation)
@@ -51,7 +51,10 @@ export function createTensor(
 /**
  * Create a zero tensor of given shape
  */
-export function zeros(shape: number[], dtype: 'float32' | 'float64' | 'int32' = 'float32'): ShapedTensor {
+export function zeros(
+  shape: number[],
+  dtype: 'float32' | 'float64' | 'int32' = 'float32'
+): ShapedTensor {
   const size = shape.reduce((a, b) => a * b, 1);
   return createTensor(new Array(size).fill(0), shape, dtype);
 }
@@ -59,7 +62,10 @@ export function zeros(shape: number[], dtype: 'float32' | 'float64' | 'int32' = 
 /**
  * Create a ones tensor of given shape
  */
-export function ones(shape: number[], dtype: 'float32' | 'float64' | 'int32' = 'float32'): ShapedTensor {
+export function ones(
+  shape: number[],
+  dtype: 'float32' | 'float64' | 'int32' = 'float32'
+): ShapedTensor {
   const size = shape.reduce((a, b) => a * b, 1);
   return createTensor(new Array(size).fill(1), shape, dtype);
 }
@@ -67,7 +73,10 @@ export function ones(shape: number[], dtype: 'float32' | 'float64' | 'int32' = '
 /**
  * Create a random tensor of given shape
  */
-export function randn(shape: number[], dtype: 'float32' | 'float64' | 'int32' = 'float32'): ShapedTensor {
+export function randn(
+  shape: number[],
+  dtype: 'float32' | 'float64' | 'int32' = 'float32'
+): ShapedTensor {
   const size = shape.reduce((a, b) => a * b, 1);
   const data = new Array(size).fill(0).map(() => {
     // Box-Muller transform for normal distribution
@@ -98,12 +107,12 @@ export interface DyadicEdge {
 /**
  * Dyadic edge identifiers for the 6 edges of a tetrahedron
  */
-export type DyadicEdgeId = 
-  | 'edge_12'  // Thread 1 - Thread 2
-  | 'edge_13'  // Thread 1 - Thread 3
-  | 'edge_14'  // Thread 1 - Thread 4
-  | 'edge_23'  // Thread 2 - Thread 3
-  | 'edge_24'  // Thread 2 - Thread 4
+export type DyadicEdgeId =
+  | 'edge_12' // Thread 1 - Thread 2
+  | 'edge_13' // Thread 1 - Thread 3
+  | 'edge_14' // Thread 1 - Thread 4
+  | 'edge_23' // Thread 2 - Thread 3
+  | 'edge_24' // Thread 2 - Thread 4
   | 'edge_34'; // Thread 3 - Thread 4
 
 /**
@@ -121,9 +130,7 @@ export function createDyadicEdge(
 ): DyadicEdge {
   // Validate shapes match
   if (poleA.shape.join(',') !== poleB.shape.join(',')) {
-    throw new Error(
-      `Pole shapes must match: ${poleA.shape} vs ${poleB.shape}`
-    );
+    throw new Error(`Pole shapes must match: ${poleA.shape} vs ${poleB.shape}`);
   }
   return { poleA, poleB, edgeId };
 }
@@ -153,10 +160,10 @@ export interface TriadicFace {
 /**
  * Triadic face identifiers for the 4 faces of a tetrahedron
  */
-export type TriadicFaceId = 
-  | 'face_123'  // Threads 1, 2, 3
-  | 'face_124'  // Threads 1, 2, 4
-  | 'face_134'  // Threads 1, 3, 4
+export type TriadicFaceId =
+  | 'face_123' // Threads 1, 2, 3
+  | 'face_124' // Threads 1, 2, 4
+  | 'face_134' // Threads 1, 3, 4
   | 'face_234'; // Threads 2, 3, 4
 
 /**
@@ -180,12 +187,12 @@ export function createTriadicFace(
 ): TriadicFace {
   // Determine threads from face ID
   const threadMap: Record<TriadicFaceId, readonly [ThreadId, ThreadId, ThreadId]> = {
-    'face_123': [1, 2, 3],
-    'face_124': [1, 2, 4],
-    'face_134': [1, 3, 4],
-    'face_234': [2, 3, 4],
+    face_123: [1, 2, 3],
+    face_124: [1, 2, 4],
+    face_134: [1, 3, 4],
+    face_234: [2, 3, 4],
   };
-  
+
   return {
     edge_ij,
     edge_jk,
@@ -234,21 +241,25 @@ export function createTetradicBundle(
   const edge_23 = createDyadicEdge(thread2, thread3, 'edge_23');
   const edge_24 = createDyadicEdge(thread2, thread4, 'edge_24');
   const edge_34 = createDyadicEdge(thread3, thread4, 'edge_34');
-  
+
   // Create the 4 triadic faces
   const face_123 = createTriadicFace(edge_12, edge_23, edge_13, 'face_123');
   const face_124 = createTriadicFace(edge_12, edge_24, edge_14, 'face_124');
   const face_134 = createTriadicFace(edge_13, edge_34, edge_14, 'face_134');
   const face_234 = createTriadicFace(edge_23, edge_34, edge_24, 'face_234');
-  
+
   return {
     face_123,
     face_124,
     face_134,
     face_234,
     edges: {
-      edge_12, edge_13, edge_14,
-      edge_23, edge_24, edge_34,
+      edge_12,
+      edge_13,
+      edge_14,
+      edge_23,
+      edge_24,
+      edge_34,
     },
     threads: {
       1: thread1,
@@ -433,7 +444,7 @@ export function createNestedShells<T>(
   function buildShell(level: number, termIndex: number): NestedShell<T> {
     const terms = getTermsForNestingLevel(level);
     const stepsApart = level;
-    
+
     if (level >= maxLevel) {
       return {
         level,
@@ -442,13 +453,13 @@ export function createNestedShells<T>(
         content: contentFactory(level, termIndex),
       };
     }
-    
+
     const childTerms = getTermsForNestingLevel(level + 1);
     const children: NestedShell<T>[] = [];
     for (let i = 0; i < childTerms; i++) {
       children.push(buildShell(level + 1, i));
     }
-    
+
     return {
       level,
       terms,
@@ -456,7 +467,7 @@ export function createNestedShells<T>(
       content: children,
     };
   }
-  
+
   return buildShell(1, 0);
 }
 
@@ -478,7 +489,12 @@ export type TriadicPermutation = [ThreadId, ThreadId, ThreadId];
  * The 6 dyadic pair permutations
  */
 export const DYADIC_PERMUTATIONS: readonly DyadicPairPermutation[] = Object.freeze([
-  [1, 2], [1, 3], [1, 4], [2, 3], [2, 4], [3, 4],
+  [1, 2],
+  [1, 3],
+  [1, 4],
+  [2, 3],
+  [2, 4],
+  [3, 4],
 ]);
 
 /**
@@ -487,11 +503,17 @@ export const DYADIC_PERMUTATIONS: readonly DyadicPairPermutation[] = Object.free
  * MP2: P[1,3,4] → P[2,3,4] → P[1,2,3] → P[1,2,4]
  */
 export const TRIADIC_PERMUTATIONS_MP1: readonly TriadicPermutation[] = Object.freeze([
-  [1, 2, 3], [1, 2, 4], [1, 3, 4], [2, 3, 4],
+  [1, 2, 3],
+  [1, 2, 4],
+  [1, 3, 4],
+  [2, 3, 4],
 ]);
 
 export const TRIADIC_PERMUTATIONS_MP2: readonly TriadicPermutation[] = Object.freeze([
-  [1, 3, 4], [2, 3, 4], [1, 2, 3], [1, 2, 4],
+  [1, 3, 4],
+  [2, 3, 4],
+  [1, 2, 3],
+  [1, 2, 4],
 ]);
 
 /**
@@ -525,9 +547,9 @@ export function getTriadicPermutationsForStep(step: number): {
  * Extended to 30-step: each group spans 10 steps
  */
 export const STREAM_STEP_GROUPS = Object.freeze({
-  stream1: [1, 5, 9, 13, 17, 21, 25, 29] as const,  // Steps where stream 1 is primary
+  stream1: [1, 5, 9, 13, 17, 21, 25, 29] as const, // Steps where stream 1 is primary
   stream2: [2, 6, 10, 14, 18, 22, 26, 30] as const, // Steps where stream 2 is primary
-  stream3: [3, 7, 11, 15, 19, 23, 27] as const,     // Steps where stream 3 is primary
+  stream3: [3, 7, 11, 15, 19, 23, 27] as const, // Steps where stream 3 is primary
   // Remaining steps (4, 8, 12, 16, 20, 24, 28) are integration points
 });
 
@@ -537,11 +559,16 @@ export const STREAM_STEP_GROUPS = Object.freeze({
 export function getPrimaryStreamForStep(absoluteStep: number): 1 | 2 | 3 | 'integration' {
   const mod4 = absoluteStep % 4;
   switch (mod4) {
-    case 1: return 1;
-    case 2: return 2;
-    case 3: return 3;
-    case 0: return 'integration';
-    default: return 'integration';
+    case 1:
+      return 1;
+    case 2:
+      return 2;
+    case 3:
+      return 3;
+    case 0:
+      return 'integration';
+    default:
+      return 'integration';
   }
 }
 

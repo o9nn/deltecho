@@ -1,27 +1,27 @@
 // Core cognitive modules
-import { HyperDimensionalMemory } from './HyperDimensionalMemory.js'
-import { AdaptivePersonality } from './AdaptivePersonality.js'
-import { QuantumBeliefPropagation } from './QuantumBeliefPropagation.js'
-import { EmotionalIntelligence } from './EmotionalIntelligence.js'
-import { SecureIntegration } from './SecureIntegration.js'
+import { HyperDimensionalMemory } from './HyperDimensionalMemory.js';
+import { AdaptivePersonality } from './AdaptivePersonality.js';
+import { QuantumBeliefPropagation } from './QuantumBeliefPropagation.js';
+import { EmotionalIntelligence } from './EmotionalIntelligence.js';
+import { SecureIntegration } from './SecureIntegration.js';
 
 // Import main component and its types
-import { DeepTreeEchoBot, DeepTreeEchoBotOptions } from './DeepTreeEchoBot.js'
-import DeepTreeEchoHubSimple from './DeepTreeEchoHubSimple.js'
+import { DeepTreeEchoBot, DeepTreeEchoBotOptions } from './DeepTreeEchoBot.js';
+import DeepTreeEchoHubSimple from './DeepTreeEchoHubSimple.js';
 
 // Import utility modules
-import { LLMService, CognitiveFunctionType } from './LLMService.js'
-import { PersonaCore } from './PersonaCore.js'
-import { RAGMemoryStore } from './RAGMemoryStore.js'
-import { SelfReflection } from './SelfReflection.js'
-import BotSettings from './BotSettings.js'
-import DeepTreeEchoSettingsScreen from './DeepTreeEchoSettingsScreen.js'
+import { LLMService, CognitiveFunctionType } from './LLMService.js';
+import { PersonaCore } from './PersonaCore.js';
+import { RAGMemoryStore } from './RAGMemoryStore.js';
+import { SelfReflection } from './SelfReflection.js';
+import BotSettings from './BotSettings.js';
+import DeepTreeEchoSettingsScreen from './DeepTreeEchoSettingsScreen.js';
 import {
   initDeepTreeEchoBot,
   saveBotSettings,
   getBotInstance,
   cleanupBot,
-} from './DeepTreeEchoIntegration.js'
+} from './DeepTreeEchoIntegration.js';
 import {
   DeepTreeEchoTestUtil,
   createTestGroup,
@@ -29,7 +29,7 @@ import {
   processMessageWithBot,
   runDemo,
   cleanup as cleanupTestUtil,
-} from './DeepTreeEchoTestUtil.js'
+} from './DeepTreeEchoTestUtil.js';
 
 export {
   DeepTreeEchoBot,
@@ -53,12 +53,12 @@ export {
   processMessageWithBot,
   runDemo,
   cleanupTestUtil,
-}
+};
 
-export type { DeepTreeEchoBotOptions }
+export type { DeepTreeEchoBotOptions };
 
 // Export the main component as default
-export default DeepTreeEchoBot
+export default DeepTreeEchoBot;
 
 // Export the cognitive modules for advanced usage
 export {
@@ -67,4 +67,4 @@ export {
   QuantumBeliefPropagation,
   EmotionalIntelligence,
   SecureIntegration,
-}
+};

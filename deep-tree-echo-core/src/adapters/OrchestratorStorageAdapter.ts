@@ -29,11 +29,11 @@ interface IPCMessage {
 
 /**
  * Storage adapter that communicates with Deep Tree Echo orchestrator via IPC
- * 
+ *
  * This adapter enables desktop applications to store cognitive data (memories,
  * persona state, etc.) through the orchestrator daemon, providing centralized
  * storage that persists across application restarts.
- * 
+ *
  * @example
  * ```typescript
  * // In desktop app (Electron/Tauri)
@@ -41,7 +41,7 @@ interface IPCMessage {
  *   socketPath: '/tmp/deep-tree-echo.sock'
  * });
  * await storage.connect();
- * 
+ *
  * const ragMemory = new RAGMemoryStore(storage);
  * ```
  */
@@ -50,7 +50,10 @@ export class OrchestratorStorageAdapter extends EventEmitter implements MemorySt
   private connected: boolean = false;
   private reconnectInterval: number = 5000;
   private reconnectTimer: NodeJS.Timeout | null = null;
-  private messageQueue: Map<string, { resolve: Function; reject: Function; timeout: NodeJS.Timeout }> = new Map();
+  private messageQueue: Map<
+    string,
+    { resolve: Function; reject: Function; timeout: NodeJS.Timeout }
+  > = new Map();
   private readonly socketPath: string;
   private readonly storagePrefix: string;
   private buffer: string = '';
@@ -77,10 +80,10 @@ export class OrchestratorStorageAdapter extends EventEmitter implements MemorySt
         this.connected = true;
         this.emit('connected');
         console.log(`[OrchestratorStorageAdapter] Connected to orchestrator at ${this.socketPath}`);
-        
+
         // Send initial ping
         this.sendPing().catch(console.error);
-        
+
         resolve();
       });
 
@@ -128,7 +131,7 @@ export class OrchestratorStorageAdapter extends EventEmitter implements MemorySt
     }
 
     this.connected = false;
-    
+
     // Reject all pending messages
     for (const [id, pending] of this.messageQueue.entries()) {
       clearTimeout(pending.timeout);
@@ -205,7 +208,11 @@ export class OrchestratorStorageAdapter extends EventEmitter implements MemorySt
   /**
    * Send a message to the orchestrator
    */
-  private async sendMessage(type: IPCMessageType, payload?: any, timeoutMs: number = 5000): Promise<any> {
+  private async sendMessage(
+    type: IPCMessageType,
+    payload?: any,
+    timeoutMs: number = 5000
+  ): Promise<any> {
     if (!this.connected || !this.socket) {
       throw new Error('Not connected to orchestrator');
     }
@@ -261,7 +268,9 @@ export class OrchestratorStorageAdapter extends EventEmitter implements MemorySt
   async load(key: string): Promise<string | undefined> {
     try {
       const prefixedKey = `${this.storagePrefix}:${key}`;
-      const response = await this.sendMessage(IPCMessageType.REQUEST_STORAGE_GET, { key: prefixedKey });
+      const response = await this.sendMessage(IPCMessageType.REQUEST_STORAGE_GET, {
+        key: prefixedKey,
+      });
       return response?.value ?? undefined;
     } catch (error) {
       console.error(`[OrchestratorStorageAdapter] Failed to load key ${key}:`, error);
@@ -312,7 +321,9 @@ export class OrchestratorStorageAdapter extends EventEmitter implements MemorySt
    */
   async keys(): Promise<string[]> {
     try {
-      const response = await this.sendMessage(IPCMessageType.REQUEST_STORAGE_KEYS, { prefix: this.storagePrefix });
+      const response = await this.sendMessage(IPCMessageType.REQUEST_STORAGE_KEYS, {
+        prefix: this.storagePrefix,
+      });
       const allKeys = response?.keys || [];
       return allKeys.map((key: string) => key.replace(`${this.storagePrefix}:`, ''));
     } catch (error) {

@@ -2,10 +2,10 @@ import { MemoryStorage } from '../memory/storage.js';
 
 /**
  * Storage adapter for Electron runtime using IPC to communicate with main process
- * 
+ *
  * This adapter provides persistent storage for cognitive modules in Electron apps
  * by leveraging the electron-store or similar persistence mechanisms.
- * 
+ *
  * @example
  * ```typescript
  * // In renderer process
@@ -26,7 +26,7 @@ export class ElectronStorageAdapter implements MemoryStorage {
     } catch (error) {
       throw new Error(
         'ElectronStorageAdapter requires Electron environment. ' +
-        'Make sure this is running in an Electron renderer process.'
+          'Make sure this is running in an Electron renderer process.'
       );
     }
     this.storagePrefix = storagePrefix;

@@ -9,42 +9,37 @@
  * - The triadic cognitive loop
  */
 
-import { EventEmitter } from 'events'
-import {
-  Dove9System,
-  MailMessage,
-  MessageProcess,
-  KernelMetrics,
-} from '../index.js'
+import { EventEmitter } from 'events';
+import { Dove9System, MailMessage, MessageProcess, KernelMetrics } from '../index.js';
 import {
   LLMServiceInterface,
   MemoryStoreInterface,
   PersonaCoreInterface,
-} from '../cognitive/deep-tree-echo-processor.js'
-import { Dove9Config, DEFAULT_DOVE9_CONFIG } from '../types/index.js'
+} from '../cognitive/deep-tree-echo-processor.js';
+import { Dove9Config, DEFAULT_DOVE9_CONFIG } from '../types/index.js';
 
 /**
  * Email message from Dovecot interface
  */
 export interface DovecotEmail {
-  from: string
-  to: string[]
-  subject: string
-  body: string
-  headers: Map<string, string>
-  messageId?: string
-  receivedAt: Date
+  from: string;
+  to: string[];
+  subject: string;
+  body: string;
+  headers: Map<string, string>;
+  messageId?: string;
+  receivedAt: Date;
 }
 
 /**
  * Response to be sent back
  */
 export interface EmailResponse {
-  to: string
-  from: string
-  subject: string
-  body: string
-  inReplyTo?: string
+  to: string;
+  from: string;
+  subject: string;
+  body: string;
+  inReplyTo?: string;
 }
 
 /**
@@ -52,15 +47,15 @@ export interface EmailResponse {
  */
 export interface OrchestratorBridgeConfig extends Partial<Dove9Config> {
   // Orchestrator connection
-  orchestratorHost?: string
-  orchestratorPort?: number
+  orchestratorHost?: string;
+  orchestratorPort?: number;
 
   // Bot identity
-  botEmailAddress: string
+  botEmailAddress: string;
 
   // Processing options
-  enableAutoResponse: boolean
-  responseDelay?: number
+  enableAutoResponse: boolean;
+  responseDelay?: number;
 }
 
 const DEFAULT_BRIDGE_CONFIG: OrchestratorBridgeConfig = {
@@ -68,7 +63,7 @@ const DEFAULT_BRIDGE_CONFIG: OrchestratorBridgeConfig = {
   botEmailAddress: 'echo@localhost',
   enableAutoResponse: true,
   responseDelay: 0,
-}
+};
 
 /**
  * OrchestratorBridge
@@ -77,16 +72,16 @@ const DEFAULT_BRIDGE_CONFIG: OrchestratorBridgeConfig = {
  * handling email-to-process conversion and response routing.
  */
 export class OrchestratorBridge extends EventEmitter {
-  private dove9: Dove9System | null = null
-  private config: OrchestratorBridgeConfig
-  private running: boolean = false
+  private dove9: Dove9System | null = null;
+  private config: OrchestratorBridgeConfig;
+  private running: boolean = false;
 
   // Response queue
-  private responseQueue: EmailResponse[] = []
+  private responseQueue: EmailResponse[] = [];
 
   constructor(config: Partial<OrchestratorBridgeConfig> = {}) {
-    super()
-    this.config = { ...DEFAULT_BRIDGE_CONFIG, ...config }
+    super();
+    this.config = { ...DEFAULT_BRIDGE_CONFIG, ...config };
   }
 
   /**
@@ -100,68 +95,74 @@ export class OrchestratorBridge extends EventEmitter {
     // Create Dove9 system with full configuration
     const dove9Config: Dove9Config = {
       stepDuration: this.config.stepDuration ?? DEFAULT_DOVE9_CONFIG.stepDuration,
-      maxConcurrentProcesses: this.config.maxConcurrentProcesses ?? DEFAULT_DOVE9_CONFIG.maxConcurrentProcesses,
+      maxConcurrentProcesses:
+        this.config.maxConcurrentProcesses ?? DEFAULT_DOVE9_CONFIG.maxConcurrentProcesses,
       maxQueueDepth: this.config.maxQueueDepth ?? DEFAULT_DOVE9_CONFIG.maxQueueDepth,
       enableMilter: this.config.enableMilter ?? DEFAULT_DOVE9_CONFIG.enableMilter,
       enableLMTP: this.config.enableLMTP ?? DEFAULT_DOVE9_CONFIG.enableLMTP,
       enableDeltaChat: this.config.enableDeltaChat ?? DEFAULT_DOVE9_CONFIG.enableDeltaChat,
-      enableParallelCognition: this.config.enableParallelCognition ?? DEFAULT_DOVE9_CONFIG.enableParallelCognition,
-      defaultSalienceThreshold: this.config.defaultSalienceThreshold ?? DEFAULT_DOVE9_CONFIG.defaultSalienceThreshold,
-    }
+      enableParallelCognition:
+        this.config.enableParallelCognition ?? DEFAULT_DOVE9_CONFIG.enableParallelCognition,
+      defaultSalienceThreshold:
+        this.config.defaultSalienceThreshold ?? DEFAULT_DOVE9_CONFIG.defaultSalienceThreshold,
+    };
 
     this.dove9 = new Dove9System({
       ...dove9Config,
       llmService,
       memoryStore,
       personaCore,
-    })
+    });
 
     // Subscribe to Dove9 events
-    this.setupEventHandlers()
+    this.setupEventHandlers();
   }
 
   /**
    * Set up event handlers for Dove9 system
    */
   private setupEventHandlers(): void {
-    if (!this.dove9) return
+    if (!this.dove9) return;
 
     // Handle response ready
-    this.dove9.on('response_ready', (data: {
-      originalMail: MailMessage
-      response: MailMessage
-      processId: string
-      cognitiveResult: any
-    }) => {
-      const emailResponse: EmailResponse = {
-        to: data.originalMail.from,
-        from: this.config.botEmailAddress,
-        subject: data.response.subject,
-        body: data.response.body,
-        inReplyTo: data.originalMail.messageId,
-      }
+    this.dove9.on(
+      'response_ready',
+      (data: {
+        originalMail: MailMessage;
+        response: MailMessage;
+        processId: string;
+        cognitiveResult: any;
+      }) => {
+        const emailResponse: EmailResponse = {
+          to: data.originalMail.from,
+          from: this.config.botEmailAddress,
+          subject: data.response.subject,
+          body: data.response.body,
+          inReplyTo: data.originalMail.messageId,
+        };
 
-      if (this.config.enableAutoResponse) {
-        this.queueResponse(emailResponse)
-      }
+        if (this.config.enableAutoResponse) {
+          this.queueResponse(emailResponse);
+        }
 
-      this.emit('response', emailResponse)
-    })
+        this.emit('response', emailResponse);
+      }
+    );
 
     // Forward kernel events
     this.dove9.on('kernel_event', (event: any) => {
-      this.emit('kernel_event', event)
-    })
+      this.emit('kernel_event', event);
+    });
 
     // Handle triadic sync
     this.dove9.on('triad_sync', (triad: any) => {
-      this.emit('triad_sync', triad)
-    })
+      this.emit('triad_sync', triad);
+    });
 
     // Handle cycle completion
     this.dove9.on('cycle_complete', (data: { cycle: number; metrics: KernelMetrics }) => {
-      this.emit('cycle_complete', data)
-    })
+      this.emit('cycle_complete', data);
+    });
   }
 
   /**
@@ -169,27 +170,27 @@ export class OrchestratorBridge extends EventEmitter {
    */
   public async start(): Promise<void> {
     if (!this.dove9) {
-      throw new Error('Bridge not initialized. Call initialize() first.')
+      throw new Error('Bridge not initialized. Call initialize() first.');
     }
 
-    if (this.running) return
+    if (this.running) return;
 
-    await this.dove9.start()
-    this.running = true
+    await this.dove9.start();
+    this.running = true;
 
-    this.emit('started')
+    this.emit('started');
   }
 
   /**
    * Stop the bridge
    */
   public async stop(): Promise<void> {
-    if (!this.dove9 || !this.running) return
+    if (!this.dove9 || !this.running) return;
 
-    await this.dove9.stop()
-    this.running = false
+    await this.dove9.stop();
+    this.running = false;
 
-    this.emit('stopped')
+    this.emit('stopped');
   }
 
   /**
@@ -197,16 +198,16 @@ export class OrchestratorBridge extends EventEmitter {
    */
   public async processEmail(email: DovecotEmail): Promise<MessageProcess | null> {
     if (!this.dove9) {
-      throw new Error('Bridge not initialized')
+      throw new Error('Bridge not initialized');
     }
 
     // Check if email is for the bot
     const isForBot = email.to.some(
-      addr => addr.toLowerCase() === this.config.botEmailAddress.toLowerCase()
-    )
+      (addr) => addr.toLowerCase() === this.config.botEmailAddress.toLowerCase()
+    );
 
     if (!isForBot) {
-      return null
+      return null;
     }
 
     // Convert to MailMessage
@@ -218,22 +219,22 @@ export class OrchestratorBridge extends EventEmitter {
       body: email.body,
       headers: email.headers,
       receivedAt: email.receivedAt,
-    }
+    };
 
     // Process through Dove9
-    return this.dove9.processMailMessage(mailMessage)
+    return this.dove9.processMailMessage(mailMessage);
   }
 
   /**
    * Queue a response for sending
    */
   private queueResponse(response: EmailResponse): void {
-    this.responseQueue.push(response)
+    this.responseQueue.push(response);
 
     if (this.config.responseDelay && this.config.responseDelay > 0) {
-      setTimeout(() => this.flushResponses(), this.config.responseDelay)
+      setTimeout(() => this.flushResponses(), this.config.responseDelay);
     } else {
-      this.flushResponses()
+      this.flushResponses();
     }
   }
 
@@ -242,9 +243,9 @@ export class OrchestratorBridge extends EventEmitter {
    */
   private flushResponses(): void {
     while (this.responseQueue.length > 0) {
-      const response = this.responseQueue.shift()
+      const response = this.responseQueue.shift();
       if (response) {
-        this.emit('send_response', response)
+        this.emit('send_response', response);
       }
     }
   }
@@ -253,28 +254,28 @@ export class OrchestratorBridge extends EventEmitter {
    * Get metrics
    */
   public getMetrics(): KernelMetrics | null {
-    return this.dove9?.getMetrics() || null
+    return this.dove9?.getMetrics() || null;
   }
 
   /**
    * Get active processes
    */
   public getActiveProcesses(): MessageProcess[] {
-    return this.dove9?.getActiveProcesses() || []
+    return this.dove9?.getActiveProcesses() || [];
   }
 
   /**
    * Check if running
    */
   public isRunning(): boolean {
-    return this.running
+    return this.running;
   }
 
   /**
    * Get the underlying Dove9 system
    */
   public getDove9System(): Dove9System | null {
-    return this.dove9
+    return this.dove9;
   }
 }
 
@@ -284,5 +285,5 @@ export class OrchestratorBridge extends EventEmitter {
 export function createOrchestratorBridge(
   config: Partial<OrchestratorBridgeConfig> = {}
 ): OrchestratorBridge {
-  return new OrchestratorBridge(config)
+  return new OrchestratorBridge(config);
 }

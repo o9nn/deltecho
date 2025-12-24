@@ -134,7 +134,7 @@ export class StorageManager {
     const allKeys = Array.from(this.storage.keys());
 
     if (prefix) {
-      return allKeys.filter(key => key.startsWith(prefix));
+      return allKeys.filter((key) => key.startsWith(prefix));
     }
 
     return allKeys;

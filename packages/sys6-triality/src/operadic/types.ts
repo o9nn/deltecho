@@ -1,6 +1,6 @@
 /**
  * @fileoverview Operadic Type System for Sys6 Triality
- * 
+ *
  * Defines the core objects (wire bundles) and morphisms for the operadic
  * composition of the sys6 cognitive architecture.
  */
@@ -119,11 +119,7 @@ export type Delta3 = (t: TriadicChannel) => [TriadicChannel, TriadicConvolutionB
  * μ: LCM synchronizer / global clocking
  * (D, T, P) → Clock₃₀
  */
-export type Mu = (
-  d: DyadicChannel,
-  t: TriadicChannel,
-  p: PentadicStage
-) => Clock30;
+export type Mu = (d: DyadicChannel, t: TriadicChannel, p: PentadicStage) => Clock30;
 
 /**
  * φ: 2×3 → 4 fold via double-step delay
@@ -136,11 +132,7 @@ export interface PhiFoldState {
   state: ShapedTensor;
 }
 
-export type Phi = (
-  clock: Clock30,
-  dyad: DyadicChannel,
-  triad: TriadicChannel
-) => PhiFoldState;
+export type Phi = (clock: Clock30, dyad: DyadicChannel, triad: TriadicChannel) => PhiFoldState;
 
 /**
  * σ: Stage scheduler
@@ -189,7 +181,14 @@ export interface Sys6OperadicState {
  */
 export interface SyncEvent {
   step: number;
-  type: 'dyadic' | 'triadic' | 'pentadic' | 'dyadic-triadic' | 'dyadic-pentadic' | 'triadic-pentadic' | 'full';
+  type:
+    | 'dyadic'
+    | 'triadic'
+    | 'pentadic'
+    | 'dyadic-triadic'
+    | 'dyadic-pentadic'
+    | 'triadic-pentadic'
+    | 'full';
   description: string;
 }
 

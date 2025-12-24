@@ -10,58 +10,62 @@
  * - Memory and persona systems
  */
 
-import {
-  CognitiveContext,
-  CognitiveMode,
-  CouplingType,
-} from '../types/index.js'
-import { CognitiveProcessor } from './triadic-engine.js'
+import { CognitiveContext, CognitiveMode, CouplingType } from '../types/index.js';
+import { CognitiveProcessor } from './triadic-engine.js';
 
 /**
  * LLM Service interface for cognitive processing
  */
 export interface LLMServiceInterface {
-  generateResponse(prompt: string, context: string[]): Promise<string>
-  generateParallelResponse(prompt: string, history: string[]): Promise<{
-    integratedResponse: string
-    cognitiveResponse?: string
-    affectiveResponse?: string
-    relevanceResponse?: string
-  }>
+  generateResponse(prompt: string, context: string[]): Promise<string>;
+  generateParallelResponse(
+    prompt: string,
+    history: string[]
+  ): Promise<{
+    integratedResponse: string;
+    cognitiveResponse?: string;
+    affectiveResponse?: string;
+    relevanceResponse?: string;
+  }>;
 }
 
 /**
  * Memory store interface
  */
 export interface MemoryStoreInterface {
-  storeMemory(memory: { chatId: number; messageId: number; sender: string; text: string }): Promise<void>
-  retrieveRecentMemories(count: number): string[]
-  retrieveRelevantMemories(query: string, count: number): Promise<string[]>
+  storeMemory(memory: {
+    chatId: number;
+    messageId: number;
+    sender: string;
+    text: string;
+  }): Promise<void>;
+  retrieveRecentMemories(count: number): string[];
+  retrieveRelevantMemories(query: string, count: number): Promise<string[]>;
 }
 
 /**
  * Persona core interface
  */
 export interface PersonaCoreInterface {
-  getPersonality(): string
-  getDominantEmotion(): { emotion: string; intensity: number }
-  updateEmotionalState(stimuli: Record<string, number>): Promise<void>
+  getPersonality(): string;
+  getDominantEmotion(): { emotion: string; intensity: number };
+  updateEmotionalState(stimuli: Record<string, number>): Promise<void>;
 }
 
 /**
  * Deep Tree Echo Processor Configuration
  */
 export interface DeepTreeEchoProcessorConfig {
-  enableParallelCognition: boolean
-  memoryRetrievalCount: number
-  salienceThreshold: number
+  enableParallelCognition: boolean;
+  memoryRetrievalCount: number;
+  salienceThreshold: number;
 }
 
 const DEFAULT_CONFIG: DeepTreeEchoProcessorConfig = {
   enableParallelCognition: true,
   memoryRetrievalCount: 10,
   salienceThreshold: 0.3,
-}
+};
 
 /**
  * DeepTreeEchoProcessor
@@ -69,14 +73,14 @@ const DEFAULT_CONFIG: DeepTreeEchoProcessorConfig = {
  * Connects Deep Tree Echo's cognitive systems to the triadic loop.
  */
 export class DeepTreeEchoProcessor implements CognitiveProcessor {
-  private llmService: LLMServiceInterface
-  private memoryStore: MemoryStoreInterface
-  private personaCore: PersonaCoreInterface
-  private config: DeepTreeEchoProcessorConfig
+  private llmService: LLMServiceInterface;
+  private memoryStore: MemoryStoreInterface;
+  private personaCore: PersonaCoreInterface;
+  private config: DeepTreeEchoProcessorConfig;
 
   // Processing state
-  private currentPerception?: any
-  private pendingActions: any[] = []
+  private currentPerception?: any;
+  private pendingActions: any[] = [];
 
   constructor(
     llmService: LLMServiceInterface,
@@ -84,10 +88,10 @@ export class DeepTreeEchoProcessor implements CognitiveProcessor {
     personaCore: PersonaCoreInterface,
     config: Partial<DeepTreeEchoProcessorConfig> = {}
   ) {
-    this.llmService = llmService
-    this.memoryStore = memoryStore
-    this.personaCore = personaCore
-    this.config = { ...DEFAULT_CONFIG, ...config }
+    this.llmService = llmService;
+    this.memoryStore = memoryStore;
+    this.personaCore = personaCore;
+    this.config = { ...DEFAULT_CONFIG, ...config };
   }
 
   /**
@@ -98,17 +102,17 @@ export class DeepTreeEchoProcessor implements CognitiveProcessor {
     context: CognitiveContext,
     mode: CognitiveMode
   ): Promise<CognitiveContext> {
-    const updated = { ...context }
+    const updated = { ...context };
 
     if (mode === CognitiveMode.REFLECTIVE) {
       // Reflective: Assess cognitive needs and capacity
-      const emotionalState = this.personaCore.getDominantEmotion()
+      const emotionalState = this.personaCore.getDominantEmotion();
 
       // Calculate cognitive load based on active processes
-      const cognitiveLoad = context.salienceScore * context.attentionWeight
+      const cognitiveLoad = context.salienceScore * context.attentionWeight;
 
       // Assess if we have capacity for processing
-      const hasCapacity = cognitiveLoad < 0.8
+      const hasCapacity = cognitiveLoad < 0.8;
 
       updated.perceptionData = {
         emotionalState,
@@ -116,24 +120,23 @@ export class DeepTreeEchoProcessor implements CognitiveProcessor {
         hasCapacity,
         mode: 'reflective',
         timestamp: Date.now(),
-      }
+      };
 
       // Update emotional arousal based on load
-      updated.emotionalArousal = Math.min(1, emotionalState.intensity + cognitiveLoad * 0.2)
-
+      updated.emotionalArousal = Math.min(1, emotionalState.intensity + cognitiveLoad * 0.2);
     } else {
       // Expressive: Active perception of current input
       updated.perceptionData = {
         ...updated.perceptionData,
         mode: 'expressive',
         activePerception: true,
-      }
+      };
 
       // Increase salience for active perception
-      updated.salienceScore = Math.min(1, updated.salienceScore + 0.1)
+      updated.salienceScore = Math.min(1, updated.salienceScore + 0.1);
     }
 
-    return updated
+    return updated;
   }
 
   /**
@@ -144,14 +147,14 @@ export class DeepTreeEchoProcessor implements CognitiveProcessor {
     context: CognitiveContext,
     mode: CognitiveMode
   ): Promise<CognitiveContext> {
-    const updated = { ...context }
-    const personality = this.personaCore.getPersonality()
+    const updated = { ...context };
+    const personality = this.personaCore.getPersonality();
 
     if (mode === CognitiveMode.EXPRESSIVE) {
       // Expressive: Generate ideas actively
       const recentMemories = this.memoryStore.retrieveRecentMemories(
         this.config.memoryRetrievalCount
-      )
+      );
 
       // Build thought generation prompt
       const thoughtPrompt = `${personality}
@@ -160,13 +163,13 @@ Current context:
 - Emotional state: ${JSON.stringify(context.perceptionData?.emotionalState)}
 - Salience: ${context.salienceScore}
 
-Generate a thoughtful response or insight.`
+Generate a thoughtful response or insight.`;
 
       if (this.config.enableParallelCognition) {
         const result = await this.llmService.generateParallelResponse(
           thoughtPrompt,
           recentMemories
-        )
+        );
 
         updated.thoughtData = {
           integrated: result.integratedResponse,
@@ -174,34 +177,30 @@ Generate a thoughtful response or insight.`
           affective: result.affectiveResponse,
           relevance: result.relevanceResponse,
           mode: 'expressive',
-        }
+        };
       } else {
-        const response = await this.llmService.generateResponse(
-          thoughtPrompt,
-          recentMemories
-        )
+        const response = await this.llmService.generateResponse(thoughtPrompt, recentMemories);
 
         updated.thoughtData = {
           response,
           mode: 'expressive',
-        }
+        };
       }
 
       // Activate Assessment-Planning coupling
       if (!updated.activeCouplings.includes(CouplingType.ASSESSMENT_PLANNING)) {
-        updated.activeCouplings.push(CouplingType.ASSESSMENT_PLANNING)
+        updated.activeCouplings.push(CouplingType.ASSESSMENT_PLANNING);
       }
-
     } else {
       // Reflective: Simulate potential ideas without committing
       updated.thoughtData = {
         ...updated.thoughtData,
         mode: 'reflective',
         simulating: true,
-      }
+      };
     }
 
-    return updated
+    return updated;
   }
 
   /**
@@ -212,7 +211,7 @@ Generate a thoughtful response or insight.`
     context: CognitiveContext,
     mode: CognitiveMode
   ): Promise<CognitiveContext> {
-    const updated = { ...context }
+    const updated = { ...context };
 
     if (mode === CognitiveMode.EXPRESSIVE) {
       // Expressive: Active sensory processing
@@ -220,28 +219,27 @@ Generate a thoughtful response or insight.`
         context: updated.perceptionData,
         thoughts: updated.thoughtData,
         timestamp: Date.now(),
-      }
+      };
 
       updated.perceptionData = {
         ...updated.perceptionData,
         sensoryProcessed: true,
         inputTime: Date.now(),
-      }
+      };
 
       // Activate Perception-Memory coupling
       if (!updated.activeCouplings.includes(CouplingType.PERCEPTION_MEMORY)) {
-        updated.activeCouplings.push(CouplingType.PERCEPTION_MEMORY)
+        updated.activeCouplings.push(CouplingType.PERCEPTION_MEMORY);
       }
-
     } else {
       // Reflective: Internal sensing
       updated.perceptionData = {
         ...updated.perceptionData,
         internalSensing: true,
-      }
+      };
     }
 
-    return updated
+    return updated;
   }
 
   /**
@@ -252,7 +250,7 @@ Generate a thoughtful response or insight.`
     context: CognitiveContext,
     mode: CognitiveMode
   ): Promise<CognitiveContext> {
-    const updated = { ...context }
+    const updated = { ...context };
 
     if (mode === CognitiveMode.EXPRESSIVE) {
       // Expressive: Execute the action plan
@@ -262,24 +260,23 @@ Generate a thoughtful response or insight.`
           plan: updated.actionPlan,
           timestamp: Date.now(),
           context: { ...updated },
-        })
+        });
 
         updated.actionPlan = {
           ...updated.actionPlan,
           executed: true,
           executionTime: Date.now(),
-        }
+        };
       }
-
     } else {
       // Reflective: Prepare for action
       updated.actionPlan = {
         ...updated.actionPlan,
         prepared: true,
-      }
+      };
     }
 
-    return updated
+    return updated;
   }
 
   /**
@@ -290,32 +287,29 @@ Generate a thoughtful response or insight.`
     context: CognitiveContext,
     mode: CognitiveMode
   ): Promise<CognitiveContext> {
-    const updated = { ...context }
+    const updated = { ...context };
 
     if (mode === CognitiveMode.REFLECTIVE) {
       // Reflective: Retrieve relevant memories
       const query = JSON.stringify({
         perception: updated.perceptionData,
         thoughts: updated.thoughtData,
-      })
+      });
 
       const relevantMemories = await this.memoryStore.retrieveRelevantMemories(
         query,
         this.config.memoryRetrievalCount
-      )
+      );
 
-      updated.relevantMemories = [
-        ...new Set([...updated.relevantMemories, ...relevantMemories])
-      ]
+      updated.relevantMemories = [...new Set([...updated.relevantMemories, ...relevantMemories])];
 
       // Activate Perception-Memory coupling if sensory processing happened
       if (
         updated.perceptionData?.sensoryProcessed &&
         !updated.activeCouplings.includes(CouplingType.PERCEPTION_MEMORY)
       ) {
-        updated.activeCouplings.push(CouplingType.PERCEPTION_MEMORY)
+        updated.activeCouplings.push(CouplingType.PERCEPTION_MEMORY);
       }
-
     } else {
       // Expressive: Encode current experience into memory
       if (updated.thoughtData?.integrated || updated.thoughtData?.response) {
@@ -324,11 +318,11 @@ Generate a thoughtful response or insight.`
           messageId: Date.now(),
           sender: 'system',
           text: updated.thoughtData.integrated || updated.thoughtData.response,
-        })
+        });
       }
     }
 
-    return updated
+    return updated;
   }
 
   /**
@@ -339,11 +333,11 @@ Generate a thoughtful response or insight.`
     context: CognitiveContext,
     mode: CognitiveMode
   ): Promise<CognitiveContext> {
-    const updated = { ...context }
+    const updated = { ...context };
 
     if (mode === CognitiveMode.EXPRESSIVE) {
       // Expressive: Generate balanced, integrated response
-      const emotionalState = this.personaCore.getDominantEmotion()
+      const emotionalState = this.personaCore.getDominantEmotion();
 
       // Balance perception, memory, and planning
       const integratedResponse = {
@@ -357,52 +351,51 @@ Generate a thoughtful response or insight.`
           dominant: emotionalState,
         },
         timestamp: Date.now(),
-      }
+      };
 
       // Update emotional state based on the interaction
-      const emotionalDelta = this.calculateEmotionalDelta(updated)
-      await this.personaCore.updateEmotionalState(emotionalDelta)
+      const emotionalDelta = this.calculateEmotionalDelta(updated);
+      await this.personaCore.updateEmotionalState(emotionalDelta);
 
       // Activate balanced integration coupling
       if (!updated.activeCouplings.includes(CouplingType.BALANCED_INTEGRATION)) {
-        updated.activeCouplings.push(CouplingType.BALANCED_INTEGRATION)
+        updated.activeCouplings.push(CouplingType.BALANCED_INTEGRATION);
       }
 
       // Clear pending actions after integration
-      this.pendingActions = []
+      this.pendingActions = [];
 
       // Update context with integrated response
-      updated.perceptionData = integratedResponse
-      updated.attentionWeight = this.calculateNewAttention(updated)
-
+      updated.perceptionData = integratedResponse;
+      updated.attentionWeight = this.calculateNewAttention(updated);
     } else {
       // Reflective: Prepare for balanced response
       updated.perceptionData = {
         ...updated.perceptionData,
         balancePrepared: true,
-      }
+      };
     }
 
-    return updated
+    return updated;
   }
 
   /**
    * Calculate emotional delta based on processing
    */
   private calculateEmotionalDelta(context: CognitiveContext): Record<string, number> {
-    const delta: Record<string, number> = {}
+    const delta: Record<string, number> = {};
 
     // Interest increases with salience
-    delta.interest = context.salienceScore * 0.1
+    delta.interest = context.salienceScore * 0.1;
 
     // Joy/sadness based on valence
     if (context.emotionalValence > 0) {
-      delta.joy = context.emotionalValence * 0.1
+      delta.joy = context.emotionalValence * 0.1;
     } else if (context.emotionalValence < 0) {
-      delta.sadness = Math.abs(context.emotionalValence) * 0.1
+      delta.sadness = Math.abs(context.emotionalValence) * 0.1;
     }
 
-    return delta
+    return delta;
   }
 
   /**
@@ -410,31 +403,31 @@ Generate a thoughtful response or insight.`
    */
   private calculateNewAttention(context: CognitiveContext): number {
     // Attention decays slightly but is boosted by salience
-    const decay = 0.95
-    const salienceBoost = context.salienceScore * 0.1
+    const decay = 0.95;
+    const salienceBoost = context.salienceScore * 0.1;
 
-    return Math.min(1, context.attentionWeight * decay + salienceBoost)
+    return Math.min(1, context.attentionWeight * decay + salienceBoost);
   }
 
   /**
    * Get pending actions
    */
   public getPendingActions(): any[] {
-    return [...this.pendingActions]
+    return [...this.pendingActions];
   }
 
   /**
    * Get current perception
    */
   public getCurrentPerception(): any {
-    return this.currentPerception
+    return this.currentPerception;
   }
 
   /**
    * Clear processing state
    */
   public clearState(): void {
-    this.currentPerception = undefined
-    this.pendingActions = []
+    this.currentPerception = undefined;
+    this.pendingActions = [];
   }
 }

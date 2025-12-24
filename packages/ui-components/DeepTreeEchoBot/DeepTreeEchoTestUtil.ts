@@ -1,13 +1,9 @@
-import { BackendRemote, onDCEvent, selectedAccountId } from '@deltecho/shared/backend'
-import { DeepTreeEchoBot } from './DeepTreeEchoBot.js'
-import {
-  getBotInstance,
-  initDeepTreeEchoBot,
-  cleanupBot,
-} from './DeepTreeEchoIntegration.js'
-import { getLogger } from '@deltecho/shared/logger'
+import { BackendRemote, onDCEvent, selectedAccountId } from '@deltecho/shared/backend';
+import { DeepTreeEchoBot } from './DeepTreeEchoBot.js';
+import { getBotInstance, initDeepTreeEchoBot, cleanupBot } from './DeepTreeEchoIntegration.js';
+import { getLogger } from '@deltecho/shared/logger';
 
-const log = getLogger('render/components/DeepTreeEchoBot/DeepTreeEchoTestUtil')
+const log = getLogger('render/components/DeepTreeEchoBot/DeepTreeEchoTestUtil');
 
 /**
  * Utility functions to help test and demonstrate the Deep Tree Echo bot
@@ -27,15 +23,15 @@ export class DeepTreeEchoTestUtil {
         accountId,
         groupName,
         additionalMembers
-      )
-      log.info(`Created test group: ${chatId}`)
+      );
+      log.info(`Created test group: ${chatId}`);
 
       // Add contacts to the group
       for (const contactId of additionalMembers) {
         try {
-          await BackendRemote.rpc.addContactToChat(accountId, chatId, contactId)
+          await BackendRemote.rpc.addContactToChat(accountId, chatId, contactId);
         } catch (error) {
-          log.error(`Failed to add contact ${contactId} to group: ${error}`)
+          log.error(`Failed to add contact ${contactId} to group: ${error}`);
         }
       }
 
@@ -44,12 +40,12 @@ export class DeepTreeEchoTestUtil {
         accountId,
         chatId,
         'Deep Tree Echo bot has been added to this group. Type /help to see available commands.'
-      )
+      );
 
-      return chatId
+      return chatId;
     } catch (error) {
-      log.error(`Failed to create test group: ${error}`)
-      return 0
+      log.error(`Failed to create test group: ${error}`);
+      return 0;
     }
   }
 
@@ -62,16 +58,12 @@ export class DeepTreeEchoTestUtil {
     text: string
   ): Promise<number> {
     try {
-      const msgId = await BackendRemote.rpc.miscSendTextMessage(
-        accountId,
-        chatId,
-        text
-      )
-      log.info(`Sent test message to chat ${chatId}: ${text}`)
-      return msgId
+      const msgId = await BackendRemote.rpc.miscSendTextMessage(accountId, chatId, text);
+      log.info(`Sent test message to chat ${chatId}: ${text}`);
+      return msgId;
     } catch (error) {
-      log.error(`Failed to send test message: ${error}`)
-      return 0
+      log.error(`Failed to send test message: ${error}`);
+      return 0;
     }
   }
 
@@ -84,18 +76,17 @@ export class DeepTreeEchoTestUtil {
     msgId: number
   ): Promise<void> {
     try {
-      const bot =
-        getBotInstance() || (await DeepTreeEchoTestUtil.initBotIfNeeded())
+      const bot = getBotInstance() || (await DeepTreeEchoTestUtil.initBotIfNeeded());
       if (!bot) {
-        log.error('Bot not available')
-        return
+        log.error('Bot not available');
+        return;
       }
 
-      const message = await BackendRemote.rpc.getMessage(accountId, msgId)
-      await bot.processMessage(accountId, chatId, msgId, message)
-      log.info(`Processed message ${msgId} with bot`)
+      const message = await BackendRemote.rpc.getMessage(accountId, msgId);
+      await bot.processMessage(accountId, chatId, msgId, message);
+      log.info(`Processed message ${msgId} with bot`);
     } catch (error) {
-      log.error(`Failed to process message with bot: ${error}`)
+      log.error(`Failed to process message with bot: ${error}`);
     }
   }
 
@@ -105,12 +96,12 @@ export class DeepTreeEchoTestUtil {
   private static async initBotIfNeeded(): Promise<DeepTreeEchoBot | null> {
     try {
       // Use a test account ID for testing - in real usage this would come from context
-      const testAccountId = 1
-      await initDeepTreeEchoBot(testAccountId)
-      return getBotInstance()
+      const testAccountId = 1;
+      await initDeepTreeEchoBot(testAccountId);
+      return getBotInstance();
     } catch (error) {
-      log.error(`Failed to initialize bot: ${error}`)
-      return null
+      log.error(`Failed to initialize bot: ${error}`);
+      return null;
     }
   }
 
@@ -120,25 +111,21 @@ export class DeepTreeEchoTestUtil {
   public static async runDemo(accountId: number): Promise<void> {
     try {
       // Ensure bot is initialized
-      const bot =
-        getBotInstance() || (await DeepTreeEchoTestUtil.initBotIfNeeded())
+      const bot = getBotInstance() || (await DeepTreeEchoTestUtil.initBotIfNeeded());
       if (!bot) {
-        log.error('Bot not available for demo')
-        return
+        log.error('Bot not available for demo');
+        return;
       }
 
       // Create a demo group
-      const chatId = await DeepTreeEchoTestUtil.createTestGroup(
-        accountId,
-        'Deep Tree Echo Demo'
-      )
+      const chatId = await DeepTreeEchoTestUtil.createTestGroup(accountId, 'Deep Tree Echo Demo');
       if (!chatId) {
-        log.error('Failed to create demo group')
-        return
+        log.error('Failed to create demo group');
+        return;
       }
 
       // Wait a moment to let the group creation complete
-      await new Promise(resolve => setTimeout(resolve, 1000))
+      await new Promise((resolve) => setTimeout(resolve, 1000));
 
       // Send a series of test messages to demonstrate different capabilities
       const demoMessages = [
@@ -149,28 +136,20 @@ export class DeepTreeEchoTestUtil {
         '/cognitive status',
         "What's your favorite book?",
         '/version',
-      ]
+      ];
 
       // Send messages with a delay between each
       for (const message of demoMessages) {
-        const msgId = await DeepTreeEchoTestUtil.sendTestMessage(
-          accountId,
-          chatId,
-          message
-        )
-        await DeepTreeEchoTestUtil.processMessageWithBot(
-          accountId,
-          chatId,
-          msgId
-        )
+        const msgId = await DeepTreeEchoTestUtil.sendTestMessage(accountId, chatId, message);
+        await DeepTreeEchoTestUtil.processMessageWithBot(accountId, chatId, msgId);
 
         // Wait between messages to make the conversation more natural
-        await new Promise(resolve => setTimeout(resolve, 2000))
+        await new Promise((resolve) => setTimeout(resolve, 2000));
       }
 
-      log.info('Demo completed successfully')
+      log.info('Demo completed successfully');
     } catch (error) {
-      log.error(`Demo failed: ${error}`)
+      log.error(`Demo failed: ${error}`);
     }
   }
 
@@ -179,17 +158,17 @@ export class DeepTreeEchoTestUtil {
    */
   public static async cleanup(): Promise<void> {
     try {
-      cleanupBot()
-      log.info('Cleaned up test resources')
+      cleanupBot();
+      log.info('Cleaned up test resources');
     } catch (error) {
-      log.error(`Failed to clean up: ${error}`)
+      log.error(`Failed to clean up: ${error}`);
     }
   }
 }
 
 // Export functions directly for easier access
-export const createTestGroup = DeepTreeEchoTestUtil.createTestGroup
-export const sendTestMessage = DeepTreeEchoTestUtil.sendTestMessage
-export const processMessageWithBot = DeepTreeEchoTestUtil.processMessageWithBot
-export const runDemo = DeepTreeEchoTestUtil.runDemo
-export const cleanup = DeepTreeEchoTestUtil.cleanup
+export const createTestGroup = DeepTreeEchoTestUtil.createTestGroup;
+export const sendTestMessage = DeepTreeEchoTestUtil.sendTestMessage;
+export const processMessageWithBot = DeepTreeEchoTestUtil.processMessageWithBot;
+export const runDemo = DeepTreeEchoTestUtil.runDemo;
+export const cleanup = DeepTreeEchoTestUtil.cleanup;

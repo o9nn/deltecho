@@ -1,6 +1,6 @@
 /**
  * @fileoverview Operadic Module Exports
- * 
+ *
  * Exports all operadic types, generators, and composite functions
  * for the Sys6 Triality architecture.
  */

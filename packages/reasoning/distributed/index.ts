@@ -4,4 +4,4 @@
  * Enables distributed reasoning across multiple nodes for scalable AGI.
  */
 
-export * from './DistributedCoordinator.js'
+export * from './DistributedCoordinator.js';

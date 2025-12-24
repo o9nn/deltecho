@@ -18,24 +18,24 @@
  *   DELTACHAT_RPC_SOCKET - DeltaChat RPC server socket path
  */
 
-import { Orchestrator, OrchestratorConfig } from '../orchestrator.js'
-import { getLogger } from 'deep-tree-echo-core'
+import { Orchestrator, OrchestratorConfig } from '../orchestrator.js';
+import { getLogger } from 'deep-tree-echo-core';
 
-const log = getLogger('deep-tree-echo-orchestrator/daemon')
+const log = getLogger('deep-tree-echo-orchestrator/daemon');
 
 // Parse boolean environment variable
 function envBool(name: string, defaultValue: boolean): boolean {
-  const value = process.env[name]
-  if (value === undefined) return defaultValue
-  return value.toLowerCase() !== 'false' && value !== '0'
+  const value = process.env[name];
+  if (value === undefined) return defaultValue;
+  return value.toLowerCase() !== 'false' && value !== '0';
 }
 
 // Parse number environment variable
 function envNumber(name: string, defaultValue: number): number {
-  const value = process.env[name]
-  if (value === undefined) return defaultValue
-  const parsed = parseInt(value, 10)
-  return isNaN(parsed) ? defaultValue : parsed
+  const value = process.env[name];
+  if (value === undefined) return defaultValue;
+  const parsed = parseInt(value, 10);
+  return isNaN(parsed) ? defaultValue : parsed;
 }
 
 // Build configuration from environment
@@ -58,98 +58,104 @@ function buildConfig(): Partial<OrchestratorConfig> {
       enabled: envBool('DEEP_TREE_ECHO_ENABLE_DOVE9', true),
       enableTriadicLoop: envBool('DEEP_TREE_ECHO_ENABLE_TRIADIC', true),
     },
-  }
+  };
 }
 
 // Main daemon class
 class Daemon {
-  private orchestrator: Orchestrator
-  private shutdownInProgress = false
+  private orchestrator: Orchestrator;
+  private shutdownInProgress = false;
 
   constructor() {
-    const config = buildConfig()
-    this.orchestrator = new Orchestrator(config)
+    const config = buildConfig();
+    this.orchestrator = new Orchestrator(config);
   }
 
   async start(): Promise<void> {
-    log.info('=========================================')
-    log.info('   Deep Tree Echo Orchestrator Daemon')
-    log.info('=========================================')
-    log.info('')
-    log.info('Starting orchestrator...')
+    log.info('=========================================');
+    log.info('   Deep Tree Echo Orchestrator Daemon');
+    log.info('=========================================');
+    log.info('');
+    log.info('Starting orchestrator...');
 
     // Setup signal handlers
-    this.setupSignalHandlers()
+    this.setupSignalHandlers();
 
     // Start the orchestrator
-    await this.orchestrator.start()
+    await this.orchestrator.start();
 
-    log.info('')
-    log.info('Daemon running. Press Ctrl+C to stop.')
-    log.info('')
-    log.info('Services:')
-    log.info(`  - IPC Server: ${this.orchestrator.isRunning() ? 'Active' : 'Inactive'}`)
-    log.info(`  - DeltaChat: ${this.orchestrator.getDeltaChatInterface()?.isConnected() ? 'Connected' : 'Waiting'}`)
-    log.info(`  - Dovecot: ${this.orchestrator.getDovecotInterface()?.isRunning() ? 'Running' : 'Inactive'}`)
-    log.info(`  - Dove9 Cognitive OS: ${this.orchestrator.getDove9Integration() ? 'Active' : 'Inactive'}`)
-    log.info('')
+    log.info('');
+    log.info('Daemon running. Press Ctrl+C to stop.');
+    log.info('');
+    log.info('Services:');
+    log.info(`  - IPC Server: ${this.orchestrator.isRunning() ? 'Active' : 'Inactive'}`);
+    log.info(
+      `  - DeltaChat: ${this.orchestrator.getDeltaChatInterface()?.isConnected() ? 'Connected' : 'Waiting'}`
+    );
+    log.info(
+      `  - Dovecot: ${this.orchestrator.getDovecotInterface()?.isRunning() ? 'Running' : 'Inactive'}`
+    );
+    log.info(
+      `  - Dove9 Cognitive OS: ${this.orchestrator.getDove9Integration() ? 'Active' : 'Inactive'}`
+    );
+    log.info('');
   }
 
   private setupSignalHandlers(): void {
     // Handle SIGINT (Ctrl+C)
     process.on('SIGINT', () => {
-      log.info('Received SIGINT signal')
-      this.shutdown()
-    })
+      log.info('Received SIGINT signal');
+      this.shutdown();
+    });
 
     // Handle SIGTERM
     process.on('SIGTERM', () => {
-      log.info('Received SIGTERM signal')
-      this.shutdown()
-    })
+      log.info('Received SIGTERM signal');
+      this.shutdown();
+    });
 
     // Handle uncaught exceptions
     process.on('uncaughtException', (error) => {
-      log.error('Uncaught exception:', error)
-      this.shutdown(1)
-    })
+      log.error('Uncaught exception:', error);
+      this.shutdown(1);
+    });
 
     // Handle unhandled promise rejections
     process.on('unhandledRejection', (reason, promise) => {
-      log.error('Unhandled rejection at:', promise, 'reason:', reason)
-    })
+      log.error('Unhandled rejection at:', promise, 'reason:', reason);
+    });
   }
 
   private async shutdown(exitCode = 0): Promise<void> {
     if (this.shutdownInProgress) {
-      log.warn('Shutdown already in progress...')
-      return
+      log.warn('Shutdown already in progress...');
+      return;
     }
 
-    this.shutdownInProgress = true
-    log.info('Initiating graceful shutdown...')
+    this.shutdownInProgress = true;
+    log.info('Initiating graceful shutdown...');
 
     try {
-      await this.orchestrator.stop()
-      log.info('Shutdown complete')
-      process.exit(exitCode)
+      await this.orchestrator.stop();
+      log.info('Shutdown complete');
+      process.exit(exitCode);
     } catch (error) {
-      log.error('Error during shutdown:', error)
-      process.exit(1)
+      log.error('Error during shutdown:', error);
+      process.exit(1);
     }
   }
 }
 
 // Run the daemon
 async function main(): Promise<void> {
-  const daemon = new Daemon()
+  const daemon = new Daemon();
 
   try {
-    await daemon.start()
+    await daemon.start();
   } catch (error) {
-    log.error('Failed to start daemon:', error)
-    process.exit(1)
+    log.error('Failed to start daemon:', error);
+    process.exit(1);
   }
 }
 
-main()
+main();

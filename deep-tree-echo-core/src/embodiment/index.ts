@@ -1,1 +1,1 @@
-export { ProprioceptiveEmbodiment } from './ProprioceptiveEmbodiment'
+export { ProprioceptiveEmbodiment } from './ProprioceptiveEmbodiment';

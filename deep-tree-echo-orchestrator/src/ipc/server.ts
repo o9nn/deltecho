@@ -17,23 +17,23 @@ export enum IPCMessageType {
   REQUEST_PERSONA = 'request_persona',
   REQUEST_STATUS = 'request_status',
   REQUEST_CONFIG = 'request_config',
-  
+
   // Storage request types
   REQUEST_STORAGE_GET = 'request_storage_get',
   REQUEST_STORAGE_SET = 'request_storage_set',
   REQUEST_STORAGE_DELETE = 'request_storage_delete',
   REQUEST_STORAGE_CLEAR = 'request_storage_clear',
   REQUEST_STORAGE_KEYS = 'request_storage_keys',
-  
+
   // Response types
   RESPONSE_SUCCESS = 'response_success',
   RESPONSE_ERROR = 'response_error',
-  
+
   // Event types
   EVENT_MESSAGE = 'event_message',
   EVENT_STATE_CHANGE = 'event_state_change',
   EVENT_ERROR = 'event_error',
-  
+
   // Control types
   PING = 'ping',
   PONG = 'pong',
@@ -193,7 +193,7 @@ export class IPCServer extends EventEmitter {
         } else {
           // Unix socket server
           const socketPath = this.config.socketPath!;
-          
+
           // Remove existing socket file if it exists
           if (fs.existsSync(socketPath)) {
             fs.unlinkSync(socketPath);
@@ -235,7 +235,7 @@ export class IPCServer extends EventEmitter {
    */
   private handleConnection(socket: net.Socket): void {
     const clientId = `client_${++this.clientIdCounter}`;
-    
+
     if (this.clients.size >= this.config.maxConnections!) {
       log.warn(`Max connections reached, rejecting client ${clientId}`);
       socket.end();
@@ -250,7 +250,7 @@ export class IPCServer extends EventEmitter {
 
     socket.on('data', async (data) => {
       buffer += data.toString();
-      
+
       // Process complete messages (newline-delimited JSON)
       const lines = buffer.split('\n');
       buffer = lines.pop() || ''; // Keep incomplete line in buffer
@@ -271,12 +271,12 @@ export class IPCServer extends EventEmitter {
     socket.on('close', () => {
       log.info(`Client disconnected: ${clientId}`);
       this.clients.delete(clientId);
-      
+
       // Remove from all subscriptions
       for (const subscribers of this.subscriptions.values()) {
         subscribers.delete(clientId);
       }
-      
+
       this.emit('client_disconnected', { clientId });
     });
 
@@ -297,7 +297,7 @@ export class IPCServer extends EventEmitter {
     log.debug(`Received message from ${clientId}: ${message.type}`);
 
     const handler = this.handlers.get(message.type);
-    
+
     if (!handler) {
       this.sendError(socket, message.id, `Unknown message type: ${message.type}`);
       return;

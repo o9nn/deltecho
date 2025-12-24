@@ -1,6 +1,6 @@
 /**
  * Runtime-specific storage adapters for different platforms
- * 
+ *
  * These adapters implement the MemoryStorage interface for various
  * runtime environments (Electron, Tauri, Node.js, Browser).
  */

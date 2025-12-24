@@ -10,14 +10,14 @@
  */
 
 // Export Deep Tree Echo Bot components
-export * from './DeepTreeEchoBot/index.js'
+export * from './DeepTreeEchoBot/index.js';
 
 // Export AI Companion Hub components
-export * from './AICompanionHub/AICompanionHub.js'
-export * from './AICompanionHub/AICompanionController.js'
-export * from './AICompanionHub/AICompanionCreator.js'
-export * from './AICompanionHub/AIPlatformConnector.js'
-export * from './AICompanionHub/ConnectorRegistry.js'
-export * from './AICompanionHub/MemoryPersistenceLayer.js'
-export * from './AICompanionHub/MemoryVisualization.js'
-export * from './AICompanionHub/AtomSpaceTypes.js'
+export * from './AICompanionHub/AICompanionHub.js';
+export * from './AICompanionHub/AICompanionController.js';
+export * from './AICompanionHub/AICompanionCreator.js';
+export * from './AICompanionHub/AIPlatformConnector.js';
+export * from './AICompanionHub/ConnectorRegistry.js';
+export * from './AICompanionHub/MemoryPersistenceLayer.js';
+export * from './AICompanionHub/MemoryVisualization.js';
+export * from './AICompanionHub/AtomSpaceTypes.js';
