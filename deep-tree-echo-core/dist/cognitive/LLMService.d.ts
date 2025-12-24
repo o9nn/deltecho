@@ -1,4 +1,8 @@
 /**
+ * Supported LLM provider types
+ */
+export type LLMProvider = 'openai' | 'anthropic' | 'ollama' | 'custom';
+/**
  * Structure for a conversation memory (shared with RAGMemoryStore)
  */
 export interface Memory {
@@ -19,6 +23,8 @@ export interface LLMServiceConfig {
     model?: string;
     temperature?: number;
     maxTokens?: number;
+    provider?: LLMProvider;
+    systemPrompt?: string;
 }
 /**
  * Represents a cognitive or memory function with its own API key
@@ -98,6 +104,26 @@ export declare class LLMService {
      */
     private getBestAvailableFunction;
     /**
+     * Detect the LLM provider from the API endpoint
+     */
+    private detectProvider;
+    /**
+     * Call the LLM API with the given messages
+     */
+    private callLLMAPI;
+    /**
+     * Call OpenAI-compatible API (OpenAI, Ollama, custom endpoints)
+     */
+    private callOpenAICompatibleAPI;
+    /**
+     * Call Anthropic Claude API
+     */
+    private callAnthropicAPI;
+    /**
+     * Get the system prompt for a cognitive function type
+     */
+    private getSystemPromptForFunction;
+    /**
      * Generate a response using the default/general cognitive function
      * Maintains backward compatibility with the original implementation
      */
@@ -106,6 +132,10 @@ export declare class LLMService {
      * Generate a response using a specific cognitive function
      */
     generateResponseWithFunction(functionType: CognitiveFunctionType, input: string, context?: string[]): Promise<string>;
+    /**
+     * Get a placeholder response for when API calls fail
+     */
+    private getPlaceholderResponse;
     /**
      * Generate responses from multiple cognitive functions and combine them
      */

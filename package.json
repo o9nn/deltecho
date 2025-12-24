@@ -10,6 +10,7 @@
   },
   "scripts": {
     "build": "pnpm -r build",
+    "build:all": "pnpm build:shared && pnpm build:core && pnpm build:dove9 && pnpm build:cognitive && pnpm build:reasoning && pnpm build:orchestrator && pnpm build:ui",
     "lint": "eslint . --ext .ts --max-warnings 0",
     "lint:fix": "eslint . --ext .ts --fix",
     "format": "prettier --check \"**/*.{ts,json,md}\"",

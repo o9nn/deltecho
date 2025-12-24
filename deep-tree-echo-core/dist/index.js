@@ -12,7 +12,9 @@ export * from './personality';
 export * from './security';
 // Export embodiment modules
 export * from './embodiment';
-// Export utility modules  
+// Export active inference modules
+export * from './active-inference';
+// Export utility modules
 export * from './utils/logger';
 // Export configuration modules
 export * from './config';

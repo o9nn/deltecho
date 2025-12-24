@@ -155,7 +155,7 @@ export class CognitiveOrchestrator {
     // Analyze message sentiment and update emotional state
     const sentiment = this.analyzeSentiment(message.content)
 
-    if (this.state) {
+    if (this.state?.cognitiveContext) {
       this.state.cognitiveContext.emotionalValence = sentiment.valence
       this.state.cognitiveContext.emotionalArousal = sentiment.arousal
       this.state.cognitiveContext.salienceScore = this.calculateSalience(message.content)
