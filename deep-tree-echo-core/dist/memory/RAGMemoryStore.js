@@ -138,7 +138,7 @@ export class RAGMemoryStore {
      */
     getMemoriesByChat(chatId) {
         return this.memories
-            .filter(mem => mem.chatId === chatId)
+            .filter((mem) => mem.chatId === chatId)
             .sort((a, b) => a.timestamp - b.timestamp);
     }
     /**
@@ -148,15 +148,13 @@ export class RAGMemoryStore {
         return this.memories
             .sort((a, b) => b.timestamp - a.timestamp)
             .slice(0, count)
-            .map(mem => `[${new Date(mem.timestamp).toLocaleString()}] ${mem.sender}: ${mem.text}`);
+            .map((mem) => `[${new Date(mem.timestamp).toLocaleString()}] ${mem.sender}: ${mem.text}`);
     }
     /**
      * Retrieve recent reflections, ordered by timestamp
      */
     getRecentReflections(count = 5) {
-        return this.reflections
-            .sort((a, b) => b.timestamp - a.timestamp)
-            .slice(0, count);
+        return this.reflections.sort((a, b) => b.timestamp - a.timestamp).slice(0, count);
     }
     /**
      * Clear all memories
@@ -170,7 +168,7 @@ export class RAGMemoryStore {
      * Clear memories for a specific chat
      */
     async clearChatMemories(chatId) {
-        this.memories = this.memories.filter(mem => mem.chatId !== chatId);
+        this.memories = this.memories.filter((mem) => mem.chatId !== chatId);
         await this.saveMemories();
         log.info(`Cleared memories for chat ${chatId}`);
     }
@@ -188,7 +186,7 @@ export class RAGMemoryStore {
         // Calculate IDF for all terms in corpus
         const idfScores = this.calculateIDF();
         // Score each memory
-        const scoredMemories = this.memories.map(memory => {
+        const scoredMemories = this.memories.map((memory) => {
             const memoryTokens = this.tokenize(memory.text);
             const tfidfScore = this.calculateTFIDF(queryTokens, memoryTokens, idfScores);
             // Apply recency boost (more recent = higher boost)
@@ -200,10 +198,10 @@ export class RAGMemoryStore {
         });
         // Filter out zero-score results and sort by score
         return scoredMemories
-            .filter(item => item.score > 0)
+            .filter((item) => item.score > 0)
             .sort((a, b) => b.score - a.score)
             .slice(0, limit)
-            .map(item => item.memory);
+            .map((item) => item.memory);
     }
     /**
      * Tokenize text into normalized words
@@ -213,19 +211,69 @@ export class RAGMemoryStore {
             .toLowerCase()
             .replace(/[^\w\s]/g, ' ')
             .split(/\s+/)
-            .filter(word => word.length > 2 && !this.isStopWord(word));
+            .filter((word) => word.length > 2 && !this.isStopWord(word));
     }
     /**
      * Check if word is a common stop word
      */
     isStopWord(word) {
         const stopWords = new Set([
-            'the', 'a', 'an', 'and', 'or', 'but', 'in', 'on', 'at', 'to', 'for',
-            'of', 'with', 'by', 'from', 'as', 'is', 'was', 'are', 'were', 'been',
-            'be', 'have', 'has', 'had', 'do', 'does', 'did', 'will', 'would',
-            'could', 'should', 'may', 'might', 'must', 'shall', 'can', 'this',
-            'that', 'these', 'those', 'it', 'its', 'they', 'them', 'their',
-            'we', 'us', 'our', 'you', 'your', 'he', 'him', 'his', 'she', 'her'
+            'the',
+            'a',
+            'an',
+            'and',
+            'or',
+            'but',
+            'in',
+            'on',
+            'at',
+            'to',
+            'for',
+            'of',
+            'with',
+            'by',
+            'from',
+            'as',
+            'is',
+            'was',
+            'are',
+            'were',
+            'been',
+            'be',
+            'have',
+            'has',
+            'had',
+            'do',
+            'does',
+            'did',
+            'will',
+            'would',
+            'could',
+            'should',
+            'may',
+            'might',
+            'must',
+            'shall',
+            'can',
+            'this',
+            'that',
+            'these',
+            'those',
+            'it',
+            'its',
+            'they',
+            'them',
+            'their',
+            'we',
+            'us',
+            'our',
+            'you',
+            'your',
+            'he',
+            'him',
+            'his',
+            'she',
+            'her',
         ]);
         return stopWords.has(word);
     }
@@ -236,9 +284,9 @@ export class RAGMemoryStore {
         const documentFrequency = new Map();
         const totalDocs = this.memories.length;
         // Count document frequency for each term
-        this.memories.forEach(memory => {
+        this.memories.forEach((memory) => {
             const uniqueTokens = new Set(this.tokenize(memory.text));
-            uniqueTokens.forEach(token => {
+            uniqueTokens.forEach((token) => {
                 documentFrequency.set(token, (documentFrequency.get(token) || 0) + 1);
             });
         });
@@ -258,13 +306,13 @@ export class RAGMemoryStore {
             return 0;
         // Calculate term frequency in document
         const termFreq = new Map();
-        docTokens.forEach(token => {
+        docTokens.forEach((token) => {
             termFreq.set(token, (termFreq.get(token) || 0) + 1);
         });
         // Calculate TF-IDF for query terms
         let score = 0;
         const queryTermSet = new Set(queryTokens);
-        queryTermSet.forEach(queryTerm => {
+        queryTermSet.forEach((queryTerm) => {
             const tf = (termFreq.get(queryTerm) || 0) / docTokens.length;
             const idf = idfScores.get(queryTerm) || 1;
             score += tf * idf;
@@ -276,20 +324,20 @@ export class RAGMemoryStore {
      * Find memories similar to a given memory (for clustering/deduplication)
      */
     findSimilarMemories(memoryId, threshold = 0.5) {
-        const targetMemory = this.memories.find(m => m.id === memoryId);
+        const targetMemory = this.memories.find((m) => m.id === memoryId);
         if (!targetMemory)
             return [];
         const targetTokens = this.tokenize(targetMemory.text);
         const idfScores = this.calculateIDF();
         return this.memories
-            .filter(m => m.id !== memoryId)
-            .map(memory => ({
+            .filter((m) => m.id !== memoryId)
+            .map((memory) => ({
             memory,
-            similarity: this.calculateCosineSimilarity(targetTokens, this.tokenize(memory.text), idfScores)
+            similarity: this.calculateCosineSimilarity(targetTokens, this.tokenize(memory.text), idfScores),
         }))
-            .filter(item => item.similarity >= threshold)
+            .filter((item) => item.similarity >= threshold)
             .sort((a, b) => b.similarity - a.similarity)
-            .map(item => item.memory);
+            .map((item) => item.memory);
     }
     /**
      * Calculate cosine similarity between two token sets
@@ -302,7 +350,7 @@ export class RAGMemoryStore {
         let dotProduct = 0;
         let norm1 = 0;
         let norm2 = 0;
-        allTerms.forEach(term => {
+        allTerms.forEach((term) => {
             const v1 = vec1.get(term) || 0;
             const v2 = vec2.get(term) || 0;
             dotProduct += v1 * v2;
@@ -319,7 +367,7 @@ export class RAGMemoryStore {
     createTFIDFVector(tokens, idfScores) {
         const vector = new Map();
         const termFreq = new Map();
-        tokens.forEach(token => {
+        tokens.forEach((token) => {
             termFreq.set(token, (termFreq.get(token) || 0) + 1);
         });
         termFreq.forEach((tf, term) => {
@@ -334,7 +382,7 @@ export class RAGMemoryStore {
      */
     getConversationContext(chatId, messageLimit = 10) {
         return this.memories
-            .filter(mem => mem.chatId === chatId)
+            .filter((mem) => mem.chatId === chatId)
             .sort((a, b) => b.timestamp - a.timestamp)
             .slice(0, messageLimit)
             .sort((a, b) => a.timestamp - b.timestamp);

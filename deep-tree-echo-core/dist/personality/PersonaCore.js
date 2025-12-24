@@ -166,7 +166,7 @@ export class PersonaCore {
         // Simplified differential equation system - in a real implementation
         // this would use proper differential equations as in Julia's DifferentialEquations.jl
         // For each emotion, adjust its value based on the stimulus and connections to other emotions
-        Object.keys(this.affectiveState).forEach(emotion => {
+        Object.keys(this.affectiveState).forEach((emotion) => {
             // Base stimulus effect
             const stimulus = stimuli[emotion] || 0;
             // Apply change with time constant and limiting bounds
@@ -200,7 +200,7 @@ export class PersonaCore {
         // If this emotion is high, slightly reduce its opponents
         if (this.affectiveState[emotion] > 0.6) {
             const opposingEmotions = opponents[emotion] || [];
-            opposingEmotions.forEach(opposing => {
+            opposingEmotions.forEach((opposing) => {
                 if (this.affectiveState[opposing]) {
                     this.affectiveState[opposing] *= 0.95; // Slightly reduce
                 }

@@ -147,7 +147,7 @@ export class LLMService {
      * Get all functioning cognitive cores
      */
     getActiveFunctions() {
-        return Array.from(this.cognitiveFunctions.values()).filter(func => !!func.config.apiKey);
+        return Array.from(this.cognitiveFunctions.values()).filter((func) => !!func.config.apiKey);
     }
     /**
      * Check if a specific cognitive function is configured
@@ -227,7 +227,7 @@ export class LLMService {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',
-                'Authorization': `Bearer ${config.apiKey}`,
+                Authorization: `Bearer ${config.apiKey}`,
             },
             body: JSON.stringify({
                 model: config.model || 'gpt-4',
@@ -253,8 +253,8 @@ export class LLMService {
      */
     async callAnthropicAPI(config, messages) {
         // Extract system message if present
-        const systemMessage = messages.find(m => m.role === 'system');
-        const conversationMessages = messages.filter(m => m.role !== 'system');
+        const systemMessage = messages.find((m) => m.role === 'system');
+        const conversationMessages = messages.filter((m) => m.role !== 'system');
         const response = await fetch(config.apiEndpoint, {
             method: 'POST',
             headers: {
@@ -266,7 +266,7 @@ export class LLMService {
                 model: config.model || 'claude-3-5-sonnet-20241022',
                 max_tokens: config.maxTokens ?? 1000,
                 system: systemMessage?.content || undefined,
-                messages: conversationMessages.map(m => ({
+                messages: conversationMessages.map((m) => ({
                     role: m.role,
                     content: m.content,
                 })),
@@ -329,8 +329,7 @@ export class LLMService {
             // Build messages array
             const messages = [];
             // Add system prompt
-            const systemPrompt = cognitiveFunction.config.systemPrompt ||
-                this.getSystemPromptForFunction(functionType);
+            const systemPrompt = cognitiveFunction.config.systemPrompt || this.getSystemPromptForFunction(functionType);
             messages.push({ role: 'system', content: systemPrompt });
             // Add context as previous messages if provided
             for (const contextItem of context) {
@@ -402,8 +401,8 @@ export class LLMService {
         try {
             // Determine which functions to use
             const availableFunctions = Object.values(CognitiveFunctionType)
-                .filter(funcType => funcType !== CognitiveFunctionType.GENERAL)
-                .filter(funcType => this.isFunctionConfigured(funcType));
+                .filter((funcType) => funcType !== CognitiveFunctionType.GENERAL)
+                .filter((funcType) => this.isFunctionConfigured(funcType));
             // If no specialized functions are configured, use the general function
             if (availableFunctions.length === 0) {
                 const generalResponse = await this.generateResponse(input, context);
@@ -465,7 +464,7 @@ export class LLMService {
             CognitiveFunctionType.RELEVANCE_CORE,
         ];
         const result = {};
-        cognitiveFunctions.forEach(funcType => {
+        cognitiveFunctions.forEach((funcType) => {
             if (responses[funcType]) {
                 result[funcType] = responses[funcType];
             }
@@ -482,7 +481,7 @@ export class LLMService {
             CognitiveFunctionType.PROCEDURAL_MEMORY,
         ];
         const result = {};
-        memoryFunctions.forEach(funcType => {
+        memoryFunctions.forEach((funcType) => {
             if (responses[funcType]) {
                 result[funcType] = responses[funcType];
             }
@@ -497,9 +496,7 @@ export class LLMService {
         const cognitiveKeys = Object.keys(cognitiveResponses);
         const memoryKeys = Object.keys(memoryResponses);
         // Handle case when we have no responses
-        if (cognitiveKeys.length === 0 &&
-            memoryKeys.length === 0 &&
-            !evaluationResponse) {
+        if (cognitiveKeys.length === 0 && memoryKeys.length === 0 && !evaluationResponse) {
             return "I'm unable to generate a response at this time.";
         }
         // Prioritize cognitive core if available
@@ -536,7 +533,7 @@ export class LLMService {
                 CognitiveFunctionType.COGNITIVE_CORE,
                 CognitiveFunctionType.AFFECTIVE_CORE,
                 CognitiveFunctionType.RELEVANCE_CORE,
-            ].filter(funcType => this.isFunctionConfigured(funcType));
+            ].filter((funcType) => this.isFunctionConfigured(funcType));
             if (cognitiveFunctions.length === 0) {
                 // Simple analysis with general function if no specialized functions are available
                 return {
@@ -551,9 +548,7 @@ export class LLMService {
             const responses = await this.generateParallelResponses(`ANALYZE_ONLY: ${message}`, cognitiveFunctions);
             // Return a more detailed analysis when we have multiple functions
             return {
-                sentiment: responses[CognitiveFunctionType.AFFECTIVE_CORE]
-                    ? 'analyzed'
-                    : 'neutral',
+                sentiment: responses[CognitiveFunctionType.AFFECTIVE_CORE] ? 'analyzed' : 'neutral',
                 topics: ['analyzed'],
                 complexity: 0.7,
                 intentClass: 'analyzed',
@@ -580,7 +575,7 @@ export class LLMService {
                 CognitiveFunctionType.COGNITIVE_CORE,
                 CognitiveFunctionType.AFFECTIVE_CORE,
                 CognitiveFunctionType.RELEVANCE_CORE,
-            ].filter(funcType => this.isFunctionConfigured(funcType));
+            ].filter((funcType) => this.isFunctionConfigured(funcType));
             // If no specialized functions are configured, use the general function
             if (reflectionFunctions.length === 0) {
                 const generalFunction = this.cognitiveFunctions.get(CognitiveFunctionType.GENERAL);

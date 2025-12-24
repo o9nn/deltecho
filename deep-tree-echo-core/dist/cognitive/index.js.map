@@ -1,1 +1,1 @@
-{"version":3,"file":"index.js","sourceRoot":"","sources":["../../src/cognitive/index.ts"],"names":[],"mappings":"AAAA,OAAO,EACL,UAAU,EAGV,qBAAqB,GAEtB,MAAM,cAAc,CAAA;AAErB,OAAO,EACL,kBAAkB,GAInB,MAAM,sBAAsB,CAAA"}
+{"version":3,"file":"index.js","sourceRoot":"","sources":["../../src/cognitive/index.ts"],"names":[],"mappings":"AAAA,OAAO,EACL,UAAU,EAGV,qBAAqB,GAEtB,MAAM,cAAc,CAAC;AAEtB,OAAO,EACL,kBAAkB,GAInB,MAAM,sBAAsB,CAAC"}

@@ -21,8 +21,17 @@ const DEFAULT_CONFIG = {
     encryption: { enabled: false, algorithm: 'aes-256-gcm' },
 };
 const BUILT_IN_FILTERS = [
-    { name: 'sql_injection', pattern: /(\b(SELECT|INSERT|UPDATE|DELETE|DROP|UNION|ALTER|CREATE|TRUNCATE)\b.*\b(FROM|INTO|TABLE|WHERE|SET)\b)/gi, action: 'block' },
-    { name: 'xss_script', pattern: /<script\b[^<]*(?:(?!<\/script>)<[^<]*)*<\/script>/gi, action: 'sanitize', replacement: '[REMOVED]' },
+    {
+        name: 'sql_injection',
+        pattern: /(\b(SELECT|INSERT|UPDATE|DELETE|DROP|UNION|ALTER|CREATE|TRUNCATE)\b.*\b(FROM|INTO|TABLE|WHERE|SET)\b)/gi,
+        action: 'block',
+    },
+    {
+        name: 'xss_script',
+        pattern: /<script\b[^<]*(?:(?!<\/script>)<[^<]*)*<\/script>/gi,
+        action: 'sanitize',
+        replacement: '[REMOVED]',
+    },
     { name: 'html_injection', pattern: /<[^>]*on\w+\s*=/gi, action: 'sanitize', replacement: '' },
     { name: 'path_traversal', pattern: /\.\.\//gi, action: 'block' },
 ];
@@ -96,7 +105,7 @@ export class SecureIntegration {
         if (state.blocked && state.blockedUntil && state.blockedUntil > now) {
             return { allowed: false, remaining: 0, resetIn: state.blockedUntil - now };
         }
-        state.requests = state.requests.filter(t => now - t < windowMs);
+        state.requests = state.requests.filter((t) => now - t < windowMs);
         state.blocked = false;
         if (state.requests.length >= maxRequests) {
             state.blocked = true;
@@ -104,7 +113,11 @@ export class SecureIntegration {
             return { allowed: false, remaining: 0, resetIn: windowMs };
         }
         state.requests.push(now);
-        return { allowed: true, remaining: maxRequests - state.requests.length, resetIn: windowMs - (now - state.requests[0]) };
+        return {
+            allowed: true,
+            remaining: maxRequests - state.requests.length,
+            resetIn: windowMs - (now - state.requests[0]),
+        };
     }
     encrypt(data) {
         if (!this.config.encryption?.enabled || !this.encryptionKey)
@@ -183,11 +196,11 @@ export class SecureIntegration {
     getAuditLog(options) {
         let entries = [...this.auditLog];
         if (options?.startTime)
-            entries = entries.filter(e => e.timestamp >= options.startTime);
+            entries = entries.filter((e) => e.timestamp >= options.startTime);
         if (options?.endTime)
-            entries = entries.filter(e => e.timestamp <= options.endTime);
+            entries = entries.filter((e) => e.timestamp <= options.endTime);
         if (options?.action)
-            entries = entries.filter(e => e.action === options.action);
+            entries = entries.filter((e) => e.action === options.action);
         entries.sort((a, b) => b.timestamp - a.timestamp);
         if (options?.limit)
             entries = entries.slice(0, options.limit);
@@ -213,7 +226,7 @@ export class SecureIntegration {
     getStats() {
         return {
             auditLogSize: this.auditLog.length,
-            rateLimitedClients: Array.from(this.rateLimitStates.values()).filter(s => s.blocked).length,
+            rateLimitedClients: Array.from(this.rateLimitStates.values()).filter((s) => s.blocked).length,
             activeFilters: this.filters.length,
             encryptionEnabled: this.config.encryption?.enabled || false,
         };

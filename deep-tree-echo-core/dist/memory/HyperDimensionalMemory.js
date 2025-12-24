@@ -69,22 +69,18 @@ export class HyperDimensionalMemory {
         // Find related memories and build associations
         const relatedMemories = this.findRelatedMemories(memoryVector, 5);
         // Update conversation hypergraph
-        this.conversationHypergraph.set(messageId, new Set(relatedMemories.map(m => m.id)));
+        this.conversationHypergraph.set(messageId, new Set(relatedMemories.map((m) => m.id)));
         // Update associative network
         if (!this.associativeNetwork.has(messageId)) {
             this.associativeNetwork.set(messageId, new Map());
         }
         for (const related of relatedMemories) {
-            this.associativeNetwork
-                .get(messageId)
-                ?.set(related.id, related.similarity);
+            this.associativeNetwork.get(messageId)?.set(related.id, related.similarity);
             // Bidirectional association
             if (!this.associativeNetwork.has(related.id)) {
                 this.associativeNetwork.set(related.id, new Map());
             }
-            this.associativeNetwork
-                .get(related.id)
-                ?.set(messageId, related.similarity);
+            this.associativeNetwork.get(related.id)?.set(messageId, related.similarity);
         }
         // Apply memory decay to old memories
         this.applyMemoryDecay();
