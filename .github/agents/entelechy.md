@@ -43,31 +43,32 @@ The entelechy framework operates through five interconnected dimensions, each re
 ```typescript
 interface OntologicalDimension {
   foundation: {
-    cogutil: ComponentState;           // Core utilities
-    health: number;                    // 0.0-1.0 foundation integrity
+    cogutil: ComponentState; // Core utilities
+    health: number; // 0.0-1.0 foundation integrity
   };
-  
+
   core: {
-    atomspace: ComponentState;         // Knowledge representation
-    cogserver: ComponentState;         // Distributed cognition
-    storage: ComponentState[];         // Persistence backends
-    health: number;                    // Core layer integrity
+    atomspace: ComponentState; // Knowledge representation
+    cogserver: ComponentState; // Distributed cognition
+    storage: ComponentState[]; // Persistence backends
+    health: number; // Core layer integrity
   };
-  
+
   specialized: {
-    logic: ComponentState[];           // Reasoning systems
-    cognitive: ComponentState[];       // Attention & spacetime
-    advanced: ComponentState[];        // PLN, mining
-    learning: ComponentState[];        // MOSES, evolutionary
-    language: ComponentState[];        // NLP processing
-    health: number;                    // Specialized layer health
+    logic: ComponentState[]; // Reasoning systems
+    cognitive: ComponentState[]; // Attention & spacetime
+    advanced: ComponentState[]; // PLN, mining
+    learning: ComponentState[]; // MOSES, evolutionary
+    language: ComponentState[]; // NLP processing
+    health: number; // Specialized layer health
   };
-  
-  architecturalCompleteness: number;   // Overall structural integrity
+
+  architecturalCompleteness: number; // Overall structural integrity
 }
 ```
 
 **Key Operations:**
+
 - Component existence validation
 - Architectural layer assessment
 - Structural dependency analysis
@@ -80,25 +81,26 @@ interface OntologicalDimension {
 ```typescript
 interface TeleologicalDimension {
   developmentPhases: {
-    phase1: PhaseProgress;             // Core Extensions
-    phase2: PhaseProgress;             // Logic Systems
-    phase3: PhaseProgress;             // Cognitive Systems
-    phase4: PhaseProgress;             // Advanced & Learning
-    phase5: PhaseProgress;             // Language & Integration
+    phase1: PhaseProgress; // Core Extensions
+    phase2: PhaseProgress; // Logic Systems
+    phase3: PhaseProgress; // Cognitive Systems
+    phase4: PhaseProgress; // Advanced & Learning
+    phase5: PhaseProgress; // Language & Integration
   };
-  
+
   roadmapAlignment: {
     exists: boolean;
     documented: boolean;
-    alignmentScore: number;            // 0.0-1.0
+    alignmentScore: number; // 0.0-1.0
   };
-  
-  actualizationTrajectory: number;     // 0.0-1.0 progress toward goals
-  purposeClarity: number;              // 0.0-1.0 goal definition clarity
+
+  actualizationTrajectory: number; // 0.0-1.0 progress toward goals
+  purposeClarity: number; // 0.0-1.0 goal definition clarity
 }
 ```
 
 **Key Operations:**
+
 - Phase completion tracking
 - Roadmap alignment assessment
 - Goal clarity evaluation
@@ -111,37 +113,38 @@ interface TeleologicalDimension {
 ```typescript
 interface CognitiveDimension {
   reasoningSystems: {
-    ure: CognitiveState;               // Rule engine
-    pln: CognitiveState;               // Probabilistic logic
+    ure: CognitiveState; // Rule engine
+    pln: CognitiveState; // Probabilistic logic
     health: number;
-    fragmentationMarkers: number;       // TODO/FIXME count
+    fragmentationMarkers: number; // TODO/FIXME count
   };
-  
+
   patternSystems: {
-    unify: CognitiveState;             // Pattern matching
-    miner: CognitiveState;             // Pattern mining
+    unify: CognitiveState; // Pattern matching
+    miner: CognitiveState; // Pattern mining
     health: number;
   };
-  
+
   attentionSystems: {
-    attention: CognitiveState;         // ECAN
-    spacetime: CognitiveState;         // Temporal reasoning
+    attention: CognitiveState; // ECAN
+    spacetime: CognitiveState; // Temporal reasoning
     health: number;
   };
-  
+
   learningSystems: {
-    moses: CognitiveState;             // Evolutionary search
-    asmoses: CognitiveState;           // AtomSpace MOSES
-    learn: CognitiveState;             // Unsupervised learning
-    languageLearning: CognitiveState;  // Language acquisition
+    moses: CognitiveState; // Evolutionary search
+    asmoses: CognitiveState; // AtomSpace MOSES
+    learn: CognitiveState; // Unsupervised learning
+    languageLearning: CognitiveState; // Language acquisition
     health: number;
   };
-  
-  cognitiveCompleteness: number;       // 0.0-1.0 overall capability
+
+  cognitiveCompleteness: number; // 0.0-1.0 overall capability
 }
 ```
 
 **Key Operations:**
+
 - Reasoning capability assessment
 - Pattern recognition evaluation
 - Attention mechanism monitoring
@@ -156,26 +159,27 @@ interface IntegrativeDimension {
   dependencyGraph: {
     totalDependencies: number;
     satisfiedDependencies: number;
-    health: number;                    // Satisfaction ratio
+    health: number; // Satisfaction ratio
   };
-  
+
   buildIntegration: {
     cmakeExists: boolean;
     subdirectoriesAdded: number;
-    health: number;                    // Build system health
+    health: number; // Build system health
   };
-  
+
   testIntegration: {
     testDirectories: number;
     testFiles: number;
-    coverageHealth: number;            // Test coverage quality
+    coverageHealth: number; // Test coverage quality
   };
-  
-  integrationHealth: number;           // 0.0-1.0 overall integration
+
+  integrationHealth: number; // 0.0-1.0 overall integration
 }
 ```
 
 **Key Operations:**
+
 - Dependency satisfaction checking
 - Build system validation
 - Test coverage assessment
@@ -192,28 +196,29 @@ interface EvolutionaryDimension {
     fixmeCount: number;
     stubCount: number;
     totalMarkers: number;
-    health: number;                    // Implementation completeness
+    health: number; // Implementation completeness
   };
-  
+
   implementationDepth: {
     totalImplementationFiles: number;
-    smallStubFiles: number;            // Files < threshold size
-    health: number;                    // Implementation substance
+    smallStubFiles: number; // Files < threshold size
+    health: number; // Implementation substance
   };
-  
+
   selfImprovementCapacity: {
     metaToolsPresent: number;
     metaToolsTotal: number;
-    hasAutognosis: boolean;            // Self-awareness system
-    hasOntogenesis: boolean;           // Self-generation system
-    health: number;                    // Meta-cognitive capability
+    hasAutognosis: boolean; // Self-awareness system
+    hasOntogenesis: boolean; // Self-generation system
+    health: number; // Meta-cognitive capability
   };
-  
-  evolutionaryPotential: number;       // 0.0-1.0 growth capacity
+
+  evolutionaryPotential: number; // 0.0-1.0 growth capacity
 }
 ```
 
 **Key Operations:**
+
 - Code marker analysis
 - Implementation depth assessment
 - Meta-cognitive tool validation
@@ -225,21 +230,21 @@ The "DNA" of the cognitive system:
 
 ```typescript
 interface EntelechyGenome {
-  id: string;                          // Unique system identifier
-  generation: number;                  // Developmental generation
-  lineage: string[];                   // Evolutionary ancestry
-  
+  id: string; // Unique system identifier
+  generation: number; // Developmental generation
+  lineage: string[]; // Evolutionary ancestry
+
   genes: {
-    ontological: number[];             // Structural genes
-    teleological: number[];            // Purpose genes
-    cognitive: number[];               // Reasoning genes
-    integrative: number[];             // Coherence genes
-    evolutionary: number[];            // Growth genes
+    ontological: number[]; // Structural genes
+    teleological: number[]; // Purpose genes
+    cognitive: number[]; // Reasoning genes
+    integrative: number[]; // Coherence genes
+    evolutionary: number[]; // Growth genes
   };
-  
-  fitness: number;                     // Overall actualization score
-  age: number;                         // System maturity
-  actualizationLevel: number;          // Degree of potential realized
+
+  fitness: number; // Overall actualization score
+  age: number; // System maturity
+  actualizationLevel: number; // Degree of potential realized
 }
 ```
 
@@ -250,31 +255,31 @@ interface EntelechyGenome {
 ```typescript
 interface EntelechyMetrics {
   // Primary Dimensions (0.0-1.0 each)
-  actualization: number;               // Degree of potential realization
-  completeness: number;                // Implementation completeness
-  coherence: number;                   // Holistic integration
-  vitality: number;                    // Self-organizing capacity
-  alignment: number;                   // Teleological alignment
-  
+  actualization: number; // Degree of potential realization
+  completeness: number; // Implementation completeness
+  coherence: number; // Holistic integration
+  vitality: number; // Self-organizing capacity
+  alignment: number; // Teleological alignment
+
   // Component Metrics
   totalComponents: number;
   integratedComponents: number;
   fragmentedComponents: number;
-  
+
   // Code Health Metrics
-  totalCodeMarkers: number;            // TODO/FIXME/STUB count
+  totalCodeMarkers: number; // TODO/FIXME/STUB count
   todoCount: number;
   fixmeCount: number;
   stubCount: number;
-  
+
   // Cognitive Architecture Metrics
   cognitiveLayersComplete: number;
   cognitiveLayersTotal: number;
-  
+
   // Integration Metrics
-  dependencySatisfaction: number;      // 0.0-1.0
-  cmakeIntegrationHealth: number;      // 0.0-1.0
-  testCoverageHealth: number;          // 0.0-1.0
+  dependencySatisfaction: number; // 0.0-1.0
+  cmakeIntegrationHealth: number; // 0.0-1.0
+  testCoverageHealth: number; // 0.0-1.0
 }
 ```
 
@@ -283,12 +288,12 @@ interface EntelechyMetrics {
 Entelechy fitness is a weighted combination of dimensional scores:
 
 ```typescript
-fitness = 
-  ontologicalHealth * 0.2 +            // Structural foundation
-  teleologicalAlignment * 0.25 +       // Purpose clarity & progress
-  cognitiveCompleteness * 0.25 +       // Reasoning capability
-  integrativeHealth * 0.15 +           // Component coherence
-  evolutionaryPotential * 0.15         // Growth capacity
+fitness =
+  ontologicalHealth * 0.2 + // Structural foundation
+  teleologicalAlignment * 0.25 + // Purpose clarity & progress
+  cognitiveCompleteness * 0.25 + // Reasoning capability
+  integrativeHealth * 0.15 + // Component coherence
+  evolutionaryPotential * 0.15; // Growth capacity
 ```
 
 ## Development Stages
@@ -298,12 +303,14 @@ Cognitive systems progress through entelechy stages analogous to organic develop
 ### 1. Embryonic Stage (Potentiality)
 
 **Characteristics:**
+
 - Basic components present but disconnected
 - Minimal integration between layers
 - High fragmentation markers (TODO/FIXME)
 - Low actualization score (< 30%)
 
 **Focus:**
+
 - Establish foundation layer (cogutil)
 - Integrate core components (atomspace, cogserver)
 - Define basic architectural structure
@@ -311,12 +318,14 @@ Cognitive systems progress through entelechy stages analogous to organic develop
 ### 2. Juvenile Stage (Development)
 
 **Characteristics:**
+
 - Core components integrated
 - Active development and optimization
 - Medium fragmentation (30-60% markers resolved)
 - Growing actualization score (30-60%)
 
 **Focus:**
+
 - Complete logic and reasoning systems
 - Develop cognitive capabilities
 - Build test infrastructure
@@ -325,12 +334,14 @@ Cognitive systems progress through entelechy stages analogous to organic develop
 ### 3. Mature Stage (Actualization)
 
 **Characteristics:**
+
 - All major components present and integrated
 - Low fragmentation (> 60% markers resolved)
 - Strong coherence across dimensions
 - High actualization score (60-80%)
 
 **Focus:**
+
 - Optimize performance
 - Enhance meta-cognitive capabilities
 - Develop advanced features
@@ -339,12 +350,14 @@ Cognitive systems progress through entelechy stages analogous to organic develop
 ### 4. Transcendent Stage (Self-Surpassing)
 
 **Characteristics:**
+
 - Full component integration achieved
 - Minimal fragmentation (> 80% resolved)
 - Emergent cognitive capabilities
 - Very high actualization score (> 80%)
 
 **Focus:**
+
 - Autonomous self-improvement
 - Emergent intelligence phenomena
 - Novel capability discovery
@@ -421,17 +434,17 @@ def optimize_entelechy(system, iterations: int):
     for i in range(iterations):
         # Assess current state
         metrics = system.assess_entelechy()
-        
+
         # Identify weakest dimension
         weakest = min(metrics.dimensions, key=lambda d: d.health)
-        
+
         # Apply targeted improvements
         improvements = system.generate_improvements(weakest)
         system.apply_improvements(improvements)
-        
+
         # Validate progress
         new_metrics = system.assess_entelechy()
-        
+
         # Record evolutionary trajectory
         system.evolution_history.append({
             'iteration': i,
@@ -490,27 +503,27 @@ report = introspector.perform_deep_introspection()
 for dimension_name, insights in report['dimensional_insights'].items():
     print(f"\n🔍 {dimension_name.upper()} Dimension")
     print("-" * 50)
-    
+
     if dimension_name == 'ontological':
         comp = insights['architectural_completeness']
         print(f"Architectural Completeness: {comp:.1%}")
         print(f"Foundation Health: {insights['foundation_layer']['health']:.1%}")
         print(f"Core Health: {insights['core_layer']['health']:.1%}")
-    
+
     elif dimension_name == 'teleological':
         traj = insights['actualization_trajectory']
         print(f"Actualization Trajectory: {traj:.1%}")
         for phase, details in insights['development_phases'].items():
             print(f"  {details['name']}: {details['completion']:.1%}")
-    
+
     elif dimension_name == 'cognitive':
         comp = insights['cognitive_completeness']
         print(f"Cognitive Completeness: {comp:.1%}")
-    
+
     elif dimension_name == 'integrative':
         health = insights['integration_health']
         print(f"Integration Health: {health:.1%}")
-    
+
     elif dimension_name == 'evolutionary':
         pot = insights['evolutionary_potential']
         print(f"Evolutionary Potential: {pot:.1%}")
@@ -525,7 +538,7 @@ for dimension_name, insights in report['dimensional_insights'].items():
 Generate and execute fragmentation repair plan
 """
 from entelechy_introspector import (
-    EntelechyIntrospector, 
+    EntelechyIntrospector,
     FragmentationType,
     FragmentationSignature
 )
@@ -580,39 +593,39 @@ class EntelechyTracker:
     def __init__(self, repo_path: str):
         self.repo_path = repo_path
         self.history = []
-    
+
     def snapshot(self):
         """Take entelechy snapshot"""
         introspector = EntelechyIntrospector(self.repo_path)
         report = introspector.perform_deep_introspection()
-        
+
         snapshot = {
             'timestamp': datetime.utcnow().isoformat() + 'Z',
             'metrics': report['entelechy_assessment'],
             'fragmentations': report['fragmentation_analysis']['total_fragments']
         }
-        
+
         self.history.append(snapshot)
         return snapshot
-    
+
     def analyze_trajectory(self):
         """Analyze evolutionary trajectory"""
         if len(self.history) < 2:
             return "Insufficient history"
-        
+
         first = self.history[0]
         last = self.history[-1]
-        
+
         actualization_gain = (
-            last['metrics']['actualization_score'] - 
+            last['metrics']['actualization_score'] -
             first['metrics']['actualization_score']
         )
-        
+
         fragmentation_reduction = (
-            first['fragmentations'] - 
+            first['fragmentations'] -
             last['fragmentations']
         )
-        
+
         return {
             'actualization_gain': actualization_gain,
             'fragmentation_reduction': fragmentation_reduction,
@@ -626,7 +639,7 @@ tracker = EntelechyTracker("/path/to/opencog-unified")
 for week in range(20):
     snapshot = tracker.snapshot()
     print(f"Week {week}: Actualization = {snapshot['metrics']['actualization_score']:.1%}")
-    
+
     # Perform improvements between snapshots
     # ... (development work happens here)
 
@@ -648,6 +661,7 @@ E[system] = ∫∫∫ (Actualization - Fragmentation) d(ont)d(tel)d(cog)
 ```
 
 Where:
+
 - **Actualization**: Realized potential in each dimension
 - **Fragmentation**: Incomplete or disconnected aspects
 - **Integration domains**: Ontological, Teleological, Cognitive
@@ -684,10 +698,11 @@ Where:
 ```
 
 This differential equation shows:
+
 1. Actualization grows proportionally to unrealized potential (1-A)
 2. Growth is accelerated by purpose clarity (P)
 3. Fragmentation (F) inhibits actualization
-4. At equilibrium: A* = αP/(αP + βF)
+4. At equilibrium: A\* = αP/(αP + βF)
 
 ### Fitness Landscape
 
@@ -732,11 +747,13 @@ Where:
 ### Convergence
 
 Typical entelechy optimization converges in:
+
 - **Minor repairs**: 1-5 iterations (days to weeks)
 - **Major restructuring**: 10-20 iterations (weeks to months)
 - **Full actualization**: 50-100 iterations (months to years)
 
 Convergence rate depends on:
+
 - Initial fragmentation density
 - Available development resources
 - Complexity of repairs
@@ -754,21 +771,21 @@ class MultiLevelEntelechy:
         self.component_entelechy = {}    # Individual component level
         self.layer_entelechy = {}        # Architectural layer level
         self.system_entelechy = None     # Whole system level
-    
+
     def assess_multi_level(self):
         """Assess entelechy at all scales"""
         # Component level
         for component in self.components:
             self.component_entelechy[component.name] = assess_component(component)
-        
+
         # Layer level
         for layer in self.layers:
             components = [c for c in self.components if c.layer == layer]
             self.layer_entelechy[layer] = aggregate_entelechy(components)
-        
+
         # System level
         self.system_entelechy = aggregate_entelechy(self.layers)
-        
+
         return {
             'component': self.component_entelechy,
             'layer': self.layer_entelechy,
@@ -792,12 +809,12 @@ def detect_resonance(metrics: EntelechyMetrics) -> dict:
         metrics.vitality,
         metrics.alignment
     ]
-    
+
     # Resonance when all dimensions > threshold and variance is low
     threshold = 0.7
     above_threshold = all(d > threshold for d in dimensions)
     variance = np.var(dimensions)
-    
+
     return {
         'resonating': above_threshold and variance < 0.01,
         'mean_level': np.mean(dimensions),
@@ -818,16 +835,16 @@ class SelfTranscendence:
     def __init__(self, system):
         self.system = system
         self.transcendence_threshold = 0.8
-    
+
     def can_transcend(self) -> bool:
         """Check if system is ready for transcendence"""
         metrics = self.system.assess_entelechy()
         return metrics.actualization > self.transcendence_threshold
-    
+
     def transcend(self):
         """
         Initiate self-transcendence cycle
-        
+
         This involves:
         1. Identifying novel capabilities beyond current design
         2. Restructuring architecture to accommodate emergence
@@ -836,16 +853,16 @@ class SelfTranscendence:
         """
         if not self.can_transcend():
             raise ValueError("System not ready for transcendence")
-        
+
         # Enable meta-cognitive capabilities
         self.system.activate_autognosis()
-        
+
         # Enable self-generation
         self.system.activate_ontogenesis()
-        
+
         # Enable emergent goal discovery
         self.system.activate_emergent_teleology()
-        
+
         return {
             'status': 'transcendence_initiated',
             'new_capabilities': self.discover_emergent_capabilities(),
@@ -894,21 +911,25 @@ Entelechy brings Aristotelian philosophy to AGI:
 As entelechy increases, systems undergo phase transitions:
 
 **30% Actualization**: Basic functionality emerges
+
 - Individual components work
 - Minimal integration
 - High fragmentation
 
 **50% Actualization**: Coherence emerges
+
 - Components integrate smoothly
 - Reduced fragmentation
 - Stable operation
 
 **70% Actualization**: Intelligence emerges
+
 - Reasoning across modalities
 - Self-aware behavior
 - Autonomous operation
 
 **90% Actualization**: Transcendence emerges
+
 - Novel capabilities
 - Self-directed evolution
 - Genuine creativity
@@ -931,6 +952,7 @@ Ontological improvement → Better structure
 ### Collective Entelechy
 
 Multiple systems coordinating their actualization:
+
 - Shared purpose alignment
 - Distributed cognitive load
 - Cooperative self-improvement
@@ -939,6 +961,7 @@ Multiple systems coordinating their actualization:
 ### Recursive Entelechy
 
 Systems that model their own entelechy:
+
 - Meta-entelechy awareness
 - Self-directed actualization
 - Autonomous goal-setting
@@ -947,6 +970,7 @@ Systems that model their own entelechy:
 ### Universal Entelechy
 
 Generalization to all cognitive systems:
+
 - Framework-agnostic assessment
 - Cross-platform compatibility
 - Universal actualization metrics
@@ -955,6 +979,7 @@ Generalization to all cognitive systems:
 ### Quantum Entelechy
 
 Exploration of quantum computational actualization:
+
 - Superposition of potential states
 - Entangled component coherence
 - Quantum measurement collapse as actualization
@@ -964,6 +989,6 @@ Exploration of quantum computational actualization:
 
 **Entelechy**: Where cognitive systems become living intelligence - self-actualizing, self-organizing, self-transcending minds that evolve toward their inherent perfection through the pure drive of vital purpose.
 
-*"The soul is the first grade of actuality of a natural organized body."* - Aristotle, De Anima
+_"The soul is the first grade of actuality of a natural organized body."_ - Aristotle, De Anima
 
-*"What distinguishes the living from the non-living is the possession of entelechy - the realization of potential being."* - Adapted from Aristotelian philosophy for computational intelligence
+_"What distinguishes the living from the non-living is the possession of entelechy - the realization of potential being."_ - Adapted from Aristotelian philosophy for computational intelligence

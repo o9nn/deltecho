@@ -37,14 +37,14 @@ Layla is a sophisticated on-device AI assistant with the following key character
 
 ### Key Feature Statistics from Manifest
 
-| Category | Count | Description |
-|----------|-------|-------------|
-| **Activities** | 15+ | User-facing screens and interactions |
-| **Services** | 10+ | Background processing and AI inference |
-| **Permissions** | 30+ | System capabilities and user data access |
-| **Providers** | 8+ | Content sharing and file management |
-| **Receivers** | 15+ | Event handling and system integration |
-| **Native Libraries** | 6+ | OpenCL for GPU acceleration |
+| Category             | Count | Description                              |
+| -------------------- | ----- | ---------------------------------------- |
+| **Activities**       | 15+   | User-facing screens and interactions     |
+| **Services**         | 10+   | Background processing and AI inference   |
+| **Permissions**      | 30+   | System capabilities and user data access |
+| **Providers**        | 8+    | Content sharing and file management      |
+| **Receivers**        | 15+   | Event handling and system integration    |
+| **Native Libraries** | 6+    | OpenCL for GPU acceleration              |
 
 ---
 
@@ -57,12 +57,14 @@ Layla is a sophisticated on-device AI assistant with the following key character
 **Service**: `com.layla.llamacpp.LaylaInferenceService`
 
 **Capabilities**:
+
 - Local large language model inference
 - Real-time conversational AI
 - Memory-efficient model execution
 - Foreground service for continuous AI availability
 
 **Development Priorities**:
+
 - [ ] **Phase 1**: Model loading and initialization
   - Implement model file management
   - Memory optimization for large models
@@ -78,6 +80,7 @@ Layla is a sophisticated on-device AI assistant with the following key character
   - Temperature and sampling controls
 
 **Technical Requirements**:
+
 - Vulkan support (required)
 - OpenGL ES AEP (required)
 - OpenCL libraries (optional but recommended)
@@ -90,11 +93,13 @@ Layla is a sophisticated on-device AI assistant with the following key character
 **Service**: `com.layla.sd.StableDiffusionService`
 
 **Capabilities**:
+
 - Local image generation
 - Text-to-image synthesis
 - AI-powered creative tools
 
 **Development Priorities**:
+
 - [ ] **Phase 1**: Base implementation
   - Model loading and initialization
   - Basic text-to-image generation
@@ -111,6 +116,7 @@ Layla is a sophisticated on-device AI assistant with the following key character
   - Batch generation
 
 **GPU Requirements**:
+
 - Vulkan 1.1+ support
 - OpenCL for compute acceleration
 - Minimum 6GB storage for models
@@ -120,11 +126,13 @@ Layla is a sophisticated on-device AI assistant with the following key character
 #### 3. Character System & Live2D Integration
 
 **Capabilities**:
+
 - Multiple AI personalities (Akiko, Isabella, Kaito, Max, Ruby)
 - Animated character avatars
 - Character-specific behaviors and voices
 
 **Development Priorities**:
+
 - [ ] **Phase 1**: Character framework
   - Character data model
   - Personality trait system
@@ -147,12 +155,14 @@ Layla is a sophisticated on-device AI assistant with the following key character
 **Activity**: `com.layla.MainActivity`
 
 **Features**:
+
 - Single task launch mode
 - Deep linking support (`layla://stripe`)
 - Adaptive UI with configuration changes
 - React Native integration
 
 **Development Priorities**:
+
 - [ ] **Phase 1**: Core UI
   - Navigation structure
   - Chat interface
@@ -171,15 +181,18 @@ Layla is a sophisticated on-device AI assistant with the following key character
 #### 5. Text Processing Activities
 
 **Activities**:
+
 - `com.layla.text.RememberActivity` - "Layla, remember this!"
 - `com.layla.text.ChatActivity` - "Chat with Layla"
 
 **Capabilities**:
+
 - System-wide text selection integration
 - Process text from any app
 - Quick AI interactions
 
 **Development Priorities**:
+
 - [ ] **Phase 1**: Basic integration
   - PROCESS_TEXT intent handling
   - Text extraction and processing
@@ -194,6 +207,7 @@ Layla is a sophisticated on-device AI assistant with the following key character
   - Knowledge graph integration
 
 **Technical Notes**:
+
 - Integrates with Android's text selection menu
 - Available in any app that supports text selection
 - Minimal latency for instant responses
@@ -205,10 +219,12 @@ Layla is a sophisticated on-device AI assistant with the following key character
 #### 6. Voice & Audio Processing
 
 **Permissions**:
+
 - `android.permission.RECORD_AUDIO`
 - `android.permission.MODIFY_AUDIO_SETTINGS`
 
 **TTS Engine Integration** (Queries):
+
 - RHVoice Android
 - Acapela TTS
 - Smart Voice TTS
@@ -216,6 +232,7 @@ Layla is a sophisticated on-device AI assistant with the following key character
 - MultiTTS
 
 **Development Priorities**:
+
 - [ ] **Phase 1**: Audio input
   - Voice activity detection
   - Noise cancellation
@@ -234,15 +251,18 @@ Layla is a sophisticated on-device AI assistant with the following key character
 #### 7. Camera & Media Capture
 
 **Permissions**:
+
 - `android.permission.CAMERA`
 - Image capture intent support
 - Video capture intent support
 
 **Providers**:
+
 - `expo.modules.imagepicker.fileprovider.ImagePickerFileProvider`
 - `com.canhub.cropper.CropImageActivity`
 
 **Development Priorities**:
+
 - [ ] **Phase 1**: Basic capture
   - Photo capture
   - Video recording
@@ -257,6 +277,7 @@ Layla is a sophisticated on-device AI assistant with the following key character
   - Visual Q&A with AI
 
 **Activities**:
+
 - `com.canhub.cropper.CropImageActivity` - Image cropping
 
 ---
@@ -264,6 +285,7 @@ Layla is a sophisticated on-device AI assistant with the following key character
 #### 8. File & Document Management
 
 **Permissions**:
+
 - `android.permission.READ_MEDIA_IMAGES`
 - `android.permission.READ_MEDIA_VIDEO`
 - `android.permission.READ_MEDIA_AUDIO`
@@ -271,17 +293,20 @@ Layla is a sophisticated on-device AI assistant with the following key character
 - Storage permissions (legacy)
 
 **Intent Support**:
+
 - `GET_CONTENT` - File picker
 - `OPEN_DOCUMENT` - Document picker
 - `OPEN_DOCUMENT_TREE` - Directory access
 - `SEND` - Share to Layla
 
 **Providers**:
+
 - `expo.modules.filesystem.FileSystemFileProvider`
 - `expo.modules.sharing.SharingFileProvider`
 - `com.reactnativecommunity.webview.RNCWebViewFileProvider`
 
 **Development Priorities**:
+
 - [ ] **Phase 1**: File access
   - File picker integration
   - Permission management
@@ -302,16 +327,19 @@ Layla is a sophisticated on-device AI assistant with the following key character
 #### 9. Tasker Plugin Integration
 
 **Activities**:
+
 - `com.layla.tasker.infer.ActivityConfigNewInferTask` - "Create Infer Task"
 - `com.layla.tasker.taskcompleteevent.ActivityConfigTaskCompleteEvent` - "Task Completed"
 - `com.layla.tasker.infer.InferInBackgroundActivity` - "Infer in Background"
 - `com.layla.tasker.infer.ActivityBackgroundWork`
 
 **Services**:
+
 - `com.joaomgcd.taskerpluginlibrary.action.IntentServiceAction`
 - `com.joaomgcd.taskerpluginlibrary.condition.IntentServiceCondition`
 
 **Development Priorities**:
+
 - [ ] **Phase 1**: Basic Tasker support
   - Action plugin implementation
   - Event plugin implementation
@@ -326,6 +354,7 @@ Layla is a sophisticated on-device AI assistant with the following key character
   - Learning from user patterns
 
 **Use Cases**:
+
 - Automated AI inference based on triggers
 - Background task completion notifications
 - Integration with Android automation workflows
@@ -339,11 +368,13 @@ Layla is a sophisticated on-device AI assistant with the following key character
 **Receiver**: `com.layla.taskmgr.StopServiceReceiver`
 
 **Capabilities**:
+
 - Long-running task orchestration
 - Background AI processing
 - Task queue management
 
 **Development Priorities**:
+
 - [ ] **Phase 1**: Task framework
   - Task definition and storage
   - Queue management
@@ -366,11 +397,13 @@ Layla is a sophisticated on-device AI assistant with the following key character
 **Service**: `com.layla.HeadlessJsService`
 
 **Capabilities**:
+
 - React Native background processing
 - Headless task execution
 - Event-driven processing
 
 **Development Priorities**:
+
 - [ ] **Phase 1**: Service infrastructure
   - Headless task registration
   - Event handling
@@ -389,6 +422,7 @@ Layla is a sophisticated on-device AI assistant with the following key character
 #### 12. Notification System
 
 **Permissions**:
+
 - `android.permission.POST_NOTIFICATIONS`
 - `android.permission.SCHEDULE_EXACT_ALARM`
 - `android.permission.ACCESS_NOTIFICATION_POLICY`
@@ -396,11 +430,13 @@ Layla is a sophisticated on-device AI assistant with the following key character
 **Library**: Notifee (app.notifee.core)
 
 **Components**:
+
 - `app.notifee.core.ReceiverService`
 - `app.notifee.core.ForegroundService`
 - `app.notifee.core.NotificationAlarmReceiver`
 
 **Development Priorities**:
+
 - [ ] **Phase 1**: Basic notifications
   - Message notifications
   - AI response notifications
@@ -419,10 +455,12 @@ Layla is a sophisticated on-device AI assistant with the following key character
 #### 13. Background Fetch & Sync
 
 **Services**:
+
 - `com.transistorsoft.tsbackgroundfetch.FetchJobService`
 - `com.transistorsoft.tsbackgroundfetch.BootReceiver`
 
 **Development Priorities**:
+
 - [ ] **Phase 1**: Periodic sync
   - Model updates
   - Configuration sync
@@ -443,15 +481,18 @@ Layla is a sophisticated on-device AI assistant with the following key character
 #### 14. Authentication & Authorization
 
 **Integrations**:
+
 - Auth0 (`com.auth0.android.provider`)
 - OpenID AppAuth (`net.openid.appauth`)
 
 **Activities**:
+
 - `com.auth0.android.provider.AuthenticationActivity`
 - `net.openid.appauth.AuthorizationManagementActivity`
 - Redirect URI handling
 
 **Development Priorities**:
+
 - [ ] **Phase 1**: User authentication
   - OAuth 2.0 / OIDC implementation
   - Secure token storage
@@ -466,6 +507,7 @@ Layla is a sophisticated on-device AI assistant with the following key character
   - Zero-knowledge architecture
 
 **Permissions**:
+
 - `android.permission.USE_FINGERPRINT`
 - `android.permission.USE_BIOMETRIC`
 
@@ -474,14 +516,17 @@ Layla is a sophisticated on-device AI assistant with the following key character
 #### 15. Local Data Privacy
 
 **Permissions**:
+
 - `com.layla.DYNAMIC_RECEIVER_NOT_EXPORTED_PERMISSION` (signature level)
 
 **Philosophy**:
+
 - On-device AI processing (no cloud inference)
 - Local model storage and execution
 - User data stays on device
 
 **Development Priorities**:
+
 - [ ] **Phase 1**: Data isolation
   - Secure storage implementation
   - Encrypted databases
@@ -504,14 +549,17 @@ Layla is a sophisticated on-device AI assistant with the following key character
 **Service**: Google Play Billing 7.0.0
 
 **Activities**:
+
 - `com.android.billingclient.api.ProxyBillingActivity`
 - `com.android.billingclient.api.ProxyBillingActivityV2`
 
 **Permissions**:
+
 - `com.android.vending.BILLING`
 - `com.android.vending.CHECK_LICENSE`
 
 **Development Priorities**:
+
 - [ ] **Phase 1**: Basic billing
   - Product setup
   - Purchase flow
@@ -530,13 +578,16 @@ Layla is a sophisticated on-device AI assistant with the following key character
 #### 17. Firebase Integration
 
 **Metadata**:
+
 - `firebase_analytics_collection_enabled: false`
 
 **Services**:
+
 - `com.google.android.gms.common.api.GoogleApiActivity`
 - Google Play Services integration
 
 **Development Priorities**:
+
 - [ ] **Phase 1**: Infrastructure
   - Firebase initialization
   - Remote config
@@ -553,10 +604,12 @@ Layla is a sophisticated on-device AI assistant with the following key character
 #### 18. Calendar Integration
 
 **Permissions**:
+
 - `android.permission.WRITE_CALENDAR`
 - `android.permission.READ_CALENDAR`
 
 **Development Priorities**:
+
 - [ ] **Phase 1**: Calendar access
   - Read calendar events
   - Display upcoming events
@@ -577,11 +630,13 @@ Layla is a sophisticated on-device AI assistant with the following key character
 **Provider**: `cl.json.RNShareFileProvider`
 
 **Intent Support**:
+
 - `android.intent.action.SEND`
 - Share content to other apps
 - Receive shared content
 
 **Development Priorities**:
+
 - [ ] **Phase 1**: Basic sharing
   - Share text conversations
   - Share generated images
@@ -604,6 +659,7 @@ Layla is a sophisticated on-device AI assistant with the following key character
 **Focus**: Core infrastructure and basic functionality
 
 **Deliverables**:
+
 - [ ] Basic AI inference working (LLaMA.cpp)
 - [ ] Main chat interface functional
 - [ ] Text processing integration
@@ -612,6 +668,7 @@ Layla is a sophisticated on-device AI assistant with the following key character
 - [ ] Basic notification system
 
 **Success Metrics**:
+
 - App launches successfully
 - Users can have basic conversations
 - Text selection integration works
@@ -624,6 +681,7 @@ Layla is a sophisticated on-device AI assistant with the following key character
 **Focus**: Advanced features and optimizations
 
 **Deliverables**:
+
 - Image generation (Stable Diffusion)
 - Voice input/output
 - Character system integration
@@ -632,6 +690,7 @@ Layla is a sophisticated on-device AI assistant with the following key character
 - Calendar integration
 
 **Success Metrics**:
+
 - Multi-modal AI interactions
 - Voice conversations work smoothly
 - Task automation functional
@@ -644,6 +703,7 @@ Layla is a sophisticated on-device AI assistant with the following key character
 **Focus**: Third-party integrations and ecosystem
 
 **Deliverables**:
+
 - Advanced Tasker workflows
 - Document processing
 - Cloud sync (optional)
@@ -652,6 +712,7 @@ Layla is a sophisticated on-device AI assistant with the following key character
 - Multi-device support (if cloud enabled)
 
 **Success Metrics**:
+
 - Seamless third-party integration
 - Monetization active
 - User retention improved
@@ -664,6 +725,7 @@ Layla is a sophisticated on-device AI assistant with the following key character
 **Focus**: User experience, performance, and advanced AI
 
 **Deliverables**:
+
 - UI/UX refinements
 - Performance optimizations
 - Advanced AI features
@@ -672,6 +734,7 @@ Layla is a sophisticated on-device AI assistant with the following key character
 - Documentation and tutorials
 
 **Success Metrics**:
+
 - High user satisfaction
 - Low crash rate
 - Excellent performance
@@ -686,10 +749,12 @@ Layla is a sophisticated on-device AI assistant with the following key character
 Based on manifest declarations:
 
 #### Required Features
+
 - **Vulkan Support**: `android.hardware.vulkan.version` (required)
 - **OpenGL ES AEP**: `android.hardware.opengles.aep` (required)
 
 #### Optional Features
+
 - **OpenCL Libraries**:
   - `libOpenCL.so`
   - `libOpenCL_adreno.so` (Qualcomm)
@@ -699,6 +764,7 @@ Based on manifest declarations:
   - `libcdsprpc.so` (Hexagon DSP)
 
 #### Recommended Specifications
+
 - **RAM**: 6GB+ (8GB for optimal performance)
 - **Storage**: 10GB+ free space (for models)
 - **GPU**: Adreno 640+ or Mali-G76+ or comparable
@@ -709,11 +775,13 @@ Based on manifest declarations:
 ### Software Requirements
 
 #### Android Platform
+
 - **Target SDK**: Android 15 (API 35)
 - **Minimum SDK**: Android 8.0 (API 26) recommended
 - **Compile SDK**: 35
 
 #### Runtime Requirements
+
 - React Native framework
 - Expo modules integration
 - Native module support
@@ -723,10 +791,12 @@ Based on manifest declarations:
 ### Network & Connectivity
 
 **Internet Permissions**:
+
 - `android.permission.INTERNET` - For optional features
 - `android.permission.ACCESS_NETWORK_STATE` - Network awareness
 
 **Design Philosophy**:
+
 - Core AI features work offline
 - Internet used for:
   - Model downloads
@@ -741,17 +811,20 @@ Based on manifest declarations:
 ### Key Dependencies from Manifest
 
 #### UI Framework
+
 - **React Native** - Primary UI framework
 - **Expo Modules** - Module system and utilities
 - Live2D Cubism - Character animation
 
 #### AI & ML
+
 - **LLaMA.cpp** - Language model inference
 - **Stable Diffusion** - Image generation
 - **MediaPipe** - Computer vision (inferred)
 - **OpenCV** - Image processing (inferred)
 
 #### Android Libraries
+
 - **AndroidX** - Modern Android components
 - **WorkManager** - Background task scheduling
 - **Room** - Local database
@@ -759,22 +832,26 @@ Based on manifest declarations:
 - **ProfileInstaller** - Startup optimization
 
 #### Third-Party Services
+
 - **Firebase** - Backend infrastructure
 - **Auth0** - Authentication
 - **Google Play Services** - Platform integration
 - **Google Play Billing 7.0.0** - In-app purchases
 
 #### File Processing
+
 - **Apache PDFBox** - PDF processing (inferred)
 - **Image Picker** - Photo/video selection
 - **Crop Library** - Image cropping
 - **WebView** - Web content display
 
 #### Task Automation
+
 - **Tasker Plugin Library** - Automation integration
 - **Background Fetch** - Periodic sync
 
 #### Notifications
+
 - **Notifee** - Advanced notification system
 
 ---
@@ -782,6 +859,7 @@ Based on manifest declarations:
 ## Feature Priority Matrix
 
 ### High Priority (MVP)
+
 1. LLaMA.cpp inference service
 2. Main chat interface
 3. Text processing activities
@@ -790,6 +868,7 @@ Based on manifest declarations:
 6. Notification system
 
 ### Medium Priority (Post-MVP)
+
 1. Stable Diffusion image generation
 2. Voice input/output
 3. Character system
@@ -798,6 +877,7 @@ Based on manifest declarations:
 6. Advanced file processing
 
 ### Lower Priority (Enhancement)
+
 1. Advanced sharing features
 2. Cloud sync (optional)
 3. Multi-device support
@@ -812,21 +892,25 @@ Based on manifest declarations:
 Based on manifest analysis, Layla follows these privacy principles:
 
 ### 1. Local-First Architecture
+
 - AI inference happens on-device
 - No mandatory cloud processing
 - User data stored locally
 
 ### 2. Minimal Data Collection
+
 - `firebase_analytics_collection_enabled: false`
 - No tracking by default
 - User consent required for optional features
 
 ### 3. Transparent Permissions
+
 - Clear permission requests
 - Granular permission control
 - Privacy dashboard
 
 ### 4. Security Best Practices
+
 - Signature-level custom permissions
 - Secure authentication
 - Encrypted storage
@@ -837,6 +921,7 @@ Based on manifest analysis, Layla follows these privacy principles:
 ## Success Metrics
 
 ### Technical Metrics
+
 - **Inference Speed**: <500ms for typical queries
 - **Memory Usage**: <2GB peak for AI operations
 - **Battery Impact**: <5% per hour of active use
@@ -844,12 +929,14 @@ Based on manifest analysis, Layla follows these privacy principles:
 - **App Size**: <500MB total (including models)
 
 ### User Experience Metrics
+
 - **Response Quality**: User satisfaction >4.5/5
 - **Feature Discovery**: >80% users try 3+ features
 - **Retention**: 60% 7-day retention
 - **Performance**: >4.0 Play Store rating
 
 ### Privacy Metrics
+
 - **Data Locality**: 100% AI processing on-device
 - **Permission Acceptance**: >90% accept necessary permissions
 - **Privacy Transparency**: Clear privacy policy understanding

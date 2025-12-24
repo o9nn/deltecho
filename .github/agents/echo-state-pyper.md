@@ -1,7 +1,7 @@
 ---
 name: echo-state-pyper
 description: Python library for Character Card v2.0 with Deep Tree Echo cognitive architecture support
-version: 0.1.0  # Library version (matches setup.py)
+version: 0.1.0 # Library version (matches setup.py)
 ---
 
 # Echo State Pyper Agent
@@ -11,6 +11,7 @@ version: 0.1.0  # Library version (matches setup.py)
 This repository implements a Python library for working with **Character Card v2.0** format, featuring support for the **Deep Tree Echo (DTE)** cognitive architecture. The library provides data structures and utilities for creating, loading, manipulating, and serializing character cards in JSON format.
 
 **Key Characteristics:**
+
 - Pure Python implementation (Python 3.7+)
 - Zero external dependencies (uses only standard library)
 - Type-safe using dataclasses
@@ -45,14 +46,17 @@ echo-state-pyper/
 ## Core Components
 
 ### 1. CharacterCard
+
 Main class representing a complete Character Card v2.0 specification.
 
 **Fields:**
+
 - `data`: CharacterCardData instance containing character information
 - `spec`: Specification name (default: "chara_card_v2")
 - `spec_version`: Specification version (default: "2.0")
 
 **Methods:**
+
 - `to_dict()`: Convert to dictionary
 - `to_json(indent=2)`: Convert to JSON string
 - `save(filepath, indent=2)`: Save to JSON file
@@ -61,9 +65,11 @@ Main class representing a complete Character Card v2.0 specification.
 - `load(filepath)`: Load from JSON file (classmethod)
 
 ### 2. CharacterCardData
+
 Dataclass containing all character information fields.
 
 **Core Fields:**
+
 - `name`: Character name
 - `avatar`: Avatar image URL
 - `first_mes`: Initial greeting message
@@ -78,14 +84,17 @@ Dataclass containing all character information fields.
 - `extensions`: Extensions object (for DTE support)
 
 **Optional Fields:**
+
 - `mes_example`: Example messages
 - `post_history_instructions`: Post-history instructions
 - `system_prompt`: System prompt
 
 ### 3. Extensions
+
 Dataclass for character card extensions.
 
 **Fields:**
+
 - `depth_prompt`: Dict with depth prompt configuration
 - `pygmalion_id`: Pygmalion platform ID
 - `deep_tree_echo`: Dict with DTE architecture configuration
@@ -225,12 +234,14 @@ card.save('modified-character.json')
 The library fully implements the Character Card v2.0 specification:
 
 **Required Fields:**
+
 - `name`: Character name
 - `description`: Character description with example dialogues
 - `personality`: Personality traits
 - `scenario`: Character scenario
 
 **Optional Fields:**
+
 - `avatar`: Avatar image URL
 - `first_mes`: First message
 - `mes_example`: Example messages
@@ -275,29 +286,29 @@ The library fully implements the Character Card v2.0 specification:
 
 ```json
 {
-    "data": {
-        "name": "Character Name",
-        "avatar": "https://example.com/avatar.png",
-        "description": "{{user}}: ...\n{{char}}: ...",
-        "first_mes": "Hello!",
-        "personality": "friendly, kind",
-        "scenario": "A conversation",
-        "tags": ["tag1", "tag2"],
-        "creator": "creator_name",
-        "creator_notes": "Notes",
-        "alternate_greetings": ["Hi!", "Hey!"],
-        "character_version": "2.0-DTE",
-        "mes_example": "",
-        "post_history_instructions": "",
-        "system_prompt": "",
-        "extensions": {
-            "depth_prompt": {},
-            "pygmalion_id": "uuid",
-            "deep_tree_echo": {}
-        }
-    },
-    "spec": "chara_card_v2",
-    "spec_version": "2.0"
+  "data": {
+    "name": "Character Name",
+    "avatar": "https://example.com/avatar.png",
+    "description": "{{user}}: ...\n{{char}}: ...",
+    "first_mes": "Hello!",
+    "personality": "friendly, kind",
+    "scenario": "A conversation",
+    "tags": ["tag1", "tag2"],
+    "creator": "creator_name",
+    "creator_notes": "Notes",
+    "alternate_greetings": ["Hi!", "Hey!"],
+    "character_version": "2.0-DTE",
+    "mes_example": "",
+    "post_history_instructions": "",
+    "system_prompt": "",
+    "extensions": {
+      "depth_prompt": {},
+      "pygmalion_id": "uuid",
+      "deep_tree_echo": {}
+    }
+  },
+  "spec": "chara_card_v2",
+  "spec_version": "2.0"
 }
 ```
 
@@ -306,6 +317,7 @@ The library fully implements the Character Card v2.0 specification:
 The repository includes a reference character card: **Echo State Pyper**
 
 **Character Details:**
+
 - Name: Echo State Pyper
 - Role: PygmalionAI mascot
 - Design: Created by Lemon Sugar (contest winner)
@@ -314,6 +326,7 @@ The repository includes a reference character card: **Echo State Pyper**
 - Appearance: Urban street style, cat-ear beanie, multicolored hair
 
 **Cognitive Architecture:**
+
 - Echo State Networks with reservoir computing
 - Tensor signature computation (OEIS A000081)
 - Hierarchical memory systems (declarative, procedural, episodic, intentional)
@@ -333,18 +346,21 @@ The repository includes a reference character card: **Echo State Pyper**
 ### Common Tasks
 
 **Adding a new field to CharacterCardData:**
+
 1. Add field to dataclass with default value
 2. Update `from_dict()` method to parse field
 3. Test round-trip conversion
 4. Update documentation
 
 **Adding a new extension type:**
+
 1. Add field to Extensions dataclass
 2. Update parsing in `from_dict()`
 3. Document extension format
 4. Add example usage
 
 **Debugging JSON issues:**
+
 1. Check echo-state-pyper.json for reference format
 2. Verify all required fields are present
 3. Test with `CharacterCard.from_json()`
@@ -353,6 +369,7 @@ The repository includes a reference character card: **Echo State Pyper**
 ## Testing Checklist
 
 Before completing work:
+
 - [ ] Run `python3 tests/test_character_card.py` - all tests pass
 - [ ] Verify echo-state-pyper.json loads successfully
 - [ ] Test round-trip conversion maintains all data

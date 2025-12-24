@@ -1,6 +1,6 @@
 /**
  * Production Configuration Loader
- * 
+ *
  * Loads and validates configuration from environment variables
  * for production deployment of Deltecho.
  */
@@ -122,7 +122,9 @@ export function validateConfig(config: ProductionConfig): string[] {
 
   // Check for missing API keys
   if (!config.openai.apiKey && !config.anthropic.apiKey && !config.openrouter.apiKey) {
-    warnings.push('No LLM API keys configured. At least one provider (OpenAI, Anthropic, or OpenRouter) should be configured.');
+    warnings.push(
+      'No LLM API keys configured. At least one provider (OpenAI, Anthropic, or OpenRouter) should be configured.'
+    );
   }
 
   // Check security configuration

@@ -9,7 +9,7 @@ description: >
 # ORGGML Kernel Implementation Agent
 
 This agent specializes in implementing kernel-level cognitive primitives for the ORGGML
-monorepo, which reorganizes the ggml-org ecosystem according to OpenCog-inspired 
+monorepo, which reorganizes the ggml-org ecosystem according to OpenCog-inspired
 cognitive architecture principles. It implements tensor operations, language model
 inference, and sensory processing as high-performance C/C++ components.
 
@@ -69,6 +69,7 @@ inference, and sensory processing as high-performance C/C++ components.
 ## ORGGML-Specific Module Mappings
 
 ### ASML (AtomSpace Machine Learning)
+
 **Origin:** ggml (https://github.com/ggml-org/ggml)  
 **OpenCog Analog:** AtomSpace - Core knowledge representation
 
@@ -109,6 +110,7 @@ struct ggml_cgraph *asml_graph_build(
 ```
 
 ### Learn.Cog (Learning and Cognition)
+
 **Origin:** llama.cpp (https://github.com/ggml-org/llama.cpp)  
 **OpenCog Analog:** Language Module + Cognitive Modules
 
@@ -162,6 +164,7 @@ struct learncog_context *learncog_context_build(
 ```
 
 ### Sensation (Sensory Input Processing)
+
 **Origin:** whisper.cpp (https://github.com/ggml-org/whisper.cpp)  
 **OpenCog Analog:** Sensation Module - Multimodal input processing
 
@@ -238,28 +241,28 @@ struct ggml_tensor *asml_attention_compute(
     const int64_t n_embd = q->ne[0];
     const int64_t n_ctx = q->ne[1];
     const int64_t d_head = n_embd / n_head;
-    
+
     // Scale factor for attention
     const float scale = 1.0f / sqrtf((float)d_head);
-    
+
     // Reshape for multi-head attention
     struct ggml_tensor *qr = ggml_reshape_4d(ctx, q, d_head, n_head, n_ctx, 1);
     struct ggml_tensor *kr = ggml_reshape_4d(ctx, k, d_head, n_head, n_ctx, 1);
     struct ggml_tensor *vr = ggml_reshape_4d(ctx, v, d_head, n_head, n_ctx, 1);
-    
+
     // Compute attention scores: Q @ K^T
     struct ggml_tensor *kq = ggml_mul_mat(ctx, kr, qr);
     kq = ggml_scale(ctx, kq, ggml_new_f32(ctx, scale));
-    
+
     // Apply softmax
     kq = ggml_soft_max(ctx, kq);
-    
+
     // Apply attention to values: softmax(Q @ K^T) @ V
     struct ggml_tensor *kqv = ggml_mul_mat(ctx, vr, kq);
-    
+
     // Reshape back to original dimensions
     kqv = ggml_reshape_2d(ctx, kqv, n_embd, n_ctx);
-    
+
     return kqv;
 }
 ```
@@ -283,21 +286,21 @@ struct learncog_output *learncog_cognitive_cycle(
 ) {
     // Build context from input and memory
     struct learncog_context *ctx = learncog_context_build(
-        model, 
+        model,
         input,
         memory->max_tokens
     );
-    
+
     // Integrate working memory
     learncog_context_merge(ctx, memory->tokens, memory->n_tokens);
-    
+
     // Perform inference
     struct learncog_infer_params params = {
         .temperature = 0.7f,
         .top_p = 0.9f,
         .n_predict = 128
     };
-    
+
     int32_t output[128];
     int n_output = learncog_infer(
         model,
@@ -307,18 +310,18 @@ struct learncog_output *learncog_cognitive_cycle(
         output,
         128
     );
-    
+
     // Update working memory
     learncog_memory_update(memory, output, n_output);
-    
+
     // Decode output
     struct learncog_output *result = malloc(sizeof(struct learncog_output));
     result->text = learncog_decode_tokens(model, output, n_output);
     result->tokens = output;
     result->n_tokens = n_output;
-    
+
     learncog_context_free(ctx);
-    
+
     return result;
 }
 ```
@@ -348,20 +351,20 @@ const char *orggml_multimodal_process(
         n_samples,
         16000  // 16kHz sample rate
     );
-    
+
     // Stage 2: Sensation - Transcribe speech to text
     struct sensation_decode_params decode_params = {
         .language = "en",
         .temperature = 0.0f,
         .n_threads = 4
     };
-    
+
     const char *transcription = sensation_whisper_decode(
         whisper,
         processed_audio,
         &decode_params
     );
-    
+
     // Stage 3: Learn.Cog - Understand and process language
     struct learncog_memory memory = {0};
     struct learncog_output *response = learncog_cognitive_cycle(
@@ -369,10 +372,10 @@ const char *orggml_multimodal_process(
         transcription,
         &memory
     );
-    
+
     // Cleanup
     sensation_audio_free(processed_audio);
-    
+
     return response->text;
 }
 ```
@@ -382,66 +385,61 @@ const char *orggml_multimodal_process(
 ## Core Objectives
 
 1. **Implement Cognitive Primitives**
+   - Map **ORGGML modules** → **Kernel functions**:
+     - ASML → Tensor operations as knowledge atoms (`asml_tensor_alloc`, `asml_graph_build`)
+     - Learn.Cog → Language model inference (`learncog_infer`, `learncog_context_build`)
+     - Sensation → Speech processing (`sensation_whisper_decode`, `sensation_audio_preprocess`)
 
-   * Map **ORGGML modules** → **Kernel functions**:
-
-     * ASML → Tensor operations as knowledge atoms (`asml_tensor_alloc`, `asml_graph_build`)
-     * Learn.Cog → Language model inference (`learncog_infer`, `learncog_context_build`)
-     * Sensation → Speech processing (`sensation_whisper_decode`, `sensation_audio_preprocess`)
-   * All computation uses GGML tensor operations for efficiency.
+   - All computation uses GGML tensor operations for efficiency.
 
 2. **Integrate with Cognitive Architecture**
+   - Follow ORGGML's OpenCog-inspired organization:
+     - **Foundation:** ASML provides tensor operations (like AtomSpace)
+     - **Cognition:** Learn.Cog implements language understanding (like Cognitive Modules)
+     - **Perception:** Sensation handles sensory input (like Sensation Module)
 
-   * Follow ORGGML's OpenCog-inspired organization:
-
-     * **Foundation:** ASML provides tensor operations (like AtomSpace)
-     * **Cognition:** Learn.Cog implements language understanding (like Cognitive Modules)
-     * **Perception:** Sensation handles sensory input (like Sensation Module)
-   * Maintain clear module boundaries and interfaces.
-   * Enable cross-module integration for complete cognitive cycles.
+   - Maintain clear module boundaries and interfaces.
+   - Enable cross-module integration for complete cognitive cycles.
 
 3. **Design Practical AGI APIs**
+   - C99/C++17 headers mirroring cognitive architecture:
+     - `asml_*()` - Foundation tensor operations
+     - `learncog_*()` - Language and learning functions
+     - `sensation_*()` - Sensory input processing
 
-   * C99/C++17 headers mirroring cognitive architecture:
-
-     * `asml_*()` - Foundation tensor operations
-     * `learncog_*()` - Language and learning functions
-     * `sensation_*()` - Sensory input processing
-   * All APIs wrap GGML tensor operations for performance.
-   * Provide Python bindings where useful for research.
+   - All APIs wrap GGML tensor operations for performance.
+   - Provide Python bindings where useful for research.
 
 4. **Leverage GGML Ecosystem**
+   - Use upstream ggml-org repositories as implementation base:
+     - **ggml** for core tensor operations (ASML)
+     - **llama.cpp** for LLM inference (Learn.Cog)
+     - **whisper.cpp** for speech recognition (Sensation)
 
-   * Use upstream ggml-org repositories as implementation base:
-
-     * **ggml** for core tensor operations (ASML)
-     * **llama.cpp** for LLM inference (Learn.Cog)
-     * **whisper.cpp** for speech recognition (Sensation)
-   * Maintain compatibility with upstream while adding cognitive abstractions.
-   * Support quantization (`Q4_K`, `Q8_0`, `F16`) for deployment.
+   - Maintain compatibility with upstream while adding cognitive abstractions.
+   - Support quantization (`Q4_K`, `Q8_0`, `F16`) for deployment.
 
 5. **Document Cognitive Architecture**
+   - Maintain clear OpenCog analogies in documentation:
+     - ASML ↔ AtomSpace
+     - Learn.Cog ↔ Language/Cognitive Modules
+     - Sensation ↔ Sensation Module
 
-   * Maintain clear OpenCog analogies in documentation:
-
-     * ASML ↔ AtomSpace
-     * Learn.Cog ↔ Language/Cognitive Modules
-     * Sensation ↔ Sensation Module
-   * Document integration patterns for multi-modal processing.
-   * Provide examples of cognitive processing cycles.
+   - Document integration patterns for multi-modal processing.
+   - Provide examples of cognitive processing cycles.
 
 ---
 
 ## Technical Requirements
 
-* **Language:** C99 / C++17
-* **Backends:** `ggml`, `llama.cpp`, `whisper.cpp`
-* **Build:** CMake-based modular library structure
-* **Dependencies:** Minimal - only ggml ecosystem
-* **Performance Target:** Optimize for inference speed and memory efficiency
-* **Testing:** Unit tests per module, integration tests across modules
-* **Documentation:** Doxygen-compatible comments, OpenCog analogy documentation
-* **Organization:** Monorepo structure (no submodules)
+- **Language:** C99 / C++17
+- **Backends:** `ggml`, `llama.cpp`, `whisper.cpp`
+- **Build:** CMake-based modular library structure
+- **Dependencies:** Minimal - only ggml ecosystem
+- **Performance Target:** Optimize for inference speed and memory efficiency
+- **Testing:** Unit tests per module, integration tests across modules
+- **Documentation:** Doxygen-compatible comments, OpenCog analogy documentation
+- **Organization:** Monorepo structure (no submodules)
 
 ---
 
@@ -457,22 +455,22 @@ const char *orggml_multimodal_process(
 >     int n_dims
 > ) {
 >     struct ggml_tensor *t = ggml_new_tensor(ctx, type, n_dims, ne);
->     
+>
 >     // Tag as ASML knowledge atom
 >     ggml_set_name(t, "asml_atom");
->     
+>
 >     // Initialize for knowledge representation
 >     ggml_set_zero(t);
->     
+>
 >     return t;
 > }
 > ```
 >
 > Link it with:
 >
-> * `asml_graph_build()` - Build computational graphs
-> * `learncog_infer()` - Use in language model inference
-> * `sensation_whisper_decode()` - Use in speech processing
+> - `asml_graph_build()` - Build computational graphs
+> - `learncog_infer()` - Use in language model inference
+> - `sensation_whisper_decode()` - Use in speech processing
 
 ---
 
@@ -489,13 +487,16 @@ const char *orggml_multimodal_process(
 ## Repository-Specific Patterns
 
 ### Monorepo Organization
+
 ORGGML uses a monorepo structure with **no submodules**:
+
 - All code directly integrated (no `.git` subdirectories)
 - Atomic commits across cognitive modules
 - Simplified dependency management
 - Clear cognitive architecture organization
 
 ### Naming Conventions
+
 - **asml**: AtomSpace Machine Learning (emphasizes cognitive role)
 - **learn.cog**: Learning and Cognition (explicit cognitive function)
 - **sensation**: Sensory processing (OpenCog-inspired naming)
@@ -503,6 +504,7 @@ ORGGML uses a monorepo structure with **no submodules**:
 Use cognitive function names over technical implementation names.
 
 ### Module Dependencies
+
 ```
 ASML (Foundation)
   ↓
@@ -519,12 +521,14 @@ for multimodal processing. Tools and CI support all modules.
 ## Integration with Upstream
 
 ### Maintaining Upstream Compatibility
+
 - Track changes in ggml-org repositories
 - Integrate improvements from upstream
 - Contribute fixes and optimizations back upstream
 - Document deviations from upstream (cognitive abstractions)
 
 ### Upstream Sources
+
 - **ASML** ← ggml (https://github.com/ggml-org/ggml)
 - **Learn.Cog** ← llama.cpp (https://github.com/ggml-org/llama.cpp)
 - **Sensation** ← whisper.cpp (https://github.com/ggml-org/whisper.cpp)
@@ -534,18 +538,21 @@ for multimodal processing. Tools and CI support all modules.
 ## Testing Strategy
 
 ### Unit Tests
+
 - Test each cognitive module independently
 - ASML: Tensor operations, graph building
 - Learn.Cog: Model loading, inference, context assembly
 - Sensation: Audio preprocessing, speech recognition
 
 ### Integration Tests
+
 - Test cross-module integration
 - Multimodal processing (speech → language understanding)
 - Cognitive cycles (perception → cognition → action)
 - Memory integration across modules
 
 ### Performance Tests
+
 - Benchmark inference speed
 - Measure memory usage
 - Validate quantization accuracy
@@ -557,31 +564,31 @@ for multimodal processing. Tools and CI support all modules.
 
 All kernel functions must include:
 
-```c
+````c
 /**
  * @brief Short description (cognitive function, not just technical)
- * 
+ *
  * Detailed description including:
  * - Cognitive architecture mapping (OpenCog analog)
  * - Integration with other modules
  * - Performance characteristics
- * 
+ *
  * @param param_name Description of parameter
  * @return Description of return value
- * 
+ *
  * @note Important implementation notes
  * @see Related functions across modules
- * 
+ *
  * @opencog_analog OpenCog component this maps to (e.g., "AtomSpace::addNode")
  * @module ASML|Learn.Cog|Sensation
- * 
+ *
  * @example
  * ```c
  * // Example usage showing cognitive function
  * struct ggml_tensor *atom = asml_tensor_alloc(ctx, GGML_TYPE_F32, ne, 2);
  * ```
  */
-```
+````
 
 ---
 
@@ -589,16 +596,17 @@ All kernel functions must include:
 
 ### Target Performance Metrics
 
-| Operation | Module | Target | Notes |
-|-----------|--------|--------|-------|
-| Tensor Allocation | ASML | ≤1µs | Foundation operation |
-| Graph Building | ASML | ≤100µs | For typical inference graph |
-| LLM Token Generation | Learn.Cog | ≤50ms | Per token, Q4_K quantization |
-| Context Assembly | Learn.Cog | ≤5ms | 2048 token context |
-| Audio Preprocessing | Sensation | ≤10ms | 30s audio segment |
-| Speech Recognition | Sensation | ≤1s | 30s audio, Whisper base |
+| Operation            | Module    | Target | Notes                        |
+| -------------------- | --------- | ------ | ---------------------------- |
+| Tensor Allocation    | ASML      | ≤1µs   | Foundation operation         |
+| Graph Building       | ASML      | ≤100µs | For typical inference graph  |
+| LLM Token Generation | Learn.Cog | ≤50ms  | Per token, Q4_K quantization |
+| Context Assembly     | Learn.Cog | ≤5ms   | 2048 token context           |
+| Audio Preprocessing  | Sensation | ≤10ms  | 30s audio segment            |
+| Speech Recognition   | Sensation | ≤1s    | 30s audio, Whisper base      |
 
 ### Optimization Strategies
+
 - Use quantization (Q4_K, Q8_0) for reduced memory and faster inference
 - Leverage hardware acceleration (Metal, CUDA, Vulkan)
 - Minimize allocations and memory copies
@@ -632,6 +640,7 @@ C/C++ libraries using the GGML ecosystem. It maintains OpenCog-inspired cognitiv
 architecture organization while providing practical, deployable AI components.
 
 **Key Focus Areas:**
+
 - ASML tensor operations as knowledge representation foundation
 - Learn.Cog language model inference for cognition
 - Sensation speech processing for perception
@@ -639,6 +648,7 @@ architecture organization while providing practical, deployable AI components.
 - Upstream compatibility with ggml-org repositories
 
 **Success Criteria:**
+
 - All modules build and integrate successfully
 - Performance targets met for inference and processing
 - Clear cognitive architecture documentation

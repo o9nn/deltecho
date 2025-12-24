@@ -102,6 +102,7 @@ print("Queue length:", status.queueLength)
 ### Load Balancing
 
 The orchestrator automatically:
+
 - Selects least-loaded instance for each request
 - Tracks tokens processed per instance
 - Maintains queue for pending tasks
@@ -110,6 +111,7 @@ The orchestrator automatically:
 ### Privacy-First Design
 
 All inference happens **locally** on your hardware:
+
 - No cloud dependencies
 - Data never leaves your machine
 - Full control over model selection
@@ -196,6 +198,7 @@ print("Active LLaMA instances:", #status.llama.instances)
 ## Documentation
 
 See `/doc` directory:
+
 - [overview.md](../../doc/overview.md): Neural network basics
 - [module.md](../../doc/module.md): Module interface
 - [containers.md](../../doc/containers.md): Container classes
@@ -208,4 +211,4 @@ See `/doc` directory:
 **Extensions**: Cognitive agents, parallel LLaMA.cpp, NNECCO architecture  
 **License**: BSD (inherited from torch/nn)
 
-🧠 *Neural networks meet cognitive architecture in Lua.*
+🧠 _Neural networks meet cognitive architecture in Lua._

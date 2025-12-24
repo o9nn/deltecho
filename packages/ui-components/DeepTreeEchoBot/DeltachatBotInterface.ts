@@ -1,9 +1,9 @@
-import { getLogger } from '@deltecho/shared/logger'
-import { BackendRemote, onDCEvent, selectedAccountId } from '@deltecho/shared/backend'
-import { DeepTreeEchoBot } from './DeepTreeEchoBot.js'
-import { getBotInstance } from './DeepTreeEchoIntegration.js'
+import { getLogger } from '@deltecho/shared/logger';
+import { BackendRemote, onDCEvent, selectedAccountId } from '@deltecho/shared/backend';
+import { DeepTreeEchoBot } from './DeepTreeEchoBot.js';
+import { getBotInstance } from './DeepTreeEchoIntegration.js';
 
-const log = getLogger('render/components/DeepTreeEchoBot/DeltachatBotInterface')
+const log = getLogger('render/components/DeepTreeEchoBot/DeltachatBotInterface');
 
 /**
  * Helper class that makes Deep Tree Echo compatible with the Delta Chat Bot ecosystem
@@ -11,16 +11,16 @@ const log = getLogger('render/components/DeepTreeEchoBot/DeltachatBotInterface')
  * Following conventions from https://bots.delta.chat/
  */
 export class DeltachatBotInterface {
-  private static instance: DeltachatBotInterface | null = null
-  private bot: DeepTreeEchoBot | null = null
-  private botAccountId: number | null = null
+  private static instance: DeltachatBotInterface | null = null;
+  private bot: DeepTreeEchoBot | null = null;
+  private botAccountId: number | null = null;
 
   private constructor() {
     // Get the bot instance
-    this.bot = getBotInstance()
+    this.bot = getBotInstance();
 
     // Initialize bot account and event handlers
-    this.initialize()
+    this.initialize();
   }
 
   /**
@@ -28,9 +28,9 @@ export class DeltachatBotInterface {
    */
   public static getInstance(): DeltachatBotInterface {
     if (!DeltachatBotInterface.instance) {
-      DeltachatBotInterface.instance = new DeltachatBotInterface()
+      DeltachatBotInterface.instance = new DeltachatBotInterface();
     }
-    return DeltachatBotInterface.instance
+    return DeltachatBotInterface.instance;
   }
 
   /**
@@ -39,14 +39,14 @@ export class DeltachatBotInterface {
   private async initialize(): Promise<void> {
     try {
       // Find the bot account or create one if needed
-      await this.initBotAccount()
+      await this.initBotAccount();
 
       // Register command handlers
-      this.registerCommands()
+      this.registerCommands();
 
-      log.info('Delta Chat Bot Interface initialized')
+      log.info('Delta Chat Bot Interface initialized');
     } catch (error) {
-      log.error('Failed to initialize Delta Chat Bot Interface:', error)
+      log.error('Failed to initialize Delta Chat Bot Interface:', error);
     }
   }
 
@@ -56,28 +56,28 @@ export class DeltachatBotInterface {
   private async initBotAccount(): Promise<void> {
     try {
       // Check if we already have a bot account
-      const accountIds = await BackendRemote.rpc.getAllAccountIds()
+      const accountIds = await BackendRemote.rpc.getAllAccountIds();
 
       // Look for an account named "Deep Tree Echo Bot"
       for (const accountId of accountIds) {
-        const accountInfo = await BackendRemote.rpc.getAccountInfo(accountId)
+        const accountInfo = await BackendRemote.rpc.getAccountInfo(accountId);
         if (
           accountInfo &&
           accountInfo.isConfigured &&
           (accountInfo.displayName === 'Deep Tree Echo Bot' ||
             accountInfo.address === 'deep-tree-echo-bot@example.com')
         ) {
-          this.botAccountId = accountId
-          log.info(`Found existing bot account: ${accountId}`)
-          return
+          this.botAccountId = accountId;
+          log.info(`Found existing bot account: ${accountId}`);
+          return;
         }
       }
 
       // No bot account found, but we can still use the current account
       // In a real dedicated bot implementation, we might create a new account here
-      log.info('Using main account for bot operations')
+      log.info('Using main account for bot operations');
     } catch (error) {
-      log.error('Error initializing bot account:', error)
+      log.error('Error initializing bot account:', error);
     }
   }
 
@@ -85,11 +85,11 @@ export class DeltachatBotInterface {
    * Register standard bot commands
    */
   private registerCommands(): void {
-    if (!this.bot) return
+    if (!this.bot) return;
 
     // Standard Delta Chat bot commands
     // These would be handled by the bot's processCommand method
-    log.info('Registered standard bot commands')
+    log.info('Registered standard bot commands');
   }
 
   /**
@@ -99,67 +99,52 @@ export class DeltachatBotInterface {
     try {
       if (this.botAccountId) {
         // If we have a dedicated bot account, use that
-        await BackendRemote.rpc.miscSendTextMessage(
-          this.botAccountId,
-          chatId,
-          text
-        )
+        await BackendRemote.rpc.miscSendTextMessage(this.botAccountId, chatId, text);
       } else if (this.bot) {
         // Otherwise use the main account
-        const accountIds = await BackendRemote.rpc.getAllAccountIds()
+        const accountIds = await BackendRemote.rpc.getAllAccountIds();
         if (accountIds.length > 0) {
-          await BackendRemote.rpc.miscSendTextMessage(
-            accountIds[0],
-            chatId,
-            text
-          )
+          await BackendRemote.rpc.miscSendTextMessage(accountIds[0], chatId, text);
         }
       }
     } catch (error) {
-      log.error('Error sending bot message:', error)
+      log.error('Error sending bot message:', error);
     }
   }
 
   /**
    * Process an incoming message as a bot
    */
-  public async processMessage(
-    accountId: number,
-    chatId: number,
-    msgId: number
-  ): Promise<void> {
+  public async processMessage(accountId: number, chatId: number, msgId: number): Promise<void> {
     try {
       if (!this.bot) {
-        this.bot = getBotInstance()
-        if (!this.bot) return
+        this.bot = getBotInstance();
+        if (!this.bot) return;
       }
 
-      const message = await BackendRemote.rpc.getMessage(accountId, msgId)
+      const message = await BackendRemote.rpc.getMessage(accountId, msgId);
 
       // Process message with Deep Tree Echo Bot
-      await this.bot.processMessage(accountId, chatId, msgId, message)
+      await this.bot.processMessage(accountId, chatId, msgId, message);
     } catch (error) {
-      log.error('Error processing message in bot interface:', error)
+      log.error('Error processing message in bot interface:', error);
     }
   }
 
   /**
    * Create a bot group
    */
-  public async createBotGroup(
-    name: string,
-    memberAddresses: string[]
-  ): Promise<number> {
+  public async createBotGroup(name: string, memberAddresses: string[]): Promise<number> {
     try {
       if (!this.botAccountId) {
-        const accountIds = await BackendRemote.rpc.getAllAccountIds()
+        const accountIds = await BackendRemote.rpc.getAllAccountIds();
         if (accountIds.length > 0) {
           // Create group chat with specified name
           const chatId = await BackendRemote.rpc.createGroupChat(
             accountIds[0],
             name,
             [] // Initial members will be added below
-          )
+          );
 
           // Add members
           for (const address of memberAddresses) {
@@ -169,15 +154,11 @@ export class DeltachatBotInterface {
                 accountIds[0],
                 address,
                 address
-              )
+              );
               // Add contact to chat
-              await BackendRemote.rpc.addContactToChat(
-                accountIds[0],
-                chatId,
-                contactId
-              )
+              await BackendRemote.rpc.addContactToChat(accountIds[0], chatId, contactId);
             } catch (error) {
-              log.error(`Failed to add ${address} to group:`, error)
+              log.error(`Failed to add ${address} to group:`, error);
             }
           }
 
@@ -185,9 +166,9 @@ export class DeltachatBotInterface {
           await this.sendMessage(
             chatId,
             `Welcome to the ${name} group with Deep Tree Echo! Type /help to see available commands.`
-          )
+          );
 
-          return chatId
+          return chatId;
         }
       } else {
         // Use dedicated bot account
@@ -196,7 +177,7 @@ export class DeltachatBotInterface {
           this.botAccountId,
           name,
           [] // Initial members will be added below
-        )
+        );
 
         // Add members
         for (const address of memberAddresses) {
@@ -206,15 +187,11 @@ export class DeltachatBotInterface {
               this.botAccountId,
               address,
               address
-            )
+            );
             // Add contact to chat
-            await BackendRemote.rpc.addContactToChat(
-              this.botAccountId,
-              chatId,
-              contactId
-            )
+            await BackendRemote.rpc.addContactToChat(this.botAccountId, chatId, contactId);
           } catch (error) {
-            log.error(`Failed to add ${address} to group:`, error)
+            log.error(`Failed to add ${address} to group:`, error);
           }
         }
 
@@ -222,38 +199,32 @@ export class DeltachatBotInterface {
         await this.sendMessage(
           chatId,
           `Welcome to the ${name} group with Deep Tree Echo! Type /help to see available commands.`
-        )
+        );
 
-        return chatId
+        return chatId;
       }
     } catch (error) {
-      log.error('Error creating bot group:', error)
+      log.error('Error creating bot group:', error);
     }
 
-    return 0
+    return 0;
   }
 
   /**
    * Get information about the bot
    */
   public getBotInfo(): {
-    name: string
-    version: string
-    capabilities: string[]
+    name: string;
+    version: string;
+    capabilities: string[];
   } {
     return {
       name: 'Deep Tree Echo',
       version: '1.0.0',
-      capabilities: [
-        'chat',
-        'memory',
-        'reflection',
-        'personality',
-        'cognitive-parallelism',
-      ],
-    }
+      capabilities: ['chat', 'memory', 'reflection', 'personality', 'cognitive-parallelism'],
+    };
   }
 }
 
 // Export a singleton instance
-export const deltachatBotInterface = DeltachatBotInterface.getInstance()
+export const deltachatBotInterface = DeltachatBotInterface.getInstance();

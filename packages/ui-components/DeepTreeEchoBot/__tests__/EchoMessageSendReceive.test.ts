@@ -6,7 +6,7 @@
  * 3. Test Echo message send receive - verify message handling
  */
 
-import { DeepTreeEchoBot } from '../DeepTreeEchoBot.js'
+import { DeepTreeEchoBot } from '../DeepTreeEchoBot.js';
 
 // Mock all the dependencies for testing
 jest.mock('@deltachat-desktop/shared/logger', () => ({
@@ -16,7 +16,7 @@ jest.mock('@deltachat-desktop/shared/logger', () => ({
     warn: jest.fn(),
     debug: jest.fn(),
   })),
-}))
+}));
 
 jest.mock('../../../backend-com.js.js', () => ({
   BackendRemote: {
@@ -30,7 +30,7 @@ jest.mock('../../../backend-com.js.js', () => ({
       miscSendTextMessage: jest.fn().mockResolvedValue(undefined),
     },
   },
-}))
+}));
 
 jest.mock('../LLMService.js', () => ({
   LLMService: {
@@ -45,7 +45,7 @@ jest.mock('../LLMService.js', () => ({
       }),
     }),
   },
-}))
+}));
 
 jest.mock('../RAGMemoryStore.js', () => ({
   RAGMemoryStore: {
@@ -58,7 +58,7 @@ jest.mock('../RAGMemoryStore.js', () => ({
       clearChatMemories: jest.fn(),
     }),
   },
-}))
+}));
 
 jest.mock('../PersonaCore.js', () => ({
   PersonaCore: {
@@ -68,7 +68,7 @@ jest.mock('../PersonaCore.js', () => ({
       getSelfPerception: jest.fn().mockReturnValue('I am Deep Tree Echo'),
     }),
   },
-}))
+}));
 
 jest.mock('../SelfReflection.js', () => ({
   SelfReflection: {
@@ -76,10 +76,10 @@ jest.mock('../SelfReflection.js', () => ({
       reflectOnAspect: jest.fn().mockResolvedValue('Reflection completed'),
     }),
   },
-}))
+}));
 
 describe('Deep Tree Echo Bot - Message Send/Receive Integration', () => {
-  let bot: DeepTreeEchoBot
+  let bot: DeepTreeEchoBot;
 
   beforeEach(() => {
     bot = new DeepTreeEchoBot({
@@ -92,92 +92,92 @@ describe('Deep Tree Echo Bot - Message Send/Receive Integration', () => {
       webAutomationEnabled: false,
       embodimentEnabled: false,
       useParallelProcessing: false,
-    })
-  })
+    });
+  });
 
   describe('Basic Bot Functionality', () => {
     it('should initialize with correct settings', () => {
-      expect(bot.isEnabled()).toBe(true)
-      expect(bot.isEnabledAsMainUser()).toBe(true)
-      expect(bot.isMemoryEnabled()).toBe(true)
-    })
+      expect(bot.isEnabled()).toBe(true);
+      expect(bot.isEnabledAsMainUser()).toBe(true);
+      expect(bot.isMemoryEnabled()).toBe(true);
+    });
 
     it('should update settings correctly', () => {
-      bot.updateOptions({ enableAsMainUser: false })
-      expect(bot.isEnabledAsMainUser()).toBe(false)
-      
-      bot.updateOptions({ memoryEnabled: false })
-      expect(bot.isMemoryEnabled()).toBe(false)
-    })
-  })
+      bot.updateOptions({ enableAsMainUser: false });
+      expect(bot.isEnabledAsMainUser()).toBe(false);
+
+      bot.updateOptions({ memoryEnabled: false });
+      expect(bot.isMemoryEnabled()).toBe(false);
+    });
+  });
 
   describe('Message Processing', () => {
     it('should process regular messages', async () => {
       const message = {
         text: 'Hello Deep Tree Echo!',
         fromId: 2,
-      }
+      };
 
       // This should not throw an error
-      await expect(bot.processMessage(1, 42, 123, message)).resolves.not.toThrow()
-    })
+      await expect(bot.processMessage(1, 42, 123, message)).resolves.not.toThrow();
+    });
 
     it('should process help command', async () => {
       const message = {
         text: '/help',
         fromId: 2,
-      }
+      };
 
       // This should not throw an error
-      await expect(bot.processMessage(1, 42, 124, message)).resolves.not.toThrow()
-    })
+      await expect(bot.processMessage(1, 42, 124, message)).resolves.not.toThrow();
+    });
 
     it('should process version command', async () => {
       const message = {
         text: '/version',
         fromId: 2,
-      }
+      };
 
       // This should not throw an error
-      await expect(bot.processMessage(1, 42, 125, message)).resolves.not.toThrow()
-    })
+      await expect(bot.processMessage(1, 42, 125, message)).resolves.not.toThrow();
+    });
 
     it('should process reflection command', async () => {
       const message = {
         text: '/reflect identity',
         fromId: 2,
-      }
+      };
 
       // This should not throw an error
-      await expect(bot.processMessage(1, 42, 126, message)).resolves.not.toThrow()
-    })
+      await expect(bot.processMessage(1, 42, 126, message)).resolves.not.toThrow();
+    });
 
     it('should handle disabled bot gracefully', async () => {
-      bot.updateOptions({ enabled: false })
-      
+      bot.updateOptions({ enabled: false });
+
       const message = {
         text: 'Hello!',
         fromId: 2,
-      }
+      };
 
       // Should return early without processing
-      await expect(bot.processMessage(1, 42, 127, message)).resolves.not.toThrow()
-    })
-  })
+      await expect(bot.processMessage(1, 42, 127, message)).resolves.not.toThrow();
+    });
+  });
 
   describe('Enable Echo as Main User', () => {
     it('should toggle main user mode', () => {
       // Initially enabled
-      expect(bot.isEnabledAsMainUser()).toBe(true)
-      
+      expect(bot.isEnabledAsMainUser()).toBe(true);
+
       // Disable
-      bot.updateOptions({ enableAsMainUser: false })
-      expect(bot.isEnabledAsMainUser()).toBe(false)
-      
+      bot.updateOptions({ enableAsMainUser: false });
+      expect(bot.isEnabledAsMainUser()).toBe(false);
+
       // Re-enable
-      bot.updateOptions({ enableAsMainUser: true })
-      expect(bot.isEnabledAsMainUser()).toBe(true)
-    })
+      bot.updateOptions({ enableAsMainUser: true });
+      expect(bot.isEnabledAsMainUser()).toBe(true);
+    });
 
     it('should default to false when not specified', () => {
       const defaultBot = new DeepTreeEchoBot({
@@ -186,18 +186,18 @@ describe('Deep Tree Echo Bot - Message Send/Receive Integration', () => {
         visionEnabled: false,
         webAutomationEnabled: false,
         embodimentEnabled: false,
-      })
-      
-      expect(defaultBot.isEnabledAsMainUser()).toBe(false)
-    })
-  })
+      });
+
+      expect(defaultBot.isEnabledAsMainUser()).toBe(false);
+    });
+  });
 
   describe('Memory Functionality', () => {
     it('should enable and disable memory', () => {
-      expect(bot.isMemoryEnabled()).toBe(true)
-      
-      bot.updateOptions({ memoryEnabled: false })
-      expect(bot.isMemoryEnabled()).toBe(false)
-    })
-  })
-})
+      expect(bot.isMemoryEnabled()).toBe(true);
+
+      bot.updateOptions({ memoryEnabled: false });
+      expect(bot.isMemoryEnabled()).toBe(false);
+    });
+  });
+});

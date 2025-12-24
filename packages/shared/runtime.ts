@@ -1,61 +1,61 @@
 /**
  * Runtime Interface Abstraction
- * 
+ *
  * This module provides an abstraction layer for runtime-specific functionality
  * that allows the ui-components to work across different environments
  * (Delta Chat Desktop, standalone web, etc.) without tight coupling.
  */
 
-import type { DesktopSettingsType } from './shared-types.js'
+import type { DesktopSettingsType } from './shared-types.js';
 
 export interface RuntimeInterface {
   /**
    * Get a configuration value
    */
-  getConfig(key: string): Promise<string | null>
-  
+  getConfig(key: string): Promise<string | null>;
+
   /**
    * Set a configuration value
    */
-  setConfig(key: string, value: string): Promise<void>
-  
+  setConfig(key: string, value: string): Promise<void>;
+
   /**
    * Open a URL in the default browser
    */
-  openLink(url: string): Promise<void>
-  
+  openLink(url: string): Promise<void>;
+
   /**
    * Show a notification
    */
-  showNotification(title: string, body: string): Promise<void>
-  
+  showNotification(title: string, body: string): Promise<void>;
+
   /**
    * Get the current platform
    */
-  getPlatform(): 'darwin' | 'linux' | 'win32' | 'web'
-  
+  getPlatform(): 'darwin' | 'linux' | 'win32' | 'web';
+
   /**
    * Get all desktop settings
    */
-  getDesktopSettings?(): Promise<DesktopSettingsType>
-  
+  getDesktopSettings?(): Promise<DesktopSettingsType>;
+
   /**
    * Set a desktop setting
    */
   setDesktopSetting?<K extends keyof DesktopSettingsType>(
-    key: K, 
+    key: K,
     value: DesktopSettingsType[K]
-  ): Promise<void>
-  
+  ): Promise<void>;
+
   /**
    * Write to a file (if supported)
    */
-  writeFile?(path: string, data: string | Buffer): Promise<void>
-  
+  writeFile?(path: string, data: string | Buffer): Promise<void>;
+
   /**
    * Read from a file (if supported)
    */
-  readFile?(path: string): Promise<Buffer>
+  readFile?(path: string): Promise<Buffer>;
 }
 
 /**
@@ -102,107 +102,105 @@ const defaultDesktopSettings: DesktopSettingsType = {
   deepTreeEchoBotPersonaState: undefined,
   deepTreeEchoBotMemories: undefined,
   deepTreeEchoBotReflections: undefined,
-  deepTreeEchoBotCognitiveKeys: undefined
-}
+  deepTreeEchoBotCognitiveKeys: undefined,
+};
 
 // In-memory settings storage for standalone operation
-let inMemorySettings: DesktopSettingsType = { ...defaultDesktopSettings }
+let inMemorySettings: DesktopSettingsType = { ...defaultDesktopSettings };
 
 /**
  * Default no-op runtime for environments without runtime support
  */
 export const defaultRuntime: RuntimeInterface = {
   async getConfig(_key: string): Promise<string | null> {
-    console.warn('Runtime not configured: getConfig called')
-    return null
+    console.warn('Runtime not configured: getConfig called');
+    return null;
   },
-  
+
   async setConfig(_key: string, _value: string): Promise<void> {
-    console.warn('Runtime not configured: setConfig called')
+    console.warn('Runtime not configured: setConfig called');
   },
-  
+
   async openLink(url: string): Promise<void> {
     if (typeof window !== 'undefined') {
-      window.open(url, '_blank')
+      window.open(url, '_blank');
     } else {
-      console.warn('Runtime not configured: openLink called', url)
+      console.warn('Runtime not configured: openLink called', url);
     }
   },
-  
+
   async showNotification(title: string, body: string): Promise<void> {
-    console.log(`Notification: ${title} - ${body}`)
+    console.log(`Notification: ${title} - ${body}`);
   },
-  
+
   getPlatform(): 'darwin' | 'linux' | 'win32' | 'web' {
     if (typeof process !== 'undefined' && process.platform) {
-      return process.platform as 'darwin' | 'linux' | 'win32'
+      return process.platform as 'darwin' | 'linux' | 'win32';
     }
-    return 'web'
+    return 'web';
   },
-  
+
   async getDesktopSettings(): Promise<DesktopSettingsType> {
-    return inMemorySettings
+    return inMemorySettings;
   },
-  
+
   async setDesktopSetting<K extends keyof DesktopSettingsType>(
-    key: K, 
+    key: K,
     value: DesktopSettingsType[K]
   ): Promise<void> {
-    inMemorySettings[key] = value
-  }
-}
+    inMemorySettings[key] = value;
+  },
+};
 
 /**
  * Global runtime instance
  */
-let runtimeInstance: RuntimeInterface = defaultRuntime
+let runtimeInstance: RuntimeInterface = defaultRuntime;
 
 /**
  * Set the runtime implementation
  */
 export function setRuntime(runtime: RuntimeInterface): void {
-  runtimeInstance = runtime
+  runtimeInstance = runtime;
 }
 
 /**
  * Get the current runtime implementation
  */
 export function getRuntime(): RuntimeInterface {
-  return runtimeInstance
+  return runtimeInstance;
 }
 
 /**
  * Reset runtime to default implementation (for testing)
  */
 export function resetRuntime(): void {
-  runtimeInstance = defaultRuntime
-  inMemorySettings = { ...defaultDesktopSettings }
+  runtimeInstance = defaultRuntime;
+  inMemorySettings = { ...defaultDesktopSettings };
 }
 
 /**
  * Runtime singleton export for convenience
  */
 export const runtime = {
-  getConfig: (...args: Parameters<RuntimeInterface['getConfig']>) => 
+  getConfig: (...args: Parameters<RuntimeInterface['getConfig']>) =>
     runtimeInstance.getConfig(...args),
-  setConfig: (...args: Parameters<RuntimeInterface['setConfig']>) => 
+  setConfig: (...args: Parameters<RuntimeInterface['setConfig']>) =>
     runtimeInstance.setConfig(...args),
-  openLink: (...args: Parameters<RuntimeInterface['openLink']>) => 
+  openLink: (...args: Parameters<RuntimeInterface['openLink']>) =>
     runtimeInstance.openLink(...args),
-  showNotification: (...args: Parameters<RuntimeInterface['showNotification']>) => 
+  showNotification: (...args: Parameters<RuntimeInterface['showNotification']>) =>
     runtimeInstance.showNotification(...args),
   getPlatform: () => runtimeInstance.getPlatform(),
-  getDesktopSettings: () => 
+  getDesktopSettings: () =>
     runtimeInstance.getDesktopSettings?.() || Promise.resolve(defaultDesktopSettings),
-  setDesktopSetting: <K extends keyof DesktopSettingsType>(
-    key: K, 
-    value: DesktopSettingsType[K]
-  ) => runtimeInstance.setDesktopSetting?.(key, value) || Promise.resolve(),
-  writeFile: (...args: Parameters<NonNullable<RuntimeInterface['writeFile']>>) => 
+  setDesktopSetting: <K extends keyof DesktopSettingsType>(key: K, value: DesktopSettingsType[K]) =>
+    runtimeInstance.setDesktopSetting?.(key, value) || Promise.resolve(),
+  writeFile: (...args: Parameters<NonNullable<RuntimeInterface['writeFile']>>) =>
     runtimeInstance.writeFile?.(...args),
-  readFile: (...args: Parameters<NonNullable<RuntimeInterface['readFile']>>) => 
-    runtimeInstance.readFile?.(...args)
-}
+  readFile: (...args: Parameters<NonNullable<RuntimeInterface['readFile']>>) =>
+    runtimeInstance.readFile?.(...args),
+};
 
 // Re-export DesktopSettingsType for convenience
-export type { DesktopSettingsType }
+export type { DesktopSettingsType };

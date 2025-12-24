@@ -71,6 +71,12 @@ export interface DesktopSettingsType {
   deepTreeEchoBotReflections?: string
   /** JSON-stringified cognitive function API keys */
   deepTreeEchoBotCognitiveKeys?: string
+  /** Enable parallel processing in Deep Tree Echo Bot */
+  deepTreeEchoBotUseParallelProcessing?: boolean
+  /** AI connectors configuration (JSON-stringified) */
+  aiConnectors?: string
+  /** AI memories storage (JSON-stringified) */
+  aiMemories?: string
 }
 
 export interface RC_Config {

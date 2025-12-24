@@ -5,5 +5,5 @@
  * based on OpenCog's AtomSpace architecture.
  */
 
-export * from './AtomSpace.js'
-export * from './PatternMatcher.js'
+export * from './AtomSpace.js';
+export * from './PatternMatcher.js';

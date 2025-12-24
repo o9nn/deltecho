@@ -5,6 +5,7 @@ This directory contains deprecated or archived code that is no longer actively m
 ## Contents
 
 ### deltachat-core/
+
 **Status:** DEPRECATED
 
 The original Delta Chat core library written in C. This has been superseded by [deltachat-core-rust](https://github.com/deltachat/deltachat-core-rust).

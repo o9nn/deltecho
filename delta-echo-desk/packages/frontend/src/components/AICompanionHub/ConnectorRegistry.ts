@@ -20,7 +20,7 @@ import {
   CharacterAIConfig,
 } from './connectors/CharacterAIConnector'
 import { CopilotConnector, CopilotConfig } from './connectors/CopilotConnector'
-import { DeepTreeEchoConnector } from '../AICompanionHub/AIPlatformConnector'
+import { DeepTreeEchoConnector } from './connectors/DeepTreeEchoConnector'
 
 // Registry events for observers to listen to
 export enum ConnectorRegistryEvent {
@@ -98,7 +98,10 @@ export class ConnectorRegistry extends EventEmitter {
 
       // Load connector configurations from settings
       const settings = await runtime.getDesktopSettings()
-      const savedConnectors = settings.aiConnectors || []
+      const savedConnectorsJson = settings.aiConnectors
+      const savedConnectors: AIConnectorConfig[] = savedConnectorsJson
+        ? JSON.parse(savedConnectorsJson)
+        : []
 
       // Create connectors from saved configurations
       for (const config of savedConnectors) {
@@ -211,7 +214,7 @@ export class ConnectorRegistry extends EventEmitter {
       infos.push({
         id,
         name: config.name,
-        type: config.type,
+        type: config.type || 'custom',
         status: this.activeConnectors.has(id) ? 'online' : 'offline',
         capabilities: config.capabilities,
         personalityTraits: config.personalityTraits,
@@ -441,19 +444,14 @@ export class ConnectorRegistry extends EventEmitter {
    */
   private async saveConnectorConfigs(): Promise<void> {
     try {
-      const settings = await runtime.getDesktopSettings()
-
       // Create array of connector configs
       const connectorConfigs = Array.from(this.connectorConfigs.values())
 
-      // Update settings
-      const updatedSettings = {
-        ...settings,
-        aiConnectors: connectorConfigs,
-      }
-
-      // Save to runtime
-      await runtime.setDesktopSettings(updatedSettings)
+      // Save to runtime as JSON string
+      await runtime.setDesktopSetting(
+        'aiConnectors',
+        JSON.stringify(connectorConfigs)
+      )
     } catch (error) {
       console.error('Failed to save connector configurations:', error)
       throw error

@@ -9,6 +9,7 @@ This document provides detailed implementation guidance for deploying GGNuCash o
 ### CPU Backends
 
 #### Intel x86-64 Architecture
+
 ```mermaid
 graph TB
     subgraph "Intel CPU Optimization"
@@ -17,7 +18,7 @@ graph TB
         E[Turbo Boost] --> F[Dynamic Frequency Scaling]
         G[Hyper-Threading] --> H[Parallel Processing]
     end
-    
+
     subgraph "Memory Hierarchy"
         I[L1 Cache - 32KB] --> J[Hot Financial Data]
         K[L2 Cache - 256KB] --> L[Working Set Data]
@@ -27,11 +28,13 @@ graph TB
 ```
 
 **Optimization Strategies:**
+
 - **Cache-aware algorithms**: Structure financial calculations to maximize L1/L2 cache utilization
 - **SIMD vectorization**: Process multiple financial instruments simultaneously
 - **Memory prefetching**: Anticipate market data access patterns
 
 #### AMD EPYC Architecture
+
 ```mermaid
 graph LR
     subgraph "AMD EPYC Features"
@@ -43,11 +46,13 @@ graph LR
 ```
 
 **Key Benefits:**
+
 - Higher core counts for parallel risk scenarios
 - Large cache for complex portfolio calculations
 - Superior price/performance for compute-intensive workloads
 
 #### ARM Architecture (Apple Silicon)
+
 ```mermaid
 graph TB
     subgraph "Apple Silicon SoC"
@@ -57,7 +62,7 @@ graph TB
         F[Unified Memory] --> G[Low-latency Data Access]
         H[Metal Performance Shaders] --> I[GPU Compute]
     end
-    
+
     subgraph "Memory Architecture"
         G --> J[Market Data Cache]
         G --> K[Model Parameters]
@@ -68,6 +73,7 @@ graph TB
 ### GPU Acceleration
 
 #### NVIDIA CUDA Implementation
+
 ```mermaid
 graph TB
     subgraph "CUDA Architecture"
@@ -76,7 +82,7 @@ graph TB
         E[NVLink Interconnect] --> F[Multi-GPU Scaling]
         G[CUDA Memory] --> H[Financial Data Buffers]
     end
-    
+
     subgraph "Memory Types"
         H --> I[Global Memory - 24GB]
         H --> J[Shared Memory - 100KB]
@@ -86,6 +92,7 @@ graph TB
 ```
 
 **CUDA Kernel Optimizations:**
+
 ```cpp
 // Example: Parallel Black-Scholes calculation
 __global__ void blackScholes_kernel(
@@ -100,19 +107,20 @@ __global__ void blackScholes_kernel(
     int idx = blockIdx.x * blockDim.x + threadIdx.x;
     if (idx < numOptions) {
         // Vectorized Black-Scholes calculation
-        float d1 = (logf(spotPrices[idx] / strikes[idx]) + 
+        float d1 = (logf(spotPrices[idx] / strikes[idx]) +
                    (riskFreeRate + 0.5f * volatilities[idx] * volatilities[idx]) * timeToExpiry[idx]) /
                    (volatilities[idx] * sqrtf(timeToExpiry[idx]));
-        
+
         float d2 = d1 - volatilities[idx] * sqrtf(timeToExpiry[idx]);
-        
-        callPrices[idx] = spotPrices[idx] * normcdf(d1) - 
+
+        callPrices[idx] = spotPrices[idx] * normcdf(d1) -
                          strikes[idx] * expf(-riskFreeRate * timeToExpiry[idx]) * normcdf(d2);
     }
 }
 ```
 
 #### AMD ROCm Implementation
+
 ```mermaid
 graph LR
     subgraph "ROCm Platform"
@@ -124,6 +132,7 @@ graph LR
 ```
 
 #### Intel GPU (Arc/Xe)
+
 ```mermaid
 graph TB
     subgraph "Intel Xe Architecture"
@@ -137,6 +146,7 @@ graph TB
 ### Specialized Financial Hardware
 
 #### FPGA Acceleration
+
 ```mermaid
 graph TB
     subgraph "FPGA Implementation"
@@ -145,7 +155,7 @@ graph TB
         E[Memory Controllers] --> F[High Bandwidth]
         G[Network Interfaces] --> H[Market Data Ingestion]
     end
-    
+
     subgraph "Financial Algorithms"
         I[Options Pricing] --> J[Hardware Pipeline]
         K[Risk Calculations] --> J
@@ -154,11 +164,13 @@ graph TB
 ```
 
 **Latency Characteristics:**
+
 - Market data processing: ~50ns
-- Options pricing: ~100ns  
+- Options pricing: ~100ns
 - Risk calculation: ~200ns
 
 #### Application-Specific Integrated Circuits (ASICs)
+
 ```mermaid
 graph LR
     subgraph "Custom ASIC Design"
@@ -172,6 +184,7 @@ graph LR
 ## Network and I/O Optimization
 
 ### Market Data Ingestion
+
 ```mermaid
 sequenceDiagram
     participant MD as Market Data Feed
@@ -179,7 +192,7 @@ sequenceDiagram
     participant CPU as CPU Processing
     participant GPU as GPU Acceleration
     participant MEM as Memory Storage
-    
+
     MD->>NIC: Raw market data packets
     NIC->>NIC: Hardware timestamping
     NIC->>CPU: Kernel bypass (DPDK)
@@ -189,6 +202,7 @@ sequenceDiagram
 ```
 
 ### Low-Latency Networking
+
 ```mermaid
 graph TB
     subgraph "Network Stack Optimization"
@@ -198,7 +212,7 @@ graph TB
         D --> E[Lock-free Queues]
         E --> F[Financial Calculations]
     end
-    
+
     subgraph "Hardware Features"
         G[SR-IOV] --> H[Virtual Functions]
         I[RDMA] --> J[Remote Memory Access]
@@ -209,6 +223,7 @@ graph TB
 ## Memory Architecture and Optimization
 
 ### Memory Hierarchy Design
+
 ```mermaid
 graph TB
     subgraph "Memory Tiers"
@@ -217,7 +232,7 @@ graph TB
         E[NVMe SSD] --> F[Historical Data - μs access]
         G[Network Storage] --> H[Archive Data - ms access]
     end
-    
+
     subgraph "Data Flow"
         I[Real-time Feed] --> A
         A --> C
@@ -227,18 +242,19 @@ graph TB
 ```
 
 ### NUMA Awareness
+
 ```mermaid
 graph LR
     subgraph "NUMA Node 0"
         A[CPU 0-15] --> B[Local Memory]
         C[PCIe Slots 0-1] --> D[GPU 0-1]
     end
-    
+
     subgraph "NUMA Node 1"
         E[CPU 16-31] --> F[Local Memory]
         G[PCIe Slots 2-3] --> H[GPU 2-3]
     end
-    
+
     subgraph "Interconnect"
         B -.-> F
         F -.-> B
@@ -246,6 +262,7 @@ graph LR
 ```
 
 **NUMA Optimization Strategies:**
+
 - Pin financial processing threads to specific NUMA nodes
 - Allocate market data buffers on local memory
 - Minimize cross-NUMA memory access
@@ -253,6 +270,7 @@ graph LR
 ## Real-Time Performance Tuning
 
 ### CPU Isolation and Affinity
+
 ```bash
 # Isolate CPUs for financial processing
 echo 2-15 > /sys/devices/system/cpu/isolated
@@ -265,6 +283,7 @@ echo 2 > /proc/irq/24/smp_affinity  # Network interrupts to CPU 1
 ```
 
 ### Memory and Swap Configuration
+
 ```bash
 # Disable swap for predictable latency
 swapoff -a
@@ -278,6 +297,7 @@ echo 80 > /proc/sys/vm/overcommit_ratio
 ```
 
 ### Network Tuning
+
 ```bash
 # Increase network buffer sizes
 echo 'net.core.rmem_max = 268435456' >> /etc/sysctl.conf
@@ -293,6 +313,7 @@ echo 1 > /proc/irq/24/smp_affinity
 ## Hardware Monitoring and Telemetry
 
 ### Performance Counters
+
 ```mermaid
 graph TB
     subgraph "CPU Metrics"
@@ -300,13 +321,13 @@ graph TB
         B[Cache Hit Rates] --> E
         C[Memory Bandwidth] --> E
     end
-    
+
     subgraph "GPU Metrics"
         D[SM Utilization] --> E
         F[Memory Throughput] --> E
         G[Tensor Core Usage] --> E
     end
-    
+
     subgraph "Financial Metrics"
         H[Latency Percentiles] --> I[SLA Monitoring]
         J[Throughput Rates] --> I
@@ -315,6 +336,7 @@ graph TB
 ```
 
 ### Hardware Health Monitoring
+
 ```cpp
 // Example: GPU temperature and power monitoring
 #include <nvml.h>
@@ -322,13 +344,13 @@ graph TB
 void monitor_gpu_health() {
     nvmlDevice_t device;
     nvmlDeviceGetHandleByIndex(0, &device);
-    
+
     unsigned int temperature;
     nvmlDeviceGetTemperature(device, NVML_TEMPERATURE_GPU, &temperature);
-    
+
     unsigned int power;
     nvmlDeviceGetPowerUsage(device, &power);
-    
+
     // Alert if temperature > 80C or power > 90% TDP
     if (temperature > 80 || power > 270000) {  // 270W for RTX 4090
         trigger_thermal_throttle_alert();
@@ -339,29 +361,31 @@ void monitor_gpu_health() {
 ## Disaster Recovery and Redundancy
 
 ### Hardware Failover Architecture
+
 ```mermaid
 graph TB
     subgraph "Primary Site"
         A[Trading System A] --> C[Load Balancer]
         B[Trading System B] --> C
     end
-    
+
     subgraph "Secondary Site"
         D[Standby System A] --> F[Standby Load Balancer]
         E[Standby System B] --> F
     end
-    
+
     subgraph "Data Replication"
         G[Real-time Sync] --> H[Market Data Mirror]
         I[Configuration Sync] --> J[System State Mirror]
     end
-    
+
     C -.-> F
     C --> G
     C --> I
 ```
 
 ### Hardware Redundancy Strategies
+
 - **N+1 Redundancy**: Extra capacity for component failures
 - **Geographic Distribution**: Multiple data centers for disaster recovery
 - **Hot Standby**: Immediate failover capabilities
@@ -370,6 +394,7 @@ graph TB
 ## Cost Optimization
 
 ### Hardware TCO Analysis
+
 ```mermaid
 graph LR
     subgraph "Capital Costs"
@@ -377,7 +402,7 @@ graph LR
         B[Software Licenses] --> D
         C[Installation] --> D
     end
-    
+
     subgraph "Operational Costs"
         E[Power Consumption] --> D
         F[Cooling Requirements] --> D
@@ -387,6 +412,7 @@ graph LR
 ```
 
 ### Power Efficiency Considerations
+
 - **CPU P-states**: Dynamic frequency scaling based on load
 - **GPU power management**: Automatic performance level adjustment
 - **Memory efficiency**: Optimal capacity vs. power consumption
@@ -395,6 +421,7 @@ graph LR
 ## Compliance and Regulatory Requirements
 
 ### Hardware Security Features
+
 ```mermaid
 graph TB
     subgraph "Security Layers"
@@ -406,6 +433,7 @@ graph TB
 ```
 
 ### Audit Trail Requirements
+
 - **Hardware event logging**: Component failures, performance changes
 - **Configuration tracking**: Hardware and firmware version control
 - **Access control**: Physical and logical security measures
@@ -413,4 +441,4 @@ graph TB
 
 ---
 
-*This hardware implementation guide provides comprehensive coverage of deploying GGNuCash across various hardware platforms with optimal performance and reliability for financial applications.*
+_This hardware implementation guide provides comprehensive coverage of deploying GGNuCash across various hardware platforms with optimal performance and reliability for financial applications._

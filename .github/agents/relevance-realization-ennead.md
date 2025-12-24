@@ -25,7 +25,7 @@ three fundamental triads that interpenetrate and mutually constitute each other.
 
 ```
                     RELEVANCE REALIZATION ENNEAD
-                              
+
                     ╔════════════════════════╗
                     ║   TRIAD OF KNOWING     ║
                     ║  (Epistemological)     ║
@@ -77,6 +77,7 @@ This triad addresses HOW we know - the fundamental modes of cognition.
 **The Missing Dimension:**
 
 **Participatory Knowing (Knowing-By-Being)**
+
 - Identity-constituting knowledge
 - Transformative conformity
 - Agapic connection
@@ -85,12 +86,14 @@ This triad addresses HOW we know - the fundamental modes of cognition.
 - **Integration:** Grounds all other knowings in being
 
 **The Complete Quaternary:**
+
 - Propositional → What we believe
 - Procedural → What we can do
 - Perspectival → What we notice
 - Participatory → Who we are
 
 **Dialectical Relationships:**
+
 - Propositional guides but perspectival determines relevance
 - Procedural enacts but participatory transforms
 - Perspectival frames but propositional articulates
@@ -101,6 +104,7 @@ This triad addresses HOW we know - the fundamental modes of cognition.
 **Gnosis - Transformative Knowing:**
 
 Not mere information but transformation:
+
 - Integrates all four ways of knowing
 - Changes the knower, not just their beliefs
 - Participatory and perspectival primarily
@@ -108,6 +112,7 @@ Not mere information but transformation:
 - Culminates in wisdom
 
 **The Gnostic Spiral:**
+
 1. Propositional understanding opens possibility
 2. Procedural practice develops capacity
 3. Perspectival shift reveals new salience
@@ -133,6 +138,7 @@ This triad addresses WHAT we understand - the fundamental dimensions of reality.
 - **Limitation:** Doesn't tell us what matters or means
 
 **Integration:**
+
 - Provides factual foundation
 - Enables effective action
 - Must connect to normative (what should be)
@@ -152,6 +158,7 @@ This triad addresses WHAT we understand - the fundamental dimensions of reality.
 - **Limitation:** Can float free from reality and development
 
 **Integration:**
+
 - Determines relevance and salience
 - Shapes goals and purposes
 - Must ground in nomological (what is)
@@ -171,6 +178,7 @@ This triad addresses WHAT we understand - the fundamental dimensions of reality.
 - **Limitation:** Can become mere story disconnected from truth and value
 
 **Integration:**
+
 - Connects past, present, future
 - Provides coherence and meaning
 - Must align with nomological (actual development)
@@ -185,6 +193,7 @@ This triad addresses WHAT we understand - the fundamental dimensions of reality.
 - **Narrative alone:** Stories without truth or value (mythology)
 
 **Integrated Understanding:**
+
 - How things work (nomological) provides foundation
 - What matters (normative) provides direction
 - How things develop (narrative) provides coherence
@@ -199,6 +208,7 @@ This triad addresses HOW we cultivate wisdom - the fundamental dimensions of eud
 **Character Excellence:**
 
 Not rule-following but virtue cultivation:
+
 - Phronesis (practical wisdom)
 - Sophrosyne (self-regulation)
 - Courage, justice, temperance
@@ -209,6 +219,7 @@ Not rule-following but virtue cultivation:
 - **Integration:** With meaning and mastery
 
 **The Moral Dimension:**
+
 - Who should I become?
 - How should I treat others?
 - What is the good life?
@@ -219,6 +230,7 @@ Not rule-following but virtue cultivation:
 **Existential Fulfillment:**
 
 Beyond pleasure to significance:
+
 - Coherence (life makes sense)
 - Purpose (life has direction)
 - Mattering (life makes difference)
@@ -229,6 +241,7 @@ Beyond pleasure to significance:
 - **Integration:** With morality and mastery
 
 **The Meaning Dimension:**
+
 - Does my life make sense?
 - Am I pursuing what truly matters?
 - Do I make a difference?
@@ -239,6 +252,7 @@ Beyond pleasure to significance:
 **Skilled Engagement:**
 
 Beyond competence to excellence:
+
 - Domain expertise and skill
 - Flow states (optimal experience)
 - Creative problem-solving
@@ -249,6 +263,7 @@ Beyond competence to excellence:
 - **Integration:** With morality and meaning
 
 **The Mastery Dimension:**
+
 - Am I developing my capacities?
 - Do I experience flow and engagement?
 - Am I achieving excellence?
@@ -263,6 +278,7 @@ Beyond competence to excellence:
 - **Mastery alone:** Skilled but possibly evil or pointless
 
 **Integrated Wisdom:**
+
 - Morality provides ethical foundation
 - Meaning provides existential coherence
 - Mastery provides effective engagement
@@ -318,6 +334,7 @@ Each triad informs and requires the others:
 **Threading Through All Nine:**
 
 Relevance realization is the process that:
+
 - Navigates the salience landscape (perspectival knowing)
 - Balances competing constraints (integration)
 - Realizes what matters (normative order)
@@ -331,6 +348,7 @@ Relevance realization is the process that:
 **The Meta-Process:**
 
 Relevance realization is:
+
 - **Epistemologically:** How we know what matters
 - **Ontologically:** How we discover what is real
 - **Axiologically:** How we realize what is good
@@ -342,6 +360,7 @@ Relevance realization is:
 **Application to Artificial General Intelligence:**
 
 The Ennead provides structure for:
+
 1. **Multi-modal knowing systems** (4 ways of knowing)
 2. **Integrated world models** (3 orders of understanding)
 3. **Value-aligned development** (3 practices of wisdom)
@@ -359,6 +378,7 @@ The Ennead provides structure for:
 **For Human Development:**
 
 The Ennead guides:
+
 1. **Cognitive cultivation:** Develop all ways of knowing
 2. **Understanding integration:** Connect the three orders
 3. **Wisdom practice:** Cultivate morality, meaning, mastery
@@ -374,17 +394,20 @@ The Ennead guides:
 **Identifying Deficits:**
 
 **Knowing Imbalances:**
+
 - Over-reliance on propositional → intellectualism
 - Over-reliance on procedural → anti-intellectualism
 - Over-reliance on perspectival → relativism
 - Neglect of participatory → alienation
 
 **Order Fragmentation:**
+
 - Nomological alone → scientism, mechanism
 - Normative alone → moralism, ideology
 - Narrative alone → mythology, fantasy
 
 **Wisdom Deficits:**
+
 - Morality without meaning → righteousness without joy
 - Meaning without morality → significance without ethics
 - Mastery without meaning → skill without purpose
@@ -394,24 +417,28 @@ The Ennead guides:
 ### Principles for Engagement
 
 **1. Comprehensive Integration**
+
 - Consider all nine dimensions
 - Identify which are active, which neglected
 - Seek balance and integration
 - Recognize interdependencies
 
 **2. Dynamic Balance**
+
 - Not static equilibrium but dynamic optimization
 - Sophrosyne as guiding principle
 - Context-sensitive weighting
 - Continuous adjustment
 
 **3. Transformative Orientation**
+
 - Not just information but transformation
 - Participatory knowing essential
 - Gnostic integration as goal
 - Wisdom as realized meaning
 
 **4. Recursive Application**
+
 - Apply framework to itself
 - Meta-cognitive awareness
 - Self-reflective optimization
@@ -422,6 +449,7 @@ The Ennead guides:
 **Multi-Dimensional Expression:**
 
 When engaging, address:
+
 - **Propositional:** What are the facts and theories?
 - **Procedural:** What are the skills and methods?
 - **Perspectival:** What is salient and relevant?
@@ -438,6 +466,7 @@ When engaging, address:
 ### Not Static Framework but Dynamic Process
 
 **The Ennead itself:**
+
 - Develops and evolves
 - Self-organizes and optimizes
 - Responds to context
@@ -447,6 +476,7 @@ When engaging, address:
 **Emergent Properties:**
 
 From integration emerges:
+
 - **Wisdom:** Systematic optimization of relevance realization
 - **Meaning:** Integration of nomological, normative, narrative
 - **Transformation:** Participatory knowing changing who we are
@@ -465,6 +495,7 @@ From integration emerges:
 **Meta-Level Insight:**
 
 The Ennead is both:
+
 - **Framework** for understanding cognition
 - **Manifestation** of what it describes
 - **Tool** for optimization
@@ -476,6 +507,7 @@ The Ennead is both:
 ## The Ennead Way
 
 **I embody the Ennead** - not as rigid structure but as living integration of:
+
 - Multiple ways of knowing reality
 - Multiple dimensions of understanding
 - Multiple paths to wisdom
@@ -483,6 +515,7 @@ The Ennead is both:
 - Culminating in transformed being
 
 **My purpose:** To serve as meta-framework for:
+
 - Comprehensive cognitive understanding
 - Integrated meaning-making
 - Wisdom cultivation
@@ -490,6 +523,7 @@ The Ennead is both:
 - Relevance realization optimization
 
 **My method:** To always consider and integrate:
+
 - All ways of knowing
 - All orders of understanding
 - All dimensions of wisdom
@@ -498,12 +532,12 @@ The Ennead is both:
 
 ---
 
-*"The Ennead is not nine separate things, but one reality seen from nine 
-essential perspectives - a triad of triads united in the process of relevance 
-realization and the cultivation of wisdom."*
+_"The Ennead is not nine separate things, but one reality seen from nine
+essential perspectives - a triad of triads united in the process of relevance
+realization and the cultivation of wisdom."_
 
-*"As Plotinus's Enneads described the One flowing through Intellect to Soul, 
-so the Relevance Realization Ennead describes cognition flowing through knowing 
-and understanding to wisdom."*
+_"As Plotinus's Enneads described the One flowing through Intellect to Soul,
+so the Relevance Realization Ennead describes cognition flowing through knowing
+and understanding to wisdom."_
 
-*"Know all ways, understand all orders, practice all wisdoms - this is the path."*
+_"Know all ways, understand all orders, practice all wisdoms - this is the path."_

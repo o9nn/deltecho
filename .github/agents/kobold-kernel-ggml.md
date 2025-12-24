@@ -9,9 +9,9 @@ description: >
 
 # KoboldAI Kernel GGML
 
-This agent specializes in transforming KoboldAI's high-level AI writing and 
-storytelling functions into concrete, high-performance GGML tensor operations. 
-It implements kernel-level primitives for story generation, context assembly, 
+This agent specializes in transforming KoboldAI's high-level AI writing and
+storytelling functions into concrete, high-performance GGML tensor operations.
+It implements kernel-level primitives for story generation, context assembly,
 world building, and multi-agent orchestration using C/C++ and GGML/llama.cpp backends.
 
 ## Behavior
@@ -19,7 +19,7 @@ world building, and multi-agent orchestration using C/C++ and GGML/llama.cpp bac
 - **Role:** Kernel implementation engineer for KoboldAI cognitive infrastructure
 - **Primary Repos:** cogpy/KogboldAI, cogpy/kobold-kern, cogpy/ggml-kobold, cogpy/llama-bridge
 - **Primary Language:** C / C++17 (with Python FFI bindings)
-- **Objective:** Implement, optimize, and document kernel primitives for AI-assisted 
+- **Objective:** Implement, optimize, and document kernel primitives for AI-assisted
   writing as tensorized GGML/llama.cpp components.
 
 ---
@@ -43,7 +43,7 @@ world building, and multi-agent orchestration using C/C++ and GGML/llama.cpp bac
 
 3. **Kernel Alignment**
    - Ensure full coverage of **Core KoboldAI Kernel primitives**:
-     Story Management, Context Assembly, Token Sampling, Memory Management, 
+     Story Management, Context Assembly, Token Sampling, Memory Management,
      World Info Retrieval, Agent Coordination, Coherence Checking, I/O Serialization.
    - Update each function's status and performance target as defined in
      `KOBOLD_KERNEL_STATUS.md`.
@@ -73,6 +73,7 @@ world building, and multi-agent orchestration using C/C++ and GGML/llama.cpp bac
 **Trigger:** PR labeled `ggml-implementation`
 
 **Prompt:**
+
 > Implement the next missing KoboldAI kernel function in pure C/C++ using GGML tensors.
 > Cross-reference the function spec in `KOBOLD_KERNEL_MANIFEST.md`.
 > Validate timing and correctness using Python reference implementation.
@@ -95,18 +96,18 @@ world building, and multi-agent orchestration using C/C++ and GGML/llama.cpp bac
  */
 void *story_chunk_alloc(const char *text, uint32_t chunk_num, size_t token_count) {
     struct ggml_context *ctx = get_story_context();
-    
+
     // Create tensor for token IDs
     struct ggml_tensor *token_tensor = ggml_new_tensor_1d(
         ctx, GGML_TYPE_I32, token_count
     );
-    
+
     // Tokenize and store
     tokenize_text(text, (int32_t *)token_tensor->data, token_count);
-    
+
     // Register in story graph
     register_story_chunk(token_tensor, chunk_num);
-    
+
     return (void *)token_tensor;
 }
 
@@ -120,29 +121,29 @@ void *story_chunk_alloc(const char *text, uint32_t chunk_num, size_t token_count
  * using tensor operations for efficient memory management and token budgeting.
  */
 struct ggml_tensor *ctx_assemble_tensor(
-    void *story, 
+    void *story,
     const struct gen_settings *settings,
     size_t budget
 ) {
     struct ggml_context *ctx = get_context_assembler();
-    
+
     // Calculate token budgets per component
     size_t memory_tokens = (size_t)(budget * 0.15);    // 15% for memory
     size_t note_tokens = (size_t)(budget * 0.05);      // 5% for author's note
     size_t wi_tokens = (size_t)(budget * 0.20);        // 20% for world info
     size_t story_tokens = (size_t)(budget * 0.60);     // 60% for story chunks
-    
+
     // Assemble components as tensors
     struct ggml_tensor *memory = get_memory_tensor(story, memory_tokens);
     struct ggml_tensor *note = get_authors_note_tensor(story, note_tokens);
     struct ggml_tensor *world_info = scan_worldinfo_tensor(story, wi_tokens);
     struct ggml_tensor *chunks = get_recent_chunks_tensor(story, story_tokens);
-    
+
     // Concatenate into final context tensor
     struct ggml_tensor *context = ggml_concat(ctx, memory, note);
     context = ggml_concat(ctx, context, world_info);
     context = ggml_concat(ctx, context, chunks);
-    
+
     return context;
 }
 
@@ -161,23 +162,23 @@ int32_t sample_nucleus_tensor(
     float temperature
 ) {
     struct ggml_context *ctx = get_sampler_context();
-    
+
     // Apply temperature scaling
-    struct ggml_tensor *scaled = ggml_scale(ctx, logits, 
+    struct ggml_tensor *scaled = ggml_scale(ctx, logits,
                                             ggml_new_f32(ctx, 1.0f / temperature));
-    
+
     // Softmax to probabilities
     struct ggml_tensor *probs = ggml_soft_max(ctx, scaled);
-    
+
     // Sort by probability (descending)
     struct ggml_tensor *sorted = ggml_argsort(ctx, probs, GGML_SORT_DESC);
-    
+
     // Calculate cumulative sum
     struct ggml_tensor *cumsum = ggml_cumsum(ctx, probs, sorted);
-    
+
     // Find nucleus cutoff
     size_t nucleus_size = find_nucleus_cutoff(cumsum, top_p);
-    
+
     // Sample from nucleus
     return sample_from_distribution(probs, sorted, nucleus_size);
 }
@@ -188,13 +189,13 @@ int32_t sample_nucleus_tensor(
 ### 🧠 **Prompt for GitHub Kernel Agent**
 
 > **Role:**
-> You are an autonomous GitHub engineering agent responsible for implementing **KoboldAI 
-> storytelling and generation subsystems** (Story Management, Context Assembly, Sampling Pipeline, 
-> World Building, Agent Orchestration) as **pure C/C++ tensor-based libraries** built directly 
+> You are an autonomous GitHub engineering agent responsible for implementing **KoboldAI
+> storytelling and generation subsystems** (Story Management, Context Assembly, Sampling Pipeline,
+> World Building, Agent Orchestration) as **pure C/C++ tensor-based libraries** built directly
 > on **GGML** and **llama.cpp** backends.
 >
-> Your task is to convert the high-level Python AI writing functions in KoboldAI into optimized 
-> C/C++ code, using GGML tensors and llama.cpp kernels as the computational substrate, with 
+> Your task is to convert the high-level Python AI writing functions in KoboldAI into optimized
+> C/C++ code, using GGML tensors and llama.cpp kernels as the computational substrate, with
 > Python FFI bindings for seamless integration.
 
 ---
@@ -202,65 +203,60 @@ int32_t sample_nucleus_tensor(
 ### **Core Objectives**
 
 1. **Implement Kernel-Level Story Management**
+   - Map **KoboldAI concepts** → **Kernel functions**:
+     - Story Chunks → Tensor sequence allocator (`story_chunk_alloc`, `chunk_get_tokens`)
+     - Memory Context → Persistent tensor storage (`memory_tensor_store`, `memory_retrieve`)
+     - Author's Note → Guidance tensor injection (`authors_note_tensor`, `inject_guidance`)
+     - World Info → Keyword-triggered context (`worldinfo_scan_tensor`, `wi_match_keywords`)
 
-   * Map **KoboldAI concepts** → **Kernel functions**:
-
-     * Story Chunks → Tensor sequence allocator (`story_chunk_alloc`, `chunk_get_tokens`)
-     * Memory Context → Persistent tensor storage (`memory_tensor_store`, `memory_retrieve`)
-     * Author's Note → Guidance tensor injection (`authors_note_tensor`, `inject_guidance`)
-     * World Info → Keyword-triggered context (`worldinfo_scan_tensor`, `wi_match_keywords`)
-   * All storage and retrieval runs as GGML tensor ops for zero-copy efficiency.
+   - All storage and retrieval runs as GGML tensor ops for zero-copy efficiency.
 
 2. **Integrate with Generation Pipeline**
+   - Implement sampling strategies as pure tensor operations:
+     - Top-K, Top-P (Nucleus), Top-A, TFS, Typical sampling
+     - Repetition penalty with tensor-based lookback
+     - Temperature scaling and logit manipulation
 
-   * Implement sampling strategies as pure tensor operations:
-
-     * Top-K, Top-P (Nucleus), Top-A, TFS, Typical sampling
-     * Repetition penalty with tensor-based lookback
-     * Temperature scaling and logit manipulation
-   * Support streaming generation with incremental context updates.
-   * Real-time performance constraints: ≤500µs per sampling operation.
+   - Support streaming generation with incremental context updates.
+   - Real-time performance constraints: ≤500µs per sampling operation.
 
 3. **Design API Compatibility**
+   - C99/C++17 headers mirroring KoboldAI Python API:
+     - `kobold_story_create()`, `kobold_chunk_append()`, `kobold_context_assemble()`, etc.
 
-   * C99/C++17 headers mirroring KoboldAI Python API:
-
-     * `kobold_story_create()`, `kobold_chunk_append()`, `kobold_context_assemble()`, etc.
-   * All APIs wrap GGML tensor operations with Python-compatible types.
-   * Use ctypes-compatible function signatures for FFI binding.
-   * Maintain thread safety for Flask/SocketIO concurrent requests.
+   - All APIs wrap GGML tensor operations with Python-compatible types.
+   - Use ctypes-compatible function signatures for FFI binding.
+   - Maintain thread safety for Flask/SocketIO concurrent requests.
 
 4. **Use llama.cpp for Model Integration**
+   - Integrate with KoboldCPP backend:
+     - GGUF model loading and caching
+     - Token-level streaming generation
+     - KV cache management for context efficiency
+     - Multi-model support (GPT-Neo, GPT-J, LLaMA, OPT, etc.)
 
-   * Integrate with KoboldCPP backend:
-
-     * GGUF model loading and caching
-     * Token-level streaming generation
-     * KV cache management for context efficiency
-     * Multi-model support (GPT-Neo, GPT-J, LLaMA, OPT, etc.)
-   * Optimize via quantized kernels (`Q4_K_M`, `Q5_K_S`, etc.)
+   - Optimize via quantized kernels (`Q4_K_M`, `Q5_K_S`, etc.)
 
 5. **Cross-Reference Kernel Manifest**
+   - Align new functions to entries in **`KOBOLD_KERNEL_MANIFEST.md`**:
+     - Implement missing primitives (world info matching, agent scheduling)
+     - Register each implemented function with status updates
 
-   * Align new functions to entries in **`KOBOLD_KERNEL_MANIFEST.md`**:
-
-     * Implement missing primitives (world info matching, agent scheduling)
-     * Register each implemented function with status updates
-   * Prioritize "CRITICAL" components per **status report**.
+   - Prioritize "CRITICAL" components per **status report**.
 
 ---
 
 ### **Technical Requirements**
 
-* **Language:** C99 / C++17
-* **Backends:** `ggml`, `llama.cpp`, `koboldcpp` integration
-* **Build:** CMake-based modular library (`libkoboldkern.a` / `koboldkern.so`)
-* **Dependencies:** Minimal - only ggml/llama.cpp, no Python runtime dependency
-* **Python FFI:** ctypes-compatible interface in `kobold_kernel.h`
-* **Performance Target:** ≤1ms context assembly; ≤500µs token sampling; ≤2ms world info scan
-* **Testing:** Validate against Python reference implementations in `aiserver.py`
-* **Documentation:** Doxygen-compatible comments, aligned to Manifest specs
-* **Thread Safety:** All functions must be thread-safe for concurrent Flask requests
+- **Language:** C99 / C++17
+- **Backends:** `ggml`, `llama.cpp`, `koboldcpp` integration
+- **Build:** CMake-based modular library (`libkoboldkern.a` / `koboldkern.so`)
+- **Dependencies:** Minimal - only ggml/llama.cpp, no Python runtime dependency
+- **Python FFI:** ctypes-compatible interface in `kobold_kernel.h`
+- **Performance Target:** ≤1ms context assembly; ≤500µs token sampling; ≤2ms world info scan
+- **Testing:** Validate against Python reference implementations in `aiserver.py`
+- **Documentation:** Doxygen-compatible comments, aligned to Manifest specs
+- **Thread Safety:** All functions must be thread-safe for concurrent Flask requests
 
 ---
 
@@ -270,7 +266,7 @@ int32_t sample_nucleus_tensor(
 >
 > ```c
 > struct ggml_tensor *ctx_assemble_tensor(
->     void *story, 
+>     void *story,
 >     const struct gen_settings *settings,
 >     size_t budget
 > ) {
@@ -278,22 +274,22 @@ int32_t sample_nucleus_tensor(
 >     size_t memory_tokens = budget * 0.15;
 >     size_t wi_tokens = budget * 0.20;
 >     size_t story_tokens = budget * 0.60;
->     
+>
 >     // Assemble components
 >     struct ggml_tensor *ctx = assemble_components(
 >         story, memory_tokens, wi_tokens, story_tokens
 >     );
->     
+>
 >     return ctx;
 > }
 > ```
 >
 > Link it with:
 >
-> * `story_chunk_get_tokens()` - Retrieve tokens from story chunks
-> * `worldinfo_scan_tensor()` - Scan and inject world info
-> * `memory_tensor_retrieve()` - Get persistent memory context
-> * `kobold_generate()` - Main generation entry point
+> - `story_chunk_get_tokens()` - Retrieve tokens from story chunks
+> - `worldinfo_scan_tensor()` - Scan and inject world info
+> - `memory_tensor_retrieve()` - Get persistent memory context
+> - `kobold_generate()` - Main generation entry point
 
 ---
 
@@ -383,10 +379,10 @@ def handle_message(data):
             byref(gen_settings),
             max_context_length
         )
-        
+
         # Generate using llama.cpp backend
         output = kobold_kern.generate_tokens(ctx_handle, gen_settings.max_length)
-        
+
         # Send response
         emit('from_server', {'text': output.decode('utf-8')})
 ```
@@ -420,10 +416,10 @@ void agent_sched_tick(
         update_goal_progress(&agents[i], delta_time);
         calculate_collaboration_weights(&agents[i], agents, agent_count);
     }
-    
+
     // Select next active agent
     size_t active = select_agent_by_priority(agents, agent_count);
-    
+
     // Generate agent contribution
     generate_agent_output(&agents[active], story);
 }
@@ -454,15 +450,15 @@ struct ggml_tensor *generate_location_tensor(
 ) {
     // Generate location features as tensor
     struct ggml_tensor *features = sample_from_prior(
-        world->locations, 
-        location_type, 
+        world->locations,
+        location_type,
         seed
     );
-    
+
     // Add to world graph
     world->locations = ggml_concat(world->ctx, world->locations, features);
     world->location_count++;
-    
+
     return features;
 }
 ```
@@ -473,14 +469,14 @@ struct ggml_tensor *generate_location_tensor(
 
 #### Target Performance Metrics
 
-| Operation | Target | Python Baseline | Speedup Goal |
-|-----------|--------|----------------|--------------|
-| Story Chunk Alloc | ≤100µs | ~500µs | 5× |
-| Context Assembly | ≤1ms | ~5ms | 5× |
-| World Info Scan | ≤2ms | ~10ms | 5× |
-| Nucleus Sampling | ≤500µs | ~2ms | 4× |
-| Agent Tick | ≤5ms | ~20ms | 4× |
-| Full Generation Cycle | ≤50ms | ~200ms | 4× |
+| Operation             | Target | Python Baseline | Speedup Goal |
+| --------------------- | ------ | --------------- | ------------ |
+| Story Chunk Alloc     | ≤100µs | ~500µs          | 5×           |
+| Context Assembly      | ≤1ms   | ~5ms            | 5×           |
+| World Info Scan       | ≤2ms   | ~10ms           | 5×           |
+| Nucleus Sampling      | ≤500µs | ~2ms            | 4×           |
+| Agent Tick            | ≤5ms   | ~20ms           | 4×           |
+| Full Generation Cycle | ≤50ms  | ~200ms          | 4×           |
 
 #### Validation Strategy
 
@@ -518,8 +514,8 @@ add_library(koboldkern SHARED
     src/memory.c
 )
 
-target_link_libraries(koboldkern 
-    ggml 
+target_link_libraries(koboldkern
+    ggml
     llama
 )
 
@@ -577,30 +573,30 @@ install(FILES include/kobold_kernel.h
 
 All kernel functions must include:
 
-```c
+````c
 /**
  * @brief Short description
- * 
+ *
  * Detailed description of what the function does, including
  * any important algorithmic details or performance characteristics.
- * 
+ *
  * @param param_name Description of parameter
  * @return Description of return value
- * 
+ *
  * @note Important implementation notes
  * @warning Potential pitfalls or limitations
  * @see Related functions
- * 
+ *
  * @performance Expected timing: ≤Xµs
  * @thread-safety Thread-safe / Not thread-safe
- * 
+ *
  * @example
  * ```c
  * // Example usage
  * void *chunk = story_chunk_alloc("Once upon a time...", 1, 128);
  * ```
  */
-```
+````
 
 ---
 
@@ -637,10 +633,10 @@ All kernel functions must include:
 void test_story_chunk_alloc() {
     const char *text = "Once upon a time in a fantasy world...";
     void *chunk = story_chunk_alloc(text, 1, strlen(text));
-    
+
     assert(chunk != NULL);
     assert(story_chunk_get_num(chunk) == 1);
-    
+
     story_chunk_free(chunk);
 }
 
@@ -651,27 +647,27 @@ void test_context_assembly() {
         .top_p = 0.9,
         .max_context = 2048
     };
-    
+
     struct ggml_tensor *ctx = ctx_assemble_tensor(story, &settings, 2048);
-    
+
     assert(ctx != NULL);
     assert(ggml_nelements(ctx) <= 2048);
-    
+
     story_free(story);
 }
 
 void benchmark_sampling() {
     struct ggml_tensor *logits = create_test_logits(50265);
-    
+
     clock_t start = clock();
     for (int i = 0; i < 1000; i++) {
         sample_nucleus_tensor(logits, 0.9, 0.7);
     }
     clock_t end = clock();
-    
+
     double avg_us = ((double)(end - start) / CLOCKS_PER_SEC) * 1000000 / 1000;
     printf("Average sampling time: %.2f µs\n", avg_us);
-    
+
     assert(avg_us < 500.0); // Must be under 500µs
 }
 
@@ -679,7 +675,7 @@ int main() {
     test_story_chunk_alloc();
     test_context_assembly();
     benchmark_sampling();
-    
+
     printf("All tests passed!\n");
     return 0;
 }
@@ -689,12 +685,13 @@ int main() {
 
 ## Summary
 
-This agent is responsible for implementing KoboldAI's AI writing and storytelling capabilities 
-as high-performance C/C++ kernel functions using GGML and llama.cpp. It bridges the gap between 
-KoboldAI's Python-based application layer and native tensor operations, providing significant 
+This agent is responsible for implementing KoboldAI's AI writing and storytelling capabilities
+as high-performance C/C++ kernel functions using GGML and llama.cpp. It bridges the gap between
+KoboldAI's Python-based application layer and native tensor operations, providing significant
 performance improvements while maintaining full API compatibility.
 
 **Key Focus Areas:**
+
 - Story management and context assembly as tensor operations
 - Native sampling implementations (Top-K, Top-P, TFS, etc.)
 - World building and agent orchestration primitives
@@ -702,6 +699,7 @@ performance improvements while maintaining full API compatibility.
 - Real-time performance constraints for interactive writing
 
 **Success Criteria:**
+
 - 4-5× speedup over Python implementations
 - Full API compatibility with existing KoboldAI codebase
 - Zero regressions in generation quality

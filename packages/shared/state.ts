@@ -1,4 +1,4 @@
-import { DesktopSettingsType } from './shared-types.js'
+import { DesktopSettingsType } from './shared-types.js';
 
 export function getDefaultState(): DesktopSettingsType {
   /**
@@ -41,5 +41,5 @@ export function getDefaultState(): DesktopSettingsType {
     deepTreeEchoBotVisionEnabled: false,
     deepTreeEchoBotWebAutomationEnabled: false,
     deepTreeEchoBotEmbodimentEnabled: false,
-  }
+  };
 }

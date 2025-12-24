@@ -1,4 +1,4 @@
-import { DeepTreeEchoBot } from '../DeepTreeEchoBot.js'
+import { DeepTreeEchoBot } from '../DeepTreeEchoBot.js';
 
 // Mock dependencies
 jest.mock('@deltachat-desktop/shared/logger', () => ({
@@ -8,7 +8,7 @@ jest.mock('@deltachat-desktop/shared/logger', () => ({
     warn: jest.fn(),
     debug: jest.fn(),
   })),
-}))
+}));
 
 jest.mock('../RAGMemoryStore.js', () => {
   return {
@@ -27,8 +27,8 @@ jest.mock('../RAGMemoryStore.js', () => {
         clearChatMemories: jest.fn(),
       }),
     },
-  }
-})
+  };
+});
 
 jest.mock('../LLMService.js', () => {
   return {
@@ -49,8 +49,8 @@ jest.mock('../LLMService.js', () => {
         updateOptions: jest.fn(),
       }),
     },
-  }
-})
+  };
+});
 
 jest.mock('../VisionCapabilities.js', () => {
   return {
@@ -63,8 +63,8 @@ jest.mock('../VisionCapabilities.js', () => {
       }),
       updateOptions: jest.fn(),
     })),
-  }
-})
+  };
+});
 
 jest.mock('../PlaywrightAutomation.js', () => {
   return {
@@ -87,8 +87,8 @@ jest.mock('../PlaywrightAutomation.js', () => {
       }),
       updateOptions: jest.fn(),
     })),
-  }
-})
+  };
+});
 
 jest.mock('../ProprioceptiveEmbodiment.js', () => {
   return {
@@ -123,8 +123,8 @@ jest.mock('../ProprioceptiveEmbodiment.js', () => {
       }),
       updateOptions: jest.fn(),
     })),
-  }
-})
+  };
+});
 
 jest.mock('../PersonaCore.js', () => {
   return {
@@ -145,8 +145,8 @@ jest.mock('../PersonaCore.js', () => {
         updatePersonality: jest.fn(),
       }),
     },
-  }
-})
+  };
+});
 
 jest.mock('../SelfReflection.js', () => {
   return {
@@ -155,8 +155,8 @@ jest.mock('../SelfReflection.js', () => {
         reflectOnAspect: jest.fn().mockResolvedValue('Test reflection'),
       }),
     },
-  }
-})
+  };
+});
 
 jest.mock('../../../backend-com.js.js', () => ({
   BackendRemote: {
@@ -168,10 +168,10 @@ jest.mock('../../../backend-com.js.js', () => ({
       miscSendTextMessage: jest.fn().mockResolvedValue(undefined),
     },
   },
-}))
+}));
 
 describe('DeepTreeEchoBot', () => {
-  let bot: DeepTreeEchoBot
+  let bot: DeepTreeEchoBot;
 
   beforeEach(() => {
     bot = new DeepTreeEchoBot({
@@ -183,8 +183,8 @@ describe('DeepTreeEchoBot', () => {
       visionEnabled: true,
       webAutomationEnabled: true,
       embodimentEnabled: true,
-    })
-  })
+    });
+  });
 
   describe('processMessage', () => {
     it('should process regular messages and return a response', async () => {
@@ -192,55 +192,55 @@ describe('DeepTreeEchoBot', () => {
         id: 123,
         text: 'Hello bot',
         file: null,
-      }
+      };
 
-      const response = await bot.processMessage(1, 100, 123, message as any)
+      const response = await bot.processMessage(1, 100, 123, message as any);
 
-      expect(response).toBeTruthy()
-      expect(typeof response).toBe('string')
-    })
+      expect(response).toBeTruthy();
+      expect(typeof response).toBe('string');
+    });
 
     it('should return an empty string if bot is disabled', async () => {
-      bot.updateOptions({ enabled: false })
+      bot.updateOptions({ enabled: false });
 
       const message = {
         id: 123,
         text: 'Hello bot',
         file: null,
-      }
+      };
 
-      const response = await bot.processMessage(1, 100, 123, message as any)
+      const response = await bot.processMessage(1, 100, 123, message as any);
 
-      expect(response).toBe('')
-    })
+      expect(response).toBe('');
+    });
 
     it('should handle command messages', async () => {
       const message = {
         id: 123,
         text: '/help',
         file: null,
-      }
+      };
 
-      const response = await bot.processMessage(1, 100, 123, message as any)
+      const response = await bot.processMessage(1, 100, 123, message as any);
 
-      expect(response).toContain('commands')
-    })
+      expect(response).toContain('commands');
+    });
 
     it('should handle errors gracefully', async () => {
       // Force an error
-      jest.spyOn(console, 'error').mockImplementation(() => {})
+      jest.spyOn(console, 'error').mockImplementation(() => {});
 
       const message = {
         id: 123,
         text: null,
         file: null,
-      }
+      };
 
-      const response = await bot.processMessage(1, 100, 123, message as any)
+      const response = await bot.processMessage(1, 100, 123, message as any);
 
-      expect(response).toContain('Sorry')
-    })
-  })
+      expect(response).toContain('Sorry');
+    });
+  });
 
   describe('Command Handlers', () => {
     it('should handle the /help command', async () => {
@@ -248,49 +248,49 @@ describe('DeepTreeEchoBot', () => {
         id: 123,
         text: '/help',
         file: null,
-      }
+      };
 
-      const response = await bot.processMessage(1, 100, 123, message as any)
+      const response = await bot.processMessage(1, 100, 123, message as any);
 
-      expect(response).toContain('Available commands')
-    })
+      expect(response).toContain('Available commands');
+    });
 
     it('should handle the /vision command', async () => {
       const message = {
         id: 123,
         text: '/vision',
         file: 'test-file-path.jpg',
-      }
+      };
 
-      const response = await bot.processMessage(1, 100, 123, message as any)
+      const response = await bot.processMessage(1, 100, 123, message as any);
 
-      expect(response).toContain('Image Analysis')
-    })
+      expect(response).toContain('Image Analysis');
+    });
 
     it('should handle the /search command', async () => {
       const message = {
         id: 123,
         text: '/search test query',
         file: null,
-      }
+      };
 
-      const response = await bot.processMessage(1, 100, 123, message as any)
+      const response = await bot.processMessage(1, 100, 123, message as any);
 
-      expect(response).toContain('Search results')
-    })
+      expect(response).toContain('Search results');
+    });
 
     it('should handle the /memory command', async () => {
       const message = {
         id: 123,
         text: '/memory status',
         file: null,
-      }
+      };
 
-      const response = await bot.processMessage(1, 100, 123, message as any)
+      const response = await bot.processMessage(1, 100, 123, message as any);
 
-      expect(response).toContain('Memory Status')
-    })
-  })
+      expect(response).toContain('Memory Status');
+    });
+  });
 
   describe('updateOptions', () => {
     it('should update options', () => {
@@ -298,18 +298,18 @@ describe('DeepTreeEchoBot', () => {
         enabled: false,
         apiKey: 'new-api-key',
         visionEnabled: false,
-      })
+      });
 
       // We can't directly check the private options, but we can test functionality
       const message = {
         id: 123,
         text: 'Hello bot',
         file: null,
-      }
+      };
 
-      return bot.processMessage(1, 100, 123, message as any).then(response => {
-        expect(response).toBe('')
-      })
-    })
-  })
-})
+      return bot.processMessage(1, 100, 123, message as any).then((response) => {
+        expect(response).toBe('');
+      });
+    });
+  });
+});

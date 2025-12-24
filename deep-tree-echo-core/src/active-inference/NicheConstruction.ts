@@ -13,42 +13,47 @@
  * In cognitive terms, this means actively shaping the information environment.
  */
 
-import { getLogger } from '../utils/logger'
-import { EventEmitter } from 'events'
+import { getLogger } from '../utils/logger';
+import { EventEmitter } from 'events';
 import {
   ActiveInference,
   BeliefState,
   Observation,
   Action,
-  FreeEnergyResult
-} from './ActiveInference.js'
+  FreeEnergyResult,
+} from './ActiveInference.js';
 
-const log = getLogger('deep-tree-echo-core/active-inference/NicheConstruction')
+const log = getLogger('deep-tree-echo-core/active-inference/NicheConstruction');
 
 /**
  * Cognitive artifact that persists in the environment
  */
 export interface CognitiveArtifact {
   /** Unique identifier */
-  id: string
+  id: string;
   /** Type of artifact */
-  type: 'memory_anchor' | 'attention_scaffold' | 'inference_template' | 'response_pattern' | 'context_frame'
+  type:
+    | 'memory_anchor'
+    | 'attention_scaffold'
+    | 'inference_template'
+    | 'response_pattern'
+    | 'context_frame';
   /** Name/label for the artifact */
-  name: string
+  name: string;
   /** Content or structure of the artifact */
-  content: unknown
+  content: unknown;
   /** When this artifact was created */
-  createdAt: number
+  createdAt: number;
   /** When this artifact was last used */
-  lastUsed: number
+  lastUsed: number;
   /** Number of times this artifact has been accessed */
-  accessCount: number
+  accessCount: number;
   /** Effectiveness score (how much it reduces free energy) */
-  effectiveness: number
+  effectiveness: number;
   /** Associated contexts where this artifact is relevant */
-  contexts: string[]
+  contexts: string[];
   /** Dependencies on other artifacts */
-  dependencies: string[]
+  dependencies: string[];
 }
 
 /**
@@ -56,19 +61,19 @@ export interface CognitiveArtifact {
  */
 export interface Affordance {
   /** Unique identifier */
-  id: string
+  id: string;
   /** Type of affordance */
-  type: 'query' | 'response' | 'memory' | 'learning' | 'adaptation'
+  type: 'query' | 'response' | 'memory' | 'learning' | 'adaptation';
   /** Description of what this affordance enables */
-  description: string
+  description: string;
   /** Conditions under which this affordance is available */
-  conditions: Map<string, unknown>
+  conditions: Map<string, unknown>;
   /** Expected benefit of using this affordance */
-  expectedBenefit: number
+  expectedBenefit: number;
   /** Cost of using this affordance */
-  cost: number
+  cost: number;
   /** Whether this affordance is currently available */
-  available: boolean
+  available: boolean;
 }
 
 /**
@@ -76,17 +81,17 @@ export interface Affordance {
  */
 export interface NicheState {
   /** Active artifacts in the environment */
-  artifacts: Map<string, CognitiveArtifact>
+  artifacts: Map<string, CognitiveArtifact>;
   /** Available affordances */
-  affordances: Map<string, Affordance>
+  affordances: Map<string, Affordance>;
   /** Current environmental stability (low = high change rate) */
-  stability: number
+  stability: number;
   /** Richness of the environment (information density) */
-  richness: number
+  richness: number;
   /** Predictability of the environment */
-  predictability: number
+  predictability: number;
   /** Fitness of the current niche (how well it supports cognition) */
-  fitness: number
+  fitness: number;
 }
 
 /**
@@ -94,15 +99,15 @@ export interface NicheState {
  */
 export interface NicheModification {
   /** Type of modification */
-  type: 'create' | 'modify' | 'remove' | 'reinforce' | 'restructure'
+  type: 'create' | 'modify' | 'remove' | 'reinforce' | 'restructure';
   /** Target artifact or affordance */
-  targetId: string
+  targetId: string;
   /** Changes to apply */
-  changes: Record<string, unknown>
+  changes: Record<string, unknown>;
   /** Rationale for the modification */
-  rationale: string
+  rationale: string;
   /** Expected effect on free energy */
-  expectedEffect: number
+  expectedEffect: number;
 }
 
 /**
@@ -110,17 +115,17 @@ export interface NicheModification {
  */
 export interface NicheConstructionConfig {
   /** Maximum number of artifacts to maintain */
-  maxArtifacts: number
+  maxArtifacts: number;
   /** Threshold for creating new artifacts (free energy reduction needed) */
-  creationThreshold: number
+  creationThreshold: number;
   /** Threshold for removing artifacts (min effectiveness) */
-  removalThreshold: number
+  removalThreshold: number;
   /** Rate at which artifact effectiveness decays */
-  decayRate: number
+  decayRate: number;
   /** How strongly to prefer proven affordances */
-  exploitationBias: number
+  exploitationBias: number;
   /** Interval for niche maintenance (ms) */
-  maintenanceInterval: number
+  maintenanceInterval: number;
 }
 
 const DEFAULT_CONFIG: NicheConstructionConfig = {
@@ -130,7 +135,7 @@ const DEFAULT_CONFIG: NicheConstructionConfig = {
   decayRate: 0.01,
   exploitationBias: 0.7,
   maintenanceInterval: 60000,
-}
+};
 
 /**
  * NicheConstruction - Active environment shaping for cognitive enhancement
@@ -140,21 +145,18 @@ const DEFAULT_CONFIG: NicheConstructionConfig = {
  * and support more effective cognition.
  */
 export class NicheConstruction extends EventEmitter {
-  private config: NicheConstructionConfig
-  private activeInference: ActiveInference
-  private nicheState: NicheState
-  private modificationHistory: NicheModification[]
-  private maintenanceTimer: NodeJS.Timeout | null = null
-  private artifactIdCounter: number = 0
+  private config: NicheConstructionConfig;
+  private activeInference: ActiveInference;
+  private nicheState: NicheState;
+  private modificationHistory: NicheModification[];
+  private maintenanceTimer: NodeJS.Timeout | null = null;
+  private artifactIdCounter: number = 0;
 
-  constructor(
-    activeInference: ActiveInference,
-    config: Partial<NicheConstructionConfig> = {}
-  ) {
-    super()
-    this.config = { ...DEFAULT_CONFIG, ...config }
-    this.activeInference = activeInference
-    this.modificationHistory = []
+  constructor(activeInference: ActiveInference, config: Partial<NicheConstructionConfig> = {}) {
+    super();
+    this.config = { ...DEFAULT_CONFIG, ...config };
+    this.activeInference = activeInference;
+    this.modificationHistory = [];
 
     // Initialize niche state
     this.nicheState = {
@@ -164,10 +166,10 @@ export class NicheConstruction extends EventEmitter {
       richness: 0.5,
       predictability: 0.5,
       fitness: 0.5,
-    }
+    };
 
-    this.initializeDefaultAffordances()
-    this.setupActiveInferenceIntegration()
+    this.initializeDefaultAffordances();
+    this.setupActiveInferenceIntegration();
   }
 
   /**
@@ -215,14 +217,14 @@ export class NicheConstruction extends EventEmitter {
         cost: 0.1,
         available: true,
       },
-    ]
+    ];
 
     for (const affordance of defaultAffordances) {
-      const id = `affordance_${this.artifactIdCounter++}`
-      this.nicheState.affordances.set(id, { id, ...affordance })
+      const id = `affordance_${this.artifactIdCounter++}`;
+      this.nicheState.affordances.set(id, { id, ...affordance });
     }
 
-    log.info(`Initialized ${defaultAffordances.length} default affordances`)
+    log.info(`Initialized ${defaultAffordances.length} default affordances`);
   }
 
   /**
@@ -230,34 +232,34 @@ export class NicheConstruction extends EventEmitter {
    */
   private setupActiveInferenceIntegration(): void {
     // Listen for belief updates to trigger niche construction
-    this.activeInference.on('beliefs_updated', (data: {
-      beliefs: Map<string, BeliefState>
-      freeEnergy: FreeEnergyResult
-    }) => {
-      this.evaluateNicheConstruction(data.beliefs, data.freeEnergy)
-    })
+    this.activeInference.on(
+      'beliefs_updated',
+      (data: { beliefs: Map<string, BeliefState>; freeEnergy: FreeEnergyResult }) => {
+        this.evaluateNicheConstruction(data.beliefs, data.freeEnergy);
+      }
+    );
 
     // Listen for learning events to update artifact effectiveness
-    this.activeInference.on('learning_complete', (data: {
-      action: Action
-      predictionError: number
-    }) => {
-      this.updateArtifactEffectiveness(data.action, data.predictionError)
-    })
+    this.activeInference.on(
+      'learning_complete',
+      (data: { action: Action; predictionError: number }) => {
+        this.updateArtifactEffectiveness(data.action, data.predictionError);
+      }
+    );
   }
 
   /**
    * Start niche construction maintenance
    */
   public start(): void {
-    if (this.maintenanceTimer) return
+    if (this.maintenanceTimer) return;
 
     this.maintenanceTimer = setInterval(() => {
-      this.performMaintenance()
-    }, this.config.maintenanceInterval)
+      this.performMaintenance();
+    }, this.config.maintenanceInterval);
 
-    log.info('Niche construction started')
-    this.emit('started')
+    log.info('Niche construction started');
+    this.emit('started');
   }
 
   /**
@@ -265,12 +267,12 @@ export class NicheConstruction extends EventEmitter {
    */
   public stop(): void {
     if (this.maintenanceTimer) {
-      clearInterval(this.maintenanceTimer)
-      this.maintenanceTimer = null
+      clearInterval(this.maintenanceTimer);
+      this.maintenanceTimer = null;
     }
 
-    log.info('Niche construction stopped')
-    this.emit('stopped')
+    log.info('Niche construction stopped');
+    this.emit('stopped');
   }
 
   /**
@@ -282,11 +284,11 @@ export class NicheConstruction extends EventEmitter {
   ): Promise<void> {
     // High free energy suggests the environment could be improved
     if (freeEnergy.totalFreeEnergy > this.config.creationThreshold * 10) {
-      await this.considerArtifactCreation(beliefs, freeEnergy)
+      await this.considerArtifactCreation(beliefs, freeEnergy);
     }
 
     // Update niche fitness
-    this.updateNicheFitness(freeEnergy)
+    this.updateNicheFitness(freeEnergy);
   }
 
   /**
@@ -297,36 +299,36 @@ export class NicheConstruction extends EventEmitter {
     freeEnergy: FreeEnergyResult
   ): Promise<void> {
     // Identify sources of high free energy
-    const highUncertaintyBeliefs: BeliefState[] = []
+    const highUncertaintyBeliefs: BeliefState[] = [];
 
     for (const belief of beliefs.values()) {
       // Calculate entropy of belief
-      let entropy = 0
+      let entropy = 0;
       for (const prob of belief.distribution.values()) {
         if (prob > 0) {
-          entropy -= prob * Math.log2(prob)
+          entropy -= prob * Math.log2(prob);
         }
       }
 
       if (entropy > 1.0) {
-        highUncertaintyBeliefs.push(belief)
+        highUncertaintyBeliefs.push(belief);
       }
     }
 
     // Create inference templates for high-uncertainty areas
     for (const belief of highUncertaintyBeliefs) {
       if (this.nicheState.artifacts.size >= this.config.maxArtifacts) {
-        await this.pruneIneffectiveArtifacts()
+        await this.pruneIneffectiveArtifacts();
       }
 
-      const existingTemplate = this.findRelevantArtifact(belief.variable, 'inference_template')
+      const existingTemplate = this.findRelevantArtifact(belief.variable, 'inference_template');
       if (!existingTemplate) {
-        await this.createInferenceTemplate(belief)
+        await this.createInferenceTemplate(belief);
       }
     }
 
     // Create context frames for recurring patterns
-    await this.detectAndCreateContextFrames(beliefs)
+    await this.detectAndCreateContextFrames(beliefs);
   }
 
   /**
@@ -349,9 +351,9 @@ export class NicheConstruction extends EventEmitter {
       effectiveness: 0.5,
       contexts: [belief.variable],
       dependencies: [],
-    }
+    };
 
-    this.nicheState.artifacts.set(artifact.id, artifact)
+    this.nicheState.artifacts.set(artifact.id, artifact);
 
     const modification: NicheModification = {
       type: 'create',
@@ -359,13 +361,13 @@ export class NicheConstruction extends EventEmitter {
       changes: { artifact },
       rationale: `High uncertainty in ${belief.variable}`,
       expectedEffect: -0.1, // Expected reduction in free energy
-    }
+    };
 
-    this.modificationHistory.push(modification)
-    this.emit('artifact_created', artifact)
+    this.modificationHistory.push(modification);
+    this.emit('artifact_created', artifact);
 
-    log.info(`Created inference template for ${belief.variable}`)
-    return artifact
+    log.info(`Created inference template for ${belief.variable}`);
+    return artifact;
   }
 
   /**
@@ -374,9 +376,9 @@ export class NicheConstruction extends EventEmitter {
   private generateQueriesForUncertainty(variable: string): string[] {
     const queryTemplates: Record<string, string[]> = {
       user_intent: [
-        'Could you clarify what you\'re looking for?',
+        "Could you clarify what you're looking for?",
         'What would be most helpful for you right now?',
-        'Is there a specific aspect you\'d like me to focus on?',
+        "Is there a specific aspect you'd like me to focus on?",
       ],
       emotional_valence: [
         'How are you feeling about this?',
@@ -398,9 +400,9 @@ export class NicheConstruction extends EventEmitter {
         'What would be most helpful to discuss?',
         'Is there anything else I should know?',
       ],
-    }
+    };
 
-    return queryTemplates[variable] || queryTemplates.default
+    return queryTemplates[variable] || queryTemplates.default;
   }
 
   /**
@@ -413,25 +415,23 @@ export class NicheConstruction extends EventEmitter {
       topic_relevance: ['keywords', 'entity_mentions', 'context_markers'],
       information_need: ['question_complexity', 'domain_terms', 'specificity'],
       default: ['content_length', 'structure', 'tone'],
-    }
+    };
 
-    return featureMap[variable] || featureMap.default
+    return featureMap[variable] || featureMap.default;
   }
 
   /**
    * Detect recurring patterns and create context frames
    */
-  private async detectAndCreateContextFrames(
-    beliefs: Map<string, BeliefState>
-  ): Promise<void> {
+  private async detectAndCreateContextFrames(beliefs: Map<string, BeliefState>): Promise<void> {
     // Analyze belief correlations
-    const beliefCorrelations = this.analyzeBeliefCorrelations(beliefs)
+    const beliefCorrelations = this.analyzeBeliefCorrelations(beliefs);
 
     for (const correlation of beliefCorrelations) {
       if (correlation.strength > 0.7) {
-        const existingFrame = this.findContextFrame(correlation.variables)
+        const existingFrame = this.findContextFrame(correlation.variables);
         if (!existingFrame) {
-          await this.createContextFrame(correlation)
+          await this.createContextFrame(correlation);
         }
       }
     }
@@ -443,30 +443,30 @@ export class NicheConstruction extends EventEmitter {
   private analyzeBeliefCorrelations(
     beliefs: Map<string, BeliefState>
   ): Array<{ variables: string[]; strength: number }> {
-    const correlations: Array<{ variables: string[]; strength: number }> = []
-    const beliefArray = Array.from(beliefs.entries())
+    const correlations: Array<{ variables: string[]; strength: number }> = [];
+    const beliefArray = Array.from(beliefs.entries());
 
     for (let i = 0; i < beliefArray.length; i++) {
       for (let j = i + 1; j < beliefArray.length; j++) {
-        const [var1, belief1] = beliefArray[i]
-        const [var2, belief2] = beliefArray[j]
+        const [var1, belief1] = beliefArray[i];
+        const [var2, belief2] = beliefArray[j];
 
         // Calculate correlation based on distribution similarity
         const strength = this.calculateDistributionSimilarity(
           belief1.distribution,
           belief2.distribution
-        )
+        );
 
         if (strength > 0.5) {
           correlations.push({
             variables: [var1, var2],
             strength,
-          })
+          });
         }
       }
     }
 
-    return correlations.sort((a, b) => b.strength - a.strength)
+    return correlations.sort((a, b) => b.strength - a.strength);
   }
 
   /**
@@ -477,19 +477,19 @@ export class NicheConstruction extends EventEmitter {
     dist2: Map<string, number>
   ): number {
     // Use Jensen-Shannon divergence (inverted for similarity)
-    const allKeys = new Set([...dist1.keys(), ...dist2.keys()])
-    let jsd = 0
+    const allKeys = new Set([...dist1.keys(), ...dist2.keys()]);
+    let jsd = 0;
 
     for (const key of allKeys) {
-      const p = dist1.get(key) || 0.001
-      const q = dist2.get(key) || 0.001
-      const m = (p + q) / 2
+      const p = dist1.get(key) || 0.001;
+      const q = dist2.get(key) || 0.001;
+      const m = (p + q) / 2;
 
-      if (p > 0) jsd += 0.5 * p * Math.log2(p / m)
-      if (q > 0) jsd += 0.5 * q * Math.log2(q / m)
+      if (p > 0) jsd += 0.5 * p * Math.log2(p / m);
+      if (q > 0) jsd += 0.5 * q * Math.log2(q / m);
     }
 
-    return Math.max(0, 1 - jsd)
+    return Math.max(0, 1 - jsd);
   }
 
   /**
@@ -498,21 +498,22 @@ export class NicheConstruction extends EventEmitter {
   private findContextFrame(variables: string[]): CognitiveArtifact | null {
     for (const artifact of this.nicheState.artifacts.values()) {
       if (artifact.type === 'context_frame') {
-        const frameVars = (artifact.content as { variables: string[] }).variables
-        if (variables.every(v => frameVars.includes(v))) {
-          return artifact
+        const frameVars = (artifact.content as { variables: string[] }).variables;
+        if (variables.every((v) => frameVars.includes(v))) {
+          return artifact;
         }
       }
     }
-    return null
+    return null;
   }
 
   /**
    * Create a context frame artifact
    */
-  private async createContextFrame(
-    correlation: { variables: string[]; strength: number }
-  ): Promise<CognitiveArtifact> {
+  private async createContextFrame(correlation: {
+    variables: string[];
+    strength: number;
+  }): Promise<CognitiveArtifact> {
     const artifact: CognitiveArtifact = {
       id: `artifact_${this.artifactIdCounter++}`,
       type: 'context_frame',
@@ -528,13 +529,13 @@ export class NicheConstruction extends EventEmitter {
       effectiveness: 0.5,
       contexts: correlation.variables,
       dependencies: [],
-    }
+    };
 
-    this.nicheState.artifacts.set(artifact.id, artifact)
-    this.emit('artifact_created', artifact)
+    this.nicheState.artifacts.set(artifact.id, artifact);
+    this.emit('artifact_created', artifact);
 
-    log.info(`Created context frame for ${correlation.variables.join(', ')}`)
-    return artifact
+    log.info(`Created context frame for ${correlation.variables.join(', ')}`);
+    return artifact;
   }
 
   /**
@@ -544,7 +545,7 @@ export class NicheConstruction extends EventEmitter {
     variables: string[]
   ): Array<{ condition: string; inference: string; confidence: number }> {
     // Generate simple conditional rules
-    const rules: Array<{ condition: string; inference: string; confidence: number }> = []
+    const rules: Array<{ condition: string; inference: string; confidence: number }> = [];
 
     for (let i = 0; i < variables.length; i++) {
       for (let j = 0; j < variables.length; j++) {
@@ -553,17 +554,17 @@ export class NicheConstruction extends EventEmitter {
             condition: `${variables[i]} = high`,
             inference: `${variables[j]} likely high`,
             confidence: 0.7,
-          })
+          });
           rules.push({
             condition: `${variables[i]} = low`,
             inference: `${variables[j]} likely low`,
             confidence: 0.6,
-          })
+          });
         }
       }
     }
 
-    return rules
+    return rules;
   }
 
   /**
@@ -573,27 +574,27 @@ export class NicheConstruction extends EventEmitter {
     context: string,
     type?: CognitiveArtifact['type']
   ): CognitiveArtifact | null {
-    let bestMatch: CognitiveArtifact | null = null
-    let bestScore = 0
+    let bestMatch: CognitiveArtifact | null = null;
+    let bestScore = 0;
 
     for (const artifact of this.nicheState.artifacts.values()) {
-      if (type && artifact.type !== type) continue
+      if (type && artifact.type !== type) continue;
 
       if (artifact.contexts.includes(context)) {
-        const score = artifact.effectiveness * artifact.accessCount
+        const score = artifact.effectiveness * artifact.accessCount;
         if (score > bestScore) {
-          bestScore = score
-          bestMatch = artifact
+          bestScore = score;
+          bestMatch = artifact;
         }
       }
     }
 
     if (bestMatch) {
-      bestMatch.lastUsed = Date.now()
-      bestMatch.accessCount++
+      bestMatch.lastUsed = Date.now();
+      bestMatch.accessCount++;
     }
 
-    return bestMatch
+    return bestMatch;
   }
 
   /**
@@ -602,13 +603,12 @@ export class NicheConstruction extends EventEmitter {
   private updateArtifactEffectiveness(action: Action, predictionError: number): void {
     // Find artifacts that were used for this action
     for (const artifact of this.nicheState.artifacts.values()) {
-      if (artifact.contexts.some(ctx => action.target.includes(ctx))) {
+      if (artifact.contexts.some((ctx) => action.target.includes(ctx))) {
         // Update effectiveness based on prediction accuracy
-        const effectiveness = 1 - predictionError
-        artifact.effectiveness =
-          artifact.effectiveness * 0.9 + effectiveness * 0.1
+        const effectiveness = 1 - predictionError;
+        artifact.effectiveness = artifact.effectiveness * 0.9 + effectiveness * 0.1;
 
-        this.emit('artifact_updated', artifact)
+        this.emit('artifact_updated', artifact);
       }
     }
   }
@@ -617,12 +617,12 @@ export class NicheConstruction extends EventEmitter {
    * Prune ineffective artifacts
    */
   private async pruneIneffectiveArtifacts(): Promise<number> {
-    let pruned = 0
+    let pruned = 0;
 
     for (const [id, artifact] of this.nicheState.artifacts) {
       if (artifact.effectiveness < this.config.removalThreshold) {
-        this.nicheState.artifacts.delete(id)
-        pruned++
+        this.nicheState.artifacts.delete(id);
+        pruned++;
 
         const modification: NicheModification = {
           type: 'remove',
@@ -630,18 +630,18 @@ export class NicheConstruction extends EventEmitter {
           changes: {},
           rationale: `Low effectiveness: ${artifact.effectiveness}`,
           expectedEffect: 0,
-        }
-        this.modificationHistory.push(modification)
+        };
+        this.modificationHistory.push(modification);
 
-        this.emit('artifact_removed', artifact)
+        this.emit('artifact_removed', artifact);
       }
     }
 
     if (pruned > 0) {
-      log.info(`Pruned ${pruned} ineffective artifacts`)
+      log.info(`Pruned ${pruned} ineffective artifacts`);
     }
 
-    return pruned
+    return pruned;
   }
 
   /**
@@ -650,31 +650,31 @@ export class NicheConstruction extends EventEmitter {
   private async performMaintenance(): Promise<void> {
     // Decay artifact effectiveness over time
     for (const artifact of this.nicheState.artifacts.values()) {
-      const timeSinceUse = Date.now() - artifact.lastUsed
-      const decayFactor = Math.exp(-this.config.decayRate * timeSinceUse / 3600000)
-      artifact.effectiveness *= decayFactor
+      const timeSinceUse = Date.now() - artifact.lastUsed;
+      const decayFactor = Math.exp((-this.config.decayRate * timeSinceUse) / 3600000);
+      artifact.effectiveness *= decayFactor;
     }
 
     // Prune ineffective artifacts
-    await this.pruneIneffectiveArtifacts()
+    await this.pruneIneffectiveArtifacts();
 
     // Update affordance availability
-    this.updateAffordanceAvailability()
+    this.updateAffordanceAvailability();
 
     // Recalculate niche fitness
-    this.recalculateNicheFitness()
+    this.recalculateNicheFitness();
 
-    this.emit('maintenance_complete', this.nicheState)
+    this.emit('maintenance_complete', this.nicheState);
   }
 
   /**
    * Update which affordances are currently available
    */
   private updateAffordanceAvailability(): void {
-    const beliefs = this.activeInference.getBeliefs()
+    const beliefs = this.activeInference.getBeliefs();
 
     for (const affordance of this.nicheState.affordances.values()) {
-      affordance.available = this.checkAffordanceConditions(affordance, beliefs)
+      affordance.available = this.checkAffordanceConditions(affordance, beliefs);
     }
   }
 
@@ -686,25 +686,25 @@ export class NicheConstruction extends EventEmitter {
     beliefs: Map<string, BeliefState>
   ): boolean {
     for (const [condition, requiredValue] of affordance.conditions) {
-      const belief = beliefs.get(condition)
-      if (!belief) continue
+      const belief = beliefs.get(condition);
+      if (!belief) continue;
 
       // Find most likely value
-      let mostLikely = 'unknown'
-      let maxProb = 0
+      let mostLikely = 'unknown';
+      let maxProb = 0;
       for (const [value, prob] of belief.distribution) {
         if (prob > maxProb) {
-          maxProb = prob
-          mostLikely = value
+          maxProb = prob;
+          mostLikely = value;
         }
       }
 
       if (mostLikely !== requiredValue && maxProb > 0.6) {
-        return false
+        return false;
       }
     }
 
-    return true
+    return true;
   }
 
   /**
@@ -712,12 +712,12 @@ export class NicheConstruction extends EventEmitter {
    */
   private updateNicheFitness(freeEnergy: FreeEnergyResult): void {
     // Fitness is inversely related to free energy
-    const newFitness = Math.exp(-freeEnergy.totalFreeEnergy / 10)
-    this.nicheState.fitness = this.nicheState.fitness * 0.9 + newFitness * 0.1
+    const newFitness = Math.exp(-freeEnergy.totalFreeEnergy / 10);
+    this.nicheState.fitness = this.nicheState.fitness * 0.9 + newFitness * 0.1;
 
     // Update other niche properties
-    this.nicheState.predictability = 1 - freeEnergy.accuracy / 10
-    this.nicheState.richness = Math.min(1, this.nicheState.artifacts.size / 50)
+    this.nicheState.predictability = 1 - freeEnergy.accuracy / 10;
+    this.nicheState.richness = Math.min(1, this.nicheState.artifacts.size / 50);
   }
 
   /**
@@ -725,35 +725,33 @@ export class NicheConstruction extends EventEmitter {
    */
   private recalculateNicheFitness(): void {
     // Calculate based on artifact effectiveness
-    let totalEffectiveness = 0
-    let artifactCount = 0
+    let totalEffectiveness = 0;
+    let artifactCount = 0;
 
     for (const artifact of this.nicheState.artifacts.values()) {
-      totalEffectiveness += artifact.effectiveness
-      artifactCount++
+      totalEffectiveness += artifact.effectiveness;
+      artifactCount++;
     }
 
-    const avgEffectiveness = artifactCount > 0 ? totalEffectiveness / artifactCount : 0.5
+    const avgEffectiveness = artifactCount > 0 ? totalEffectiveness / artifactCount : 0.5;
 
     // Calculate based on affordance availability
-    let availableAffordances = 0
+    let availableAffordances = 0;
     for (const affordance of this.nicheState.affordances.values()) {
-      if (affordance.available) availableAffordances++
+      if (affordance.available) availableAffordances++;
     }
-    const affordanceRatio = availableAffordances / Math.max(1, this.nicheState.affordances.size)
+    const affordanceRatio = availableAffordances / Math.max(1, this.nicheState.affordances.size);
 
     // Combined fitness
     this.nicheState.fitness =
-      avgEffectiveness * 0.4 +
-      affordanceRatio * 0.3 +
-      this.nicheState.predictability * 0.3
+      avgEffectiveness * 0.4 + affordanceRatio * 0.3 + this.nicheState.predictability * 0.3;
   }
 
   /**
    * Get available affordances for action selection
    */
   public getAvailableAffordances(): Affordance[] {
-    return Array.from(this.nicheState.affordances.values()).filter(a => a.available)
+    return Array.from(this.nicheState.affordances.values()).filter((a) => a.available);
   }
 
   /**
@@ -764,26 +762,26 @@ export class NicheConstruction extends EventEmitter {
       ...this.nicheState,
       artifacts: new Map(this.nicheState.artifacts),
       affordances: new Map(this.nicheState.affordances),
-    }
+    };
   }
 
   /**
    * Get artifacts by type
    */
   public getArtifactsByType(type: CognitiveArtifact['type']): CognitiveArtifact[] {
-    return Array.from(this.nicheState.artifacts.values()).filter(a => a.type === type)
+    return Array.from(this.nicheState.artifacts.values()).filter((a) => a.type === type);
   }
 
   /**
    * Get niche construction summary
    */
   public getSummary(): {
-    artifactCount: number
-    affordanceCount: number
-    availableAffordances: number
-    nicheFitness: number
-    stability: number
-    recentModifications: number
+    artifactCount: number;
+    affordanceCount: number;
+    availableAffordances: number;
+    nicheFitness: number;
+    stability: number;
+    recentModifications: number;
   } {
     return {
       artifactCount: this.nicheState.artifacts.size,
@@ -792,8 +790,8 @@ export class NicheConstruction extends EventEmitter {
       nicheFitness: this.nicheState.fitness,
       stability: this.nicheState.stability,
       recentModifications: this.modificationHistory.filter(
-        m => Date.now() - (m as any).timestamp < 3600000
+        (m) => Date.now() - (m as any).timestamp < 3600000
       ).length,
-    }
+    };
   }
 }

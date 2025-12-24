@@ -62,20 +62,20 @@ struct Proc {
 	char	*user;		/* User name */
 	int	pid;		/* Process ID */
 	int	state;		/* Process state */
-	
+
 	QLock	seglock;	/* Locked whenever seg[] changes */
 	Segment	*seg[NSEG];	/* Segments */
-	
+
 	Fgrp	*fgrp;		/* File descriptors */
 	Pgrp	*pgrp;		/* Namespace */
 	Egrp	*egrp;		/* Environment */
 	Rgrp	*rgrp;		/* Rendez groups */
-	
+
 	ulong	nlocks;		/* Number of locks held */
 	int	priority;	/* Scheduling priority */
 	int	basepri;	/* Base priority */
 	ulong	cpu;		/* CPU time used */
-	
+
 	/* ... more fields ... */
 };
 ```
@@ -169,7 +169,7 @@ Plan 9 device drivers implement a standard interface:
 struct Dev {
 	int	dc;		/* Device character */
 	char	*name;		/* Device name */
-	
+
 	void	(*reset)(void);
 	void	(*init)(void);
 	void	(*shutdown)(void);
@@ -277,7 +277,7 @@ examplewrite(Chan *c, void *a, long n, vlong offset)
 Dev exampledevtab = {
 	'X',
 	"example",
-	
+
 	devreset,
 	devinit,
 	devshutdown,
@@ -364,17 +364,17 @@ sysexample(Ar0 *ar0)
 {
 	char *path;
 	long n;
-	
+
 	// Validate user pointer
 	path = validaddr(ar0->p, 1, 0);
-	
+
 	// Validate user memory region
 	n = (long)ar0->n;
 	validaddr(ar0->va, n, 1);
-	
+
 	// Perform operation
 	// ...
-	
+
 	// Return value
 	ar0->i = result;
 }
@@ -390,10 +390,10 @@ trap(Ureg *ur)
 {
 	int clockintr, user;
 	char buf[ERRMAX];
-	
+
 	user = userureg(ur);
 	clockintr = 0;
-	
+
 	// Handle trap based on type
 	switch(ur->trap){
 	case VectorBPT:
@@ -403,7 +403,7 @@ trap(Ureg *ur)
 		else
 			panic("kernel breakpoint");
 		break;
-		
+
 	case VectorUD:
 		// Undefined instruction
 		if(user){
@@ -414,7 +414,7 @@ trap(Ureg *ur)
 		}
 		panic("invalid opcode");
 		break;
-		
+
 	case VectorGPF:
 		// General protection fault
 		if(user){
@@ -426,15 +426,15 @@ trap(Ureg *ur)
 		}
 		panic("general protection violation");
 		break;
-		
+
 	case VectorPF:
 		// Page fault
 		fault(ur->pc, (void*)cr2get(), user);
 		break;
-		
+
 	// ... more cases ...
 	}
-	
+
 	// Check for notifications
 	if(user){
 		notify(ur);
@@ -450,6 +450,7 @@ trap(Ureg *ur)
 To port Plan 9 to a new architecture:
 
 1. **Create architecture directory**
+
    ```
    sys/src/9/<arch>/
    ├── dat.h      # Data structures (Mach, Page sizes, etc.)
@@ -464,6 +465,7 @@ To port Plan 9 to a new architecture:
    ```
 
 2. **Define architecture-specific structures**
+
    ```c
    // dat.h
    struct Mach {
@@ -476,7 +478,7 @@ To port Plan 9 to a new architecture:
    	Alarm	*alarm;		/* Alarm queue */
    	/* ... arch-specific fields ... */
    };
-   
+
    struct Page {
    	Lock;
    	ulong	pa;		/* Physical address */
@@ -616,18 +618,21 @@ icflush(va, size);  // Instruction cache
 ### Kernel Debugging
 
 1. **Print Debugging**
+
    ```c
    print("Debug: value = %d\n", value);
    iprint("Interrupt: handler called\n");  // Safe in interrupts
    ```
 
 2. **Panic on Error**
+
    ```c
    if(condition)
    	panic("something wrong: %d", value);
    ```
 
 3. **Stack Traces**
+
    ```c
    void dumpstack(void);        // Dump current stack
    void dumpregs(Ureg*);        // Dump registers
@@ -695,11 +700,11 @@ icflush(va, size);  // Instruction cache
 void func(void)
 {
 	vlong t0, t1;
-	
+
 	cycles(&t0);
 	// ... code to profile ...
 	cycles(&t1);
-	
+
 	print("elapsed: %lld cycles\n", t1 - t0);
 }
 ```
@@ -759,17 +764,17 @@ Proc*
 allocproc(void)
 {
 	Proc *p;
-	
+
 	p = procalloc.free;
 	if(p == nil)
 		return nil;
-	
+
 	procalloc.free = p->qnext;
-	
+
 	p->state = Scheding;
 	p->mach = nil;
 	p->qnext = nil;
-	
+
 	return p;
 }
 ```
@@ -777,11 +782,13 @@ allocproc(void)
 ## Related Kernel Resources
 
 ### Kernel Documentation
+
 - `/sys/doc/9.ms` - Plan 9 kernel overview
 - `/sys/doc/dev.ms` - Device driver interface
 - `/sys/doc/port.ms` - Portable kernel design
 
 ### Key Source Files
+
 - `sys/src/9/port/portdat.h` - Core data structures
 - `sys/src/9/port/portfns.h` - Core functions
 - `sys/src/9/port/proc.c` - Process management
@@ -789,6 +796,7 @@ allocproc(void)
 - `sys/src/9/port/page.c` - Memory management
 
 ### Architecture References
+
 - `sys/src/9/pc/` - x86 reference implementation
 - `sys/src/9/arm/` - ARM implementation
 - `sys/src/9/port/` - Portable kernel code

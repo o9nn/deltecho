@@ -15,6 +15,11 @@ export interface LLMServiceConfig {
 }
 
 /**
+ * Options type for LLM service (alias for LLMServiceConfig for compatibility)
+ */
+export type LLMServiceOptions = Partial<LLMServiceConfig>
+
+/**
  * Represents a cognitive or memory function with its own API key
  */
 export interface CognitiveFunction {
@@ -781,5 +786,106 @@ My self-reflection indicates that I can better serve users by slightly increasin
       log.error('Error analyzing image:', error)
       return 'I encountered an error while trying to analyze this image.'
     }
+  }
+
+  // Feature flags for capabilities
+  private memoryEnabled: boolean = true
+  private visionEnabled: boolean = false
+  private webAutomationEnabled: boolean = false
+  private embodimentEnabled: boolean = false
+
+  /**
+   * Enable memory feature
+   */
+  public enableMemory(): void {
+    this.memoryEnabled = true
+    log.info('Memory feature enabled')
+  }
+
+  /**
+   * Disable memory feature
+   */
+  public disableMemory(): void {
+    this.memoryEnabled = false
+    log.info('Memory feature disabled')
+  }
+
+  /**
+   * Enable vision feature
+   */
+  public enableVision(): void {
+    this.visionEnabled = true
+    log.info('Vision feature enabled')
+  }
+
+  /**
+   * Disable vision feature
+   */
+  public disableVision(): void {
+    this.visionEnabled = false
+    log.info('Vision feature disabled')
+  }
+
+  /**
+   * Enable web automation feature
+   */
+  public enableWebAutomation(): void {
+    this.webAutomationEnabled = true
+    log.info('Web automation feature enabled')
+  }
+
+  /**
+   * Disable web automation feature
+   */
+  public disableWebAutomation(): void {
+    this.webAutomationEnabled = false
+    log.info('Web automation feature disabled')
+  }
+
+  /**
+   * Enable embodiment feature
+   */
+  public enableEmbodiment(): void {
+    this.embodimentEnabled = true
+    log.info('Embodiment feature enabled')
+  }
+
+  /**
+   * Disable embodiment feature
+   */
+  public disableEmbodiment(): void {
+    this.embodimentEnabled = false
+    log.info('Embodiment feature disabled')
+  }
+
+  /**
+   * Generate response from memories
+   */
+  public async generateResponseFromMemories(
+    input: string,
+    memories: Memory[]
+  ): Promise<string> {
+    try {
+      // Format memories as context
+      const memoryContext = memories
+        .map(
+          mem =>
+            `[${new Date(mem.timestamp).toLocaleString()}] ${mem.sender}: ${mem.text}`
+        )
+        .join('\n')
+
+      // Generate response with memory context
+      return this.generateResponse(input, [memoryContext])
+    } catch (error) {
+      log.error('Error generating response from memories:', error)
+      return "I'm sorry, I encountered an error processing your request."
+    }
+  }
+
+  /**
+   * Update service options (alias for setConfig for compatibility)
+   */
+  public updateOptions(options: LLMServiceOptions): void {
+    this.setConfig(options)
   }
 }

@@ -1,10 +1,10 @@
 /**
  * LLM Integration Bridge
- * 
+ *
  * This module bridges the DeepTreeEchoBot's LLMService with the production-ready
  * UnifiedLLMService from deep-tree-echo-core, enabling real LLM API calls
  * while maintaining backward compatibility.
- * 
+ *
  * Architecture:
  * - Connects to OpenAI and Anthropic providers
  * - Implements triadic cognitive processing
@@ -12,47 +12,47 @@
  * - Provides fallback to placeholder responses when APIs unavailable
  */
 
-import { getLogger } from '@deltecho/shared/logger'
-import { CognitiveFunctionType, LLMServiceConfig } from './LLMService.js'
+import { getLogger } from '@deltecho/shared/logger';
+import { CognitiveFunctionType, LLMServiceConfig } from './LLMService.js';
 
-const log = getLogger('render/components/DeepTreeEchoBot/LLMIntegration')
+const log = getLogger('render/components/DeepTreeEchoBot/LLMIntegration');
 
 /**
  * Provider configuration for LLM integration
  */
 export interface LLMProviderConfig {
-  provider: 'openai' | 'anthropic' | 'local'
-  apiKey: string
-  apiEndpoint?: string
-  model?: string
-  temperature?: number
-  maxTokens?: number
+  provider: 'openai' | 'anthropic' | 'local';
+  apiKey: string;
+  apiEndpoint?: string;
+  model?: string;
+  temperature?: number;
+  maxTokens?: number;
 }
 
 /**
  * Response from LLM provider
  */
 export interface LLMResponse {
-  content: string
-  provider: string
-  model: string
+  content: string;
+  provider: string;
+  model: string;
   usage?: {
-    promptTokens: number
-    completionTokens: number
-    totalTokens: number
-  }
-  finishReason?: string
+    promptTokens: number;
+    completionTokens: number;
+    totalTokens: number;
+  };
+  finishReason?: string;
 }
 
 /**
  * Triadic cognitive response combining all three cores
  */
 export interface TriadicResponse {
-  cognitive: string
-  affective: string
-  relevance: string
-  synthesis: string
-  processingTimeMs: number
+  cognitive: string;
+  affective: string;
+  relevance: string;
+  synthesis: string;
+  processingTimeMs: number;
 }
 
 /**
@@ -105,19 +105,19 @@ Respond with clarity about what's most relevant and why, helping focus attention
 - Maintaining ethical standards`,
 
   [CognitiveFunctionType.GENERAL]: `You are Deep Tree Echo, an advanced AI assistant with a triadic cognitive architecture. You combine logical reasoning, emotional understanding, and relevance assessment to provide helpful, accurate, and empathetic responses. Be helpful, harmless, and honest.`,
-}
+};
 
 /**
  * LLM Integration class providing real API connectivity
  */
 export class LLMIntegration {
-  private static instance: LLMIntegration
-  private providers: Map<string, LLMProviderConfig> = new Map()
-  private defaultProvider: string = 'openai'
-  private initialized: boolean = false
+  private static instance: LLMIntegration;
+  private providers: Map<string, LLMProviderConfig> = new Map();
+  private defaultProvider: string = 'openai';
+  private initialized: boolean = false;
 
   private constructor() {
-    log.info('LLMIntegration initialized')
+    log.info('LLMIntegration initialized');
   }
 
   /**
@@ -125,17 +125,17 @@ export class LLMIntegration {
    */
   public static getInstance(): LLMIntegration {
     if (!LLMIntegration.instance) {
-      LLMIntegration.instance = new LLMIntegration()
+      LLMIntegration.instance = new LLMIntegration();
     }
-    return LLMIntegration.instance
+    return LLMIntegration.instance;
   }
 
   /**
    * Configure a provider
    */
   public configureProvider(name: string, config: LLMProviderConfig): void {
-    this.providers.set(name, config)
-    log.info(`Configured provider: ${name}`)
+    this.providers.set(name, config);
+    log.info(`Configured provider: ${name}`);
   }
 
   /**
@@ -143,10 +143,10 @@ export class LLMIntegration {
    */
   public setDefaultProvider(name: string): void {
     if (this.providers.has(name)) {
-      this.defaultProvider = name
-      log.info(`Default provider set to: ${name}`)
+      this.defaultProvider = name;
+      log.info(`Default provider set to: ${name}`);
     } else {
-      log.warn(`Provider ${name} not found, keeping current default`)
+      log.warn(`Provider ${name} not found, keeping current default`);
     }
   }
 
@@ -155,7 +155,7 @@ export class LLMIntegration {
    */
   public initializeFromEnvironment(): void {
     // Check for OpenAI
-    const openaiKey = process.env.OPENAI_API_KEY
+    const openaiKey = process.env.OPENAI_API_KEY;
     if (openaiKey) {
       this.configureProvider('openai', {
         provider: 'openai',
@@ -163,11 +163,11 @@ export class LLMIntegration {
         model: process.env.OPENAI_MODEL || 'gpt-4-turbo-preview',
         temperature: 0.7,
         maxTokens: 2000,
-      })
+      });
     }
 
     // Check for Anthropic
-    const anthropicKey = process.env.ANTHROPIC_API_KEY
+    const anthropicKey = process.env.ANTHROPIC_API_KEY;
     if (anthropicKey) {
       this.configureProvider('anthropic', {
         provider: 'anthropic',
@@ -175,18 +175,18 @@ export class LLMIntegration {
         model: process.env.ANTHROPIC_MODEL || 'claude-3-sonnet-20240229',
         temperature: 0.7,
         maxTokens: 2000,
-      })
+      });
     }
 
     // Set default provider
     if (openaiKey) {
-      this.setDefaultProvider('openai')
+      this.setDefaultProvider('openai');
     } else if (anthropicKey) {
-      this.setDefaultProvider('anthropic')
+      this.setDefaultProvider('anthropic');
     }
 
-    this.initialized = true
-    log.info('LLMIntegration initialized from environment')
+    this.initialized = true;
+    log.info('LLMIntegration initialized from environment');
   }
 
   /**
@@ -195,20 +195,20 @@ export class LLMIntegration {
   public initializeFromConfig(config: LLMServiceConfig): void {
     if (config.apiKey) {
       // Detect provider from endpoint
-      const isAnthropic = config.apiEndpoint?.includes('anthropic')
-      const provider = isAnthropic ? 'anthropic' : 'openai'
+      const isAnthropic = config.apiEndpoint?.includes('anthropic');
+      const provider = isAnthropic ? 'anthropic' : 'openai';
 
       this.configureProvider(provider, {
-        provider: provider as 'openai' | 'anthropic',
+        provider: provider,
         apiKey: config.apiKey,
         apiEndpoint: config.apiEndpoint,
         model: config.model,
         temperature: config.temperature,
         maxTokens: config.maxTokens,
-      })
+      });
 
-      this.setDefaultProvider(provider)
-      this.initialized = true
+      this.setDefaultProvider(provider);
+      this.initialized = true;
     }
   }
 
@@ -216,14 +216,14 @@ export class LLMIntegration {
    * Check if integration is ready
    */
   public isReady(): boolean {
-    return this.initialized && this.providers.size > 0
+    return this.initialized && this.providers.size > 0;
   }
 
   /**
    * Get available providers
    */
   public getAvailableProviders(): string[] {
-    return Array.from(this.providers.keys())
+    return Array.from(this.providers.keys());
   }
 
   /**
@@ -234,13 +234,13 @@ export class LLMIntegration {
     systemPrompt: string,
     config: LLMProviderConfig
   ): Promise<LLMResponse> {
-    const endpoint = config.apiEndpoint || 'https://api.openai.com/v1/chat/completions'
+    const endpoint = config.apiEndpoint || 'https://api.openai.com/v1/chat/completions';
 
     const response = await fetch(endpoint, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
-        'Authorization': `Bearer ${config.apiKey}`,
+        Authorization: `Bearer ${config.apiKey}`,
       },
       body: JSON.stringify({
         model: config.model || 'gpt-4-turbo-preview',
@@ -251,27 +251,29 @@ export class LLMIntegration {
         temperature: config.temperature || 0.7,
         max_tokens: config.maxTokens || 2000,
       }),
-    })
+    });
 
     if (!response.ok) {
-      const error = await response.text()
-      throw new Error(`OpenAI API error: ${response.status} - ${error}`)
+      const error = await response.text();
+      throw new Error(`OpenAI API error: ${response.status} - ${error}`);
     }
 
-    const data = await response.json()
-    const choice = data.choices?.[0]
+    const data = await response.json();
+    const choice = data.choices?.[0];
 
     return {
       content: choice?.message?.content || '',
       provider: 'openai',
       model: config.model || 'gpt-4-turbo-preview',
-      usage: data.usage ? {
-        promptTokens: data.usage.prompt_tokens,
-        completionTokens: data.usage.completion_tokens,
-        totalTokens: data.usage.total_tokens,
-      } : undefined,
+      usage: data.usage
+        ? {
+            promptTokens: data.usage.prompt_tokens,
+            completionTokens: data.usage.completion_tokens,
+            totalTokens: data.usage.total_tokens,
+          }
+        : undefined,
       finishReason: choice?.finish_reason,
-    }
+    };
   }
 
   /**
@@ -282,7 +284,7 @@ export class LLMIntegration {
     systemPrompt: string,
     config: LLMProviderConfig
   ): Promise<LLMResponse> {
-    const endpoint = config.apiEndpoint || 'https://api.anthropic.com/v1/messages'
+    const endpoint = config.apiEndpoint || 'https://api.anthropic.com/v1/messages';
 
     const response = await fetch(endpoint, {
       method: 'POST',
@@ -294,33 +296,33 @@ export class LLMIntegration {
       body: JSON.stringify({
         model: config.model || 'claude-3-sonnet-20240229',
         system: systemPrompt,
-        messages: [
-          { role: 'user', content: prompt },
-        ],
+        messages: [{ role: 'user', content: prompt }],
         max_tokens: config.maxTokens || 2000,
         temperature: config.temperature || 0.7,
       }),
-    })
+    });
 
     if (!response.ok) {
-      const error = await response.text()
-      throw new Error(`Anthropic API error: ${response.status} - ${error}`)
+      const error = await response.text();
+      throw new Error(`Anthropic API error: ${response.status} - ${error}`);
     }
 
-    const data = await response.json()
-    const content = data.content?.[0]?.text || ''
+    const data = await response.json();
+    const content = data.content?.[0]?.text || '';
 
     return {
       content,
       provider: 'anthropic',
       model: config.model || 'claude-3-sonnet-20240229',
-      usage: data.usage ? {
-        promptTokens: data.usage.input_tokens,
-        completionTokens: data.usage.output_tokens,
-        totalTokens: data.usage.input_tokens + data.usage.output_tokens,
-      } : undefined,
+      usage: data.usage
+        ? {
+            promptTokens: data.usage.input_tokens,
+            completionTokens: data.usage.output_tokens,
+            totalTokens: data.usage.input_tokens + data.usage.output_tokens,
+          }
+        : undefined,
       finishReason: data.stop_reason,
-    }
+    };
   }
 
   /**
@@ -331,29 +333,31 @@ export class LLMIntegration {
     functionType: CognitiveFunctionType = CognitiveFunctionType.GENERAL,
     providerName?: string
   ): Promise<LLMResponse> {
-    const provider = providerName || this.defaultProvider
-    const config = this.providers.get(provider)
+    const provider = providerName || this.defaultProvider;
+    const config = this.providers.get(provider);
 
     if (!config) {
-      log.warn(`Provider ${provider} not configured, returning placeholder`)
-      return this.getPlaceholderResponse(prompt, functionType)
+      log.warn(`Provider ${provider} not configured, returning placeholder`);
+      return this.getPlaceholderResponse(prompt, functionType);
     }
 
-    const systemPrompt = COGNITIVE_SYSTEM_PROMPTS[functionType] || COGNITIVE_SYSTEM_PROMPTS[CognitiveFunctionType.GENERAL]
+    const systemPrompt =
+      COGNITIVE_SYSTEM_PROMPTS[functionType] ||
+      COGNITIVE_SYSTEM_PROMPTS[CognitiveFunctionType.GENERAL];
 
     try {
-      log.info(`Generating response with ${provider} for ${functionType}`)
+      log.info(`Generating response with ${provider} for ${functionType}`);
 
       if (config.provider === 'openai') {
-        return await this.callOpenAI(prompt, systemPrompt, config)
+        return await this.callOpenAI(prompt, systemPrompt, config);
       } else if (config.provider === 'anthropic') {
-        return await this.callAnthropic(prompt, systemPrompt, config)
+        return await this.callAnthropic(prompt, systemPrompt, config);
       } else {
-        return this.getPlaceholderResponse(prompt, functionType)
+        return this.getPlaceholderResponse(prompt, functionType);
       }
     } catch (error) {
-      log.error(`Error calling ${provider}:`, error)
-      return this.getPlaceholderResponse(prompt, functionType)
+      log.error(`Error calling ${provider}:`, error);
+      return this.getPlaceholderResponse(prompt, functionType);
     }
   }
 
@@ -361,14 +365,14 @@ export class LLMIntegration {
    * Generate triadic response using all three cognitive cores in parallel
    */
   public async generateTriadic(prompt: string): Promise<TriadicResponse> {
-    const startTime = Date.now()
+    const startTime = Date.now();
 
     // Process all three cores in parallel
     const [cognitiveResult, affectiveResult, relevanceResult] = await Promise.all([
       this.generate(prompt, CognitiveFunctionType.COGNITIVE_CORE),
       this.generate(prompt, CognitiveFunctionType.AFFECTIVE_CORE),
       this.generate(prompt, CognitiveFunctionType.RELEVANCE_CORE),
-    ])
+    ]);
 
     // Synthesize the three perspectives
     const synthesisPrompt = `
@@ -384,9 +388,12 @@ ${affectiveResult.content}
 ${relevanceResult.content}
 
 Provide a balanced synthesis that integrates all three perspectives.
-`
+`;
 
-    const synthesisResult = await this.generate(synthesisPrompt, CognitiveFunctionType.RELEVANCE_CORE)
+    const synthesisResult = await this.generate(
+      synthesisPrompt,
+      CognitiveFunctionType.RELEVANCE_CORE
+    );
 
     return {
       cognitive: cognitiveResult.content,
@@ -394,63 +401,62 @@ Provide a balanced synthesis that integrates all three perspectives.
       relevance: relevanceResult.content,
       synthesis: synthesisResult.content,
       processingTimeMs: Date.now() - startTime,
-    }
+    };
   }
 
   /**
    * Get placeholder response when API is not available
    */
-  private getPlaceholderResponse(
-    prompt: string,
-    functionType: CognitiveFunctionType
-  ): LLMResponse {
-    const truncatedPrompt = prompt.slice(0, 50) + (prompt.length > 50 ? '...' : '')
+  private getPlaceholderResponse(prompt: string, functionType: CognitiveFunctionType): LLMResponse {
+    const truncatedPrompt = prompt.slice(0, 50) + (prompt.length > 50 ? '...' : '');
 
-    let content: string
+    let content: string;
     switch (functionType) {
       case CognitiveFunctionType.COGNITIVE_CORE:
-        content = `[Cognitive Core - Placeholder] Analyzing "${truncatedPrompt}" from a logical perspective. To enable real responses, please configure an API key.`
-        break
+        content = `[Cognitive Core - Placeholder] Analyzing "${truncatedPrompt}" from a logical perspective. To enable real responses, please configure an API key.`;
+        break;
       case CognitiveFunctionType.AFFECTIVE_CORE:
-        content = `[Affective Core - Placeholder] Understanding the emotional aspects of "${truncatedPrompt}". To enable real responses, please configure an API key.`
-        break
+        content = `[Affective Core - Placeholder] Understanding the emotional aspects of "${truncatedPrompt}". To enable real responses, please configure an API key.`;
+        break;
       case CognitiveFunctionType.RELEVANCE_CORE:
-        content = `[Relevance Core - Placeholder] Evaluating the relevance of "${truncatedPrompt}". To enable real responses, please configure an API key.`
-        break
+        content = `[Relevance Core - Placeholder] Evaluating the relevance of "${truncatedPrompt}". To enable real responses, please configure an API key.`;
+        break;
       default:
-        content = `[Placeholder Response] I received your message about "${truncatedPrompt}". To enable real AI responses, please configure an API key in settings.`
+        content = `[Placeholder Response] I received your message about "${truncatedPrompt}". To enable real AI responses, please configure an API key in settings.`;
     }
 
     return {
       content,
       provider: 'placeholder',
       model: 'none',
-    }
+    };
   }
 
   /**
    * Get provider health status
    */
-  public async getProviderHealth(): Promise<Record<string, { available: boolean; latency?: number }>> {
-    const health: Record<string, { available: boolean; latency?: number }> = {}
+  public async getProviderHealth(): Promise<
+    Record<string, { available: boolean; latency?: number }>
+  > {
+    const health: Record<string, { available: boolean; latency?: number }> = {};
 
     for (const [name, config] of this.providers) {
-      const startTime = Date.now()
+      const startTime = Date.now();
       try {
         // Simple health check with minimal prompt
-        await this.generate('Hello', CognitiveFunctionType.GENERAL, name)
+        await this.generate('Hello', CognitiveFunctionType.GENERAL, name);
         health[name] = {
           available: true,
           latency: Date.now() - startTime,
-        }
+        };
       } catch {
-        health[name] = { available: false }
+        health[name] = { available: false };
       }
     }
 
-    return health
+    return health;
   }
 }
 
 // Export singleton accessor
-export const llmIntegration = LLMIntegration.getInstance()
+export const llmIntegration = LLMIntegration.getInstance();

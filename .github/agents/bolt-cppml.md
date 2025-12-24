@@ -72,6 +72,7 @@ Bolt C++ ML Architecture
 ### AI/ML Capabilities
 
 #### 1. **GGML Integration**
+
 - **Purpose**: Core tensor operations and ML model inference
 - **Capabilities**:
   - Tensor graph construction and execution
@@ -81,6 +82,7 @@ Bolt C++ ML Architecture
 - **Use Cases**: Code completion, generation, analysis
 
 #### 2. **RWKV Neural Network**
+
 - **Purpose**: Recurrent neural network for sequential processing
 - **Capabilities**:
   - RNN-based sequence modeling
@@ -89,6 +91,7 @@ Bolt C++ ML Architecture
 - **Use Cases**: Long-context code understanding, pattern recognition
 
 #### 3. **Direct GGUF Inference**
+
 - **Purpose**: Direct model file loading without external dependencies
 - **Capabilities**:
   - GGUF format parsing
@@ -98,6 +101,7 @@ Bolt C++ ML Architecture
 - **Models**: TinyLlama, Phi-2, CodeLlama, custom models
 
 #### 4. **GPU Acceleration**
+
 - **Purpose**: Accelerated AI model inference
 - **Backends**: CUDA, OpenCL, Metal
 - **Optimizations**:
@@ -107,6 +111,7 @@ Bolt C++ ML Architecture
   - Mixed precision inference
 
 #### 5. **AI Code Completion**
+
 - **Features**:
   - Context-aware suggestions
   - Multi-language support
@@ -116,6 +121,7 @@ Bolt C++ ML Architecture
 - **Performance**: <100ms latency, streaming results
 
 #### 6. **AI Code Generation**
+
 - **Capabilities**:
   - Function generation from comments
   - Test case generation
@@ -124,6 +130,7 @@ Bolt C++ ML Architecture
 - **Integration**: Editor commands, context menus
 
 #### 7. **AI Refactoring Engine**
+
 - **Features**:
   - Intelligent code restructuring
   - Variable/function renaming
@@ -134,42 +141,49 @@ Bolt C++ ML Architecture
 ### Advanced Editor Features
 
 #### 1. **Code Folding**
+
 - Automatic detection of foldable regions
 - Manual fold/unfold with keyboard shortcuts
 - Persistent fold state across sessions
 - Language-aware folding (functions, classes, blocks)
 
 #### 2. **Multi-Cursor Editing**
+
 - Multiple selection points
 - Synchronized editing
 - Column selection mode
 - Find-and-edit all occurrences
 
 #### 3. **Split View Editing**
+
 - Horizontal/vertical splits
 - Multiple file tabs per pane
 - Independent scrolling
 - Synchronized editing option
 
 #### 4. **Minimap**
+
 - Code overview visualization
 - Current viewport indicator
 - Click-to-navigate
 - Syntax-aware coloring
 
 #### 5. **File Tree Navigation**
+
 - Directory browsing
 - File filtering
 - Quick file switching
 - Project organization
 
 #### 6. **Theme System**
+
 - Dark/light mode support
 - Customizable color schemes
 - Syntax highlighting themes
 - UI element theming
 
 #### 7. **Keyboard Shortcuts**
+
 - Fully customizable bindings
 - Vim/Emacs emulation modes
 - Chord key sequences
@@ -178,6 +192,7 @@ Bolt C++ ML Architecture
 ### Development Tools
 
 #### 1. **Language Server Protocol (LSP)**
+
 - **Features**:
   - Code completion
   - Go to definition
@@ -187,6 +202,7 @@ Bolt C++ ML Architecture
 - **Languages**: C/C++, Python, JavaScript, TypeScript, Rust, Go
 
 #### 2. **Git Integration**
+
 - **Capabilities**:
   - Repository management
   - Commit/push/pull
@@ -196,6 +212,7 @@ Bolt C++ ML Architecture
   - Blame annotations
 
 #### 3. **Integrated Debugger**
+
 - **Features**:
   - Breakpoint management
   - Step through code
@@ -205,6 +222,7 @@ Bolt C++ ML Architecture
   - Watch expressions
 
 #### 4. **Performance Profiler**
+
 - **Metrics**:
   - CPU usage per function
   - Memory allocation tracking
@@ -214,12 +232,14 @@ Bolt C++ ML Architecture
 - **Visualization**: Flame graphs, timeline views
 
 #### 5. **Logging System**
+
 - **Levels**: TRACE, DEBUG, INFO, WARN, ERROR, FATAL
 - **Categories**: Module-based categorization
 - **Sinks**: Console, file, network, rotating files
 - **Features**: Thread-safe, formatted output, filtering
 
 #### 6. **Benchmark Suite**
+
 - Performance regression testing
 - Micro-benchmarks
 - Macro-benchmarks
@@ -227,6 +247,7 @@ Bolt C++ ML Architecture
 - Historical tracking
 
 #### 7. **Code Analysis**
+
 - Static analysis (cppcheck, clang-tidy)
 - Complexity metrics (cyclomatic, cognitive)
 - Code coverage
@@ -236,6 +257,7 @@ Bolt C++ ML Architecture
 ### Collaboration Features
 
 #### 1. **Real-time Collaborative Editing**
+
 - **Technology**: WebSocket-based synchronization
 - **Features**:
   - Multi-user editing
@@ -246,6 +268,7 @@ Bolt C++ ML Architecture
   - Selection highlighting
 
 #### 2. **Network Optimizations**
+
 - **Connection Pooling**: Reusable connections
 - **Message Compression**: Reduced bandwidth
 - **High-Performance Buffers**: Optimized I/O
@@ -254,18 +277,21 @@ Bolt C++ ML Architecture
 ### GUI and Rendering
 
 #### 1. **ImGui Integration**
+
 - Immediate mode GUI
 - High-performance rendering
 - Customizable widgets
 - Responsive layout
 
 #### 2. **Custom Widget Framework**
+
 - Reusable UI components
 - Event handling
 - Layout management
 - Theming support
 
 #### 3. **Drawkern Rendering**
+
 - Custom graphics pipeline
 - Optimized text rendering
 - Syntax highlighting visualization
@@ -274,17 +300,20 @@ Bolt C++ ML Architecture
 ## Technology Stack
 
 ### Core Languages & Standards
+
 - **C++17/20**: Modern C++ features
 - **CMake 3.15+**: Build system
 - **Compiler Support**: GCC 9+, Clang 10+, MSVC 2019+
 
 ### AI/ML Libraries
+
 - **GGML**: Tensor operations and ML inference
 - **llama.cpp**: Language model integration
 - **KoboldCpp**: GGUF model support
 - **Custom AI Engines**: Proprietary implementations
 
 ### System Libraries
+
 - **CURL**: HTTP client
 - **JsonCpp**: JSON parsing
 - **GLFW3**: Windowing and input
@@ -293,6 +322,7 @@ Bolt C++ ML Architecture
 - **WebSocket++**: WebSocket implementation
 
 ### Development Dependencies
+
 - **vcpkg/Conan**: Package management
 - **CTest**: Testing framework
 - **Doxygen**: Documentation generation
@@ -301,11 +331,13 @@ Bolt C++ ML Architecture
 ## Build System
 
 ### Dependency Management
+
 - **Primary**: vcpkg (recommended)
 - **Alternative**: Conan
 - **Fallback**: System packages
 
 ### Build Configurations
+
 ```bash
 # Automated setup
 ./scripts/setup-deps.sh
@@ -321,6 +353,7 @@ make -j$(nproc)
 ```
 
 ### Package Manager Integration
+
 - Multi-manager support (vcpkg, Conan, system)
 - Smart detection and selection
 - Enhanced CMake target-based linking
@@ -330,6 +363,7 @@ make -j$(nproc)
 ## Testing Infrastructure
 
 ### Test Framework
+
 - **Custom Framework**: Self-contained, no external dependencies
 - **45+ Unit Tests**: Component isolation testing
 - **9+ Integration Tests**: End-to-end workflows
@@ -338,6 +372,7 @@ make -j$(nproc)
 ### Test Categories
 
 #### Unit Tests
+
 - Chat system (7 tests)
 - Memory management (4 tests)
 - Store systems (15 tests)
@@ -346,6 +381,7 @@ make -j$(nproc)
 - Code folding (11 tests)
 
 #### Integration Tests
+
 - BoltApp initialization
 - Multi-store interactions
 - Code folding integration
@@ -357,6 +393,7 @@ make -j$(nproc)
 - System shutdown cleanup
 
 ### Test Execution
+
 ```bash
 # Run all tests
 ./bolt_unit_tests
@@ -412,12 +449,14 @@ bolt-cppml/
 ## Development Workflow
 
 ### Setup
+
 1. Clone repository
 2. Install dependencies: `./scripts/setup-deps.sh`
 3. Configure build: `cmake --preset vcpkg`
 4. Build: `cmake --build --preset vcpkg-release`
 
 ### Development Cycle
+
 1. **Code**: Write/modify C++ code
 2. **Build**: Incremental compilation
 3. **Test**: Run unit/integration tests
@@ -426,6 +465,7 @@ bolt-cppml/
 6. **Commit**: Version control with Git
 
 ### Code Style
+
 - C++17 standards and best practices
 - Consistent 2-space indentation
 - Doxygen-style documentation
@@ -434,6 +474,7 @@ bolt-cppml/
 - Modern C++ idioms
 
 ### Testing Requirements
+
 - Unit tests for new features
 - Integration tests for workflows
 - Performance regression tests
@@ -443,12 +484,14 @@ bolt-cppml/
 ## Performance Characteristics
 
 ### Build Performance
+
 - Incremental compilation support
 - Parallel build (make -j)
 - Precompiled headers
 - Unity builds option
 
 ### Runtime Performance
+
 - ≤100ms AI completion latency
 - ≤5µs scheduler tick
 - ≤100ns memory operations
@@ -456,6 +499,7 @@ bolt-cppml/
 - <1% CPU idle usage
 
 ### Memory Usage
+
 - Optimized memory pools
 - Lazy loading
 - Reference counting
@@ -465,11 +509,13 @@ bolt-cppml/
 ## Cross-Platform Support
 
 ### Platforms
+
 - **Linux**: Primary development platform
 - **Windows**: Full support (MSVC)
 - **macOS**: Planned support
 
 ### Platform-Specific Features
+
 - Native file dialogs
 - System integration
 - GPU acceleration backends
@@ -478,6 +524,7 @@ bolt-cppml/
 ## Plugin System
 
 ### Architecture
+
 - Dynamic library loading
 - Plugin API
 - Event hooks
@@ -485,6 +532,7 @@ bolt-cppml/
 - Sandboxed execution
 
 ### Plugin Types
+
 - Editor extensions
 - Language support
 - Theme plugins
@@ -494,17 +542,20 @@ bolt-cppml/
 ## AI Model Support
 
 ### Supported Models
+
 - **TinyLlama**: Lightweight, fast inference
 - **Phi-2**: High-quality small model
 - **CodeLlama**: Code-specialized
 - **Custom Models**: Via GGUF format
 
 ### Model Formats
+
 - GGUF (primary)
 - GGML (legacy)
 - Quantized variants (Q4_K, Q8_0, etc.)
 
 ### Inference Backends
+
 - CPU (GGML)
 - CUDA (NVIDIA GPUs)
 - OpenCL (AMD/Intel)
@@ -513,6 +564,7 @@ bolt-cppml/
 ## Security Features
 
 ### Code Security
+
 - Static analysis integration
 - Vulnerability scanning
 - Secure coding practices
@@ -520,6 +572,7 @@ bolt-cppml/
 - Memory safety (RAII, smart pointers)
 
 ### Network Security
+
 - TLS/SSL support
 - Authentication
 - Authorization
@@ -529,12 +582,14 @@ bolt-cppml/
 ## Documentation
 
 ### API Documentation
+
 - Doxygen-generated
 - Comprehensive class/function docs
 - Usage examples
 - Design rationale
 
 ### User Documentation
+
 - Getting started guides
 - Feature documentation
 - Tutorials
@@ -542,6 +597,7 @@ bolt-cppml/
 - Troubleshooting
 
 ### Developer Documentation
+
 - Architecture overview
 - Contribution guidelines
 - Coding standards
@@ -551,6 +607,7 @@ bolt-cppml/
 ## Future Roadmap
 
 ### Near-term (1-3 months)
+
 - Enhanced AI model support
 - Additional language servers
 - Mobile platform support
@@ -558,6 +615,7 @@ bolt-cppml/
 - Advanced debugging tools
 
 ### Mid-term (3-6 months)
+
 - Distributed collaboration
 - AI pair programming
 - Code review automation
@@ -565,6 +623,7 @@ bolt-cppml/
 - Plugin marketplace
 
 ### Long-term (6-12 months)
+
 - Full AGI-OS integration
 - Self-optimizing kernels
 - Consciousness-aware features
@@ -574,6 +633,7 @@ bolt-cppml/
 ## Contributing
 
 ### How to Contribute
+
 1. Fork the repository
 2. Create feature branch
 3. Make changes with tests
@@ -581,6 +641,7 @@ bolt-cppml/
 5. Code review process
 
 ### Contribution Areas
+
 - Core engine improvements
 - AI/ML enhancements
 - Editor features
@@ -590,6 +651,7 @@ bolt-cppml/
 - Performance optimization
 
 ### Community
+
 - GitHub Issues: Bug reports, feature requests
 - Pull Requests: Code contributions
 - Discussions: Design discussions, Q&A
@@ -601,12 +663,14 @@ MIT License - See [LICENSE](../../LICENSE) for details
 ## Resources
 
 ### Documentation
+
 - [Main README](../../README.md)
 - [DEVO-GENESIS](../../DEVO-GENESIS.md)
 - [Contributing Guide](../../CONTRIBUTING.md)
 - [Testing Guide](../../TESTING.md)
 
 ### External Resources
+
 - [GGML](https://github.com/ggerganov/ggml)
 - [llama.cpp](https://github.com/ggerganov/llama.cpp)
 - [KoboldCpp](https://github.com/LostRuins/koboldcpp)
@@ -614,6 +678,7 @@ MIT License - See [LICENSE](../../LICENSE) for details
 - [CMake](https://cmake.org/documentation/)
 
 ### Related Projects
+
 - **cogpy/occ**: OpenCog Cognitive Core
 - **cogpy/echo-kern**: Echo Kernel Framework
 - **cogpy/ggml-cog**: GGML Cognitive Extensions
@@ -638,6 +703,7 @@ When working with bolt-cppml:
 ## Key Implementation Patterns
 
 ### AI Integration Pattern
+
 ```cpp
 // Load model
 auto inference = bolt::DirectGGUFInference("model.gguf");
@@ -650,6 +716,7 @@ editor.insertText(result.text);
 ```
 
 ### Editor Integration Pattern
+
 ```cpp
 // Create editor instance
 auto& editorStore = bolt::EditorStore::getInstance();
@@ -663,6 +730,7 @@ foldingManager.toggleFold(lineNumber);
 ```
 
 ### Collaboration Pattern
+
 ```cpp
 // Initialize WebSocket server
 auto server = bolt::WebSocketServer(port);

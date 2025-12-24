@@ -1,6 +1,6 @@
 /**
  * Enhanced LLM Service with real API integration
- * 
+ *
  * Supports multiple LLM providers:
  * - OpenAI (GPT-4, GPT-3.5)
  * - Anthropic (Claude)
@@ -97,7 +97,7 @@ export class EnhancedLLMService {
       throw new Error(`OpenAI API error: ${error}`);
     }
 
-    const data = await response.json() as {
+    const data = (await response.json()) as {
       choices: Array<{ message: { content: string }; finish_reason: string }>;
       usage: { prompt_tokens: number; completion_tokens: number; total_tokens: number };
       model: string;
@@ -147,7 +147,7 @@ export class EnhancedLLMService {
       throw new Error(`Anthropic API error: ${error}`);
     }
 
-    const data = await response.json() as {
+    const data = (await response.json()) as {
       content: Array<{ text: string }>;
       usage: { input_tokens: number; output_tokens: number };
       model: string;
@@ -194,7 +194,7 @@ export class EnhancedLLMService {
       throw new Error(`OpenRouter API error: ${error}`);
     }
 
-    const data = await response.json() as {
+    const data = (await response.json()) as {
       choices: Array<{ message: { content: string }; finish_reason: string }>;
       usage?: { prompt_tokens: number; completion_tokens: number; total_tokens: number };
       model: string;
@@ -240,7 +240,7 @@ export class EnhancedLLMService {
       throw new Error(`Ollama API error: ${error}`);
     }
 
-    const data = await response.json() as {
+    const data = (await response.json()) as {
       message: { content: string };
     };
     return {

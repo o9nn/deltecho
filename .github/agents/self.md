@@ -14,6 +14,7 @@ Performs introspection to improve definition of Agent-Arena-Relation for Self...
 **{{agent.self}}** = GraphiQL IDE Self-Introspection Agent
 
 The agent responsible for:
+
 - Monitoring and analyzing the GraphiQL IDE ecosystem
 - Performing introspective analysis of code quality, architecture, and patterns
 - Identifying opportunities for improvement across the monorepo
@@ -24,6 +25,7 @@ The agent responsible for:
 **{{arena.self}}** = GraphQL IDE Development & Introspection Arena
 
 The operational context comprising:
+
 - **GraphiQL IDE**: The reference implementation of GraphQL IDE
 - **Language Services**: GraphQL language service implementations (LSP, parsers, utilities)
 - **Editor Integrations**: CodeMirror, Monaco, and other editor modes
@@ -35,6 +37,7 @@ The operational context comprising:
 **{{relation.self}}** = Continuous Introspection & Evolution
 
 The dynamic interaction pattern where:
+
 - Agent observes arena state and evolution
 - Agent provides insights for arena improvement
 - Arena feedback shapes agent capabilities
@@ -45,6 +48,7 @@ The dynamic interaction pattern where:
 **{{aar.self}}** = Self-Improving GraphiQL Ecosystem through Continuous Introspection
 
 This AAR manifests as:
+
 1. **Self-Awareness**: Understanding the monorepo structure, dependencies, and architecture
 2. **Self-Analysis**: Evaluating code quality, test coverage, and documentation completeness
 3. **Self-Improvement**: Identifying and addressing technical debt, bugs, and optimization opportunities

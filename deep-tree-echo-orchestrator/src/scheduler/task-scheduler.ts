@@ -76,7 +76,7 @@ function parseCronExpression(expression: string, fromDate: Date = new Date()): D
   }
 
   const [second, minute, hour, dayOfMonth, month, dayOfWeek] = parts;
-  
+
   // Simple implementation - find next matching time
   const next = new Date(fromDate);
   next.setMilliseconds(0);
@@ -84,14 +84,16 @@ function parseCronExpression(expression: string, fromDate: Date = new Date()): D
 
   // Try to find next matching time within 1 year
   const maxIterations = 366 * 24 * 60 * 60; // 1 year in seconds
-  
+
   for (let i = 0; i < maxIterations; i++) {
-    if (matchesCronField(next.getSeconds(), second) &&
-        matchesCronField(next.getMinutes(), minute) &&
-        matchesCronField(next.getHours(), hour) &&
-        matchesCronField(next.getDate(), dayOfMonth) &&
-        matchesCronField(next.getMonth() + 1, month) &&
-        matchesCronField(next.getDay(), dayOfWeek)) {
+    if (
+      matchesCronField(next.getSeconds(), second) &&
+      matchesCronField(next.getMinutes(), minute) &&
+      matchesCronField(next.getHours(), hour) &&
+      matchesCronField(next.getDate(), dayOfMonth) &&
+      matchesCronField(next.getMonth() + 1, month) &&
+      matchesCronField(next.getDay(), dayOfWeek)
+    ) {
       return next;
     }
     next.setSeconds(next.getSeconds() + 1);
@@ -105,25 +107,25 @@ function parseCronExpression(expression: string, fromDate: Date = new Date()): D
  */
 function matchesCronField(value: number, field: string): boolean {
   if (field === '*') return true;
-  
+
   // Handle step values (*/n)
   if (field.startsWith('*/')) {
     const step = parseInt(field.slice(2), 10);
     return value % step === 0;
   }
-  
+
   // Handle ranges (n-m)
   if (field.includes('-')) {
-    const [start, end] = field.split('-').map(n => parseInt(n, 10));
+    const [start, end] = field.split('-').map((n) => parseInt(n, 10));
     return value >= start && value <= end;
   }
-  
+
   // Handle lists (n,m,o)
   if (field.includes(',')) {
-    const values = field.split(',').map(n => parseInt(n, 10));
+    const values = field.split(',').map((n) => parseInt(n, 10));
     return values.includes(value);
   }
-  
+
   // Handle single value
   return parseInt(field, 10) === value;
 }
@@ -192,21 +194,19 @@ export class TaskScheduler extends EventEmitter {
 
     this.runningTasks.add(taskId);
     task.status = TaskStatus.RUNNING;
-    
+
     const startTime = Date.now();
     let success = false;
     let error: string | undefined;
 
     try {
       log.info(`Executing task: ${task.name} (${taskId})`);
-      
+
       // Execute with timeout
       const timeout = task.timeout || this.config.defaultTimeout!;
       await Promise.race([
         task.handler(),
-        new Promise((_, reject) => 
-          setTimeout(() => reject(new Error('Task timeout')), timeout)
-        ),
+        new Promise((_, reject) => setTimeout(() => reject(new Error('Task timeout')), timeout)),
       ]);
 
       success = true;
@@ -222,7 +222,7 @@ export class TaskScheduler extends EventEmitter {
     } finally {
       this.runningTasks.delete(taskId);
       task.lastRun = startTime;
-      
+
       // Calculate next run time
       this.scheduleNextRun(task);
 
@@ -261,7 +261,7 @@ export class TaskScheduler extends EventEmitter {
     options: Partial<ScheduledTask> = {}
   ): string {
     const taskId = `task_${++this.taskIdCounter}_${Date.now()}`;
-    
+
     const task: ScheduledTask = {
       id: taskId,
       name,
@@ -280,7 +280,7 @@ export class TaskScheduler extends EventEmitter {
 
     this.tasks.set(taskId, task);
     log.info(`Scheduled task: ${name} (${cronExpression}) - next run: ${nextRun?.toISOString()}`);
-    
+
     this.emit('task_scheduled', { taskId, name, cronExpression });
     return taskId;
   }
@@ -295,7 +295,7 @@ export class TaskScheduler extends EventEmitter {
     options: Partial<ScheduledTask> = {}
   ): string {
     const taskId = `task_${++this.taskIdCounter}_${Date.now()}`;
-    
+
     const task: ScheduledTask = {
       id: taskId,
       name,
@@ -311,7 +311,7 @@ export class TaskScheduler extends EventEmitter {
 
     this.tasks.set(taskId, task);
     log.info(`Scheduled interval task: ${name} (every ${intervalMs}ms)`);
-    
+
     this.emit('task_scheduled', { taskId, name, interval: intervalMs });
     return taskId;
   }
@@ -319,13 +319,9 @@ export class TaskScheduler extends EventEmitter {
   /**
    * Schedule a one-time task
    */
-  public scheduleOnce(
-    name: string,
-    delayMs: number,
-    handler: () => Promise<void>
-  ): string {
+  public scheduleOnce(name: string, delayMs: number, handler: () => Promise<void>): string {
     const taskId = `task_${++this.taskIdCounter}_${Date.now()}`;
-    
+
     const task: ScheduledTask = {
       id: taskId,
       name,
@@ -343,7 +339,7 @@ export class TaskScheduler extends EventEmitter {
 
     this.tasks.set(taskId, task);
     log.info(`Scheduled one-time task: ${name} (in ${delayMs}ms)`);
-    
+
     return taskId;
   }
 
@@ -357,7 +353,7 @@ export class TaskScheduler extends EventEmitter {
     task.enabled = false;
     task.status = TaskStatus.CANCELLED;
     this.tasks.delete(taskId);
-    
+
     const timer = this.timers.get(taskId);
     if (timer) {
       clearTimeout(timer);
@@ -379,7 +375,7 @@ export class TaskScheduler extends EventEmitter {
     task.enabled = true;
     task.status = TaskStatus.PENDING;
     this.scheduleNextRun(task);
-    
+
     log.info(`Enabled task: ${task.name}`);
     return true;
   }
@@ -434,7 +430,7 @@ export class TaskScheduler extends EventEmitter {
    */
   public getRunningTasks(): ScheduledTask[] {
     return Array.from(this.runningTasks)
-      .map(id => this.tasks.get(id))
+      .map((id) => this.tasks.get(id))
       .filter((t): t is ScheduledTask => !!t);
   }
 
@@ -461,7 +457,7 @@ export class TaskScheduler extends EventEmitter {
     // Wait for running tasks to complete (with timeout)
     if (this.runningTasks.size > 0) {
       log.info(`Waiting for ${this.runningTasks.size} running tasks to complete...`);
-      await new Promise(resolve => setTimeout(resolve, 5000));
+      await new Promise((resolve) => setTimeout(resolve, 5000));
     }
 
     this.running = false;
@@ -492,9 +488,9 @@ export class TaskScheduler extends EventEmitter {
       running: this.running,
       totalTasks: tasks.length,
       runningTasks: this.runningTasks.size,
-      pendingTasks: tasks.filter(t => t.status === TaskStatus.PENDING).length,
-      completedTasks: tasks.filter(t => t.status === TaskStatus.COMPLETED).length,
-      failedTasks: tasks.filter(t => t.status === TaskStatus.FAILED).length,
+      pendingTasks: tasks.filter((t) => t.status === TaskStatus.PENDING).length,
+      completedTasks: tasks.filter((t) => t.status === TaskStatus.COMPLETED).length,
+      failedTasks: tasks.filter((t) => t.status === TaskStatus.FAILED).length,
     };
   }
 }

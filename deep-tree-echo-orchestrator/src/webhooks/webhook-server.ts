@@ -85,14 +85,14 @@ class RateLimiter {
   check(key: string, maxRequests: number, windowMs: number): boolean {
     const now = Date.now();
     const timestamps = this.requests.get(key) || [];
-    
+
     // Remove old timestamps
-    const validTimestamps = timestamps.filter(t => now - t < windowMs);
-    
+    const validTimestamps = timestamps.filter((t) => now - t < windowMs);
+
     if (validTimestamps.length >= maxRequests) {
       return false;
     }
-    
+
     validTimestamps.push(now);
     this.requests.set(key, validTimestamps);
     return true;
@@ -160,7 +160,7 @@ export class WebhookServer extends EventEmitter {
     options: Omit<WebhookEndpoint, 'id' | 'enabled'> & { enabled?: boolean }
   ): string {
     const id = `endpoint_${++this.endpointIdCounter}`;
-    
+
     const endpoint: WebhookEndpoint = {
       id,
       enabled: true,
@@ -169,7 +169,7 @@ export class WebhookServer extends EventEmitter {
 
     this.endpoints.set(endpoint.path, endpoint);
     log.info(`Registered webhook endpoint: ${endpoint.name} at ${endpoint.path}`);
-    
+
     return id;
   }
 
@@ -224,17 +224,17 @@ export class WebhookServer extends EventEmitter {
   /**
    * Handle incoming HTTP request
    */
-  private async handleRequest(
-    req: http.IncomingMessage,
-    res: http.ServerResponse
-  ): Promise<void> {
+  private async handleRequest(req: http.IncomingMessage, res: http.ServerResponse): Promise<void> {
     const startTime = Date.now();
-    
+
     // Set CORS headers
     if (this.config.enableCors) {
       res.setHeader('Access-Control-Allow-Origin', this.config.corsOrigins?.join(',') || '*');
       res.setHeader('Access-Control-Allow-Methods', 'GET, POST, PUT, DELETE, OPTIONS');
-      res.setHeader('Access-Control-Allow-Headers', 'Content-Type, Authorization, X-Webhook-Secret');
+      res.setHeader(
+        'Access-Control-Allow-Headers',
+        'Content-Type, Authorization, X-Webhook-Secret'
+      );
     }
 
     // Handle preflight
@@ -248,7 +248,7 @@ export class WebhookServer extends EventEmitter {
       // Parse URL
       const url = new URL(req.url || '/', `http://${req.headers.host}`);
       let path = url.pathname;
-      
+
       // Remove base path
       if (this.config.basePath && path.startsWith(this.config.basePath)) {
         path = path.slice(this.config.basePath.length) || '/';
@@ -256,7 +256,7 @@ export class WebhookServer extends EventEmitter {
 
       // Find endpoint
       const endpoint = this.endpoints.get(path);
-      
+
       if (!endpoint) {
         this.sendResponse(res, 404, { error: 'Endpoint not found' });
         return;
@@ -272,7 +272,7 @@ export class WebhookServer extends EventEmitter {
       if (rateLimit) {
         const clientIp = req.socket.remoteAddress || 'unknown';
         const key = `${endpoint.id}:${clientIp}`;
-        
+
         if (!this.rateLimiter.check(key, rateLimit.maxRequests, rateLimit.windowMs)) {
           this.sendResponse(res, 429, { error: 'Rate limit exceeded' });
           return;
@@ -316,7 +316,7 @@ export class WebhookServer extends EventEmitter {
       this.sendResponse(res, 200, result);
     } catch (error) {
       log.error('Webhook request error:', error);
-      
+
       this.emit('request', {
         path: req.url,
         duration: Date.now() - startTime,
@@ -384,10 +384,7 @@ export class WebhookServer extends EventEmitter {
     if (!signature) return false;
 
     const payload = typeof body === 'string' ? body : JSON.stringify(body);
-    const expectedSignature = crypto
-      .createHmac('sha256', secret)
-      .update(payload)
-      .digest('hex');
+    const expectedSignature = crypto.createHmac('sha256', secret).update(payload).digest('hex');
 
     return crypto.timingSafeEqual(
       Buffer.from(signature),
@@ -424,10 +421,7 @@ export class WebhookServer extends EventEmitter {
       };
 
       if (secret) {
-        const signature = crypto
-          .createHmac('sha256', secret)
-          .update(body)
-          .digest('hex');
+        const signature = crypto.createHmac('sha256', secret).update(body).digest('hex');
         headers['X-Webhook-Signature'] = `sha256=${signature}`;
       }
 
@@ -498,7 +492,7 @@ export class WebhookServer extends EventEmitter {
       running: this.running,
       port: this.config.port!,
       endpoints: endpoints.length,
-      enabledEndpoints: endpoints.filter(e => e.enabled).length,
+      enabledEndpoints: endpoints.filter((e) => e.enabled).length,
     };
   }
 }

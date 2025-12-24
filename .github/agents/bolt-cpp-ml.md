@@ -71,12 +71,14 @@ Bolt C++ Architecture
 ## Build System & Dependencies
 
 ### Current Build Issues
+
 ```bash
 # Current build failure:
 include/bolt/ai/rwkv_wrapper.hpp:8:10: fatal error: ggml.h: No such file or directory
 ```
 
 The project requires proper dependency management for:
+
 - GGML library for AI model inference
 - WebSocket++ for network functionality
 - Additional C++ libraries for editor features
@@ -124,18 +126,21 @@ The project requires proper dependency management for:
 ## Implementation Priorities
 
 ### Core Infrastructure
+
 1. **Build System**: Fix dependency issues and create reproducible builds
 2. **Testing**: Establish comprehensive test coverage
 3. **Documentation**: API documentation and user guides
 4. **Error Handling**: Robust error management throughout the system
 
 ### Editor Features
+
 1. **Code Editing**: Complete multi-cursor, folding, and advanced editing features
 2. **AI Integration**: Seamless code completion and intelligent suggestions
 3. **User Interface**: Theme system, file navigation, and split views
 4. **Performance**: Memory optimization and responsive UI
 
 ### Collaboration & Networking
+
 1. **Real-time Editing**: Multi-user collaborative editing
 2. **WebSocket Integration**: Efficient network communication
 3. **Conflict Resolution**: Operational transformation for concurrent edits
@@ -144,17 +149,20 @@ The project requires proper dependency management for:
 ## Testing Strategy
 
 ### Unit Tests
+
 - Core component testing (memory management, stores, utilities)
 - AI wrapper testing (GGML, RWKV functionality)
 - Editor component testing (syntax highlighting, completion)
 
 ### Integration Tests
+
 - End-to-end editor functionality
 - Network communication testing
 - AI model inference testing
 - Multi-user collaboration scenarios
 
 ### Performance Tests
+
 - Memory usage profiling
 - CPU utilization monitoring
 - Network latency testing
@@ -195,4 +203,4 @@ To contribute to Bolt C++:
 
 ---
 
-*Building the future of AI-integrated development environments, one commit at a time.*
+_Building the future of AI-integrated development environments, one commit at a time._

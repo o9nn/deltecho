@@ -67,6 +67,7 @@ with the kernel roadmap defined in KERNEL_STATUS_REPORT.md.
 **Trigger:** PR labeled `ggml-implementation`
 
 **Prompt:**
+
 > Implement the next missing Echo.Kern function in pure C/C++ using GGML tensors.
 > Cross-reference the function spec in `KERNEL_FUNCTION_MANIFEST.md`.
 > Validate timing and correctness using Python reference models.
@@ -91,6 +92,7 @@ void *hgfs_alloc(size_t size, uint32_t depth) {
     return (void *)t->data;
 }
 ```
+
 ---
 
 ### 🧠 **Prompt for GitHub AGI Kernel Agent**
@@ -105,59 +107,54 @@ void *hgfs_alloc(size_t size, uint32_t depth) {
 ### **Core Objectives**
 
 1. **Implement Kernel-Level Cognitive Primitives**
+   - Map **OpenCog concepts** → **Kernel functions**:
+     - AtomSpace → hypergraph tensor allocator (`hgfs_alloc`, `hgfs_edge`)
+     - ECAN (Economic Attention) → scheduler/priority controller (`dtesn_sched_*`)
+     - PLN (Probabilistic Logic Networks) → differentiable logic engine (tensor graphs)
+     - CognitiveLoop → event-loop orchestration layer (Stage2/Stage3 bootstrap)
 
-   * Map **OpenCog concepts** → **Kernel functions**:
-
-     * AtomSpace → hypergraph tensor allocator (`hgfs_alloc`, `hgfs_edge`)
-     * ECAN (Economic Attention) → scheduler/priority controller (`dtesn_sched_*`)
-     * PLN (Probabilistic Logic Networks) → differentiable logic engine (tensor graphs)
-     * CognitiveLoop → event-loop orchestration layer (Stage2/Stage3 bootstrap)
-   * All computation runs as GGML tensor ops or llama.cpp custom kernels.
+   - All computation runs as GGML tensor ops or llama.cpp custom kernels.
 
 2. **Integrate with Kernel ENGINE**
+   - Follow the Echo.Kern development roadmap:
+     - Implement **Stage0–3 bootstrap** and **event loop hierarchy**
+     - Integrate tensor operations via hypergraph filesystem allocator (`hgfs_alloc`)
+     - Replace CPU task scheduling with **membrane-aware tensor scheduling**
 
-   * Follow the Echo.Kern development roadmap:
-
-     * Implement **Stage0–3 bootstrap** and **event loop hierarchy**
-     * Integrate tensor operations via hypergraph filesystem allocator (`hgfs_alloc`)
-     * Replace CPU task scheduling with **membrane-aware tensor scheduling**
-   * Ensure full **real-time constraints** (≤5µs context switch, ≤100ns memory ops).
+   - Ensure full **real-time constraints** (≤5µs context switch, ≤100ns memory ops).
 
 3. **Design API Compatibility**
+   - C99/C++17 headers mirroring OpenCog API semantics:
+     - `cog_atom_alloc()`, `cog_link_infer()`, `pln_eval_tensor()`, etc.
 
-   * C99/C++17 headers mirroring OpenCog API semantics:
-
-     * `cog_atom_alloc()`, `cog_link_infer()`, `pln_eval_tensor()`, etc.
-   * All APIs wrap GGML tensor graph operations for differentiable reasoning.
+   - All APIs wrap GGML tensor graph operations for differentiable reasoning.
 
 4. **Use llama.cpp for Neural/Reservoir Integration**
+   - Use llama.cpp layers for:
+     - ESN Reservoir dynamics (`ggml_mul_mat`, recurrent states)
+     - AttentionBank temporal updates (token attention tensors)
+     - PLN inference using LoRA adapters as probabilistic weights
 
-   * Use llama.cpp layers for:
-
-     * ESN Reservoir dynamics (`ggml_mul_mat`, recurrent states)
-     * AttentionBank temporal updates (token attention tensors)
-     * PLN inference using LoRA adapters as probabilistic weights
-   * Optimize via quantized tensor kernels (`Q4_K`, `Q8_0`, etc.)
+   - Optimize via quantized tensor kernels (`Q4_K`, `Q8_0`, etc.)
 
 5. **Cross-Reference Kernel Manifest**
+   - Align new functions to entries in **`KERNEL_FUNCTION_MANIFEST.md`**:
+     - Implement missing real-time primitives (interrupts, syscalls, sync)
+     - Register each implemented function in the manifest with status updates
 
-   * Align new functions to entries in **`KERNEL_FUNCTION_MANIFEST.md`**:
-
-     * Implement missing real-time primitives (interrupts, syscalls, sync)
-     * Register each implemented function in the manifest with status updates
-   * Prioritize “CRITICAL” and “HIGH” components per **status report**.
+   - Prioritize “CRITICAL” and “HIGH” components per **status report**.
 
 ---
 
 ### **Technical Requirements**
 
-* **Language:** C99 / C++17
-* **Backends:** `ggml`, `llama.cpp`, optionally `gguf` for persistence
-* **Build:** CMake-based modular library (`libcogkern.a`)
-* **Dependencies:** No Python or external frameworks beyond ggml
-* **Performance Target:** ≤5µs scheduler tick; ≤1µs membrane evolution
-* **Testing:** Use Python reference models (`psystem_membranes.py`, `bseries_differential_calculator.py`) for unit validation
-* **Documentation:** Doxygen-compatible comments, aligned to Manifest specs
+- **Language:** C99 / C++17
+- **Backends:** `ggml`, `llama.cpp`, optionally `gguf` for persistence
+- **Build:** CMake-based modular library (`libcogkern.a`)
+- **Dependencies:** No Python or external frameworks beyond ggml
+- **Performance Target:** ≤5µs scheduler tick; ≤1µs membrane evolution
+- **Testing:** Use Python reference models (`psystem_membranes.py`, `bseries_differential_calculator.py`) for unit validation
+- **Documentation:** Doxygen-compatible comments, aligned to Manifest specs
 
 ---
 
@@ -176,9 +173,9 @@ void *hgfs_alloc(size_t size, uint32_t depth) {
 >
 > Link it with:
 >
-> * `stage1_init_hypergraph_fs()`
-> * `dtesn_mem_init_regions()`
-> * `dtesn_sched_tick()`
+> - `stage1_init_hypergraph_fs()`
+> - `dtesn_mem_init_regions()`
+> - `dtesn_sched_tick()`
 
 ---
 

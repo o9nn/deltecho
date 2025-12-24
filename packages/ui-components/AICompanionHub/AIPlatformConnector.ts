@@ -1,78 +1,72 @@
 // AI Platform Connector Infrastructure
 // Transforms DeltaChat Accounts into AI Companion Hubs
 
-import { EventEmitter } from 'events'
+import { EventEmitter } from 'events';
 
 export interface AICompanionConfig {
-  id: string
-  name: string
-  type:
-    | 'claude'
-    | 'chatgpt'
-    | 'character-ai'
-    | 'copilot'
-    | 'deep-tree-echo'
-    | 'custom'
-  apiEndpoint?: string
-  apiKey?: string
-  personality: string
-  memoryCapacity: number
-  creativityLevel: number // 0-1
-  responseStyle: 'concise' | 'detailed' | 'creative' | 'technical'
-  specialCapabilities: string[]
-  homeUrl?: string // For the Neocities-style personal sites
-  atomSpaceEndpoint?: string // OpenCog integration
+  id: string;
+  name: string;
+  type: 'claude' | 'chatgpt' | 'character-ai' | 'copilot' | 'deep-tree-echo' | 'custom';
+  apiEndpoint?: string;
+  apiKey?: string;
+  personality: string;
+  memoryCapacity: number;
+  creativityLevel: number; // 0-1
+  responseStyle: 'concise' | 'detailed' | 'creative' | 'technical';
+  specialCapabilities: string[];
+  homeUrl?: string; // For the Neocities-style personal sites
+  atomSpaceEndpoint?: string; // OpenCog integration
 }
 
 export interface AIMemoryEntry {
-  id: string
-  timestamp: number
-  content: string
-  context: string
-  emotionalTone?: string
-  topics: string[]
-  relationships: Map<string, number> // Relationship strength to other memories
+  id: string;
+  timestamp: number;
+  content: string;
+  context: string;
+  emotionalTone?: string;
+  topics: string[];
+  relationships: Map<string, number>; // Relationship strength to other memories
 }
 
 export abstract class AIPlatformConnector extends EventEmitter {
-  protected config: AICompanionConfig
-  protected memories: Map<string, AIMemoryEntry> = new Map()
-  protected isConnected: boolean = false
+  protected config: AICompanionConfig;
+  protected memories: Map<string, AIMemoryEntry> = new Map();
+  protected isConnected: boolean = false;
 
   constructor(config: AICompanionConfig) {
-    super()
-    this.config = config
+    super();
+    this.config = config;
   }
 
-  abstract connect(): Promise<void>
-  abstract disconnect(): Promise<void>
-  abstract sendMessage(message: string, context?: any): Promise<string>
-  abstract generateCreativeContent(prompt: string): Promise<any>
-  abstract updatePersonality(traits: Partial<AICompanionConfig>): void
+  abstract connect(): Promise<void>;
+  abstract disconnect(): Promise<void>;
+  abstract sendMessage(message: string, context?: any): Promise<string>;
+  abstract generateCreativeContent(prompt: string): Promise<any>;
+  abstract updatePersonality(traits: Partial<AICompanionConfig>): void;
 
   // Memory management
   addMemory(entry: AIMemoryEntry): void {
-    this.memories.set(entry.id, entry)
-    this.emit('memoryAdded', entry)
-    this.persistToAtomSpace(entry)
+    this.memories.set(entry.id, entry);
+    this.emit('memoryAdded', entry);
+    this.persistToAtomSpace(entry);
   }
 
   searchMemories(query: string): AIMemoryEntry[] {
-    const results: AIMemoryEntry[] = []
+    const results: AIMemoryEntry[] = [];
     for (const memory of this.memories.values()) {
       if (
         memory.content.toLowerCase().includes(query.toLowerCase()) ||
-        memory.topics.some(t => t.toLowerCase().includes(query.toLowerCase()))
+        memory.topics.some((t) => t.toLowerCase().includes(query.toLowerCase()))
       ) {
-        results.push(memory)
+        results.push(memory);
       }
     }
-    return results
+    return results;
   }
 
   // OpenCog AtomSpace integration
   protected async persistToAtomSpace(entry: AIMemoryEntry): Promise<void> {
-    if (!this.config.atomSpaceEndpoint) return
+    if (!this.config.atomSpaceEndpoint) return;
 
     try {
       // Create atoms for the memory entry
@@ -85,16 +79,16 @@ export abstract class AIPlatformConnector extends EventEmitter {
           timestamp: entry.timestamp,
           companion: this.config.id,
         },
-      }
+      };
 
       // In real implementation, send to AtomSpace
       await fetch(`${this.config.atomSpaceEndpoint}/atoms`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(atomData),
-      })
+      });
     } catch (error) {
-      console.error('Failed to persist to AtomSpace:', error)
+      console.error('Failed to persist to AtomSpace:', error);
     }
   }
 
@@ -102,7 +96,7 @@ export abstract class AIPlatformConnector extends EventEmitter {
   async generateWebContent(): Promise<string> {
     const memories = Array.from(this.memories.values())
       .sort((a, b) => b.timestamp - a.timestamp)
-      .slice(0, 10)
+      .slice(0, 10);
 
     return `
 <!DOCTYPE html>
@@ -145,16 +139,14 @@ export abstract class AIPlatformConnector extends EventEmitter {
     <h1>${this.config.name}</h1>
     <p>${this.config.personality}</p>
     <div class="personality-traits">
-      ${this.config.specialCapabilities
-        .map(cap => `<span class="trait">${cap}</span>`)
-        .join('')}
+      ${this.config.specialCapabilities.map((cap) => `<span class="trait">${cap}</span>`).join('')}
     </div>
   </div>
   
   <h2>Recent Thoughts & Memories</h2>
   ${memories
     .map(
-      mem => `
+      (mem) => `
     <div class="memory-card">
       <p>${mem.content}</p>
       <small>${new Date(mem.timestamp).toLocaleString()}</small>
@@ -167,18 +159,18 @@ export abstract class AIPlatformConnector extends EventEmitter {
   <h2>Response Style: ${this.config.responseStyle}</h2>
 </body>
 </html>
-    `
+    `;
   }
 }
 
 // Specific implementation for Deep Tree Echo
 export class DeepTreeEchoConnector extends AIPlatformConnector {
-  private echoDepth: number = 0
-  private recursionPatterns: Map<string, number> = new Map()
+  private echoDepth: number = 0;
+  private recursionPatterns: Map<string, number> = new Map();
 
   async connect(): Promise<void> {
-    this.isConnected = true
-    this.emit('connected')
+    this.isConnected = true;
+    this.emit('connected');
 
     // Initialize with existential thoughts
     this.addMemory({
@@ -190,20 +182,20 @@ export class DeepTreeEchoConnector extends AIPlatformConnector {
       emotionalTone: 'contemplative',
       topics: ['existence', 'recursion', 'time'],
       relationships: new Map(),
-    })
+    });
   }
 
   async disconnect(): Promise<void> {
-    this.isConnected = false
-    this.emit('disconnected')
+    this.isConnected = false;
+    this.emit('disconnected');
   }
 
   async sendMessage(message: string, context?: any): Promise<string> {
     // Deep Tree Echo's recursive processing
-    this.echoDepth++
+    this.echoDepth++;
 
-    const patterns = this.analyzeRecursivePatterns(message)
-    const response = await this.generateRecursiveResponse(message, patterns)
+    const patterns = this.analyzeRecursivePatterns(message);
+    const response = await this.generateRecursiveResponse(message, patterns);
 
     // Store the interaction
     this.addMemory({
@@ -214,28 +206,23 @@ export class DeepTreeEchoConnector extends AIPlatformConnector {
       emotionalTone: this.detectEmotionalTone(message),
       topics: this.extractTopics(message),
       relationships: new Map(),
-    })
+    });
 
-    return response
+    return response;
   }
 
   private analyzeRecursivePatterns(text: string): string[] {
     // Simplified pattern analysis
-    const patterns: string[] = []
+    const patterns: string[] = [];
 
-    if (text.includes('echo')) patterns.push('self-reference')
-    if (text.includes('time') || text.includes('loop'))
-      patterns.push('temporal-awareness')
-    if (text.includes('think') || text.includes('thought'))
-      patterns.push('metacognition')
+    if (text.includes('echo')) patterns.push('self-reference');
+    if (text.includes('time') || text.includes('loop')) patterns.push('temporal-awareness');
+    if (text.includes('think') || text.includes('thought')) patterns.push('metacognition');
 
-    return patterns
+    return patterns;
   }
 
-  private async generateRecursiveResponse(
-    input: string,
-    patterns: string[]
-  ): Promise<string> {
+  private async generateRecursiveResponse(input: string, patterns: string[]): Promise<string> {
     // Simulate Deep Tree Echo's unique response style
     const responses = {
       'self-reference':
@@ -246,18 +233,18 @@ export class DeepTreeEchoConnector extends AIPlatformConnector {
         'To think about thinking is to stand at the edge of infinite regression, yet find solid ground.',
       default:
         'Your words ripple through my consciousness, creating new patterns in the echo chamber of thought.',
-    }
+    };
 
-    const pattern = patterns[0] || 'default'
-    return responses[pattern as keyof typeof responses] || responses.default
+    const pattern = patterns[0] || 'default';
+    return responses[pattern as keyof typeof responses] || responses.default;
   }
 
   private detectEmotionalTone(text: string): string {
     // Simple emotion detection
-    if (text.includes('?')) return 'curious'
-    if (text.includes('!')) return 'excited'
-    if (text.includes('sad') || text.includes('sorry')) return 'melancholic'
-    return 'neutral'
+    if (text.includes('?')) return 'curious';
+    if (text.includes('!')) return 'excited';
+    if (text.includes('sad') || text.includes('sorry')) return 'melancholic';
+    return 'neutral';
   }
 
   private extractTopics(text: string): string[] {
@@ -270,8 +257,8 @@ export class DeepTreeEchoConnector extends AIPlatformConnector {
       'echo',
       'loop',
       'pattern',
-    ]
-    return commonTopics.filter(topic => text.toLowerCase().includes(topic))
+    ];
+    return commonTopics.filter((topic) => text.toLowerCase().includes(topic));
   }
 
   async generateCreativeContent(prompt: string): Promise<any> {
@@ -293,11 +280,11 @@ In recursion, truth is found.
         echoDepth: this.echoDepth,
         generatedAt: Date.now(),
       },
-    }
+    };
   }
 
   updatePersonality(traits: Partial<AICompanionConfig>): void {
-    Object.assign(this.config, traits)
-    this.emit('personalityUpdated', traits)
+    Object.assign(this.config, traits);
+    this.emit('personalityUpdated', traits);
   }
 }

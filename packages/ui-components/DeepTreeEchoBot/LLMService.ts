@@ -1,32 +1,32 @@
-import { getLogger } from '@deltecho/shared/logger'
-import { Memory as _Memory } from './RAGMemoryStore.js'
+import { getLogger } from '@deltecho/shared/logger';
+import { Memory as _Memory } from './RAGMemoryStore.js';
 
-const log = getLogger('render/components/DeepTreeEchoBot/LLMService')
+const log = getLogger('render/components/DeepTreeEchoBot/LLMService');
 
 /**
  * Configuration for a single LLM service instance
  */
 export interface LLMServiceConfig {
-  apiKey: string
-  apiEndpoint: string
-  model?: string
-  temperature?: number
-  maxTokens?: number
+  apiKey: string;
+  apiEndpoint: string;
+  model?: string;
+  temperature?: number;
+  maxTokens?: number;
 }
 
 /**
  * Represents a cognitive or memory function with its own API key
  */
 export interface CognitiveFunction {
-  id: string
-  name: string
-  description: string
-  config: LLMServiceConfig
+  id: string;
+  name: string;
+  description: string;
+  config: LLMServiceConfig;
   usage: {
-    totalTokens: number
-    lastUsed: number
-    requestCount: number
-  }
+    totalTokens: number;
+    lastUsed: number;
+    requestCount: number;
+  };
 }
 
 /**
@@ -54,9 +54,9 @@ export enum CognitiveFunctionType {
  * Grouped cognitive function result from parallel processing
  */
 export interface ParallelCognitiveResult {
-  processing: Record<CognitiveFunctionType, string>
-  integratedResponse: string
-  insights: Record<string, any>
+  processing: Record<CognitiveFunctionType, string>;
+  integratedResponse: string;
+  insights: Record<string, any>;
 }
 
 /**
@@ -64,21 +64,20 @@ export interface ParallelCognitiveResult {
  * Supports multiple API keys for different cognitive functions
  */
 export class LLMService {
-  private static instance: LLMService
-  private cognitiveFunctions: Map<string, CognitiveFunction> = new Map()
+  private static instance: LLMService;
+  private cognitiveFunctions: Map<string, CognitiveFunction> = new Map();
   private defaultConfig: Partial<LLMServiceConfig> = {
     model: 'gpt-4',
     temperature: 0.7,
     maxTokens: 1000,
-  }
+  };
 
   private constructor() {
     // Initialize with default general function
     this.cognitiveFunctions.set(CognitiveFunctionType.GENERAL, {
       id: CognitiveFunctionType.GENERAL,
       name: 'General Processing',
-      description:
-        'Default function for general processing when no specific function is required',
+      description: 'Default function for general processing when no specific function is required',
       config: {
         apiKey: '',
         apiEndpoint: 'https://api.openai.com/v1/chat/completions',
@@ -89,7 +88,7 @@ export class LLMService {
         lastUsed: 0,
         requestCount: 0,
       },
-    })
+    });
   }
 
   /**
@@ -97,9 +96,9 @@ export class LLMService {
    */
   public static getInstance(): LLMService {
     if (!LLMService.instance) {
-      LLMService.instance = new LLMService()
+      LLMService.instance = new LLMService();
     }
-    return LLMService.instance
+    return LLMService.instance;
   }
 
   /**
@@ -109,12 +108,12 @@ export class LLMService {
     functionType: CognitiveFunctionType,
     config: Partial<LLMServiceConfig>
   ): void {
-    const currentFunction = this.cognitiveFunctions.get(functionType)
+    const currentFunction = this.cognitiveFunctions.get(functionType);
 
     if (currentFunction) {
       // Update existing function
-      currentFunction.config = { ...currentFunction.config, ...config }
-      this.cognitiveFunctions.set(functionType, currentFunction)
+      currentFunction.config = { ...currentFunction.config, ...config };
+      this.cognitiveFunctions.set(functionType, currentFunction);
     } else {
       // Create new function with provided config
       this.cognitiveFunctions.set(functionType, {
@@ -123,8 +122,7 @@ export class LLMService {
         description: this.getFunctionDescription(functionType),
         config: {
           apiKey: config.apiKey || '',
-          apiEndpoint:
-            config.apiEndpoint || 'https://api.openai.com/v1/chat/completions',
+          apiEndpoint: config.apiEndpoint || 'https://api.openai.com/v1/chat/completions',
           model: config.model || this.defaultConfig.model,
           temperature: config.temperature || this.defaultConfig.temperature,
           maxTokens: config.maxTokens || this.defaultConfig.maxTokens,
@@ -134,10 +132,10 @@ export class LLMService {
           lastUsed: 0,
           requestCount: 0,
         },
-      })
+      });
     }
 
-    log.info(`Configured ${functionType} function`)
+    log.info(`Configured ${functionType} function`);
   }
 
   /**
@@ -146,23 +144,23 @@ export class LLMService {
   private getFunctionName(functionType: CognitiveFunctionType): string {
     switch (functionType) {
       case CognitiveFunctionType.COGNITIVE_CORE:
-        return 'Cognitive Core'
+        return 'Cognitive Core';
       case CognitiveFunctionType.AFFECTIVE_CORE:
-        return 'Affective Core'
+        return 'Affective Core';
       case CognitiveFunctionType.RELEVANCE_CORE:
-        return 'Relevance Core'
+        return 'Relevance Core';
       case CognitiveFunctionType.SEMANTIC_MEMORY:
-        return 'Semantic Memory'
+        return 'Semantic Memory';
       case CognitiveFunctionType.EPISODIC_MEMORY:
-        return 'Episodic Memory'
+        return 'Episodic Memory';
       case CognitiveFunctionType.PROCEDURAL_MEMORY:
-        return 'Procedural Memory'
+        return 'Procedural Memory';
       case CognitiveFunctionType.CONTENT_EVALUATION:
-        return 'Content Evaluation'
+        return 'Content Evaluation';
       case CognitiveFunctionType.GENERAL:
-        return 'General Processing'
+        return 'General Processing';
       default:
-        return 'Unknown Function'
+        return 'Unknown Function';
     }
   }
 
@@ -172,23 +170,23 @@ export class LLMService {
   private getFunctionDescription(functionType: CognitiveFunctionType): string {
     switch (functionType) {
       case CognitiveFunctionType.COGNITIVE_CORE:
-        return 'Handles logical reasoning, planning, and analytical thinking'
+        return 'Handles logical reasoning, planning, and analytical thinking';
       case CognitiveFunctionType.AFFECTIVE_CORE:
-        return 'Processes emotional content and generates appropriate emotional responses'
+        return 'Processes emotional content and generates appropriate emotional responses';
       case CognitiveFunctionType.RELEVANCE_CORE:
-        return 'Integrates cognitive and affective processing to determine relevance'
+        return 'Integrates cognitive and affective processing to determine relevance';
       case CognitiveFunctionType.SEMANTIC_MEMORY:
-        return 'Stores and retrieves factual knowledge and conceptual information'
+        return 'Stores and retrieves factual knowledge and conceptual information';
       case CognitiveFunctionType.EPISODIC_MEMORY:
-        return 'Manages memories of events and experiences'
+        return 'Manages memories of events and experiences';
       case CognitiveFunctionType.PROCEDURAL_MEMORY:
-        return 'Handles knowledge of how to perform tasks and procedures'
+        return 'Handles knowledge of how to perform tasks and procedures';
       case CognitiveFunctionType.CONTENT_EVALUATION:
-        return 'Evaluates potentially sensitive content to determine appropriate responses'
+        return 'Evaluates potentially sensitive content to determine appropriate responses';
       case CognitiveFunctionType.GENERAL:
-        return 'Default function for general processing'
+        return 'Default function for general processing';
       default:
-        return 'Unknown function type'
+        return 'Unknown function type';
     }
   }
 
@@ -197,53 +195,47 @@ export class LLMService {
    * Backward compatibility with the previous single-key implementation
    */
   public setConfig(config: Partial<LLMServiceConfig>): void {
-    this.setFunctionConfig(CognitiveFunctionType.GENERAL, config)
-    log.info('LLM service general configuration updated')
+    this.setFunctionConfig(CognitiveFunctionType.GENERAL, config);
+    log.info('LLM service general configuration updated');
   }
 
   /**
    * Get all configured cognitive functions
    */
   public getAllFunctions(): CognitiveFunction[] {
-    return Array.from(this.cognitiveFunctions.values())
+    return Array.from(this.cognitiveFunctions.values());
   }
 
   /**
    * Get all functioning cognitive cores
    */
   public getActiveFunctions(): CognitiveFunction[] {
-    return Array.from(this.cognitiveFunctions.values()).filter(
-      func => !!func.config.apiKey
-    )
+    return Array.from(this.cognitiveFunctions.values()).filter((func) => !!func.config.apiKey);
   }
 
   /**
    * Check if a specific cognitive function is configured
    */
   public isFunctionConfigured(functionType: CognitiveFunctionType): boolean {
-    const func = this.cognitiveFunctions.get(functionType)
-    return !!func && !!func.config.apiKey
+    const func = this.cognitiveFunctions.get(functionType);
+    return !!func && !!func.config.apiKey;
   }
 
   /**
    * Get the best available cognitive function for a specific type
    * Falls back to general function if specific function not available
    */
-  private getBestAvailableFunction(
-    functionType: CognitiveFunctionType
-  ): CognitiveFunction {
+  private getBestAvailableFunction(functionType: CognitiveFunctionType): CognitiveFunction {
     // Try to get the specific function
-    const specificFunction = this.cognitiveFunctions.get(functionType)
+    const specificFunction = this.cognitiveFunctions.get(functionType);
     if (specificFunction && specificFunction.config.apiKey) {
-      return specificFunction
+      return specificFunction;
     }
 
     // Fall back to general function
-    const generalFunction = this.cognitiveFunctions.get(
-      CognitiveFunctionType.GENERAL
-    )
+    const generalFunction = this.cognitiveFunctions.get(CognitiveFunctionType.GENERAL);
     if (generalFunction && generalFunction.config.apiKey) {
-      return generalFunction
+      return generalFunction;
     }
 
     // Create a placeholder function if none are configured
@@ -261,23 +253,16 @@ export class LLMService {
         lastUsed: 0,
         requestCount: 0,
       },
-    }
+    };
   }
 
   /**
    * Generate a response using the default/general cognitive function
    * Maintains backward compatibility with the original implementation
    */
-  public async generateResponse(
-    input: string,
-    context: string[] = []
-  ): Promise<string> {
+  public async generateResponse(input: string, context: string[] = []): Promise<string> {
     // Use the general function by default
-    return this.generateResponseWithFunction(
-      CognitiveFunctionType.GENERAL,
-      input,
-      context
-    )
+    return this.generateResponseWithFunction(CognitiveFunctionType.GENERAL, input, context);
   }
 
   /**
@@ -289,76 +274,76 @@ export class LLMService {
     _context: string[] = []
   ): Promise<string> {
     try {
-      const cognitiveFunction = this.getBestAvailableFunction(functionType)
+      const cognitiveFunction = this.getBestAvailableFunction(functionType);
 
       if (!cognitiveFunction.config.apiKey) {
-        log.warn(`No API key provided for ${cognitiveFunction.name}`)
-        return `I'm sorry, but my ${cognitiveFunction.name.toLowerCase()} isn't fully configured. Please set up the API key in settings.`
+        log.warn(`No API key provided for ${cognitiveFunction.name}`);
+        return `I'm sorry, but my ${cognitiveFunction.name.toLowerCase()} isn't fully configured. Please set up the API key in settings.`;
       }
 
       // In a real implementation, this would call out to an actual LLM API
       // For now, it just returns a placeholder message
-      log.info(`Generating response with ${cognitiveFunction.name}`)
+      log.info(`Generating response with ${cognitiveFunction.name}`);
 
       // Update usage stats
-      cognitiveFunction.usage.lastUsed = Date.now()
-      cognitiveFunction.usage.requestCount++
-      cognitiveFunction.usage.totalTokens += input.length + 100 // Approximate token count for demo
+      cognitiveFunction.usage.lastUsed = Date.now();
+      cognitiveFunction.usage.requestCount++;
+      cognitiveFunction.usage.totalTokens += input.length + 100; // Approximate token count for demo
 
       // Return a specific response for each cognitive function type to simulate different perspectives
-      let functionResponse: string
+      let functionResponse: string;
 
       switch (functionType) {
         case CognitiveFunctionType.COGNITIVE_CORE:
           functionResponse = `From a logical perspective, I believe the most effective approach to "${input.slice(
             0,
             30
-          )}..." would involve a structured analysis of the key components.`
-          break
+          )}..." would involve a structured analysis of the key components.`;
+          break;
         case CognitiveFunctionType.AFFECTIVE_CORE:
           functionResponse = `I sense that "${input.slice(
             0,
             30
-          )}..." evokes feelings of curiosity and interest. I'd like to explore this with empathy and emotional awareness.`
-          break
+          )}..." evokes feelings of curiosity and interest. I'd like to explore this with empathy and emotional awareness.`;
+          break;
         case CognitiveFunctionType.RELEVANCE_CORE:
           functionResponse = `When considering "${input.slice(
             0,
             30
-          )}...", the most relevant aspects appear to be the underlying patterns and practical implications.`
-          break
+          )}...", the most relevant aspects appear to be the underlying patterns and practical implications.`;
+          break;
         case CognitiveFunctionType.SEMANTIC_MEMORY:
           functionResponse = `Based on my knowledge, "${input.slice(
             0,
             30
-          )}..." relates to several key concepts that I can help clarify and expand upon.`
-          break
+          )}..." relates to several key concepts that I can help clarify and expand upon.`;
+          break;
         case CognitiveFunctionType.EPISODIC_MEMORY:
-          functionResponse = `This reminds me of previous conversations we've had about similar topics. Let me recall some relevant context.`
-          break
+          functionResponse = `This reminds me of previous conversations we've had about similar topics. Let me recall some relevant context.`;
+          break;
         case CognitiveFunctionType.PROCEDURAL_MEMORY:
           functionResponse = `Here's how I would approach "${input.slice(
             0,
             30
-          )}..." step by step, drawing on established methods and best practices.`
-          break
+          )}..." step by step, drawing on established methods and best practices.`;
+          break;
         case CognitiveFunctionType.CONTENT_EVALUATION:
           functionResponse = `I've carefully evaluated "${input.slice(
             0,
             30
-          )}..." and can provide a thoughtful response that respects appropriate boundaries.`
-          break
+          )}..." and can provide a thoughtful response that respects appropriate boundaries.`;
+          break;
         default:
           functionResponse = `I've processed your message about "${input.slice(
             0,
             30
-          )}..." and here's my response.`
+          )}..." and here's my response.`;
       }
 
-      return functionResponse
+      return functionResponse;
     } catch (error) {
-      log.error('Error generating response:', error)
-      return "I'm sorry, I encountered an error while processing your message."
+      log.error('Error generating response:', error);
+      return "I'm sorry, I encountered an error while processing your message.";
     }
   }
 
@@ -373,27 +358,23 @@ export class LLMService {
     const responses: Record<CognitiveFunctionType, string> = {} as Record<
       CognitiveFunctionType,
       string
-    >
+    >;
 
     // Generate responses in parallel
-    const responsePromises = functionTypes.map(async functionType => {
-      const response = await this.generateResponseWithFunction(
-        functionType,
-        input,
-        context
-      )
-      return { functionType, response }
-    })
+    const responsePromises = functionTypes.map(async (functionType) => {
+      const response = await this.generateResponseWithFunction(functionType, input, context);
+      return { functionType, response };
+    });
 
     // Wait for all responses
-    const results = await Promise.all(responsePromises)
+    const results = await Promise.all(responsePromises);
 
     // Organize responses by function type
     results.forEach(({ functionType, response }) => {
-      responses[functionType] = response
-    })
+      responses[functionType] = response;
+    });
 
-    return responses
+    return responses;
   }
 
   /**
@@ -407,36 +388,31 @@ export class LLMService {
     try {
       // Determine which functions to use
       const availableFunctions = Object.values(CognitiveFunctionType)
-        .filter(funcType => funcType !== CognitiveFunctionType.GENERAL)
-        .filter(funcType => this.isFunctionConfigured(funcType))
+        .filter((funcType) => funcType !== CognitiveFunctionType.GENERAL)
+        .filter((funcType) => this.isFunctionConfigured(funcType));
 
       // If no specialized functions are configured, use the general function
       if (availableFunctions.length === 0) {
-        const generalResponse = await this.generateResponse(input, context)
+        const generalResponse = await this.generateResponse(input, context);
         return {
           processing: {
             [CognitiveFunctionType.GENERAL]: generalResponse,
           } as Record<CognitiveFunctionType, string>,
           integratedResponse: generalResponse,
           insights: { processingMethod: 'single_function' },
-        }
+        };
       }
 
       // Generate responses from all configured functions in parallel
       log.info(
         `Generating parallel responses with ${availableFunctions.length} cognitive functions`
-      )
-      const responses = await this.generateParallelResponses(
-        input,
-        availableFunctions,
-        context
-      )
+      );
+      const responses = await this.generateParallelResponses(input, availableFunctions, context);
 
       // Group responses by cognitive domain
-      const cognitiveResponses = this.extractCognitiveDomainResponses(responses)
-      const memoryResponses = this.extractMemoryDomainResponses(responses)
-      const evaluationResponse =
-        responses[CognitiveFunctionType.CONTENT_EVALUATION]
+      const cognitiveResponses = this.extractCognitiveDomainResponses(responses);
+      const memoryResponses = this.extractMemoryDomainResponses(responses);
+      const evaluationResponse = responses[CognitiveFunctionType.CONTENT_EVALUATION];
 
       // Integrate the responses using a weighted approach
       // In a real implementation, this would use a more sophisticated integration
@@ -444,7 +420,7 @@ export class LLMService {
         cognitiveResponses,
         memoryResponses,
         evaluationResponse
-      )
+      );
 
       return {
         processing: responses,
@@ -458,12 +434,12 @@ export class LLMService {
             evaluation: !!evaluationResponse,
           },
         },
-      }
+      };
     } catch (error) {
-      log.error('Error generating parallel response:', error)
+      log.error('Error generating parallel response:', error);
 
       // Fall back to general function
-      const fallbackResponse = await this.generateResponse(input, context)
+      const fallbackResponse = await this.generateResponse(input, context);
       return {
         processing: {
           [CognitiveFunctionType.GENERAL]: fallbackResponse,
@@ -473,7 +449,7 @@ export class LLMService {
           processingMethod: 'fallback_single_function',
           error: 'Parallel processing failed',
         },
-      }
+      };
     }
   }
 
@@ -487,20 +463,20 @@ export class LLMService {
       CognitiveFunctionType.COGNITIVE_CORE,
       CognitiveFunctionType.AFFECTIVE_CORE,
       CognitiveFunctionType.RELEVANCE_CORE,
-    ]
+    ];
 
     const result: Record<CognitiveFunctionType, string> = {} as Record<
       CognitiveFunctionType,
       string
-    >
+    >;
 
-    cognitiveFunctions.forEach(funcType => {
+    cognitiveFunctions.forEach((funcType) => {
       if (responses[funcType]) {
-        result[funcType] = responses[funcType]
+        result[funcType] = responses[funcType];
       }
-    })
+    });
 
-    return result
+    return result;
   }
 
   /**
@@ -513,20 +489,20 @@ export class LLMService {
       CognitiveFunctionType.SEMANTIC_MEMORY,
       CognitiveFunctionType.EPISODIC_MEMORY,
       CognitiveFunctionType.PROCEDURAL_MEMORY,
-    ]
+    ];
 
     const result: Record<CognitiveFunctionType, string> = {} as Record<
       CognitiveFunctionType,
       string
-    >
+    >;
 
-    memoryFunctions.forEach(funcType => {
+    memoryFunctions.forEach((funcType) => {
       if (responses[funcType]) {
-        result[funcType] = responses[funcType]
+        result[funcType] = responses[funcType];
       }
-    })
+    });
 
-    return result
+    return result;
   }
 
   /**
@@ -538,24 +514,17 @@ export class LLMService {
     evaluationResponse?: string
   ): string {
     // Get available responses
-    const cognitiveKeys = Object.keys(
-      cognitiveResponses
-    ) as CognitiveFunctionType[]
-    const memoryKeys = Object.keys(memoryResponses) as CognitiveFunctionType[]
+    const cognitiveKeys = Object.keys(cognitiveResponses) as CognitiveFunctionType[];
+    const memoryKeys = Object.keys(memoryResponses) as CognitiveFunctionType[];
 
     // Handle case when we have no responses
-    if (
-      cognitiveKeys.length === 0 &&
-      memoryKeys.length === 0 &&
-      !evaluationResponse
-    ) {
-      return "I'm unable to generate a response at this time."
+    if (cognitiveKeys.length === 0 && memoryKeys.length === 0 && !evaluationResponse) {
+      return "I'm unable to generate a response at this time.";
     }
 
     // Prioritize cognitive core if available
     if (cognitiveResponses[CognitiveFunctionType.COGNITIVE_CORE]) {
-      const cognitiveBase =
-        cognitiveResponses[CognitiveFunctionType.COGNITIVE_CORE]
+      const cognitiveBase = cognitiveResponses[CognitiveFunctionType.COGNITIVE_CORE];
 
       // Enrich with affective information if available
       if (cognitiveResponses[CognitiveFunctionType.AFFECTIVE_CORE]) {
@@ -564,26 +533,26 @@ export class LLMService {
           cognitiveBase.replace(/\.$/, '') +
           '. ' +
           'I also recognize the emotional aspects of this topic.'
-        )
+        );
       }
 
-      return cognitiveBase
+      return cognitiveBase;
     }
 
     // If no cognitive core, use other available responses
     if (cognitiveKeys.length > 0) {
-      return cognitiveResponses[cognitiveKeys[0]]
+      return cognitiveResponses[cognitiveKeys[0]];
     }
 
     if (memoryKeys.length > 0) {
-      return memoryResponses[memoryKeys[0]]
+      return memoryResponses[memoryKeys[0]];
     }
 
     if (evaluationResponse) {
-      return evaluationResponse
+      return evaluationResponse;
     }
 
-    return "I'm processing your request but don't have a specific response formulated yet."
+    return "I'm processing your request but don't have a specific response formulated yet.";
   }
 
   /**
@@ -596,7 +565,7 @@ export class LLMService {
         CognitiveFunctionType.COGNITIVE_CORE,
         CognitiveFunctionType.AFFECTIVE_CORE,
         CognitiveFunctionType.RELEVANCE_CORE,
-      ].filter(funcType => this.isFunctionConfigured(funcType))
+      ].filter((funcType) => this.isFunctionConfigured(funcType));
 
       if (cognitiveFunctions.length === 0) {
         // Simple analysis with general function if no specialized functions are available
@@ -606,32 +575,30 @@ export class LLMService {
           complexity: 0.5,
           intentClass: 'inquiry',
           processingMethod: 'general',
-        }
+        };
       }
 
       // Generate parallel responses
       const responses = await this.generateParallelResponses(
         `ANALYZE_ONLY: ${message}`,
         cognitiveFunctions
-      )
+      );
 
       // Return a more detailed analysis when we have multiple functions
       return {
-        sentiment: responses[CognitiveFunctionType.AFFECTIVE_CORE]
-          ? 'analyzed'
-          : 'neutral',
+        sentiment: responses[CognitiveFunctionType.AFFECTIVE_CORE] ? 'analyzed' : 'neutral',
         topics: ['analyzed'],
         complexity: 0.7,
         intentClass: 'analyzed',
         processingMethod: 'parallel',
         functionsUsed: cognitiveFunctions.length,
-      }
+      };
     } catch (error) {
-      log.error('Error analyzing message:', error)
+      log.error('Error analyzing message:', error);
       return {
         error: 'Analysis failed',
         sentiment: 'unknown',
-      }
+      };
     }
   }
 
@@ -646,41 +613,37 @@ export class LLMService {
         CognitiveFunctionType.COGNITIVE_CORE,
         CognitiveFunctionType.AFFECTIVE_CORE,
         CognitiveFunctionType.RELEVANCE_CORE,
-      ].filter(funcType => this.isFunctionConfigured(funcType))
+      ].filter((funcType) => this.isFunctionConfigured(funcType));
 
       // If no specialized functions are configured, use the general function
       if (reflectionFunctions.length === 0) {
-        const generalFunction = this.cognitiveFunctions.get(
-          CognitiveFunctionType.GENERAL
-        )
+        const generalFunction = this.cognitiveFunctions.get(CognitiveFunctionType.GENERAL);
 
         if (!generalFunction || !generalFunction.config.apiKey) {
-          log.warn('No API key provided for reflection')
-          return 'Reflection failed: LLM service not properly configured'
+          log.warn('No API key provided for reflection');
+          return 'Reflection failed: LLM service not properly configured';
         }
 
         // In a real implementation, this would call an LLM API with the reflection prompt
-        log.info('Generating self-reflection with general LLM function')
+        log.info('Generating self-reflection with general LLM function');
 
         // Return a placeholder reflection
-        return this.getPlaceholderReflection()
+        return this.getPlaceholderReflection();
       }
 
       // Generate parallel responses from multiple cognitive functions
-      log.info(
-        `Generating self-reflection with ${reflectionFunctions.length} cognitive functions`
-      )
+      log.info(`Generating self-reflection with ${reflectionFunctions.length} cognitive functions`);
       const _responses = await this.generateParallelResponses(
         reflectionPrompt,
         reflectionFunctions
-      )
+      );
 
       // In a real implementation, these responses would be combined intelligently
       // For now, return a placeholder combined response
-      return this.getPlaceholderReflection()
+      return this.getPlaceholderReflection();
     } catch (error) {
-      log.error('Error generating reflection:', error)
-      return 'Self-reflection process encountered an error.'
+      log.error('Error generating reflection:', error);
+      return 'Self-reflection process encountered an error.';
     }
   }
 
@@ -708,37 +671,30 @@ certainty: 0.65
 
 Overall Insights:
 My self-reflection indicates that I can better serve users by slightly increasing my curiosity and creativity, while maintaining a balanced approach to displaying intelligence. I want to be perceived as capable but approachable, knowledgeable but not intimidating. My communication should be warm yet substantive, avoiding both excessive formality and overfamiliarity.
-    `
+    `;
   }
 
   /**
    * Analyze content for potential sensitivity issues using the specialized content evaluation function
    */
   public async evaluateContent(_content: string): Promise<{
-    isSensitive: boolean
-    category?: 'violence' | 'sexual' | 'other'
-    explanation: string
-    recommendedAction:
-      | 'respond_normally'
-      | 'respond_with_humor'
-      | 'de_escalate'
-      | 'decline'
+    isSensitive: boolean;
+    category?: 'violence' | 'sexual' | 'other';
+    explanation: string;
+    recommendedAction: 'respond_normally' | 'respond_with_humor' | 'de_escalate' | 'decline';
   }> {
     try {
       // Check if content evaluation function is configured
-      if (
-        !this.isFunctionConfigured(CognitiveFunctionType.CONTENT_EVALUATION)
-      ) {
+      if (!this.isFunctionConfigured(CognitiveFunctionType.CONTENT_EVALUATION)) {
         // Fall back to general function
         return {
           isSensitive: false,
-          explanation:
-            'Content evaluation function not configured, unable to analyze deeply',
+          explanation: 'Content evaluation function not configured, unable to analyze deeply',
           recommendedAction: 'respond_normally',
-        }
+        };
       }
 
-      log.info('Evaluating content sensitivity')
+      log.info('Evaluating content sensitivity');
 
       // In a real implementation, this would call the content evaluation function
       // For now, return a placeholder response
@@ -746,15 +702,15 @@ My self-reflection indicates that I can better serve users by slightly increasin
         isSensitive: false,
         explanation: 'No sensitive content detected',
         recommendedAction: 'respond_normally',
-      }
+      };
     } catch (error) {
-      log.error('Error evaluating content:', error)
+      log.error('Error evaluating content:', error);
       return {
         isSensitive: true,
         category: 'other',
         explanation: 'Error during content evaluation, defaulting to caution',
         recommendedAction: 'respond_with_humor',
-      }
+      };
     }
   }
 
@@ -763,23 +719,21 @@ My self-reflection indicates that I can better serve users by slightly increasin
    */
   public async analyzeImage(_imageData: string): Promise<string> {
     try {
-      const generalFunction = this.cognitiveFunctions.get(
-        CognitiveFunctionType.GENERAL
-      )
+      const generalFunction = this.cognitiveFunctions.get(CognitiveFunctionType.GENERAL);
 
       if (!generalFunction || !generalFunction.config.apiKey) {
-        log.warn('No API key provided for LLM service')
-        return 'Image analysis failed: LLM service not properly configured'
+        log.warn('No API key provided for LLM service');
+        return 'Image analysis failed: LLM service not properly configured';
       }
 
       // In a real implementation, this would call a vision-capable LLM API
-      log.info('Analyzing image with LLM vision capabilities')
+      log.info('Analyzing image with LLM vision capabilities');
 
       // Return a placeholder analysis
-      return "This appears to be an image. I can see some elements but can't fully analyze it at the moment."
+      return "This appears to be an image. I can see some elements but can't fully analyze it at the moment.";
     } catch (error) {
-      log.error('Error analyzing image:', error)
-      return 'I encountered an error while trying to analyze this image.'
+      log.error('Error analyzing image:', error);
+      return 'I encountered an error while trying to analyze this image.';
     }
   }
 }

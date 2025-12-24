@@ -25,6 +25,7 @@ This repository serves as:
 The OpenCog ecosystem is organized into 9 hierarchical dependency layers, each building upon the previous:
 
 ### 1. Foundation Layer
+
 **Purpose**: Core utilities and base infrastructure
 
 - **cogutil**: Thread-safe utilities, queues, stacks, signal-slot system, random selection
@@ -34,6 +35,7 @@ The OpenCog ecosystem is organized into 9 hierarchical dependency layers, each b
 - **ocpkg**: Package management utilities for OpenCog components
 
 ### 2. Core Layer
+
 **Purpose**: Knowledge representation and storage backends
 
 - **atomspace**: In-RAM metagraph database with query engine and graph-rewriting system
@@ -52,12 +54,14 @@ The OpenCog ecosystem is organized into 9 hierarchical dependency layers, each b
 - **atomspace-dht**: Distributed Hash Table storage backend
 
 ### 3. Logic Layer
+
 **Purpose**: Logical reasoning and unification
 
 - **unify**: Unification algorithms for pattern matching
 - **ure**: Unified Rule Engine for forward/backward chaining
 
 ### 4. Cognitive Layer
+
 **Purpose**: Cognitive processing and reasoning infrastructure
 
 - **cogserver**: Network shell and server framework for AtomSpace access
@@ -68,6 +72,7 @@ The OpenCog ecosystem is organized into 9 hierarchical dependency layers, each b
 - **profile**: Performance profiling and optimization tools
 
 ### 5. Advanced Layer
+
 **Purpose**: Advanced reasoning and learning systems
 
 - **pln**: Probabilistic Logic Networks for uncertain reasoning
@@ -76,6 +81,7 @@ The OpenCog ecosystem is organized into 9 hierarchical dependency layers, each b
 - **benchmark**: Performance benchmarking suite
 
 ### 6. Learning Layer
+
 **Purpose**: Machine learning and language acquisition
 
 - **learn**: General machine learning framework
@@ -83,6 +89,7 @@ The OpenCog ecosystem is organized into 9 hierarchical dependency layers, each b
 - **language-learning**: Natural language learning and processing
 
 ### 7. Language Layer
+
 **Purpose**: Natural language processing
 
 - **lg-atomese**: Link Grammar to AtomSpace integration
@@ -90,6 +97,7 @@ The OpenCog ecosystem is organized into 9 hierarchical dependency layers, each b
 - **link-grammar**: Link Grammar parser for syntactic analysis
 
 ### 8. Robotics Layer
+
 **Purpose**: Sensory processing and robotic embodiment
 
 - **vision**: Computer vision processing
@@ -100,6 +108,7 @@ The OpenCog ecosystem is organized into 9 hierarchical dependency layers, each b
 - **pau2motors**: Motor control interface
 
 ### 9. Integration Layer
+
 **Purpose**: Complete system integration
 
 - **opencog**: Main OpenCog integration bringing all components together
@@ -111,6 +120,7 @@ The OpenCog ecosystem is organized into 9 hierarchical dependency layers, each b
 The AtomSpace is OpenCog's foundational knowledge representation system:
 
 **What Makes AtomSpace Unique:**
+
 - **Metagraph Store**: More efficient than traditional graph databases
 - **Executable Graphs**: Graphs can be executed as abstract syntax trees
 - **Pattern Engine**: Advanced graph query and rewriting
@@ -119,6 +129,7 @@ The AtomSpace is OpenCog's foundational knowledge representation system:
 - **Persistent Storage**: Multiple backend options (RocksDB, IPFS, PostgreSQL)
 
 **Language Support:**
+
 - Scheme (Guile): Primary scripting interface
 - Python: Python bindings for all operations
 - Haskell: Functional programming interface
@@ -127,6 +138,7 @@ The AtomSpace is OpenCog's foundational knowledge representation system:
 ### CogServer - The Network Shell
 
 Network-accessible shell and server providing:
+
 - WebSocket API for real-time interaction
 - Multi-user concurrent access
 - Command-line interface via telnet
@@ -136,6 +148,7 @@ Network-accessible shell and server providing:
 ### CogUtil - The Foundation
 
 Essential utilities used across all components:
+
 - Thread-safe data structures (queues, stacks, sets)
 - Asynchronous method invocation
 - Resource pooling
@@ -163,6 +176,7 @@ make all-components
 ```
 
 **Features:**
+
 - Automatic component discovery
 - Dependency-aware build ordering
 - Individual component targets
@@ -172,6 +186,7 @@ make all-components
 ### GitHub Actions Workflows
 
 **Dependency Build Matrix** (`cogci.yml`):
+
 - 40+ component parallel builds
 - 9 dependency layer execution
 - Fail-never approach for complete issue discovery
@@ -180,6 +195,7 @@ make all-components
 - Comprehensive build summary reports
 
 **Other Workflows:**
+
 - `efficient-build.yml`: Optimized incremental builds
 - `guix.yml`: Guix package manager builds
 - `cogutil-test.yml`: CogUtil unit testing
@@ -192,6 +208,7 @@ make all-components
 Launch complete OpenCog environment instantly:
 
 **Instant Setup:**
+
 - Complete OpenCog ecosystem pre-built
 - Python 3.10 environment configured
 - Guix package manager with automatic fallback
@@ -199,12 +216,14 @@ Launch complete OpenCog environment instantly:
 - Port forwarding for all services
 
 **Services Available:**
+
 - CogServer Telnet: Port 17001
 - CogServer Web UI: Port 18001
 - REST API: Port 5000
 - Web Demos: Port 8080
 
 **Quick Commands:**
+
 ```bash
 opencog_status    # Verify installation
 build-opencog     # Build entire ecosystem
@@ -215,6 +234,7 @@ start-cogserver   # Launch CogServer
 ### Local Development
 
 **Prerequisites:**
+
 - CMake 3.12+
 - C++17 compiler (GCC 7+ or Clang 5+)
 - Boost libraries
@@ -222,6 +242,7 @@ start-cogserver   # Launch CogServer
 - Python 3.6+ (for Python bindings)
 
 **Build Process:**
+
 ```bash
 git clone --recursive https://github.com/opencog/opencog-org
 cd opencog-org
@@ -233,6 +254,7 @@ make -j$(nproc)
 ## Documentation Resources
 
 ### Core Documentation
+
 - **README.md**: Repository overview and quick start
 - **MERMAID_DIAGRAMS.md**: Complete dependency diagrams
 - **docs/OPENCOG_DEPENDENCY_BUILD.md**: Build system documentation
@@ -240,13 +262,16 @@ make -j$(nproc)
 - **CMAKE_BUILD_GUIDE.md**: Detailed CMake build instructions
 
 ### Component Documentation
+
 Each component includes:
+
 - Component-specific README.md
 - API documentation (Doxygen)
 - Example code and usage
 - Test suites
 
 ### External Resources
+
 - **OpenCog Wiki**: https://wiki.opencog.org/
 - **Main Project Site**: http://opencog.org
 - **Forums and Discussion**: OpenCog community channels
@@ -258,23 +283,27 @@ This repository includes a sophisticated agent framework in `.github/agents/`:
 ### Custom Agents Available
 
 **Conceptual/Theoretical Agents:**
+
 - **ONTOGENESIS.md**: Self-generating kernels through differential operators
 - **AUTOGNOSIS.md**: Hierarchical self-image building system
 - **HOLISTIC_METAMODEL.md**: Eric Schwarz's organizational systems theory
 - **universal-kernel-generator.md**: Universal kernel generation system
 
 **Mathematical/Computational Agents:**
+
 - **A000081-OEIS.md**: Rooted tree enumeration (OEIS A000081)
 - **A000055-OEIS.md**: Tree enumeration sequences
 - **echo.md**: Echo state networks and dynamics
 - **introspection.md**: Self-reflective system analysis
 
 **Integration Agents:**
+
 - **AGI-OS-Integration.md**: AGI operating system integration
 - **COGPERSONAS.md**: Cognitive personality systems
 - **Gizmos.md**: Utility components and tools
 
 These agents provide specialized capabilities for:
+
 - Self-generation and evolution of mathematical structures
 - Hierarchical cognitive modeling
 - System introspection and optimization
@@ -285,6 +314,7 @@ These agents provide specialized capabilities for:
 ### Dependency Discovery
 
 The build system automatically discovers:
+
 - Missing system dependencies (libraries, tools)
 - Undocumented component dependencies
 - Build order requirements
@@ -293,6 +323,7 @@ The build system automatically discovers:
 ### Dependency Tracking
 
 Dependencies are tracked through:
+
 - CMakeLists.txt analysis
 - Git submodule relationships
 - README documentation
@@ -301,6 +332,7 @@ Dependencies are tracked through:
 ### Mermaid Diagrams
 
 Complete visual dependency graphs available in `MERMAID_DIAGRAMS.md`:
+
 - Full ecosystem dependency graph
 - Layer-by-layer dependency views
 - Critical path analysis
@@ -311,12 +343,14 @@ Complete visual dependency graphs available in `MERMAID_DIAGRAMS.md`:
 ### Continuous Integration
 
 **Build Matrix Strategy:**
+
 - Parallel builds within dependency layers
 - Sequential execution across layers
 - Fail-fast option for rapid feedback
 - Comprehensive failure reporting
 
 **Test Coverage:**
+
 - Unit tests for each component
 - Integration tests across components
 - Performance benchmarks
@@ -325,6 +359,7 @@ Complete visual dependency graphs available in `MERMAID_DIAGRAMS.md`:
 ### Continuous Deployment
 
 **Gitpod Integration:**
+
 - Automatic environment setup
 - Pre-built component caching
 - Service auto-start configuration
@@ -335,6 +370,7 @@ Complete visual dependency graphs available in `MERMAID_DIAGRAMS.md`:
 ### For AGI Researchers
 
 Use OpenCog for:
+
 - Knowledge representation experiments
 - Reasoning system development
 - Cognitive architecture research
@@ -343,6 +379,7 @@ Use OpenCog for:
 ### For Application Developers
 
 Build applications with:
+
 - Natural language processing
 - Biological data analysis (agi-bio)
 - Robotic control systems
@@ -351,6 +388,7 @@ Build applications with:
 ### For System Integrators
 
 Integrate OpenCog with:
+
 - External databases (Neo4j, PostgreSQL)
 - ROS robotic systems
 - Blender 3D environments
@@ -378,18 +416,21 @@ Integrate OpenCog with:
 ## Technical Specifications
 
 ### Supported Platforms
+
 - **Linux**: Ubuntu 20.04+, Debian 11+, Fedora 35+
 - **macOS**: 11.0+ (Big Sur and later)
 - **Containers**: Docker, Podman
 - **Cloud**: Gitpod, GitHub Codespaces
 
 ### Programming Languages
+
 - **C++17**: Core implementation
 - **Scheme (Guile 3.0+)**: Primary scripting
 - **Python 3.6+**: Alternative scripting
 - **Haskell**: Functional interface
 
 ### Performance Characteristics
+
 - **AtomSpace**: Millions of atoms in RAM
 - **Pattern Matching**: Sub-millisecond for common patterns
 - **Parallel Processing**: Multi-threaded throughout
@@ -400,6 +441,7 @@ Integrate OpenCog with:
 The OpenCog ecosystem is licensed under the **GNU Affero General Public License v3.0 (AGPL-3.0)**.
 
 This ensures:
+
 - Freedom to use, modify, and distribute
 - Copyleft protection for the community
 - Network service provision triggers sharing requirements
@@ -410,20 +452,24 @@ See [LICENSE](../../LICENSE) for complete terms.
 ## Community and Support
 
 ### Getting Help
+
 - **Wiki**: Comprehensive documentation at wiki.opencog.org
 - **Issues**: GitHub issues in component repositories
 - **Discussions**: GitHub Discussions in opencog-org
 - **Chat**: Community chat channels
 
 ### Contributing
+
 Contributions are welcome! See individual component repositories for contribution guidelines.
 
 ### Research Collaboration
+
 OpenCog is used in academic research worldwide. Contact the community for collaboration opportunities.
 
 ## Future Directions
 
 ### Planned Enhancements
+
 - Extended distributed storage backends
 - Enhanced GPU acceleration (atomese-simd)
 - Improved language learning capabilities
@@ -431,6 +477,7 @@ OpenCog is used in academic research worldwide. Contact the community for collab
 - Quantum computing integration experiments
 
 ### Research Areas
+
 - Artificial General Intelligence architectures
 - Cognitive synergy through component integration
 - Scalable knowledge representation

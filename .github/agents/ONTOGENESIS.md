@@ -23,29 +23,35 @@ The term "ontogenesis" refers to the process of origin and development of an org
 ### Core Components
 
 #### 1. Ontogenetic Kernel
+
 An enhanced kernel with genetic capabilities:
+
 ```typescript
 interface OntogeneticKernel extends GeneratedKernel {
-  genome: KernelGenome;           // Genetic information
-  ontogeneticState: OntogeneticState;  // Development state
+  genome: KernelGenome; // Genetic information
+  ontogeneticState: OntogeneticState; // Development state
 }
 ```
 
 #### 2. Kernel Genome
+
 The "DNA" of a kernel:
+
 ```typescript
 interface KernelGenome {
-  id: string;                     // Unique identifier
-  generation: number;             // Generation number
-  lineage: string[];              // Parent IDs
-  genes: KernelGene[];            // Genetic information
-  fitness: number;                // Overall fitness
-  age: number;                    // Age in generations
+  id: string; // Unique identifier
+  generation: number; // Generation number
+  lineage: string[]; // Parent IDs
+  genes: KernelGene[]; // Genetic information
+  fitness: number; // Overall fitness
+  age: number; // Age in generations
 }
 ```
 
 #### 3. Development Stages
+
 Kernels progress through life stages:
+
 - **Embryonic**: Just generated, basic structure
 - **Juvenile**: Developing, optimizing
 - **Mature**: Fully developed, capable of reproduction
@@ -73,6 +79,7 @@ const optimized = selfOptimize(kernel, iterations);
 ```
 
 Each iteration:
+
 1. Optimizes grip coefficients
 2. Increases maturity
 3. Records development event
@@ -86,6 +93,7 @@ const result = selfReproduce(parent1, parent2, 'crossover');
 ```
 
 Methods:
+
 - **Crossover**: Single-point genetic crossover
 - **Mutation**: Random coefficient mutation
 - **Cloning**: Direct copy
@@ -112,6 +120,7 @@ const generations = runOntogenesis(config);
 ```
 
 Evolution process:
+
 1. **Fitness Evaluation**: Score each kernel
 2. **Selection**: Tournament selection of parents
 3. **Reproduction**: Crossover and mutation
@@ -123,6 +132,7 @@ Evolution process:
 ### Genes
 
 Kernels have four types of genes:
+
 1. **Coefficient Genes**: Control B-series coefficients (mutable)
 2. **Operator Genes**: Control differential operators (mutable)
 3. **Symmetry Genes**: Preserve domain symmetries (immutable)
@@ -131,6 +141,7 @@ Kernels have four types of genes:
 ### Crossover
 
 Single-point crossover on coefficient arrays:
+
 ```
 Parent 1: [c1, c2, c3, c4, c5]
 Parent 2: [d1, d2, d3, d4, d5]
@@ -144,6 +155,7 @@ Offspring 2: [d1, d2, d3, c4, c5]
 ### Mutation
 
 Random perturbation of coefficients:
+
 ```
 coeff[i] += (random() - 0.5) * 0.2  // ±10% mutation
 ```
@@ -153,34 +165,38 @@ coeff[i] += (random() - 0.5) * 0.2  // ±10% mutation
 Fitness is a weighted combination of multiple factors:
 
 ```typescript
-fitness = 
-  grip * 0.4 +          // Quality of domain fit
-  stability * 0.2 +     // Numerical stability
-  efficiency * 0.2 +    // Computational efficiency
-  novelty * 0.1 +       // Genetic diversity
-  symmetry * 0.1        // Symmetry preservation
+fitness =
+  grip * 0.4 + // Quality of domain fit
+  stability * 0.2 + // Numerical stability
+  efficiency * 0.2 + // Computational efficiency
+  novelty * 0.1 + // Genetic diversity
+  symmetry * 0.1; // Symmetry preservation
 ```
 
 ### Grip Components
+
 - **Contact**: How well kernel touches domain
 - **Coverage**: Completeness of span
 - **Efficiency**: Computational cost
 - **Stability**: Numerical properties
 
 ### Novelty
+
 Measured as genetic distance from population:
+
 ```typescript
-novelty = avg_distance(kernel, population)
+novelty = avg_distance(kernel, population);
 ```
 
 ## Examples
 
 ### Example 1: Simple Self-Generation
+
 ```typescript
-import { 
-  UniversalKernelGenerator, 
-  initializeOntogeneticKernel, 
-  selfGenerate 
+import {
+  UniversalKernelGenerator,
+  initializeOntogeneticKernel,
+  selfGenerate,
 } from 'cographiql-hypergraph';
 
 // Create parent kernel
@@ -196,6 +212,7 @@ console.log('Generation:', offspring.genome.generation);
 ```
 
 ### Example 2: Multi-Generation Evolution
+
 ```typescript
 import { runOntogenesis } from 'cographiql-hypergraph';
 
@@ -218,7 +235,7 @@ const config = {
 const generations = runOntogenesis(config);
 
 // Analyze results
-generations.forEach(gen => {
+generations.forEach((gen) => {
   console.log(`Gen ${gen.generation}:`);
   console.log(`  Best: ${gen.bestFitness.toFixed(4)}`);
   console.log(`  Avg: ${gen.averageFitness.toFixed(4)}`);
@@ -227,6 +244,7 @@ generations.forEach(gen => {
 ```
 
 ### Example 3: Lineage Tracking
+
 ```typescript
 import { selfGenerate, initializeOntogeneticKernel } from 'cographiql-hypergraph';
 
@@ -253,11 +271,13 @@ lineage.forEach((k, gen) => {
 ### B-Series as Genetic Code
 
 The B-series expansion serves as the genetic code:
+
 ```
 y_n+1 = y_n + h * Σ b_i * Φ_i(f, y_n)
 ```
 
 Where:
+
 - `b_i` are the coefficient genes
 - `Φ_i` are elementary differentials (rooted trees)
 - Trees follow A000081 sequence: 1, 1, 2, 4, 9, 20, 48, 115, ...
@@ -267,11 +287,13 @@ Where:
 Kernels reproduce through differential operators:
 
 1. **Chain Rule** (Self-Composition):
+
    ```
    (f∘g)' = f'(g(x)) · g'(x)
    ```
 
 2. **Product Rule** (Combination):
+
    ```
    (f·g)' = f'·g + f·g'
    ```
@@ -284,6 +306,7 @@ Kernels reproduce through differential operators:
 ### Grip as Fitness Function
 
 Grip measures how well the kernel's differential structure matches the domain:
+
 ```
 grip = optimal_contact ∩ domain_topology
 ```
@@ -293,6 +316,7 @@ Perfect grip → Perfect computation
 ## Performance Characteristics
 
 ### Complexity
+
 - **Initialization**: O(n) where n = coefficient count
 - **Self-Generation**: O(n²) (operator application)
 - **Self-Optimization**: O(k·n) where k = iterations
@@ -301,12 +325,15 @@ Perfect grip → Perfect computation
 - **Evolution**: O(g·p·n) where g = generations, p = population
 
 ### Memory
+
 - **Kernel**: ~1KB (genome + state)
 - **Population**: p × 1KB
 - **History**: 1000 operations × ~500B = 500KB max
 
 ### Convergence
+
 Typical evolution converges in 20-50 generations with:
+
 - Population size: 20-50
 - Mutation rate: 0.1-0.2
 - Crossover rate: 0.7-0.9
@@ -316,6 +343,7 @@ Typical evolution converges in 20-50 generations with:
 ### Development Schedule
 
 Control stage transitions:
+
 ```typescript
 developmentSchedule: {
   embryonicDuration: 2,    // Generations
@@ -328,19 +356,21 @@ developmentSchedule: {
 ### Custom Fitness Function
 
 Define domain-specific fitness:
+
 ```typescript
 fitnessFunction: (kernel) => {
   const domainFit = evaluateDomainFit(kernel);
   const complexity = evaluateComplexity(kernel);
   return domainFit * 0.7 + complexity * 0.3;
-}
+};
 ```
 
 ### Diversity Pressure
 
 Maintain genetic diversity:
+
 ```typescript
-diversityPressure: 0.2  // Higher = more diverse population
+diversityPressure: 0.2; // Higher = more diverse population
 ```
 
 ## Philosophical Implications
@@ -348,6 +378,7 @@ diversityPressure: 0.2  // Higher = more diverse population
 ### Living Mathematics
 
 Ontogenesis demonstrates that mathematical structures can be "alive" in the sense that they:
+
 1. **Self-replicate**: Generate copies with variation
 2. **Evolve**: Improve through selection
 3. **Develop**: Progress through life stages
@@ -357,6 +388,7 @@ Ontogenesis demonstrates that mathematical structures can be "alive" in the sens
 ### Computational Ontogenesis
 
 The system implements von Neumann's concept of self-reproducing automata, but at a higher mathematical level:
+
 - **Universal Constructor**: B-series expansion
 - **Blueprint**: Differential operators
 - **Replication**: Recursive composition
@@ -366,6 +398,7 @@ The system implements von Neumann's concept of self-reproducing automata, but at
 ### Emergence
 
 Complex behaviors emerge from simple rules:
+
 1. Elementary differentials (A000081 sequence)
 2. Differential operators (chain, product, quotient)
 3. Grip optimization (gradient ascent)
@@ -376,18 +409,23 @@ Result: Self-organizing mathematical structures that adapt to domains.
 ## Future Directions
 
 ### Symbiosis
+
 Kernels cooperating rather than competing
 
 ### Co-evolution
+
 Multiple populations evolving together
 
 ### Speciation
+
 Different kernel species for different domains
 
 ### Meta-evolution
+
 Evolution of evolution parameters
 
 ### Consciousness
+
 Self-aware kernels that model themselves
 
 ## References

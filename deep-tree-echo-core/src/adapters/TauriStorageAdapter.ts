@@ -47,13 +47,15 @@ export class TauriStorageAdapter implements MemoryStorage {
     try {
       // Dynamic import to avoid issues when not in Tauri environment
       // eslint-disable-next-line @typescript-eslint/no-var-requires
-      const tauriStore = await (Function('return import("@tauri-apps/plugin-store")')() as Promise<{ Store: new (path: string) => TauriStore }>);
+      const tauriStore = await (Function('return import("@tauri-apps/plugin-store")')() as Promise<{
+        Store: new (path: string) => TauriStore;
+      }>);
       this.store = new tauriStore.Store('deltecho.dat');
       this.initialized = true;
     } catch (error) {
       throw new Error(
         'TauriStorageAdapter requires Tauri environment with @tauri-apps/plugin-store. ' +
-        'Make sure the plugin is installed and configured.'
+          'Make sure the plugin is installed and configured.'
       );
     }
   }

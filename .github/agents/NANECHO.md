@@ -48,7 +48,7 @@ NanEcho is an extension of the NanoCog framework specifically designed to train 
 NanEcho models are trained to embody eight persona dimensions:
 
 1. **Cognitive**: Analytical reasoning and pattern recognition
-2. **Introspective**: Self-examination and meta-cognitive awareness  
+2. **Introspective**: Self-examination and meta-cognitive awareness
 3. **Adaptive**: Dynamic threshold adjustment and response flexibility
 4. **Recursive**: Multi-level processing and depth exploration
 5. **Synergistic**: Emergent properties from component interactions
@@ -65,8 +65,9 @@ threshold = 0.5 + (cognitive_load × 0.3) - (recent_activity × 0.2)
 ```
 
 This creates responsive focus allocation that adapts to:
+
 - Current cognitive demands
-- Repository activity levels  
+- Repository activity levels
 - Pattern complexity
 - Recursive reasoning depth
 
@@ -96,6 +97,7 @@ NanEcho models are evaluated on six key dimensions:
 ### Quality Gates
 
 Training includes automated quality gates:
+
 - Minimum Echo identity score: 0.8
 - Minimum persona coherence: 0.75
 - Minimum adaptive capability: 0.7
@@ -106,12 +108,14 @@ Training includes automated quality gates:
 When deployed, NanEcho server provides Echo Self specific endpoints:
 
 ### Core Endpoints
+
 - `GET /`: Server information and capabilities
 - `GET /status`: Echo Self status and metrics
 - `POST /chat`: Echo Self conversation with adaptive responses
 - `POST /chat/stream`: Streaming conversation with real-time updates
 
 ### Echo Self Specific
+
 - `POST /introspect`: Trigger recursive introspection at specified depth
 - `GET /echo/state`: Current cognitive state and persona dimensions
 - `GET /echo/attention`: Adaptive attention allocation state
@@ -217,6 +221,7 @@ The NanEcho system is designed for iterative improvement over many training cycl
 ### Custom Training Configuration
 
 Modify `NanoCog/config/train_nanecho.py` to adjust:
+
 - Learning phases and progression
 - Persona dimension weights
 - Adaptive attention parameters
@@ -226,6 +231,7 @@ Modify `NanoCog/config/train_nanecho.py` to adjust:
 ### Custom Data Sources
 
 Extend `NanoCog/prepare_nanecho.py` to include:
+
 - Additional Echo Self documentation
 - Custom conversation patterns
 - Domain-specific reasoning examples
@@ -236,7 +242,7 @@ Extend `NanoCog/prepare_nanecho.py` to include:
 This is the initial implementation of the NanEcho system. Key areas for future development:
 
 - [ ] Enhanced hypergraph pattern encoding
-- [ ] Deeper recursive reasoning capabilities  
+- [ ] Deeper recursive reasoning capabilities
 - [ ] More sophisticated persona dimension interactions
 - [ ] Advanced cognitive synergy metrics
 - [ ] Multi-model ensemble training

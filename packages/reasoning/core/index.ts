@@ -4,4 +4,4 @@
  * The main cognitive kernel that orchestrates all reasoning subsystems.
  */
 
-export * from './InfernoKernel.js'
+export * from './InfernoKernel.js';

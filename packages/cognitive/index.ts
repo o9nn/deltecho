@@ -27,17 +27,13 @@
  */
 
 // Re-export all deep-tree-echo-core capabilities
-export * from 'deep-tree-echo-core'
+export * from 'deep-tree-echo-core';
 
 // Re-export dove9 triadic cognitive engine
-export {
-  Dove9Kernel,
-  TriadicCognitiveEngine,
-  DeepTreeEchoProcessor
-} from 'dove9'
+export { Dove9Kernel, TriadicCognitiveEngine, DeepTreeEchoProcessor } from 'dove9';
 
 // Export unified types
-export * from './types/index.js'
+export * from './types/index.js';
 
 // Export integration utilities
-export * from './integration/index.js'
+export * from './integration/index.js';
