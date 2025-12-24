@@ -1,0 +1,36 @@
+{
+  "name": "@deltecho/sys6-triality",
+  "version": "1.0.0",
+  "description": "Sys6 Triality cognitive architecture with 30-step cycle and nested neural networks",
+  "main": "dist/index.js",
+  "types": "dist/index.d.ts",
+  "type": "module",
+  "scripts": {
+    "build": "tsc",
+    "test": "jest --config jest.config.cjs",
+    "lint": "eslint src/"
+  },
+  "keywords": [
+    "cognitive-architecture",
+    "neural-networks",
+    "triality",
+    "tetradic",
+    "sys6",
+    "agi"
+  ],
+  "author": "Deltecho Team",
+  "license": "MIT",
+  "dependencies": {
+    "@deltecho/shared": "workspace:*"
+  },
+  "devDependencies": {
+    "@types/jest": "^29.5.11",
+    "@types/node": "^20.10.0",
+    "jest": "^29.7.0",
+    "ts-jest": "^29.1.1",
+    "typescript": "^5.3.3"
+  },
+  "peerDependencies": {
+    "typescript": "^5.0.0"
+  }
+}
