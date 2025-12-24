@@ -62,10 +62,13 @@ export class MemoryPersistenceLayer extends EventEmitter {
     try {
       // Load memories from persistent storage
       const settings = await runtime.getDesktopSettings()
-      const storedMemories = settings.aiMemories || []
+      const storedMemoriesJson = settings.aiMemories
+      const storedMemories: AIMemory[] = storedMemoriesJson
+        ? JSON.parse(storedMemoriesJson)
+        : []
 
       // Restore the memory constellation
-      storedMemories.forEach(memory => {
+      storedMemories.forEach((memory: AIMemory) => {
         this.memories.set(memory.id, memory)
         this.companions.add(memory.companionId)
       })
@@ -324,17 +327,10 @@ export class MemoryPersistenceLayer extends EventEmitter {
   // Persist memories to storage
   private async persistMemories(): Promise<void> {
     try {
-      const settings = await runtime.getDesktopSettings()
       const memoriesArray = Array.from(this.memories.values())
 
-      // Update settings with memories
-      const updatedSettings = {
-        ...settings,
-        aiMemories: memoriesArray,
-      }
-
-      // Save to runtime storage
-      await runtime.setDesktopSettings(updatedSettings)
+      // Save to runtime storage as JSON string
+      await runtime.setDesktopSetting('aiMemories', JSON.stringify(memoriesArray))
 
       this.emit('memoriesPersisted', { count: memoriesArray.length })
     } catch (error) {

@@ -263,4 +263,60 @@ export class RAGMemoryStore {
       .slice(0, messageLimit)
       .sort((a, b) => a.timestamp - b.timestamp)
   }
+
+  /**
+   * Add a new memory (alias for storeMemory for compatibility)
+   */
+  public async addMemory(
+    memory: Omit<Memory, 'id' | 'timestamp' | 'embedding'>
+  ): Promise<void> {
+    return this.storeMemory(memory)
+  }
+
+  /**
+   * Get memories by chat ID (alias for getMemoriesByChat)
+   */
+  public getMemoriesByChatId(chatId: number): Memory[] {
+    return this.getMemoriesByChat(chatId)
+  }
+
+  /**
+   * Get latest chat memories
+   */
+  public getLatestChatMemories(chatId: number, count: number = 10): Memory[] {
+    return this.memories
+      .filter(mem => mem.chatId === chatId)
+      .sort((a, b) => b.timestamp - a.timestamp)
+      .slice(0, count)
+  }
+
+  /**
+   * Delete chat memories (alias for clearChatMemories)
+   */
+  public async deleteChatMemories(chatId: number): Promise<void> {
+    return this.clearChatMemories(chatId)
+  }
+
+  /**
+   * Get memory statistics
+   */
+  public getStats(): {
+    totalMemories: number
+    totalReflections: number
+    memoriesByChat: Record<number, number>
+  } {
+    const memoriesByChat: Record<number, number> = {}
+    this.memories.forEach(mem => {
+      if (!memoriesByChat[mem.chatId]) {
+        memoriesByChat[mem.chatId] = 0
+      }
+      memoriesByChat[mem.chatId]++
+    })
+
+    return {
+      totalMemories: this.memories.length,
+      totalReflections: this.reflections.length,
+      memoriesByChat,
+    }
+  }
 }

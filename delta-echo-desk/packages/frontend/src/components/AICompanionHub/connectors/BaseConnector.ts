@@ -7,6 +7,7 @@ import { AIMemory, MemorySystem, MemoryType } from '../MemoryPersistenceLayer'
 export interface AIConnectorConfig {
   id: string
   name: string
+  type?: 'claude' | 'chatgpt' | 'character-ai' | 'copilot' | 'deep-tree-echo' | 'custom'
   avatar?: string
   apiKey?: string
   apiEndpoint?: string
@@ -18,6 +19,15 @@ export interface AIConnectorConfig {
   memoriesPerRequest?: number
   capabilities: AICapability[]
   personalityTraits: Record<string, number> // trait -> value (0-1)
+  // Additional properties for AICompanionConfig compatibility
+  personality?: string
+  memoryCapacity?: number
+  creativityLevel?: number
+  responseStyle?: 'concise' | 'detailed' | 'creative' | 'technical'
+  specialCapabilities?: string[]
+  homeUrl?: string
+  atomSpaceEndpoint?: string
+  characterId?: string
 }
 
 export enum AICapability {
@@ -31,6 +41,7 @@ export enum AICapability {
   STRUCTURED_OUTPUT = 'structured_output',
   FINE_TUNING = 'fine_tuning',
   RETRIEVAL = 'retrieval',
+  ROLEPLAYING = 'roleplaying',
 }
 
 export interface Message {
@@ -47,6 +58,7 @@ export interface Message {
 
 export interface ConversationContext {
   conversationId: string
+  companionId?: string
   title?: string
   messages: Message[]
   metadata?: Record<string, any>
