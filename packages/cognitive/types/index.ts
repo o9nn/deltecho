@@ -54,6 +54,10 @@ export interface MessageMetadata {
   isBot?: boolean
   replyTo?: string
   cognitivePhase?: 'sense' | 'process' | 'act'
+  sentiment?: {
+    valence: number
+    arousal: number
+  }
 }
 
 /**

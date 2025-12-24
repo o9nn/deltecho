@@ -81,10 +81,38 @@ export declare class RAGMemoryStore {
      */
     clearChatMemories(chatId: number): Promise<void>;
     /**
-     * Search memories using semantic search (simplified implementation)
-     * In a real implementation, this would use vector similarity search
+     * Search memories using TF-IDF based semantic search
+     * Ranks results by relevance score combining term frequency and recency
      */
     searchMemories(query: string, limit?: number): Memory[];
+    /**
+     * Tokenize text into normalized words
+     */
+    private tokenize;
+    /**
+     * Check if word is a common stop word
+     */
+    private isStopWord;
+    /**
+     * Calculate IDF (Inverse Document Frequency) for all terms
+     */
+    private calculateIDF;
+    /**
+     * Calculate TF-IDF score between query and document
+     */
+    private calculateTFIDF;
+    /**
+     * Find memories similar to a given memory (for clustering/deduplication)
+     */
+    findSimilarMemories(memoryId: string, threshold?: number): Memory[];
+    /**
+     * Calculate cosine similarity between two token sets
+     */
+    private calculateCosineSimilarity;
+    /**
+     * Create TF-IDF vector for tokens
+     */
+    private createTFIDFVector;
     /**
      * Get conversation context for a specific chat
      */

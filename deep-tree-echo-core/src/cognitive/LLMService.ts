@@ -30,6 +30,20 @@ interface ChatCompletionResponse {
 }
 
 /**
+ * Response format from Anthropic Claude API
+ */
+interface AnthropicResponse {
+  content: Array<{
+    text: string
+    type: string
+  }>
+  usage?: {
+    input_tokens: number
+    output_tokens: number
+  }
+}
+
+/**
  * Supported LLM provider types
  */
 export type LLMProvider = 'openai' | 'anthropic' | 'ollama' | 'custom'
@@ -401,7 +415,7 @@ export class LLMService {
       throw new Error(`Anthropic API error (${response.status}): ${errorText}`)
     }
 
-    const data = await response.json()
+    const data = (await response.json()) as AnthropicResponse
 
     return {
       content: data.content?.[0]?.text || '',
