@@ -38,3 +38,6 @@ export * from './runtime.js'
 
 // Export backend interface
 export * from './backend.js'
+
+// Export navigation interface
+export * from './navigation.js'

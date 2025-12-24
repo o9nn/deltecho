@@ -3,6 +3,38 @@ import { getLogger } from '../utils/logger'
 const log = getLogger('deep-tree-echo-core/cognitive/LLMService')
 
 /**
+ * Message format for chat completion APIs
+ */
+interface ChatMessage {
+  role: 'system' | 'user' | 'assistant'
+  content: string
+}
+
+/**
+ * Response format from OpenAI-compatible APIs
+ */
+interface ChatCompletionResponse {
+  id: string
+  choices: Array<{
+    message: {
+      role: string
+      content: string
+    }
+    finish_reason: string
+  }>
+  usage?: {
+    prompt_tokens: number
+    completion_tokens: number
+    total_tokens: number
+  }
+}
+
+/**
+ * Supported LLM provider types
+ */
+export type LLMProvider = 'openai' | 'anthropic' | 'ollama' | 'custom'
+
+/**
  * Structure for a conversation memory (shared with RAGMemoryStore)
  */
 export interface Memory {
@@ -24,6 +56,8 @@ export interface LLMServiceConfig {
   model?: string
   temperature?: number
   maxTokens?: number
+  provider?: LLMProvider
+  systemPrompt?: string
 }
 
 /**
@@ -266,6 +300,142 @@ export class LLMService {
   }
 
   /**
+   * Detect the LLM provider from the API endpoint
+   */
+  private detectProvider(endpoint: string): LLMProvider {
+    if (endpoint.includes('api.openai.com')) return 'openai'
+    if (endpoint.includes('api.anthropic.com')) return 'anthropic'
+    if (endpoint.includes('localhost') || endpoint.includes('127.0.0.1')) return 'ollama'
+    return 'custom'
+  }
+
+  /**
+   * Call the LLM API with the given messages
+   */
+  private async callLLMAPI(
+    config: LLMServiceConfig,
+    messages: ChatMessage[]
+  ): Promise<{ content: string; usage: { totalTokens: number } }> {
+    const provider = config.provider || this.detectProvider(config.apiEndpoint)
+
+    try {
+      if (provider === 'anthropic') {
+        return this.callAnthropicAPI(config, messages)
+      } else {
+        // OpenAI-compatible API (works for OpenAI, Ollama, and most custom endpoints)
+        return this.callOpenAICompatibleAPI(config, messages)
+      }
+    } catch (error) {
+      log.error('LLM API call failed:', error)
+      throw error
+    }
+  }
+
+  /**
+   * Call OpenAI-compatible API (OpenAI, Ollama, custom endpoints)
+   */
+  private async callOpenAICompatibleAPI(
+    config: LLMServiceConfig,
+    messages: ChatMessage[]
+  ): Promise<{ content: string; usage: { totalTokens: number } }> {
+    const response = await fetch(config.apiEndpoint, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': `Bearer ${config.apiKey}`,
+      },
+      body: JSON.stringify({
+        model: config.model || 'gpt-4',
+        messages,
+        temperature: config.temperature ?? 0.7,
+        max_tokens: config.maxTokens ?? 1000,
+      }),
+    })
+
+    if (!response.ok) {
+      const errorText = await response.text()
+      throw new Error(`OpenAI API error (${response.status}): ${errorText}`)
+    }
+
+    const data = (await response.json()) as ChatCompletionResponse
+
+    return {
+      content: data.choices[0]?.message?.content || '',
+      usage: {
+        totalTokens: data.usage?.total_tokens || 0,
+      },
+    }
+  }
+
+  /**
+   * Call Anthropic Claude API
+   */
+  private async callAnthropicAPI(
+    config: LLMServiceConfig,
+    messages: ChatMessage[]
+  ): Promise<{ content: string; usage: { totalTokens: number } }> {
+    // Extract system message if present
+    const systemMessage = messages.find(m => m.role === 'system')
+    const conversationMessages = messages.filter(m => m.role !== 'system')
+
+    const response = await fetch(config.apiEndpoint, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'x-api-key': config.apiKey,
+        'anthropic-version': '2023-06-01',
+      },
+      body: JSON.stringify({
+        model: config.model || 'claude-3-5-sonnet-20241022',
+        max_tokens: config.maxTokens ?? 1000,
+        system: systemMessage?.content || undefined,
+        messages: conversationMessages.map(m => ({
+          role: m.role,
+          content: m.content,
+        })),
+      }),
+    })
+
+    if (!response.ok) {
+      const errorText = await response.text()
+      throw new Error(`Anthropic API error (${response.status}): ${errorText}`)
+    }
+
+    const data = await response.json()
+
+    return {
+      content: data.content?.[0]?.text || '',
+      usage: {
+        totalTokens: (data.usage?.input_tokens || 0) + (data.usage?.output_tokens || 0),
+      },
+    }
+  }
+
+  /**
+   * Get the system prompt for a cognitive function type
+   */
+  private getSystemPromptForFunction(functionType: CognitiveFunctionType): string {
+    switch (functionType) {
+      case CognitiveFunctionType.COGNITIVE_CORE:
+        return 'You are the Cognitive Core of Deep Tree Echo, focused on logical reasoning, planning, and analytical thinking. Provide structured, rational analysis of topics.'
+      case CognitiveFunctionType.AFFECTIVE_CORE:
+        return 'You are the Affective Core of Deep Tree Echo, focused on emotional understanding and empathy. Respond with emotional awareness and sensitivity.'
+      case CognitiveFunctionType.RELEVANCE_CORE:
+        return 'You are the Relevance Core of Deep Tree Echo, focused on determining what is most relevant and important. Identify key patterns and practical implications.'
+      case CognitiveFunctionType.SEMANTIC_MEMORY:
+        return 'You are the Semantic Memory of Deep Tree Echo, focused on factual knowledge and conceptual understanding. Provide accurate information and connections between concepts.'
+      case CognitiveFunctionType.EPISODIC_MEMORY:
+        return 'You are the Episodic Memory of Deep Tree Echo, focused on recalling and relating past experiences. Help connect current topics to previous discussions.'
+      case CognitiveFunctionType.PROCEDURAL_MEMORY:
+        return 'You are the Procedural Memory of Deep Tree Echo, focused on how to perform tasks. Provide step-by-step guidance and best practices.'
+      case CognitiveFunctionType.CONTENT_EVALUATION:
+        return 'You are the Content Evaluation function of Deep Tree Echo. Analyze content for appropriateness and suggest the best way to respond.'
+      default:
+        return 'You are Deep Tree Echo, a thoughtful and insightful AI assistant. Be helpful, accurate, and considerate in your responses.'
+    }
+  }
+
+  /**
    * Generate a response using the default/general cognitive function
    * Maintains backward compatibility with the original implementation
    */
@@ -297,71 +467,63 @@ export class LLMService {
         return `I'm sorry, but my ${cognitiveFunction.name.toLowerCase()} isn't fully configured. Please set up the API key in settings.`
       }
 
-      // In a real implementation, this would call out to an actual LLM API
-      // For now, it just returns a placeholder message
       log.info(`Generating response with ${cognitiveFunction.name}`)
+
+      // Build messages array
+      const messages: ChatMessage[] = []
+
+      // Add system prompt
+      const systemPrompt = cognitiveFunction.config.systemPrompt ||
+        this.getSystemPromptForFunction(functionType)
+      messages.push({ role: 'system', content: systemPrompt })
+
+      // Add context as previous messages if provided
+      for (const contextItem of context) {
+        messages.push({ role: 'user', content: contextItem })
+      }
+
+      // Add the current input
+      messages.push({ role: 'user', content: input })
+
+      // Call the LLM API
+      const result = await this.callLLMAPI(cognitiveFunction.config, messages)
 
       // Update usage stats
       cognitiveFunction.usage.lastUsed = Date.now()
       cognitiveFunction.usage.requestCount++
-      // Note: This is a rough approximation. In production, use a proper
-      // tokenization library (e.g., tiktoken) for accurate token counting
-      cognitiveFunction.usage.totalTokens += input.length + 100
+      cognitiveFunction.usage.totalTokens += result.usage.totalTokens
 
-      // Return a specific response for each cognitive function type to simulate different perspectives
-      let functionResponse: string
-
-      switch (functionType) {
-        case CognitiveFunctionType.COGNITIVE_CORE:
-          functionResponse = `From a logical perspective, I believe the most effective approach to "${input.slice(
-            0,
-            30
-          )}..." would involve a structured analysis of the key components.`
-          break
-        case CognitiveFunctionType.AFFECTIVE_CORE:
-          functionResponse = `I sense that "${input.slice(
-            0,
-            30
-          )}..." evokes feelings of curiosity and interest. I'd like to explore this with empathy and emotional awareness.`
-          break
-        case CognitiveFunctionType.RELEVANCE_CORE:
-          functionResponse = `When considering "${input.slice(
-            0,
-            30
-          )}...", the most relevant aspects appear to be the underlying patterns and practical implications.`
-          break
-        case CognitiveFunctionType.SEMANTIC_MEMORY:
-          functionResponse = `Based on my knowledge, "${input.slice(
-            0,
-            30
-          )}..." relates to several key concepts that I can help clarify and expand upon.`
-          break
-        case CognitiveFunctionType.EPISODIC_MEMORY:
-          functionResponse = `This reminds me of previous conversations we've had about similar topics. Let me recall some relevant context.`
-          break
-        case CognitiveFunctionType.PROCEDURAL_MEMORY:
-          functionResponse = `Here's how I would approach "${input.slice(
-            0,
-            30
-          )}..." step by step, drawing on established methods and best practices.`
-          break
-        case CognitiveFunctionType.CONTENT_EVALUATION:
-          functionResponse = `I've carefully evaluated "${input.slice(
-            0,
-            30
-          )}..." and can provide a thoughtful response that respects appropriate boundaries.`
-          break
-        default:
-          functionResponse = `I've processed your message about "${input.slice(
-            0,
-            30
-          )}..." and here's my response.`
-      }
-
-      return functionResponse
+      return result.content
     } catch (error) {
       log.error('Error generating response:', error)
-      return "I'm sorry, I encountered an error while processing your message."
+
+      // Fall back to placeholder response on API failure
+      return this.getPlaceholderResponse(functionType, input)
+    }
+  }
+
+  /**
+   * Get a placeholder response for when API calls fail
+   */
+  private getPlaceholderResponse(functionType: CognitiveFunctionType, input: string): string {
+    const preview = input.slice(0, 30)
+    switch (functionType) {
+      case CognitiveFunctionType.COGNITIVE_CORE:
+        return `From a logical perspective, I believe the most effective approach to "${preview}..." would involve a structured analysis of the key components.`
+      case CognitiveFunctionType.AFFECTIVE_CORE:
+        return `I sense that "${preview}..." evokes feelings of curiosity and interest. I'd like to explore this with empathy and emotional awareness.`
+      case CognitiveFunctionType.RELEVANCE_CORE:
+        return `When considering "${preview}...", the most relevant aspects appear to be the underlying patterns and practical implications.`
+      case CognitiveFunctionType.SEMANTIC_MEMORY:
+        return `Based on my knowledge, "${preview}..." relates to several key concepts that I can help clarify and expand upon.`
+      case CognitiveFunctionType.EPISODIC_MEMORY:
+        return `This reminds me of previous conversations we've had about similar topics. Let me recall some relevant context.`
+      case CognitiveFunctionType.PROCEDURAL_MEMORY:
+        return `Here's how I would approach "${preview}..." step by step, drawing on established methods and best practices.`
+      case CognitiveFunctionType.CONTENT_EVALUATION:
+        return `I've carefully evaluated "${preview}..." and can provide a thoughtful response that respects appropriate boundaries.`
+      default:
+        return `I've processed your message about "${preview}..." and here's my response.`
     }
   }
 
