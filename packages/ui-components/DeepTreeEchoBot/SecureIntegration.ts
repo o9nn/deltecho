@@ -7,8 +7,7 @@
  * DeltaChat ecosystem.
  */
 
-// TODO: Abstract DeltaChat types
-// // TODO: Abstract DeltaChat types - not needed for standalone operation
+// Note: DeltaChat types abstracted - module now works standalone with localStorage fallback
 
 // Encryption states for cognitive data
 enum SecureState {
