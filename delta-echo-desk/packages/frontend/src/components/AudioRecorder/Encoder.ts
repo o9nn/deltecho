@@ -16,7 +16,7 @@ class Encoder {
   private mp3Encoder: Mp3Encoder
   private maxSamples: number
   private samplesMono: Int16Array | null
-  private dataBuffer: Int8Array[] = []
+  private dataBuffer: Uint8Array[] = []
 
   constructor(config: EncoderConfig = {}) {
     this.config = {
@@ -48,10 +48,13 @@ class Encoder {
 
   /**
    * Append new audio buffer to current active buffer
-   * @param {ArrayBuffer | Int8Array} buffer
+   * @param {ArrayBuffer | Int8Array | Uint8Array} buffer
    */
-  appendToBuffer(buffer: ArrayBuffer | Int8Array): void {
-    this.dataBuffer.push(new Int8Array(buffer))
+  appendToBuffer(buffer: ArrayBuffer | Int8Array | Uint8Array): void {
+    // Create a copy with its own ArrayBuffer to avoid SharedArrayBuffer issues
+    const copy = new Uint8Array(buffer.byteLength)
+    copy.set(new Uint8Array(buffer instanceof ArrayBuffer ? buffer : buffer.buffer, buffer instanceof ArrayBuffer ? 0 : buffer.byteOffset, buffer.byteLength))
+    this.dataBuffer.push(copy)
   }
 
   /**
@@ -101,9 +104,9 @@ class Encoder {
 
   /**
    * Return full dataBuffer
-   * @returns {Int8Array[]}
+   * @returns {Uint8Array[]}
    */
-  finish(): Int8Array[] {
+  finish(): Uint8Array[] {
     this.appendToBuffer(this.mp3Encoder.flush())
     return this.dataBuffer
   }

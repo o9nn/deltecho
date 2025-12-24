@@ -36,7 +36,15 @@ async function getGitRef() {
   } catch (err) {
     console.log(err)
     console.log('Hint: you can set the env var VERSION_INFO_GIT_REF manualy')
-    process.exit(1)
+    // Fallback to commit SHA if no tags are present
+    try {
+      git_describe = gatherProcessStdout('git', ['rev-parse', 'HEAD']).substring(0, 7)
+      git_branch = git_branch || 'main'
+    } catch (fallbackErr) {
+      console.log('Fallback to commit SHA also failed:', fallbackErr)
+      git_describe = 'unknown'
+      git_branch = 'main'
+    }
   }
 
   const git_ref = git_describe + (git_branch === 'main' ? '' : '-' + git_branch)

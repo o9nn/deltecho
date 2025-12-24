@@ -141,9 +141,9 @@ class MicRecorder {
 
   /**
    * Return Mp3 Buffer and Blob with type mp3
-   * @return {Promise<[Int8Array[], Blob]>}
+   * @return {Promise<[Uint8Array[], Blob]>}
    */
-  getMp3(): Promise<[Int8Array[], Blob]> {
+  getMp3(): Promise<[Uint8Array[], Blob]> {
     if (!this.lameEncoder) {
       return Promise.reject(new Error('LAME encoder is not initialized.'))
     }
@@ -154,7 +154,7 @@ class MicRecorder {
       if (finalBuffer.length === 0) {
         reject(new Error('No buffer to send'))
       } else {
-        resolve([finalBuffer, new Blob(finalBuffer, { type: 'audio/mp3' })])
+        resolve([finalBuffer, new Blob(finalBuffer as BlobPart[], { type: 'audio/mp3' })])
         this.lameEncoder?.clearBuffer()
       }
     })

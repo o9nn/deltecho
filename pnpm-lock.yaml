@@ -93,11 +93,11 @@ importers:
   deep-tree-echo-orchestrator:
     dependencies:
       deep-tree-echo-core:
-        specifier: file:../deep-tree-echo-core
+        specifier: workspace:*
         version: link:../deep-tree-echo-core
       dove9:
-        specifier: file:../dove9
-        version: file:dove9
+        specifier: workspace:*
+        version: link:../dove9
     devDependencies:
       '@types/node':
         specifier: ^20.11.0
@@ -1058,8 +1058,8 @@ importers:
   packages/reasoning:
     dependencies:
       '@deltecho/cognitive':
-        specifier: file:../cognitive
-        version: file:packages/cognitive
+        specifier: workspace:*
+        version: link:../cognitive
     devDependencies:
       '@types/node':
         specifier: ^20.0.0
@@ -1099,10 +1099,10 @@ importers:
         specifier: ^1.79.0
         version: 1.79.0
       '@deltecho/cognitive':
-        specifier: file:../cognitive
-        version: file:packages/cognitive
+        specifier: workspace:*
+        version: link:../cognitive
       '@deltecho/shared':
-        specifier: file:../shared
+        specifier: workspace:*
         version: link:../shared
       '@types/three':
         specifier: ^0.182.0
@@ -1384,10 +1384,6 @@ packages:
 
   '@deltachat/tiny-emitter@3.0.0':
     resolution: {integrity: sha512-iapvwGCEWFjXtObQ/vNzXS0+M9hrZrY2tMdV7SaX8kHXKVm3oIuJUVmUj5jhABTL7GstO6uKzV+36FUZVGOqCA==}
-
-  '@deltecho/cognitive@file:packages/cognitive':
-    resolution: {directory: packages/cognitive, type: directory}
-    engines: {node: '>=20.0.0'}
 
   '@develar/schema-utils@2.6.5':
     resolution: {integrity: sha512-0cp4PsWQ/9avqTVMCtZ+GirikIA36ikvjtHweU4/j8yLtgObI0+JUPhYFScgwlteveGB1rt3Cm8UhN04XayDig==}
@@ -3189,10 +3185,6 @@ packages:
   dotenv@9.0.2:
     resolution: {integrity: sha512-I9OvvrHp4pIARv4+x9iuewrWycX6CcZtoAu1XrzPxc5UygMJXJZYmBsynku8IkrJwgypE5DGNjDPmPRhDCptUg==}
     engines: {node: '>=10'}
-
-  dove9@file:dove9:
-    resolution: {directory: dove9, type: directory}
-    engines: {node: '>=20.0.0'}
 
   dunder-proto@1.0.1:
     resolution: {integrity: sha512-KIN/nDJBQRcXw0MLVhZE9iQHmG68qAVIBg9CqmUYjmQIhgij9U5MFvrqkUL5FbtyyzZuOeOt0zdeRe4UY7ct+A==}
@@ -5929,11 +5921,6 @@ snapshots:
 
   '@deltachat/tiny-emitter@3.0.0': {}
 
-  '@deltecho/cognitive@file:packages/cognitive':
-    dependencies:
-      deep-tree-echo-core: link:deep-tree-echo-core
-      dove9: link:dove9
-
   '@develar/schema-utils@2.6.5':
     dependencies:
       ajv: 6.12.6
@@ -7966,10 +7953,6 @@ snapshots:
   dotenv@16.6.1: {}
 
   dotenv@9.0.2: {}
-
-  dove9@file:dove9:
-    dependencies:
-      deep-tree-echo-core: link:deep-tree-echo-core
 
   dunder-proto@1.0.1:
     dependencies:
