@@ -11,9 +11,14 @@ export interface DeepTreeEchoBotConfig {
   enabled: boolean
   enableAsMainUser: boolean
   apiKey?: string
+  apiEndpoint?: string
+  model?: string
+  temperature?: number
+  maxTokens?: number
   cognitiveKeys?: CognitiveKeys
   useParallelProcessing?: boolean
   memoryPersistence?: 'local' | 'remote' | 'hybrid'
+  provider?: 'openai' | 'anthropic' | 'ollama' | 'custom'
 }
 
 /**
@@ -82,6 +87,7 @@ export interface MemoryState {
     content: string
     embedding?: number[]
     timestamp: number
+    type?: 'message' | 'context' | 'reflection'
   }>
   longTerm: {
     episodic: number

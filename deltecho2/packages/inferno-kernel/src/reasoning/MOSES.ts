@@ -153,33 +153,247 @@ export class MOSES {
   }
 
   /**
-   * Crossover two programs
-   * Note: This is a simplified implementation. A full implementation would
-   * perform actual genetic crossover by combining subtrees from both parents.
+   * Deep clone an atom tree, creating new atoms in the AtomSpace
    */
-  private crossover(parent1: Program, parent2: Program): Program {
-    // TODO: Implement actual genetic crossover
-    // For now, inherit from parent1 with some characteristics from parent2
-    const child = this.createRandomProgram()
-    child.generation = this.generation
-    // Inherit some fitness bias from parents
-    child.fitness = (parent1.fitness + parent2.fitness) / 2
-    return child
+  private cloneAtomTree(atomId: string): Atom {
+    const original = this.atomSpace.getAtom(atomId)
+    if (!original) {
+      // If atom not found, create a placeholder
+      return this.atomSpace.addNode('ConceptNode', `placeholder_${Math.random()}`)
+    }
+
+    if (original.outgoing && original.outgoing.length > 0) {
+      // It's a link - recursively clone children
+      const clonedOutgoing = original.outgoing.map(childId =>
+        this.cloneAtomTree(childId).id
+      )
+      return this.atomSpace.addLink(original.type, clonedOutgoing, original.truthValue)
+    } else {
+      // It's a node - create a copy
+      return this.atomSpace.addNode(original.type, original.name || '', original.truthValue)
+    }
   }
 
   /**
-   * Mutate a program
-   * Note: This is a simplified implementation. A full implementation would
-   * make small modifications to the existing program tree structure.
+   * Get all subtree root IDs from an atom tree
+   */
+  private getSubtreeIds(atomId: string): string[] {
+    const result: string[] = [atomId]
+    const atom = this.atomSpace.getAtom(atomId)
+
+    if (atom?.outgoing) {
+      for (const childId of atom.outgoing) {
+        result.push(...this.getSubtreeIds(childId))
+      }
+    }
+
+    return result
+  }
+
+  /**
+   * Replace a subtree in a cloned tree with another subtree
+   */
+  private replaceSubtree(rootId: string, targetId: string, replacementId: string): Atom {
+    const root = this.atomSpace.getAtom(rootId)
+    if (!root) {
+      return this.atomSpace.addNode('ConceptNode', 'error')
+    }
+
+    if (rootId === targetId) {
+      // This is the node to replace - clone the replacement
+      return this.cloneAtomTree(replacementId)
+    }
+
+    if (!root.outgoing || root.outgoing.length === 0) {
+      // Leaf node, not our target - just clone it
+      return this.atomSpace.addNode(root.type, root.name || '', root.truthValue)
+    }
+
+    // Link node - recursively process children
+    const newOutgoing = root.outgoing.map(childId =>
+      this.replaceSubtree(childId, targetId, replacementId).id
+    )
+    return this.atomSpace.addLink(root.type, newOutgoing, root.truthValue)
+  }
+
+  /**
+   * Crossover two programs using subtree exchange
+   * Performs actual genetic crossover by combining subtrees from both parents.
+   */
+  private crossover(parent1: Program, parent2: Program): Program {
+    // Get subtree positions from both parents
+    const subtrees1 = this.getSubtreeIds(parent1.tree.id)
+    const subtrees2 = this.getSubtreeIds(parent2.tree.id)
+
+    // Select random crossover points (skip root to ensure valid programs)
+    const crossoverPoint1 = subtrees1.length > 1
+      ? subtrees1[1 + Math.floor(Math.random() * (subtrees1.length - 1))]
+      : subtrees1[0]
+    const crossoverPoint2 = subtrees2.length > 1
+      ? subtrees2[1 + Math.floor(Math.random() * (subtrees2.length - 1))]
+      : subtrees2[0]
+
+    // Clone parent1's tree and replace a subtree with one from parent2
+    const childTree = this.replaceSubtree(
+      parent1.tree.id,
+      crossoverPoint1,
+      crossoverPoint2
+    )
+
+    return {
+      id: `prog_${this.nextProgramId++}`,
+      tree: childTree,
+      fitness: 0, // Will be evaluated by fitness function
+      generation: this.generation,
+    }
+  }
+
+  /**
+   * Generate a random mutation for a node
+   */
+  private mutateNode(atom: Atom): Atom {
+    const mutationTypes = ['strength', 'confidence', 'name'] as const
+    const mutationType = mutationTypes[Math.floor(Math.random() * mutationTypes.length)]
+
+    switch (mutationType) {
+      case 'strength': {
+        // Mutate truth value strength
+        const newStrength = Math.max(0, Math.min(1,
+          atom.truthValue.strength + (Math.random() - 0.5) * 0.2
+        ))
+        return this.atomSpace.addNode(
+          atom.type,
+          atom.name || '',
+          { strength: newStrength, confidence: atom.truthValue.confidence }
+        )
+      }
+      case 'confidence': {
+        // Mutate truth value confidence
+        const newConfidence = Math.max(0, Math.min(1,
+          atom.truthValue.confidence + (Math.random() - 0.5) * 0.2
+        ))
+        return this.atomSpace.addNode(
+          atom.type,
+          atom.name || '',
+          { strength: atom.truthValue.strength, confidence: newConfidence }
+        )
+      }
+      case 'name': {
+        // Mutate the predicate name (for predicate nodes)
+        if (atom.type === 'PredicateNode') {
+          return this.atomSpace.addNode(
+            'PredicateNode',
+            `pred_${Math.random()}`,
+            atom.truthValue
+          )
+        }
+        // For other node types, just clone
+        return this.atomSpace.addNode(atom.type, atom.name || '', atom.truthValue)
+      }
+    }
+  }
+
+  /**
+   * Mutate a program tree at a random position
+   * Makes small modifications to the existing program tree structure.
    */
   private mutate(program: Program): Program {
-    // TODO: Implement actual mutation (e.g., replace subtrees, modify nodes)
-    // For now, create a new program with slight variation
-    const mutated = this.createRandomProgram()
-    mutated.generation = this.generation
-    // Inherit some fitness bias from parent
-    mutated.fitness = program.fitness * 0.8
-    return mutated
+    // Get all subtree positions
+    const subtrees = this.getSubtreeIds(program.tree.id)
+
+    // Select a random mutation point
+    const mutationPoint = subtrees[Math.floor(Math.random() * subtrees.length)]
+    const targetAtom = this.atomSpace.getAtom(mutationPoint)
+
+    if (!targetAtom) {
+      // Fallback: create a new random program
+      return this.createRandomProgram()
+    }
+
+    // Decide mutation type
+    const mutationChoice = Math.random()
+
+    if (mutationChoice < 0.4 && (!targetAtom.outgoing || targetAtom.outgoing.length === 0)) {
+      // Point mutation: modify a leaf node's properties
+      const mutatedNode = this.mutateNode(targetAtom)
+      const newTree = this.replaceSubtree(
+        program.tree.id,
+        mutationPoint,
+        mutatedNode.id
+      )
+      return {
+        id: `prog_${this.nextProgramId++}`,
+        tree: newTree,
+        fitness: 0,
+        generation: this.generation,
+      }
+    } else if (mutationChoice < 0.7) {
+      // Subtree mutation: replace a subtree with a new random one
+      const randomSubtree = this.createRandomSubtree()
+      const newTree = this.replaceSubtree(
+        program.tree.id,
+        mutationPoint,
+        randomSubtree.id
+      )
+      return {
+        id: `prog_${this.nextProgramId++}`,
+        tree: newTree,
+        fitness: 0,
+        generation: this.generation,
+      }
+    } else {
+      // Shrink mutation: replace a subtree with a single node
+      const shrunkNode = this.atomSpace.addNode('VariableNode', '$Y')
+      const newTree = this.replaceSubtree(
+        program.tree.id,
+        mutationPoint,
+        shrunkNode.id
+      )
+      return {
+        id: `prog_${this.nextProgramId++}`,
+        tree: newTree,
+        fitness: 0,
+        generation: this.generation,
+      }
+    }
+  }
+
+  /**
+   * Create a random subtree for mutation operations
+   */
+  private createRandomSubtree(): Atom {
+    const depth = Math.floor(Math.random() * 2) + 1
+    return this.createRandomSubtreeWithDepth(depth)
+  }
+
+  /**
+   * Create a random subtree with specified maximum depth
+   */
+  private createRandomSubtreeWithDepth(maxDepth: number): Atom {
+    if (maxDepth <= 0 || Math.random() < 0.3) {
+      // Create a leaf node
+      const nodeTypes = ['VariableNode', 'ConceptNode', 'NumberNode'] as const
+      const nodeType = nodeTypes[Math.floor(Math.random() * nodeTypes.length)]
+      const name = nodeType === 'NumberNode'
+        ? String(Math.random())
+        : nodeType === 'VariableNode'
+          ? `$${String.fromCharCode(65 + Math.floor(Math.random() * 26))}`
+          : `concept_${Math.random().toString(36).substr(2, 5)}`
+      return this.atomSpace.addNode(nodeType, name)
+    }
+
+    // Create a link with children
+    const linkTypes = ['ListLink', 'EvaluationLink', 'ExecutionLink'] as const
+    const linkType = linkTypes[Math.floor(Math.random() * linkTypes.length)]
+    const numChildren = Math.floor(Math.random() * 2) + 1
+    const children: string[] = []
+
+    for (let i = 0; i < numChildren; i++) {
+      const child = this.createRandomSubtreeWithDepth(maxDepth - 1)
+      children.push(child.id)
+    }
+
+    return this.atomSpace.addLink(linkType, children)
   }
 
   /**
