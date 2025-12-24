@@ -239,18 +239,199 @@ export class RAGMemoryStore {
   }
 
   /**
-   * Search memories using semantic search (simplified implementation)
-   * In a real implementation, this would use vector similarity search
+   * Search memories using TF-IDF based semantic search
+   * Ranks results by relevance score combining term frequency and recency
    */
   public searchMemories(query: string, limit: number = 5): Memory[] {
-    // Simple keyword-based search as a placeholder
-    // In a real implementation, this would use vector embeddings and similarity search
-    const normalizedQuery = query.toLowerCase()
+    if (this.memories.length === 0) return []
+
+    // Tokenize query
+    const queryTokens = this.tokenize(query)
+    if (queryTokens.length === 0) return []
+
+    // Calculate IDF for all terms in corpus
+    const idfScores = this.calculateIDF()
+
+    // Score each memory
+    const scoredMemories = this.memories.map(memory => {
+      const memoryTokens = this.tokenize(memory.text)
+      const tfidfScore = this.calculateTFIDF(queryTokens, memoryTokens, idfScores)
+
+      // Apply recency boost (more recent = higher boost)
+      const ageInDays = (Date.now() - memory.timestamp) / (1000 * 60 * 60 * 24)
+      const recencyBoost = Math.exp(-ageInDays / 30) // Decay over 30 days
+
+      // Combine TF-IDF with recency (70% relevance, 30% recency)
+      const finalScore = tfidfScore * 0.7 + recencyBoost * 0.3
+
+      return { memory, score: finalScore }
+    })
+
+    // Filter out zero-score results and sort by score
+    return scoredMemories
+      .filter(item => item.score > 0)
+      .sort((a, b) => b.score - a.score)
+      .slice(0, limit)
+      .map(item => item.memory)
+  }
+
+  /**
+   * Tokenize text into normalized words
+   */
+  private tokenize(text: string): string[] {
+    return text
+      .toLowerCase()
+      .replace(/[^\w\s]/g, ' ')
+      .split(/\s+/)
+      .filter(word => word.length > 2 && !this.isStopWord(word))
+  }
+
+  /**
+   * Check if word is a common stop word
+   */
+  private isStopWord(word: string): boolean {
+    const stopWords = new Set([
+      'the', 'a', 'an', 'and', 'or', 'but', 'in', 'on', 'at', 'to', 'for',
+      'of', 'with', 'by', 'from', 'as', 'is', 'was', 'are', 'were', 'been',
+      'be', 'have', 'has', 'had', 'do', 'does', 'did', 'will', 'would',
+      'could', 'should', 'may', 'might', 'must', 'shall', 'can', 'this',
+      'that', 'these', 'those', 'it', 'its', 'they', 'them', 'their',
+      'we', 'us', 'our', 'you', 'your', 'he', 'him', 'his', 'she', 'her'
+    ])
+    return stopWords.has(word)
+  }
+
+  /**
+   * Calculate IDF (Inverse Document Frequency) for all terms
+   */
+  private calculateIDF(): Map<string, number> {
+    const documentFrequency = new Map<string, number>()
+    const totalDocs = this.memories.length
+
+    // Count document frequency for each term
+    this.memories.forEach(memory => {
+      const uniqueTokens = new Set(this.tokenize(memory.text))
+      uniqueTokens.forEach(token => {
+        documentFrequency.set(token, (documentFrequency.get(token) || 0) + 1)
+      })
+    })
+
+    // Calculate IDF scores
+    const idfScores = new Map<string, number>()
+    documentFrequency.forEach((df, term) => {
+      // IDF = log(N / df) where N is total documents
+      idfScores.set(term, Math.log((totalDocs + 1) / (df + 1)) + 1)
+    })
+
+    return idfScores
+  }
+
+  /**
+   * Calculate TF-IDF score between query and document
+   */
+  private calculateTFIDF(
+    queryTokens: string[],
+    docTokens: string[],
+    idfScores: Map<string, number>
+  ): number {
+    if (docTokens.length === 0) return 0
+
+    // Calculate term frequency in document
+    const termFreq = new Map<string, number>()
+    docTokens.forEach(token => {
+      termFreq.set(token, (termFreq.get(token) || 0) + 1)
+    })
+
+    // Calculate TF-IDF for query terms
+    let score = 0
+    const queryTermSet = new Set(queryTokens)
+
+    queryTermSet.forEach(queryTerm => {
+      const tf = (termFreq.get(queryTerm) || 0) / docTokens.length
+      const idf = idfScores.get(queryTerm) || 1
+      score += tf * idf
+    })
+
+    // Normalize by query length
+    return score / Math.sqrt(queryTermSet.size)
+  }
+
+  /**
+   * Find memories similar to a given memory (for clustering/deduplication)
+   */
+  public findSimilarMemories(memoryId: string, threshold: number = 0.5): Memory[] {
+    const targetMemory = this.memories.find(m => m.id === memoryId)
+    if (!targetMemory) return []
+
+    const targetTokens = this.tokenize(targetMemory.text)
+    const idfScores = this.calculateIDF()
 
     return this.memories
-      .filter(mem => mem.text.toLowerCase().includes(normalizedQuery))
-      .sort((a, b) => b.timestamp - a.timestamp)
-      .slice(0, limit)
+      .filter(m => m.id !== memoryId)
+      .map(memory => ({
+        memory,
+        similarity: this.calculateCosineSimilarity(
+          targetTokens,
+          this.tokenize(memory.text),
+          idfScores
+        )
+      }))
+      .filter(item => item.similarity >= threshold)
+      .sort((a, b) => b.similarity - a.similarity)
+      .map(item => item.memory)
+  }
+
+  /**
+   * Calculate cosine similarity between two token sets
+   */
+  private calculateCosineSimilarity(
+    tokens1: string[],
+    tokens2: string[],
+    idfScores: Map<string, number>
+  ): number {
+    const vec1 = this.createTFIDFVector(tokens1, idfScores)
+    const vec2 = this.createTFIDFVector(tokens2, idfScores)
+
+    // Get all unique terms
+    const allTerms = new Set([...vec1.keys(), ...vec2.keys()])
+
+    let dotProduct = 0
+    let norm1 = 0
+    let norm2 = 0
+
+    allTerms.forEach(term => {
+      const v1 = vec1.get(term) || 0
+      const v2 = vec2.get(term) || 0
+      dotProduct += v1 * v2
+      norm1 += v1 * v1
+      norm2 += v2 * v2
+    })
+
+    if (norm1 === 0 || norm2 === 0) return 0
+    return dotProduct / (Math.sqrt(norm1) * Math.sqrt(norm2))
+  }
+
+  /**
+   * Create TF-IDF vector for tokens
+   */
+  private createTFIDFVector(
+    tokens: string[],
+    idfScores: Map<string, number>
+  ): Map<string, number> {
+    const vector = new Map<string, number>()
+    const termFreq = new Map<string, number>()
+
+    tokens.forEach(token => {
+      termFreq.set(token, (termFreq.get(token) || 0) + 1)
+    })
+
+    termFreq.forEach((tf, term) => {
+      const normalizedTF = tf / tokens.length
+      const idf = idfScores.get(term) || 1
+      vector.set(term, normalizedTF * idf)
+    })
+
+    return vector
   }
 
   /**

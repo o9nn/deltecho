@@ -1,4 +1,7 @@
 import { MemoryStorage } from '../memory/storage.js';
+import { getLogger } from '../utils/logger.js';
+
+const log = getLogger('deep-tree-echo-core/adapters/TauriStorageAdapter');
 
 /**
  * Tauri Store interface (matches @tauri-apps/plugin-store API)
@@ -14,10 +17,10 @@ interface TauriStore {
 
 /**
  * Storage adapter for Tauri runtime using the Tauri Store API
- * 
+ *
  * This adapter provides persistent storage for cognitive modules in Tauri apps
  * by leveraging the @tauri-apps/plugin-store plugin.
- * 
+ *
  * @example
  * ```typescript
  * // In Tauri frontend
@@ -60,13 +63,13 @@ export class TauriStorageAdapter implements MemoryStorage {
    */
   async load(key: string): Promise<string | undefined> {
     await this.ensureInitialized();
-    
+
     try {
       const prefixedKey = `${this.storagePrefix}:${key}`;
       const result = await this.store!.get(prefixedKey);
       return result ?? undefined;
     } catch (error) {
-      console.error(`Failed to load key ${key}:`, error);
+      log.error(`Failed to load key ${key}:`, error);
       return undefined;
     }
   }
@@ -76,13 +79,13 @@ export class TauriStorageAdapter implements MemoryStorage {
    */
   async save(key: string, value: string): Promise<void> {
     await this.ensureInitialized();
-    
+
     try {
       const prefixedKey = `${this.storagePrefix}:${key}`;
       await this.store!.set(prefixedKey, value);
       await this.store!.save();
     } catch (error) {
-      console.error(`Failed to save key ${key}:`, error);
+      log.error(`Failed to save key ${key}:`, error);
       throw error;
     }
   }
@@ -92,13 +95,13 @@ export class TauriStorageAdapter implements MemoryStorage {
    */
   async delete(key: string): Promise<void> {
     await this.ensureInitialized();
-    
+
     try {
       const prefixedKey = `${this.storagePrefix}:${key}`;
       await this.store!.delete(prefixedKey);
       await this.store!.save();
     } catch (error) {
-      console.error(`Failed to delete key ${key}:`, error);
+      log.error(`Failed to delete key ${key}:`, error);
       throw error;
     }
   }
@@ -108,14 +111,14 @@ export class TauriStorageAdapter implements MemoryStorage {
    */
   async clear(): Promise<void> {
     await this.ensureInitialized();
-    
+
     try {
       const keys = await this.keys();
       for (const key of keys) {
         await this.delete(key);
       }
     } catch (error) {
-      console.error('Failed to clear storage:', error);
+      log.error('Failed to clear storage:', error);
       throw error;
     }
   }
@@ -125,14 +128,14 @@ export class TauriStorageAdapter implements MemoryStorage {
    */
   async keys(): Promise<string[]> {
     await this.ensureInitialized();
-    
+
     try {
       const allKeys = await this.store!.keys();
       return allKeys
         .filter((key: string) => key.startsWith(`${this.storagePrefix}:`))
         .map((key: string) => key.replace(`${this.storagePrefix}:`, ''));
     } catch (error) {
-      console.error('Failed to list keys:', error);
+      log.error('Failed to list keys:', error);
       return [];
     }
   }
