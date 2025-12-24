@@ -36,3 +36,6 @@ export * from './engine/index.js';
 
 // Integration layer
 export * from './integration/index.js';
+
+// Operadic architecture (Sys6 morphisms and wiring diagrams)
+export * from './operadic/index.js';

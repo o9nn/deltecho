@@ -1,0 +1,39 @@
+{
+  "compilerOptions": {
+    "target": "ES2022",
+    "module": "NodeNext",
+    "moduleResolution": "NodeNext",
+    "lib": ["ES2022"],
+    "outDir": "./dist",
+    "rootDir": ".",
+    "declaration": true,
+    "declarationMap": true,
+    "sourceMap": true,
+    "strict": true,
+    "esModuleInterop": true,
+    "skipLibCheck": true,
+    "forceConsistentCasingInFileNames": true,
+    "resolveJsonModule": true,
+    "allowSyntheticDefaultImports": true,
+    "incremental": true,
+    "composite": true
+  },
+  "include": [],
+  "exclude": [
+    "node_modules",
+    "dist",
+    "**/node_modules",
+    "**/dist",
+    "**/*.test.ts",
+    "**/__tests__"
+  ],
+  "references": [
+    { "path": "./deep-tree-echo-core" },
+    { "path": "./dove9" },
+    { "path": "./deep-tree-echo-orchestrator" },
+    { "path": "./packages/sys6-triality" },
+    { "path": "./packages/shared" },
+    { "path": "./packages/cognitive" },
+    { "path": "./packages/reasoning" }
+  ]
+}
