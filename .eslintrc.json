@@ -4,7 +4,12 @@
   "parserOptions": {
     "ecmaVersion": 2022,
     "sourceType": "module",
-    "project": ["./tsconfig.json", "./packages/*/tsconfig.json", "./deep-tree-echo-*/tsconfig.json", "./dove9/tsconfig.json"]
+    "project": [
+      "./tsconfig.json",
+      "./packages/*/tsconfig.json",
+      "./deep-tree-echo-*/tsconfig.json",
+      "./dove9/tsconfig.json"
+    ]
   },
   "plugins": ["@typescript-eslint", "prettier"],
   "extends": [
@@ -22,5 +27,14 @@
     "@typescript-eslint/no-misused-promises": "error",
     "no-console": ["warn", { "allow": ["warn", "error"] }]
   },
-  "ignorePatterns": ["dist", "node_modules", "*.js", "*.mjs", "*.cjs", "delta-echo-desk", "deltecho2", "dovecot-core"]
+  "ignorePatterns": [
+    "dist",
+    "node_modules",
+    "*.js",
+    "*.mjs",
+    "*.cjs",
+    "delta-echo-desk",
+    "deltecho2",
+    "dovecot-core"
+  ]
 }

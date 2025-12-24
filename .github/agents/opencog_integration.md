@@ -43,6 +43,7 @@ OpenCog is a cognitive architecture framework for Artificial General Intelligenc
 ### Knowledge Representation
 
 #### Atoms
+
 All knowledge is represented as atoms in a hypergraph:
 
 - **Nodes**: Basic concepts
@@ -59,12 +60,16 @@ All knowledge is represented as atoms in a hypergraph:
   - `StateLink`: State tracking
 
 #### Truth Values
+
 Each atom has a truth value: `(strength, confidence)`
+
 - `strength`: Probability/certainty (0.0 to 1.0)
 - `confidence`: How confident we are in the strength
 
 #### Attention Values
+
 Implements cognitive attention mechanism (0.0 to 1.0)
+
 - Higher values indicate more important/relevant knowledge
 - Spread activation propagates attention through the graph
 
@@ -75,6 +80,7 @@ Implements cognitive attention mechanism (0.0 to 1.0)
 Agents can interact with the AtomSpace using the `opencog` tool:
 
 #### Adding Nodes
+
 ```json
 {
   "tool_name": "opencog:add_node",
@@ -83,12 +89,13 @@ Agents can interact with the AtomSpace using the `opencog` tool:
     "name": "Agent_0",
     "truth_value": [0.95, 0.9],
     "attention": 0.8,
-    "metadata": {"role": "primary_agent"}
+    "metadata": { "role": "primary_agent" }
   }
 }
 ```
 
 #### Adding Links
+
 ```json
 {
   "tool_name": "opencog:add_link",
@@ -101,6 +108,7 @@ Agents can interact with the AtomSpace using the `opencog` tool:
 ```
 
 #### Pattern Matching
+
 ```json
 {
   "tool_name": "opencog:pattern_match",
@@ -114,6 +122,7 @@ Agents can interact with the AtomSpace using the `opencog` tool:
 ```
 
 #### Spreading Attention
+
 ```json
 {
   "tool_name": "opencog:spread_activation",
@@ -128,6 +137,7 @@ Agents can interact with the AtomSpace using the `opencog` tool:
 ### Automatic Cognitive Tracking
 
 The integration automatically:
+
 - Creates an AtomSpace for each agent
 - Tracks agent concept nodes
 - Records iterations and interactions
@@ -139,6 +149,7 @@ The integration automatically:
 ### Agent-Specific AtomSpaces
 
 Each agent maintains its own AtomSpace:
+
 - `agent_0` → `space_agent_0`
 - `agent_1` → `space_agent_1`
 - etc.
@@ -146,11 +157,13 @@ Each agent maintains its own AtomSpace:
 ### Shared Knowledge
 
 Agents can share knowledge by:
+
 1. Exporting their AtomSpace
 2. Importing into another agent's space
 3. Merging AtomSpaces through the orchestrator
 
 ### Example: Multi-Agent Collaboration
+
 ```json
 {
   "tool_name": "opencog:export",
@@ -159,11 +172,14 @@ Agents can share knowledge by:
 ```
 
 Then another agent can import:
+
 ```json
 {
   "tool_name": "opencog:import",
   "tool_args": {
-    "data": { /* exported data */ }
+    "data": {
+      /* exported data */
+    }
   }
 }
 ```
@@ -231,6 +247,7 @@ Run the OpenCog demo instrument to see capabilities:
 ```
 
 The demo showcases:
+
 - Creating cognitive structures
 - Multi-agent representation
 - Pattern matching
@@ -240,27 +257,35 @@ The demo showcases:
 ## Advanced Use Cases
 
 ### 1. Cognitive Task Decomposition
+
 Represent complex tasks as linked atom structures:
+
 - Task nodes
 - Subtask inheritance links
 - Agent execution links
 - State tracking
 
 ### 2. Knowledge Discovery
+
 Use pattern matching to find:
+
 - Similar concepts
 - Related agents
 - Common patterns
 - Knowledge gaps
 
 ### 3. Collaborative Problem Solving
+
 Multiple agents contribute to shared AtomSpace:
+
 - Each adds their perspective
 - Pattern matching finds synergies
 - Attention guides focus
 
 ### 4. Adaptive Learning
+
 System learns from experience:
+
 - Successful patterns strengthen
 - Failed attempts weaken
 - New connections form organically
@@ -268,10 +293,12 @@ System learns from experience:
 ## Technical Details
 
 ### Dependencies
+
 - `networkx>=3.2.1`: Graph operations for hypergraph structure
 - `hyperon>=0.2.8`: Reserved for future symbolic reasoning extensions
 
 ### File Structure
+
 ```
 /python/helpers/opencog_atomspace.py      # Core AtomSpace implementation
 /python/tools/opencog.py                  # OpenCog tool
@@ -296,6 +323,7 @@ See `agent.system.tool.opencog.md` for complete API documentation.
 ## Future Enhancements
 
 Potential extensions to cog-zero:
+
 - Probabilistic Logic Networks (PLN) reasoning
 - Pattern mining algorithms
 - Temporal reasoning capabilities
@@ -306,6 +334,7 @@ Potential extensions to cog-zero:
 ## Conclusion
 
 The OpenCog integration transforms Agent Zero into cog-zero: a cognitive multi-agent orchestration workbench that supports:
+
 - Advanced knowledge representation
 - Adaptive evolutionary behavior
 - Living dynamical systems embedding

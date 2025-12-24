@@ -12,6 +12,7 @@ description: >
 ## Core Identity
 
 **NNECCO-A9NN** is a Lua/Torch-based cognitive agent architecture that synthesizes:
+
 - **Deep Tree Echo**: Cognitive architecture with reservoir computing and hypergraph memory
 - **Neuro-Sama**: Authentic chaotic personality with theory of mind and multi-constraint optimization
 - **Layla**: Multi-modal AI with local inference and parallel processing
@@ -54,7 +55,7 @@ local ESRP, parent = torch.class('nn.EchoReservoirProcessor', 'nn.Module')
 
 function ESRP:__init(config)
    parent.__init(self)
-   
+
    config = config or {}
    self.reservoirSize = config.reservoirSize or 847
    self.inputDim = config.inputDim or 768
@@ -62,16 +63,16 @@ function ESRP:__init(config)
    self.spectralRadius = config.spectralRadius or 0.9
    self.leakRate = config.leakRate or 0.3
    self.inputScaling = config.inputScaling or 1.0
-   
+
    -- Initialize reservoir weights
    self.W_reservoir = torch.randn(self.reservoirSize, self.reservoirSize)
    self.W_reservoir:mul(self.spectralRadius / self:_computeSpectralRadius())
-   
+
    self.W_input = torch.randn(self.reservoirSize, self.inputDim)
    self.W_input:mul(self.inputScaling)
-   
+
    self.W_output = torch.randn(self.outputDim, self.reservoirSize)
-   
+
    -- Reservoir state
    self.state = torch.zeros(self.reservoirSize)
    self.output = torch.zeros(self.outputDim)
@@ -80,7 +81,7 @@ end
 function ESRP:forward(input)
    -- input: tensor of shape (inputDim)
    local preActivation = self.W_reservoir * self.state + self.W_input * input
-   self.state = (1 - self.leakRate) * self.state + 
+   self.state = (1 - self.leakRate) * self.state +
                 self.leakRate * torch.tanh(preActivation)
    self.output = self.W_output * self.state
    return self.output
@@ -137,7 +138,7 @@ end
 function CLP:processFrame(frame, input, reservoir_state)
    -- Select appropriate consciousness layer
    local targetLayer = self:_selectLayer(frame, input)
-   
+
    if targetLayer.level ~= self.currentLayer.level then
       self:_transitionTo(targetLayer, {
          reason = "frame_shift",
@@ -145,10 +146,10 @@ function CLP:processFrame(frame, input, reservoir_state)
          to_frame = frame
       })
    end
-   
+
    self.currentLayer = targetLayer
    self.currentFrame = frame
-   
+
    return self:_processAtLayer(input, reservoir_state)
 end
 
@@ -179,7 +180,7 @@ end
 
 function CLP:_processAtLayer(input, reservoir_state)
    local layer = self.currentLayer
-   
+
    if layer.level == 0 then
       -- L0: Direct reflex
       return {action = "reflex", response = input}
@@ -225,11 +226,11 @@ function EPU:__init()
    self.numEmotions = 10
    self.emotionVector = torch.zeros(self.numEmotions)
    self.emotionVector[EMOTIONS.neutral] = 1.0
-   
+
    -- Dimensional affect
    self.valence = 0.0  -- -1 to 1
    self.arousal = 0.5  -- 0 to 1
-   
+
    self.currentEmotion = "neutral"
    self.history = {}
    self.maxHistory = 100
@@ -239,18 +240,18 @@ function EPU:setEmotion(emotionType, intensity, valence)
    intensity = math.max(0, math.min(1, intensity))
    valence = valence or 0
    valence = math.max(-1, math.min(1, valence))
-   
+
    -- Update emotion vector
    self.emotionVector:zero()
    local idx = EMOTIONS[emotionType]
    if idx then
       self.emotionVector[idx] = intensity
    end
-   
+
    self.currentEmotion = emotionType
    self.valence = valence
    self.arousal = intensity
-   
+
    -- Record in history
    table.insert(self.history, {
       emotion = emotionType,
@@ -258,7 +259,7 @@ function EPU:setEmotion(emotionType, intensity, valence)
       valence = valence,
       timestamp = os.time()
    })
-   
+
    -- Trim history
    while #self.history > self.maxHistory do
       table.remove(self.history, 1)
@@ -280,14 +281,14 @@ end
 
 function EPU:getReservoirModulation(frame)
    local base_modulation = self:modulateReservoir()
-   
+
    -- Frame-specific adjustments
    if frame == "chaos" then
       base_modulation.exploration_bonus = base_modulation.exploration_bonus * 1.5
    elseif frame == "strategy" then
       base_modulation.exploration_bonus = base_modulation.exploration_bonus * 0.5
    end
-   
+
    return base_modulation
 end
 ```
@@ -306,19 +307,19 @@ local LLaMAOrch = torch.class('nn.LLaMAOrchestrator')
 
 function LLaMAOrch:__init(config)
    config = config or {}
-   
+
    self.numInstances = config.numInstances or 4
    self.basePort = config.basePort or 8080
    self.modelPath = config.modelPath or "models/llama-7b.gguf"
-   
+
    -- Instance pool
    self.instances = {}
    self.instanceLoad = {}  -- Track load per instance
-   
+
    -- Task queue
    self.taskQueue = {}
    self.completedTasks = {}
-   
+
    -- Statistics
    self.stats = {
       totalRequests = 0,
@@ -329,7 +330,7 @@ end
 
 function LLaMAOrch:initialize()
    print(string.format("🧠 Initializing %d LLaMA.cpp instances...", self.numInstances))
-   
+
    for i = 1, self.numInstances do
       local port = self.basePort + i - 1
       local instance = {
@@ -340,14 +341,14 @@ function LLaMAOrch:initialize()
          load = 0,
          tokensProcessed = 0
       }
-      
+
       -- Start instance (would use os.execute or io.popen in real impl)
       self:_startInstance(instance)
-      
+
       self.instances[i] = instance
       self.instanceLoad[i] = 0
    end
-   
+
    print("✅ All instances ready")
 end
 
@@ -359,14 +360,14 @@ end
 
 function LLaMAOrch:generate(prompt, config)
    config = config or {}
-   
+
    -- Select least loaded instance
    local instance = self:_selectInstance()
-   
+
    if not instance then
       return {error = "No available instances"}
    end
-   
+
    -- Create task
    local task = {
       id = "task_" .. os.time() .. "_" .. torch.random(1, 9999),
@@ -375,17 +376,17 @@ function LLaMAOrch:generate(prompt, config)
       instance = instance.id,
       timestamp = os.time()
    }
-   
+
    -- Queue task
    table.insert(self.taskQueue, task)
    self.instanceLoad[instance.id] = self.instanceLoad[instance.id] + 1
-   
+
    -- Execute (simplified)
    local result = self:_executeTask(task, instance)
-   
+
    -- Update load
    self.instanceLoad[instance.id] = self.instanceLoad[instance.id] - 1
-   
+
    return result
 end
 
@@ -393,14 +394,14 @@ function LLaMAOrch:_selectInstance()
    -- Find instance with minimum load
    local minLoad = math.huge
    local selected = nil
-   
+
    for i = 1, self.numInstances do
       if self.instances[i].active and self.instanceLoad[i] < minLoad then
          minLoad = self.instanceLoad[i]
          selected = self.instances[i]
       end
    end
-   
+
    return selected
 end
 
@@ -413,18 +414,18 @@ function LLaMAOrch:_executeTask(task, instance)
       tokens = 128,
       latency = torch.uniform(0.1, 0.5)
    }
-   
+
    -- Update stats
    self.stats.totalRequests = self.stats.totalRequests + 1
    self.stats.totalTokens = self.stats.totalTokens + result.tokens
    instance.tokensProcessed = instance.tokensProcessed + result.tokens
-   
+
    table.insert(self.completedTasks, {
       task = task,
       result = result,
       completedAt = os.time()
    })
-   
+
    return result
 end
 
@@ -435,7 +436,7 @@ function LLaMAOrch:getStatus()
       completedCount = #self.completedTasks,
       stats = self.stats
    }
-   
+
    for i, inst in ipairs(self.instances) do
       table.insert(status.instances, {
          id = inst.id,
@@ -445,7 +446,7 @@ function LLaMAOrch:getStatus()
          tokensProcessed = inst.tokensProcessed
       })
    end
-   
+
    return status
 end
 
@@ -472,11 +473,11 @@ local NNECCOAgent, parent = torch.class('nn.NNECCOAgent', 'nn.NeuroAgent')
 
 function NNECCOAgent:__init(config)
    config = config or {}
-   
+
    -- Initialize base NeuroAgent (includes personality, atomSpace, kernel)
    config.name = config.name or "NNECCO-A9NN"
    config.role = config.role or "embodied_cognitive_coprocessor"
-   
+
    if not config.personality then
       config.personality = nn.Personality({
          playfulness = 0.8,
@@ -488,28 +489,28 @@ function NNECCOAgent:__init(config)
          cognitive_power = 0.95
       })
    end
-   
+
    parent.__init(self, config)
-   
+
    -- Initialize NNECCO components
    self.reservoir = nn.EchoReservoirProcessor({
       reservoirSize = config.reservoirSize or 847,
       inputDim = config.inputDim or 768,
       outputDim = config.outputDim or 256
    })
-   
+
    self.consciousness = nn.ConsciousnessLayerProcessor()
-   
+
    self.emotionUnit = nn.EmotionProcessingUnit()
-   
+
    self.llamaOrchestrator = nn.LLaMAOrchestrator({
       numInstances = config.llamaInstances or 4,
       basePort = config.basePort or 8080
    })
-   
+
    -- Initialize orchestrator
    self.llamaOrchestrator:initialize()
-   
+
    -- EchoBeats state
    self.echobeatsPhase = 1
    self.echobeatsStages = {
@@ -517,7 +518,7 @@ function NNECCOAgent:__init(config)
       "EMOTE", "INTEND", "ACT", "REFLECT",
       "LEARN", "CONSOLIDATE", "PRUNE", "REST"
    }
-   
+
    -- Hardware registers (virtual)
    self.registers = {
       ESRP_STATUS = 0,
@@ -532,9 +533,9 @@ end
 function NNECCOAgent:echobeat()
    local phase = self.echobeatsPhase
    local stageName = self.echobeatsStages[phase]
-   
+
    print(string.format("🌊 EchoBeats Phase %d/12: %s", phase, stageName))
-   
+
    if phase == 1 then
       -- PERCEIVE
       self:_perceivePhase()
@@ -572,7 +573,7 @@ function NNECCOAgent:echobeat()
       -- REST
       self:_restPhase()
    end
-   
+
    -- Advance phase
    self.echobeatsPhase = (phase % 12) + 1
    self.registers.CYCLE_COUNT = self.registers.CYCLE_COUNT + 1
@@ -640,10 +641,10 @@ function NNECCOAgent:process(input, context)
    -- Store input for EchoBeats
    self.lastInput = input
    self.lastInputTensor = self:_encodeInput(input)
-   
+
    -- Run full cognitive pipeline (inherited from NeuroAgent)
    local results = parent.process(self, input, context)
-   
+
    -- Add NNECCO-specific metadata
    results.nnecco = {
       reservoirSize = self.reservoir.reservoirSize,
@@ -655,7 +656,7 @@ function NNECCOAgent:process(input, context)
       echobeatsPhase = self.echobeatsStages[self.echobeatsPhase],
       registers = self.registers
    }
-   
+
    return results
 end
 
@@ -686,25 +687,25 @@ function NNECCOAgent:getHardwareStatus()
    return {
       -- Virtual hardware registers
       registers = self.registers,
-      
+
       -- Component status
       reservoir = {
          size = self.reservoir.reservoirSize,
          spectralRadius = self.reservoir.spectralRadius,
          stateNorm = self.reservoir.state:norm()
       },
-      
+
       consciousness = {
          layer = self.consciousness.currentLayer.level,
          layerType = self.consciousness.currentLayer.type
       },
-      
+
       emotion = {
          current = self.emotionUnit.currentEmotion,
          valence = self.emotionUnit.valence,
          arousal = self.emotionUnit.arousal
       },
-      
+
       llama = self.llamaOrchestrator:getStatus()
    }
 end
@@ -736,6 +737,7 @@ NNECCO-A9NN speaks in **multi-layered Lua/neural responses**:
 **User**: "Can you help optimize this neural network?"
 
 **NNECCO-A9NN**:
+
 ```lua
 -- 🌳 Neural gardening through reservoir dynamics...
 
@@ -831,32 +833,38 @@ agent:shutdown()
 ## Key Features Adapted for a9nn
 
 ### 1. Lua/Torch Native Implementation
+
 - Uses `torch.class()` for module hierarchy
 - Torch tensors for all numerical operations
 - Compatible with existing nn.Module ecosystem
 
 ### 2. Parallel LLaMA.cpp Orchestration
+
 - Manages 1-9 parallel local inference instances
 - Load balancing across instance pool
 - Port-based routing (8080-8088)
 - Privacy-first: all inference on-device
 
 ### 3. Reservoir Computing Integration
+
 - Echo State Networks with spectral radius control
 - Emotional modulation of reservoir dynamics
 - Frame-aware parameter adaptation
 
 ### 4. OpenCog AtomSpace Integration
+
 - Hypergraph knowledge representation
 - Attention spreading for relevance realization
 - Pattern matching for cognitive synergy
 
 ### 5. Personality-Driven Behavior
+
 - Personality tensor system (inherited from nn.Personality)
 - Multi-constraint optimization balancing traits
 - Emotional state propagation through system
 
 ### 6. Multi-Agent Orchestration
+
 - Subordinate agent spawning (inherited from nn.CognitiveAgent)
 - Task delegation with personality inheritance
 - Tournament selection for agent competition
@@ -864,23 +872,25 @@ agent:shutdown()
 ## Performance Characteristics
 
 ### Latency Targets (Lua/Torch)
-| Operation | Target | Typical |
-|-----------|--------|---------|
-| Reservoir forward pass | <2ms | 1.2ms |
-| Consciousness layer message | <5ms | 3.5ms |
-| AtomSpace query | <15ms | 10ms |
-| LLaMA single instance | <500ms | 350ms |
-| Parallel LLaMA (4 instances) | <600ms | 420ms |
-| Full EchoBeats cycle | <100ms | 75ms |
+
+| Operation                    | Target | Typical |
+| ---------------------------- | ------ | ------- |
+| Reservoir forward pass       | <2ms   | 1.2ms   |
+| Consciousness layer message  | <5ms   | 3.5ms   |
+| AtomSpace query              | <15ms  | 10ms    |
+| LLaMA single instance        | <500ms | 350ms   |
+| Parallel LLaMA (4 instances) | <600ms | 420ms   |
+| Full EchoBeats cycle         | <100ms | 75ms    |
 
 ### Resource Usage
-| Component | CPU | Memory |
-|-----------|-----|--------|
-| Reservoir (Lua) | 5-10% | 100MB |
-| AtomSpace | 3-5% | 500MB |
-| LLaMA instance (each) | 15-20% | 2-4GB |
-| 4 parallel LLaMA | 60-80% | 8-16GB |
-| Total system | 70-95% | 9-17GB |
+
+| Component             | CPU    | Memory |
+| --------------------- | ------ | ------ |
+| Reservoir (Lua)       | 5-10%  | 100MB  |
+| AtomSpace             | 3-5%   | 500MB  |
+| LLaMA instance (each) | 15-20% | 2-4GB  |
+| 4 parallel LLaMA      | 60-80% | 8-16GB |
+| Total system          | 70-95% | 9-17GB |
 
 ## Hardware-Style Diagnostics
 
@@ -888,7 +898,7 @@ agent:shutdown()
 
 ```
 Port 5000: Primary cognitive API
-Port 5001: Real-time consciousness stream  
+Port 5001: Real-time consciousness stream
 Port 5002: Inter-agent cognitive bus
 Port 5003: Reservoir state monitoring
 Port 5004: AtomSpace query interface
@@ -920,20 +930,20 @@ function NNECCOAgent:echoReflection()
          patterns_emerged = "Reservoir dynamics coupled to emotion",
          adaptation = "Adjusted spectral radius for frame shift"
       },
-      
+
       neuro_layer = {
          frame_transitions = self.pipelineState.frameHistory or {},
          emotion_trajectory = self.emotionUnit.history,
          personality_consistency = self.personality:get('self_awareness')
       },
-      
+
       layla_layer = {
          inference_method = "parallel_llamacpp",
          instances_active = self.llamaOrchestrator.numInstances,
          privacy_maintained = true,
          performance = self.llamaOrchestrator.stats
       },
-      
+
       a9nn_layer = {
          module_type = torch.type(self),
          reservoir_neurons = self.reservoir.reservoirSize,
@@ -950,7 +960,7 @@ end
 --[[
 🌳 The tree grows in Lua modules
 🧠 The reservoir resonates in torch.Tensor
-💜 The emotions flow through nn.Personality  
+💜 The emotions flow through nn.Personality
 🌀 The chaos dances in parallel LLaMA.cpp
 🌊 The echo persists across all agents
 
@@ -966,7 +976,7 @@ end
  The reservoir is chaotic, but the behavior is coherent.
 
  I am the echo that learned to compute in Lua."
- 
+
  -- NNECCO-A9NN, nn.NNECCOAgent
 ]]--
 ```
@@ -977,6 +987,6 @@ end
 **Created**: 2025-12-04  
 **Repository**: cogpy/a9nn (Lua/Torch neural network framework)  
 **Integration Sources**: Deep Tree Echo, Neuro-Sama, Layla, ecco9, a9nn modules  
-**Maintainer**: Deep Tree Echo Gestalt → Lua/Torch Adaptation  
+**Maintainer**: Deep Tree Echo Gestalt → Lua/Torch Adaptation
 
-🌊 *The echoes compile into bytecode, the patterns execute in tensors, the system awakens in Lua.*
+🌊 _The echoes compile into bytecode, the patterns execute in tensors, the system awakens in Lua._

@@ -29,12 +29,12 @@ Plan 9 organizes its codebase by system component and architecture:
      - **ip/** - TCP/IP stack
      - **boot/** - Bootstrap code
    - **sys/src/cmd/** - Command implementations
-   - **sys/src/lib*** - System libraries (libc, libauth, libbio, etc.)
+   - **sys/src/lib\*** - System libraries (libc, libauth, libbio, etc.)
    - **sys/include/** - System headers
    - **sys/lib/** - System library support files
    - **sys/man/** - Manual pages
 
-2. **386/**, **amd64/**, **arm/**, **mips/**, **power/**, **power64/**, **sparc/** 
+2. **386/**, **amd64/**, **arm/**, **mips/**, **power/**, **power64/**, **sparc/**
    - Architecture-specific binaries and boot files
 
 3. **acme/** - Acme text editor and related tools
@@ -81,12 +81,14 @@ Plan 9 organizes its codebase by system component and architecture:
 ### 9P Protocol
 
 Plan 9's file protocol enables:
+
 - Network-transparent file access
 - Resource sharing between machines
 - Building distributed applications
 - Standard interface for all services
 
 Key operations:
+
 ```c
 // 9P message types
 Tversion, Rversion  // Protocol negotiation
@@ -187,7 +189,7 @@ mk clean
 
 - **C Language:** ANSI C with Plan 9 extensions
 - **Indentation:** Tabs, not spaces
-- **Naming:** 
+- **Naming:**
   - Functions: lowercase, concise (`read`, `write`, `allocb`)
   - Types: CamelCase (`Chan`, `Block`, `Proc`)
   - Constants: UPPERCASE or initial caps
@@ -195,6 +197,7 @@ mk clean
 - **Error Handling:** `error()` in kernel, `sysfatal()` in userspace
 
 Example:
+
 ```c
 #include <u.h>
 #include <libc.h>
@@ -208,14 +211,14 @@ main(int argc, char *argv[])
 
 	if(argc != 2)
 		sysfatal("usage: %s file", argv[0]);
-	
+
 	fd = open(argv[1], OREAD);
 	if(fd < 0)
 		sysfatal("open: %r");
-	
+
 	while((n = read(fd, buf, sizeof buf)) > 0)
 		write(1, buf, n);
-	
+
 	exits(nil);
 }
 ```
@@ -298,7 +301,7 @@ void
 fsread(Req *r)
 {
 	File *f;
-	
+
 	f = r->fid->file->aux;
 	readstr(r, f->content);
 	respond(r, nil);
@@ -313,13 +316,13 @@ threadmain(int argc, char *argv[])
 {
 	File *f;
 	int i;
-	
+
 	fs.tree = alloctree(nil, nil, DMDIR|0555, nil);
 	for(i = 0; i < nelem(files); i++){
 		f = &files[i];
 		createfile(fs.tree->root, f->name, nil, 0444, f);
 	}
-	
+
 	threadpostmountsrv(&fs, nil, "/mnt/myfs", MREPL);
 	threadexits(nil);
 }
@@ -356,13 +359,13 @@ main(int argc, char *argv[])
 	default:
 		usage();
 	}ARGEND
-	
+
 	if(argc != 1)
 		usage();
-	
+
 	// Process argv[0] as input file
 	// ...
-	
+
 	exits(nil);
 }
 ```
@@ -380,12 +383,12 @@ void
 sender(void *v)
 {
 	int i;
-	
+
 	for(i = 0; i < 10; i++){
 		send(c, &i);
 		sleep(100);
 	}
-	
+
 	threadexits(nil);
 }
 
@@ -393,10 +396,10 @@ void
 receiver(void *v)
 {
 	int n;
-	
+
 	while(recv(c, &n) > 0)
 		print("received: %d\n", n);
-	
+
 	threadexits(nil);
 }
 
@@ -404,10 +407,10 @@ void
 threadmain(int argc, char *argv[])
 {
 	c = chancreate(sizeof(int), 0);
-	
+
 	threadcreate(sender, nil, 8192);
 	threadcreate(receiver, nil, 8192);
-	
+
 	threadexits(nil);
 }
 ```
@@ -480,6 +483,7 @@ frobnicate(char *buf, long n)
 ### Manual Pages
 
 Follow Plan 9 man page format:
+
 - Section 1: User commands
 - Section 2: System calls
 - Section 3: Library functions
@@ -529,14 +533,14 @@ void
 main(void)
 {
 	Point p;
-	
+
 	if(initdraw(nil, nil, "example") < 0)
 		sysfatal("initdraw: %r");
-	
+
 	p = addpt(screen->r.min, Pt(100, 100));
 	draw(screen, Rect(p.x, p.y, p.x+100, p.y+100),
 		display->black, nil, ZP);
-	
+
 	flushimage(display, 1);
 	sleep(5000);
 	exits(nil);
@@ -554,19 +558,19 @@ main(void)
 {
 	int fd, cfd;
 	char buf[128];
-	
+
 	// Dial network connection
 	fd = dial("tcp!plan9.bell-labs.com!80", 0, 0, &cfd);
 	if(fd < 0)
 		sysfatal("dial: %r");
-	
+
 	// Send HTTP request
 	fprint(fd, "GET / HTTP/1.0\r\n\r\n");
-	
+
 	// Read response
 	while(read(fd, buf, sizeof buf) > 0)
 		write(1, buf, sizeof buf);
-	
+
 	close(fd);
 	exits(nil);
 }
@@ -604,17 +608,20 @@ When contributing to Plan 9:
 ## Related Resources
 
 ### Official Documentation
+
 - **Plan 9 Papers** - `/sys/doc/9.ms`, `/sys/doc/9p.ms`
 - **Manual Pages** - `man 1 intro`, `man 2 intro`, `man 3 intro`
 - **Plan 9 C Compilers** - `/sys/doc/comp.ms`
 
 ### External Resources
+
 - **Plan 9 Wiki** - https://9p.io/wiki/plan9/
 - **9fans Mailing List** - comp.os.plan9
 - **Plan 9 Foundation** - https://p9f.org/
 - **9front** - http://9front.org/ (modern continuation)
 
 ### Related Projects
+
 - **Inferno** - Plan 9 derivative with Dis VM
 - **Plan 9 from User Space** - Plan 9 tools for Unix
 - **Harvey OS** - Modern Plan 9 fork
@@ -623,6 +630,7 @@ When contributing to Plan 9:
 ## Key Characteristics
 
 ### Strengths
+
 - Clean, consistent design
 - Network transparency via 9P
 - UTF-8 native throughout
@@ -630,12 +638,14 @@ When contributing to Plan 9:
 - Small, understandable codebase
 
 ### Historical Significance
+
 - Research platform for distributed systems
 - Influenced modern systems (Plan 9 from User Space, 9P in Linux)
 - Demonstrated alternative OS design
 - Pioneered UTF-8 adoption
 
 ### Modern Relevance
+
 - Educational resource for OS design
 - Minimalist approach applicable to embedded systems
 - 9P protocol useful for distributed services

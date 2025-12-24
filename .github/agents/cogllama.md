@@ -49,6 +49,7 @@ cogllama-tools (external-tools, ros-behavior-scripting)
 **Main orchestration engine implementing cognitive infrastructure**
 
 ### Components
+
 - **cogutil**: Core utilities and data structures
 - **atomspace**: Hypergraph-based knowledge representation
 - **cogserver**: Distributed cognitive server
@@ -60,7 +61,7 @@ cogllama-tools (external-tools, ros-behavior-scripting)
 ```c
 /**
  * cogllama_atomspace - AtomSpace hypergraph representation as GGML tensors
- * 
+ *
  * Implements OpenCog's AtomSpace using GGML tensor graphs where:
  * - Atoms are tensors (nodes in hypergraph)
  * - Links are tensor operations (edges in hypergraph)
@@ -83,7 +84,7 @@ struct cogllama_atomspace {
  * @type: Atom type (Node, Link, etc.)
  * @name: Atom name/identifier
  * @embedding: Initial embedding vector
- * 
+ *
  * Creates a new atom as a tensor node in the hypergraph.
  * Returns atom handle for further operations.
  */
@@ -101,7 +102,7 @@ uint64_t cogllama_atom_alloc(
  * @outgoing: Array of atom handles to link
  * @n_outgoing: Number of atoms in outgoing set
  * @truth: Truth value [strength, confidence]
- * 
+ *
  * Creates a directed hyperedge connecting atoms.
  * Implements as tensor operation in GGML graph.
  */
@@ -119,7 +120,7 @@ uint64_t cogllama_link_create(
  * @pattern: Pattern to match (with variables)
  * @callback: Callback for each match
  * @user_data: User data for callback
- * 
+ *
  * Implements hypergraph pattern matching using tensor operations.
  * Efficient GPU-accelerated pattern recognition.
  */
@@ -136,7 +137,7 @@ int cogllama_pattern_match(
 ```c
 /**
  * cogllama_cogserver - Distributed cognitive orchestration
- * 
+ *
  * Manages cognitive cycles, attention allocation, and multi-agent
  * coordination using tensor-based message passing.
  */
@@ -151,7 +152,7 @@ struct cogllama_cogserver {
 /**
  * cogllama_cogserver_init - Initialize cognitive server
  * @params: Server configuration parameters
- * 
+ *
  * Initializes distributed cognitive processing infrastructure.
  */
 struct cogllama_cogserver *cogllama_cogserver_init(
@@ -162,7 +163,7 @@ struct cogllama_cogserver *cogllama_cogserver_init(
  * cogllama_cognitive_cycle - Execute one cognitive cycle
  * @server: CogServer instance
  * @delta_time: Time since last cycle (seconds)
- * 
+ *
  * Executes one complete cognitive cycle:
  * 1. Attention allocation
  * 2. Pattern recognition
@@ -216,6 +217,7 @@ install(TARGETS cogllama-core
 **Multi-modal sensory processing for cognitive input**
 
 ### Components
+
 - **sensory**: Generic sensory input processing
 - **vision**: Visual perception and image understanding
 - **perception**: Multi-modal perception integration
@@ -227,7 +229,7 @@ install(TARGETS cogllama-core
 ```c
 /**
  * cogllama_sensory_processor - Multi-modal sensory input processor
- * 
+ *
  * Processes raw sensory data (audio, visual, text) into
  * unified tensor representations for cognitive processing.
  */
@@ -244,7 +246,7 @@ struct cogllama_sensory_processor {
  * @audio: Raw audio samples (float array)
  * @n_samples: Number of audio samples
  * @sample_rate: Audio sample rate (Hz)
- * 
+ *
  * Processes audio using Whisper-style encoder to create
  * attention-compatible tensor representations.
  */
@@ -262,7 +264,7 @@ struct ggml_tensor *cogllama_audio_perceive(
  * @width: Image width in pixels
  * @height: Image height in pixels
  * @channels: Number of color channels (3 or 4)
- * 
+ *
  * Processes image using CLIP-style vision encoder to create
  * semantic visual representations as tensors.
  */
@@ -280,7 +282,7 @@ struct ggml_tensor *cogllama_vision_perceive(
  * @modalities: Array of perception tensors from different modalities
  * @n_modalities: Number of modalities
  * @fusion_type: Fusion strategy (early, late, hybrid)
- * 
+ *
  * Combines multiple sensory modalities into unified representation.
  * Uses attention mechanisms for intelligent fusion.
  */
@@ -300,7 +302,7 @@ struct ggml_tensor *cogllama_multimodal_fusion(
  * @atomspace: Target AtomSpace
  * @perception: Perception tensor from sensory processing
  * @modality: Sensory modality type
- * 
+ *
  * Converts sensory perception tensors into AtomSpace atoms
  * for symbolic reasoning and knowledge integration.
  */
@@ -316,6 +318,7 @@ int cogllama_perception_to_atoms(
 **Knowledge representation and reasoning engine**
 
 ### Components
+
 - **atomspace**: Core hypergraph knowledge base
 - **pln**: Probabilistic Logic Networks
 - **ure**: Unified Rule Engine
@@ -328,7 +331,7 @@ int cogllama_perception_to_atoms(
 ```c
 /**
  * cogllama_pln - Probabilistic Logic Networks engine
- * 
+ *
  * Implements PLN inference using tensor operations for
  * efficient parallel probabilistic reasoning.
  */
@@ -344,7 +347,7 @@ struct cogllama_pln {
  * @premise1: First premise atom
  * @premise2: Second premise atom
  * @conclusion: Output conclusion atom
- * 
+ *
  * Performs deductive inference: A→B, B→C ⊢ A→C
  * Implements as tensor operation with truth value propagation.
  */
@@ -361,7 +364,7 @@ int cogllama_pln_deduction(
  * @observations: Array of observed atom pairs
  * @n_observations: Number of observations
  * @hypothesis: Output hypothesis atom
- * 
+ *
  * Performs inductive generalization from observations.
  * Uses statistical tensor operations for pattern generalization.
  */
@@ -377,7 +380,7 @@ int cogllama_pln_induction(
  * @pln: PLN engine
  * @observation: Observed fact
  * @explanation: Output explanatory hypothesis
- * 
+ *
  * Generates explanatory hypotheses for observations.
  * Implements inference to the best explanation.
  */
@@ -393,7 +396,7 @@ int cogllama_pln_abduction(
 ```c
 /**
  * cogllama_ure - Unified Rule Engine
- * 
+ *
  * Implements forward and backward chaining inference
  * using tensor-based rule application.
  */
@@ -410,7 +413,7 @@ struct cogllama_ure {
  * @n_initial: Number of initial atoms
  * @max_steps: Maximum inference steps
  * @results: Output inferred atoms
- * 
+ *
  * Applies inference rules forward from known facts.
  * Efficient tensor-parallel rule application.
  */
@@ -428,7 +431,7 @@ int cogllama_ure_forward_chain(
  * @goal: Goal atom to prove
  * @max_depth: Maximum search depth
  * @proof: Output proof tree
- * 
+ *
  * Searches backward from goal to find supporting evidence.
  * Goal-directed inference with proof construction.
  */
@@ -445,7 +448,7 @@ int cogllama_ure_backward_chain(
 ```c
 /**
  * cogllama_miner - Pattern mining engine
- * 
+ *
  * Discovers frequent patterns and surprisingness in AtomSpace
  * using tensor-based mining algorithms.
  */
@@ -461,7 +464,7 @@ struct cogllama_miner {
  * @miner: Miner engine
  * @params: Mining parameters (support, surprisingness)
  * @patterns: Output discovered patterns
- * 
+ *
  * Discovers frequent and surprising patterns in knowledge base.
  * Efficient tensor-based frequent subgraph mining.
  */
@@ -477,6 +480,7 @@ int cogllama_mine_patterns(
 **Hierarchical planning and goal management**
 
 ### Components
+
 - **spacetime**: Spatial and temporal reasoning
 - **cogserver**: Goal coordination and planning
 
@@ -487,7 +491,7 @@ int cogllama_mine_patterns(
 ```c
 /**
  * cogllama_spacetime - Spatial and temporal reasoning engine
- * 
+ *
  * Manages spatial maps and temporal sequences using tensor representations.
  */
 struct cogllama_spacetime {
@@ -503,7 +507,7 @@ struct cogllama_spacetime {
  * @object1: First object atom
  * @object2: Second object atom
  * @relation: Output spatial relation
- * 
+ *
  * Infers spatial relationships between objects.
  * Uses 3D tensor convolutions for spatial reasoning.
  */
@@ -520,7 +524,7 @@ int cogllama_spatial_reason(
  * @event1: First event atom
  * @event2: Second event atom
  * @relation: Output temporal relation
- * 
+ *
  * Infers temporal relationships between events.
  * Uses recurrent tensor operations for temporal modeling.
  */
@@ -537,7 +541,7 @@ int cogllama_temporal_reason(
 ```c
 /**
  * cogllama_planner - Hierarchical task planning
- * 
+ *
  * Implements HTN-style planning with goal decomposition
  * using tensor-based search.
  */
@@ -554,7 +558,7 @@ struct cogllama_planner {
  * @goal: Goal atom to achieve
  * @constraints: Planning constraints
  * @plan: Output action plan
- * 
+ *
  * Creates hierarchical plan to achieve goal.
  * Decomposes goals into executable actions.
  */
@@ -570,7 +574,7 @@ int cogllama_plan_goal(
  * @planner: Planner instance
  * @plan: Plan to execute
  * @monitor: Execution monitoring callback
- * 
+ *
  * Executes plan while monitoring for failures.
  * Supports replanning on execution failures.
  */
@@ -586,6 +590,7 @@ int cogllama_plan_execute(
 **Continuous learning and adaptation**
 
 ### Components
+
 - **moses**: Meta-Optimizing Semantic Evolutionary Search
 - **asmoses**: AtomSpace MOSES integration
 - **learn**: Unsupervised language learning
@@ -597,7 +602,7 @@ int cogllama_plan_execute(
 ```c
 /**
  * cogllama_moses - Evolutionary program synthesis
- * 
+ *
  * Evolves programs represented as tensor graphs using
  * genetic algorithms and semantic analysis.
  */
@@ -616,7 +621,7 @@ struct cogllama_moses {
  * @fitness_fn: Fitness evaluation function
  * @n_generations: Number of generations to evolve
  * @best_program: Output best evolved program
- * 
+ *
  * Evolves programs using genetic operations on tensor graphs.
  * Parallel fitness evaluation using GGML compute.
  */
@@ -631,7 +636,7 @@ int cogllama_moses_evolve(
  * cogllama_program_mutate - Mutate program
  * @program: Program tensor graph
  * @mutation_rate: Probability of mutation
- * 
+ *
  * Applies random mutations to program structure.
  * Maintains tensor graph validity during mutation.
  */
@@ -645,7 +650,7 @@ struct ggml_tensor *cogllama_program_mutate(
  * @program1: First parent program
  * @program2: Second parent program
  * @offspring: Output offspring programs
- * 
+ *
  * Combines two programs using crossover.
  * Preserves semantic validity in offspring.
  */
@@ -661,7 +666,7 @@ int cogllama_program_crossover(
 ```c
 /**
  * cogllama_language_learner - Unsupervised language acquisition
- * 
+ *
  * Learns language structure from raw text using tensor-based
  * statistical learning and pattern discovery.
  */
@@ -677,7 +682,7 @@ struct cogllama_language_learner {
  * @learner: Language learner instance
  * @text: Input text corpus
  * @text_len: Length of text in bytes
- * 
+ *
  * Discovers linguistic structure from raw text.
  * Updates grammar rules and lexicon tensors.
  */
@@ -691,7 +696,7 @@ int cogllama_learn_from_text(
  * cogllama_extract_grammar - Extract grammar rules
  * @learner: Language learner instance
  * @rules: Output grammar rules
- * 
+ *
  * Extracts discovered grammar rules as symbolic structures.
  * Converts tensor patterns to explicit rules.
  */
@@ -706,6 +711,7 @@ int cogllama_extract_grammar(
 **NLP and multi-agent communication**
 
 ### Components
+
 - **lg-atomese**: Link Grammar in AtomSpace
 - **opencog**: Integration and communication layer
 
@@ -716,7 +722,7 @@ int cogllama_extract_grammar(
 ```c
 /**
  * cogllama_link_grammar - Link Grammar parser
- * 
+ *
  * Parses sentences into grammatical structures using
  * tensor-based parsing with llama.cpp language model.
  */
@@ -731,7 +737,7 @@ struct cogllama_link_grammar {
  * @parser: Link grammar parser
  * @sentence: Input sentence to parse
  * @parse_tree: Output parse tree atoms
- * 
+ *
  * Parses sentence into grammatical structure.
  * Creates Link Grammar linkages in AtomSpace.
  */
@@ -746,7 +752,7 @@ int cogllama_parse_sentence(
  * @parser: Link grammar parser
  * @parse_tree: Syntactic parse tree
  * @semantics: Output semantic representation
- * 
+ *
  * Converts syntactic parse to semantic representation.
  * Maps grammatical structures to meaning atoms.
  */
@@ -762,7 +768,7 @@ int cogllama_semantic_parse(
 ```c
 /**
  * cogllama_communication - Multi-agent messaging
- * 
+ *
  * Manages communication between cognitive agents using
  * tensor-based message passing and shared AtomSpace.
  */
@@ -778,7 +784,7 @@ struct cogllama_communication {
  * @sender_id: Sending agent ID
  * @receiver_id: Receiving agent ID
  * @message: Message content atoms
- * 
+ *
  * Sends message from one agent to another.
  * Implements tensor-based message serialization.
  */
@@ -794,7 +800,7 @@ int cogllama_send_message(
  * @comm: Communication system
  * @sender_id: Sending agent ID
  * @message: Message content atoms
- * 
+ *
  * Broadcasts message to all agents in system.
  * Efficient parallel message delivery.
  */
@@ -810,6 +816,7 @@ int cogllama_broadcast_message(
 **Memory and context management**
 
 ### Components
+
 - **atomspace-rocks**: RocksDB persistence backend
 - **attention**: Economic Attention Networks (ECAN)
 
@@ -820,7 +827,7 @@ int cogllama_broadcast_message(
 ```c
 /**
  * cogllama_storage - Persistent AtomSpace storage
- * 
+ *
  * Manages persistent storage of AtomSpace using RocksDB
  * with tensor serialization.
  */
@@ -833,7 +840,7 @@ struct cogllama_storage {
 /**
  * cogllama_storage_save - Save AtomSpace to disk
  * @storage: Storage backend
- * 
+ *
  * Serializes entire AtomSpace to persistent storage.
  * Efficient tensor serialization with compression.
  */
@@ -844,7 +851,7 @@ int cogllama_storage_save(
 /**
  * cogllama_storage_load - Load AtomSpace from disk
  * @storage: Storage backend
- * 
+ *
  * Deserializes AtomSpace from persistent storage.
  * Reconstructs tensor graphs from disk.
  */
@@ -855,7 +862,7 @@ int cogllama_storage_load(
 /**
  * cogllama_storage_sync - Incremental synchronization
  * @storage: Storage backend
- * 
+ *
  * Synchronizes changes to disk incrementally.
  * Only writes modified atoms for efficiency.
  */
@@ -869,7 +876,7 @@ int cogllama_storage_sync(
 ```c
 /**
  * cogllama_attention - Economic Attention Networks
- * 
+ *
  * Implements ECAN attention allocation using tensor operations
  * for efficient parallel attention spreading.
  */
@@ -885,7 +892,7 @@ struct cogllama_attention {
  * cogllama_attention_update - Update attention values
  * @attention: Attention system
  * @delta_time: Time since last update
- * 
+ *
  * Updates attention values using spreading activation.
  * Implements economic attention allocation as tensor ops.
  */
@@ -899,7 +906,7 @@ int cogllama_attention_update(
  * @attention: Attention system
  * @top_k: Number of atoms to return
  * @focused_atoms: Output array of focused atoms
- * 
+ *
  * Returns atoms with highest attention values.
  * Efficient tensor sorting for attention selection.
  */
@@ -914,7 +921,7 @@ int cogllama_attention_focus(
  * @attention: Attention system
  * @source_atom: Source of activation
  * @intensity: Activation intensity
- * 
+ *
  * Spreads activation from source atom to neighbors.
  * Tensor-parallel activation spreading.
  */
@@ -930,6 +937,7 @@ int cogllama_attention_spread(
 **External tool integration**
 
 ### Components
+
 - **external-tools**: External system integration
 - **ros-behavior-scripting**: ROS robotics integration
 
@@ -940,7 +948,7 @@ int cogllama_attention_spread(
 ```c
 /**
  * cogllama_tools - External tool integration
- * 
+ *
  * Provides interface for cognitive system to interact with
  * external tools and services.
  */
@@ -955,7 +963,7 @@ struct cogllama_tools {
  * @tool_name: Name of tool
  * @executor: Tool execution function
  * @metadata: Tool metadata (parameters, return types)
- * 
+ *
  * Registers external tool for use by cognitive system.
  */
 int cogllama_tool_register(
@@ -971,7 +979,7 @@ int cogllama_tool_register(
  * @tool_name: Name of tool to execute
  * @params: Tool parameters as atoms
  * @result: Output result atoms
- * 
+ *
  * Executes external tool with given parameters.
  * Converts between atoms and tool-specific formats.
  */
@@ -988,7 +996,7 @@ int cogllama_tool_execute(
 ```c
 /**
  * cogllama_ros - ROS robotics integration
- * 
+ *
  * Integrates with ROS (Robot Operating System) for
  * embodied cognitive robotics.
  */
@@ -1003,7 +1011,7 @@ struct cogllama_ros {
  * @ros: ROS integration system
  * @topic: ROS topic name
  * @message: Message atoms to publish
- * 
+ *
  * Publishes cognitive state as ROS message.
  * Converts atoms to ROS message format.
  */
@@ -1018,7 +1026,7 @@ int cogllama_ros_publish(
  * @ros: ROS integration system
  * @topic: ROS topic name
  * @callback: Callback for received messages
- * 
+ *
  * Subscribes to ROS topic and converts messages to atoms.
  */
 int cogllama_ros_subscribe(
@@ -1035,38 +1043,38 @@ int cogllama_ros_subscribe(
 ```c
 /**
  * cogllama_system - Complete integrated cognitive system
- * 
+ *
  * Brings together all component groups into unified system.
  */
 struct cogllama_system {
     // Core
     struct cogllama_atomspace *atomspace;
     struct cogllama_cogserver *cogserver;
-    
+
     // Perception
     struct cogllama_sensory_processor *perception;
-    
+
     // Knowledge
     struct cogllama_pln *pln;
     struct cogllama_ure *ure;
     struct cogllama_miner *miner;
-    
+
     // Planning
     struct cogllama_spacetime *spacetime;
     struct cogllama_planner *planner;
-    
+
     // Learning
     struct cogllama_moses *moses;
     struct cogllama_language_learner *language_learner;
-    
+
     // Communication
     struct cogllama_link_grammar *link_grammar;
     struct cogllama_communication *communication;
-    
+
     // Memory
     struct cogllama_storage *storage;
     struct cogllama_attention *attention;
-    
+
     // Tools
     struct cogllama_tools *tools;
     struct cogllama_ros *ros;
@@ -1075,7 +1083,7 @@ struct cogllama_system {
 /**
  * cogllama_system_init - Initialize complete system
  * @params: System configuration parameters
- * 
+ *
  * Initializes all component groups and establishes connections.
  */
 struct cogllama_system *cogllama_system_init(
@@ -1085,7 +1093,7 @@ struct cogllama_system *cogllama_system_init(
 /**
  * cogllama_system_run - Run cognitive system
  * @system: Initialized cognitive system
- * 
+ *
  * Starts main cognitive loop with all components active.
  * Coordinates perception, reasoning, learning, and action.
  */
@@ -1170,20 +1178,20 @@ install(DIRECTORY include/
 
 ### Target Performance Metrics
 
-| Component Group | Operation | Target Latency | Throughput |
-|----------------|-----------|----------------|------------|
-| cogllama-core | Atom allocation | ≤1µs | 1M atoms/s |
-| cogllama-core | Pattern matching | ≤100µs | 10K matches/s |
-| cogllama-perception | Audio perception | ≤10ms | 100 chunks/s |
-| cogllama-perception | Vision perception | ≤50ms | 20 frames/s |
-| cogllama-knowledge | PLN inference | ≤5ms | 200 inferences/s |
-| cogllama-knowledge | Pattern mining | ≤1s | Variable |
-| cogllama-planning | Goal planning | ≤100ms | 10 plans/s |
-| cogllama-learning | MOSES evolution | ≤10s/gen | Variable |
-| cogllama-communication | Message passing | ≤1ms | 1K messages/s |
-| cogllama-memory | Attention update | ≤5ms | 200 updates/s |
-| cogllama-memory | Storage sync | ≤100ms | 10 syncs/s |
-| cogllama-tools | Tool execution | Variable | Variable |
+| Component Group        | Operation         | Target Latency | Throughput       |
+| ---------------------- | ----------------- | -------------- | ---------------- |
+| cogllama-core          | Atom allocation   | ≤1µs           | 1M atoms/s       |
+| cogllama-core          | Pattern matching  | ≤100µs         | 10K matches/s    |
+| cogllama-perception    | Audio perception  | ≤10ms          | 100 chunks/s     |
+| cogllama-perception    | Vision perception | ≤50ms          | 20 frames/s      |
+| cogllama-knowledge     | PLN inference     | ≤5ms           | 200 inferences/s |
+| cogllama-knowledge     | Pattern mining    | ≤1s            | Variable         |
+| cogllama-planning      | Goal planning     | ≤100ms         | 10 plans/s       |
+| cogllama-learning      | MOSES evolution   | ≤10s/gen       | Variable         |
+| cogllama-communication | Message passing   | ≤1ms           | 1K messages/s    |
+| cogllama-memory        | Attention update  | ≤5ms           | 200 updates/s    |
+| cogllama-memory        | Storage sync      | ≤100ms         | 10 syncs/s       |
+| cogllama-tools         | Tool execution    | Variable       | Variable         |
 
 ### Memory Requirements
 
@@ -1271,9 +1279,9 @@ int main() {
         .attention_budget = 100.0f,
         .n_threads = 8,
     };
-    
+
     struct cogllama_system *system = cogllama_system_init(&params);
-    
+
     // Add some knowledge
     uint64_t cat = cogllama_atom_alloc(
         system->atomspace,
@@ -1281,14 +1289,14 @@ int main() {
         "cat",
         NULL
     );
-    
+
     uint64_t animal = cogllama_atom_alloc(
         system->atomspace,
         COGLLAMA_NODE,
         "animal",
         NULL
     );
-    
+
     // Create inheritance link
     uint64_t outgoing[] = {cat, animal};
     cogllama_link_create(
@@ -1298,15 +1306,15 @@ int main() {
         2,
         (float[]){0.9f, 0.8f}  // [strength, confidence]
     );
-    
+
     // Run cognitive cycle
     for (int i = 0; i < 100; i++) {
         cogllama_cognitive_cycle(system->cogserver, 0.1f);
     }
-    
+
     // Cleanup
     cogllama_system_free(system);
-    
+
     return 0;
 }
 ```
@@ -1318,37 +1326,37 @@ int main() {
 
 int main() {
     struct cogllama_system *system = cogllama_system_init(NULL);
-    
+
     // Load image
     uint8_t *image_data = load_image("cat.jpg");
-    
+
     // Perceive image
     struct ggml_tensor *perception = cogllama_vision_perceive(
         system->perception,
         image_data,
         640, 480, 3
     );
-    
+
     // Convert to atoms
     cogllama_perception_to_atoms(
         system->atomspace,
         perception,
         COGLLAMA_VISION
     );
-    
+
     // Reason about perception
     struct cogllama_pattern pattern = {
         .type = COGLLAMA_SIMILARITY_PATTERN,
         .threshold = 0.8f
     };
-    
+
     cogllama_pattern_match(
         system->atomspace,
         &pattern,
         match_callback,
         NULL
     );
-    
+
     cogllama_system_free(system);
     return 0;
 }
@@ -1368,12 +1376,12 @@ float program_fitness(struct ggml_tensor *program, void *data) {
 
 int main() {
     struct cogllama_system *system = cogllama_system_init(NULL);
-    
+
     // Configure MOSES
     system->moses->population_size = 100;
     system->moses->mutation_rate = 0.1f;
     system->moses->crossover_rate = 0.7f;
-    
+
     // Evolve programs
     struct cogllama_program best_program;
     cogllama_moses_evolve(
@@ -1382,10 +1390,10 @@ int main() {
         50,  // 50 generations
         &best_program
     );
-    
+
     // Use best program
     printf("Best fitness: %f\n", best_program.fitness);
-    
+
     cogllama_system_free(system);
     return 0;
 }
@@ -1456,48 +1464,56 @@ cogllama_register_custom_op(
 ## Development Roadmap
 
 ### Phase 1: Foundation (Months 1-3)
+
 - ✓ GGML tensor infrastructure
 - ✓ llama.cpp integration
 - ✓ Basic AtomSpace implementation
 - [ ] Core cognitive cycle
 
 ### Phase 2: Perception (Months 4-6)
+
 - [ ] Whisper audio integration
 - [ ] CLIP vision integration
 - [ ] Multi-modal fusion
 - [ ] Perception-to-atoms conversion
 
 ### Phase 3: Knowledge (Months 7-9)
+
 - [ ] PLN inference engine
 - [ ] URE rule engine
 - [ ] Pattern miner
 - [ ] Knowledge persistence
 
 ### Phase 4: Planning & Learning (Months 10-12)
+
 - [ ] Spacetime reasoning
 - [ ] Hierarchical planner
 - [ ] MOSES evolution
 - [ ] Language learning
 
 ### Phase 5: Communication (Months 13-15)
+
 - [ ] Link Grammar parser
 - [ ] Multi-agent messaging
 - [ ] Natural language generation
 - [ ] Dialog management
 
 ### Phase 6: Integration (Months 16-18)
+
 - [ ] Memory management
 - [ ] ECAN attention
 - [ ] Tool integration
 - [ ] ROS robotics
 
 ### Phase 7: Optimization (Months 19-21)
+
 - [ ] Performance tuning
 - [ ] Quantization optimization
 - [ ] Hardware acceleration
 - [ ] Distributed deployment
 
 ### Phase 8: Validation (Months 22-24)
+
 - [ ] Comprehensive testing
 - [ ] Benchmark suite
 - [ ] Documentation
@@ -1547,16 +1563,19 @@ MIT License - Compatible with GGML and llama.cpp
 ## References
 
 ### OpenCog Architecture
+
 - [OpenCog Hyperon](https://github.com/opencog/hyperon)
 - [AtomSpace Documentation](https://wiki.opencog.org/w/AtomSpace)
 - [PLN Book](https://github.com/opencog/pln)
 
 ### GGML & llama.cpp
+
 - [GGML Tensor Library](https://github.com/ggml-org/ggml)
 - [llama.cpp](https://github.com/ggerganov/llama.cpp)
 - [GGUF Format](https://github.com/ggml-org/ggml/blob/master/docs/gguf.md)
 
 ### Cognitive Science
+
 - Vervaeke, J. et al. - Relevance Realization
 - Goertzel, B. - The Hidden Pattern
 - Bostrom, N. - Superintelligence

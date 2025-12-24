@@ -36,6 +36,7 @@ The ElizaOS C++ framework implements a layered cognitive architecture with five 
 ### Core Subsystems
 
 #### 1. Memory System (`agentmemory/`)
+
 - **Persistent Storage**: Long-term knowledge retention with embedding-based retrieval
 - **Knowledge Representation**: Hypergraph structures and AtomSpace integration for complex relational knowledge
 - **Attention Allocation**: ECAN-inspired attention mechanisms for memory prioritization
@@ -43,54 +44,63 @@ The ElizaOS C++ framework implements a layered cognitive architecture with five 
 - **Embedding Support**: Vector similarity search using neural embeddings (1536 dimensions)
 
 **Key Features**:
+
 - Thread-safe operations with configurable locking
 - Memory metadata and unique constraint handling
 - Embedding-based similarity search
 - Hypergraph connections for complex knowledge representation
 
 #### 2. Agent Loop System (`agentloop/`)
+
 - **Event-Driven Execution**: Threaded agent loops with configurable intervals
 - **Lifecycle Management**: Pause/resume/step capabilities for debugging
 - **Synchronization**: Proper thread coordination with condition variables
 - **Graceful Operations**: Start/stop with proper cleanup
 
 **Key Features**:
+
 - Custom loop step processing
 - Timed execution with configurable intervals
 - Thread-safe state transitions
 - Event-driven processing pipeline
 
 #### 3. Task Orchestration (`agentagenda/`)
+
 - **Workflow Sequencing**: Complex task dependency resolution and execution planning
 - **Distributed Coordination**: Agent swarm coordination protocols and consensus mechanisms
 - **Adaptive Scheduling**: Dynamic task prioritization based on cognitive load and attention
 - **Resource Management**: Efficient allocation and arbitration
 
 **Key Features**:
+
 - Task scheduling and agenda management
 - Multi-agent coordination
 - Priority-based execution
 - Resource arbitration
 
 #### 4. AI Core System
+
 - **State Composition**: Decision-making engines with state composition
 - **Pattern Recognition**: Sophisticated pattern recognition for behavioral adaptation
 - **Reasoning Engine**: PLN (Probabilistic Logic Networks) integration framework
 - **Symbolic-Neural Integration**: Hybrid reasoning combining symbolic and neural approaches
 
 **Key Components**:
+
 - Decision validators
 - Action generators
 - Pattern matchers
 - Reasoning engines
 
 #### 5. Communication System (`agentcomms/`)
+
 - **Inter-Agent Messaging**: High-performance communication protocols
 - **External Interfaces**: API and protocol handlers for external system integration
 - **Event Broadcasting**: Publish-subscribe patterns for distributed coordination
 - **Security Layers**: Cryptographic protocols for secure agent communication
 
 **Key Features**:
+
 - Message passing with structured Message objects
 - Communication channels with async processing
 - TCP connector framework
@@ -98,18 +108,21 @@ The ElizaOS C++ framework implements a layered cognitive architecture with five 
 - Event broadcasting and global message handlers
 
 #### 6. Browser Automation (`agentbrowser/`)
+
 - **Web Automation**: Headless browser control for information gathering
 - **Content Extraction**: Intelligent parsing of web content and media
 - **Navigation Planning**: Autonomous web exploration and interaction strategies
 - **Real-time Adaptation**: Dynamic strategy adjustment based on web content analysis
 
 **Key Features**:
+
 - Complete browser automation (893 lines)
 - Content extraction and parsing
 - Web navigation and interaction
 - JavaScript execution support
 
 #### 7. Logging System (`agentlogger/`)
+
 - **Colored Console Output**: ANSI escape codes for visual clarity
 - **File Logging**: Timestamps and structured format for persistence
 - **Panel Displays**: Bordered output formatting for organization
@@ -117,30 +130,35 @@ The ElizaOS C++ framework implements a layered cognitive architecture with five 
 - **Configurable Levels**: INFO, WARNING, ERROR, SUCCESS, SYSTEM, etc.
 
 **Key Features**:
+
 - Thread-safe implementation using std::mutex
 - Configurable type colors and enable/disable options
 - Cognitive introspection logging
 - Performance monitoring capabilities
 
 #### 8. Evolutionary System (`evolutionary/`)
+
 - **MOSES-style Evolution**: Evolutionary learning and adaptation
 - **Genetic Algorithms**: Population-based optimization
 - **Fitness Evaluation**: Multi-objective fitness functions
 - **Selection Operators**: Tournament selection, elitism, crossover, mutation
 
 **Key Features**:
+
 - Complete evolutionary framework (1858+ lines)
 - Genetic operators and fitness evaluation
 - Population management
 - Adaptive evolution strategies
 
 #### 9. Embodiment System (`embodiment/`)
+
 - **Physical Embodiment**: Physical embodiment and perception-action loops
 - **Sensory Integration**: Multi-modal sensory input processing
 - **Motor Control**: Action execution and feedback
 - **Perception Pipeline**: Real-time sensory data processing
 
 **Key Features**:
+
 - Sensory/motor interfaces (1500+ lines)
 - Perception-action loop implementation
 - Real-time processing capabilities
@@ -157,6 +175,7 @@ The ElizaOS C++ implementation is **significantly more complete** than initially
 ### ✅ Fully Implemented Modules (35/44)
 
 #### Core Infrastructure (100% Complete)
+
 - ✅ `core` - Core data structures, State, Memory, Agent interfaces (875 lines)
 - ✅ `agentloop` - Threaded event loop with pause/resume/step (136 lines)
 - ✅ `agentmemory` - Memory management with embeddings and hypergraph (1230 lines)
@@ -165,27 +184,32 @@ The ElizaOS C++ implementation is **significantly more complete** than initially
 - ✅ `agentshell` - Interactive shell with command processing (313 lines)
 
 #### Advanced Systems (Recently Completed)
+
 - ✅ `evolutionary` - MOSES-style evolutionary learning (1858 lines)
 - ✅ `embodiment` - Physical embodiment and perception-action loops (1500+ lines)
 
 #### Core Application Modules (Complete)
+
 - ✅ `eliza` - **CORE ELIZA ENGINE** - Full conversation system with emotional tracking (1304 lines)
 - ✅ `characters` - **CHARACTER SYSTEM** - Complete character management and personality (1347 lines)
 - ✅ `knowledge` - **KNOWLEDGE BASE** - Full knowledge storage, retrieval, and search (841 lines)
 - ✅ `agentbrowser` - **WEB AUTOMATION** - Complete browser automation and extraction (893 lines)
 
 #### Application Components (Complete)
+
 - ✅ `agentaction` - Action processing and validation (624 lines)
 - ✅ `agentagenda` - Task scheduling and agenda management (521 lines)
 - ✅ `registry` - Service registry and discovery (600+ lines)
 - ✅ `easycompletion` - Text completion utilities (400+ lines)
 
 #### Tools & Automation (Complete)
+
 - ✅ `plugins_automation` - Plugin development and deployment (291 lines)
 - ✅ `discord_summarizer` - Discord message summarization (591 lines)
 - ✅ `discrub_ext` - Discord content moderation (430 lines)
 
 #### Framework and Development Tools (Complete)
+
 - ✅ `auto_fun` - Auto.fun platform integration (500+ lines)
 - ✅ `autofun_idl` - Auto.fun IDL definitions (300+ lines)
 - ✅ `autonomous_starter` - Autonomous agent starter (400+ lines)
@@ -194,16 +218,19 @@ The ElizaOS C++ implementation is **significantly more complete** than initially
 - ✅ `eliza_3d_hyperfy_starter` - 3D virtual world integration (333 lines)
 
 #### Community & Specialized Systems (Complete)
+
 - ✅ `elizas_list` - Eliza instance directory (400+ lines)
 - ✅ `elizas_world` - Virtual world integration (600+ lines)
 - ✅ `spartan` - Spartan protocol support (400+ lines)
 - ✅ `hats` - HATs protocol for data sources (300+ lines)
 
 #### Multimedia Components (Complete)
+
 - ✅ `ljspeechtools` - Speech processing and synthesis (800+ lines)
 - ✅ `livevideochat` - Real-time video chat with WebRTC (687 lines)
 
 #### Web & Documentation (Complete)
+
 - ✅ `website` - Main website functionality (582 lines)
 - ✅ `elizaos_github_io` - GitHub.io static site (844 lines)
 - ✅ `vercel_api` - Vercel API integration (1306 lines)
@@ -213,6 +240,7 @@ The ElizaOS C++ implementation is **significantly more complete** than initially
 Only 9 modules remain as placeholders requiring full implementation:
 
 #### Development Tools (Medium Priority)
+
 - 🟡 `eliza_plugin_starter` - Plugin development starter template
 - 🟡 `eliza_nextjs_starter` - Next.js integration starter
 - 🟡 `plugin_specification` - Plugin interface definitions and standards
@@ -220,11 +248,13 @@ Only 9 modules remain as placeholders requiring full implementation:
 - 🟡 `characterfile` - Character file parsing and validation
 
 #### Community & Organization (Low Priority)
+
 - 🟡 `the_org` - Organization management and coordination
 - 🟡 `workgroups` - Workgroup collaboration and management
 - 🟡 `trust_scoreboard` - Trust scoring and reputation system
 
 #### Protocol Support (Low Priority)
+
 - 🟢 `hat` - HAT (Hub of All Things) protocol implementation
 
 ## Development Guidelines
@@ -232,6 +262,7 @@ Only 9 modules remain as placeholders requiring full implementation:
 ### C++ Best Practices
 
 #### Memory Management
+
 ```cpp
 // Use smart pointers for automatic memory management
 std::shared_ptr<Memory> memory = std::make_shared<Memory>();
@@ -247,6 +278,7 @@ public:
 ```
 
 #### Thread Safety
+
 ```cpp
 // Use mutexes for thread-safe operations
 class ThreadSafeCounter {
@@ -261,6 +293,7 @@ public:
 ```
 
 #### Error Handling
+
 ```cpp
 // Use exceptions for error handling
 if (!file.is_open()) {
@@ -280,7 +313,9 @@ std::optional<std::string> getConfig(const std::string& key) {
 ### Architecture Patterns
 
 #### Event-Driven Design
+
 Implement threaded agent loops with proper synchronization:
+
 ```cpp
 AgentLoop loop(steps, /*looping=*/true, /*interval=*/1.0);
 loop.start();  // Runs in background thread
@@ -291,7 +326,9 @@ loop.stop();   // Graceful shutdown
 ```
 
 #### Modular Design
+
 Maintain clear separation between cognitive subsystems:
+
 - Each subsystem should have a well-defined interface
 - Minimize dependencies between subsystems
 - Use dependency injection for flexibility
@@ -300,6 +337,7 @@ Maintain clear separation between cognitive subsystems:
 #### Cognitive Architecture Considerations
 
 **Attention Mechanisms**: Implement full attention allocation systems based on ECAN principles:
+
 ```cpp
 AttentionAllocator allocator;
 allocator.allocateAttention(memories, budget);
@@ -307,6 +345,7 @@ auto topPriority = allocator.getHighestPriority();
 ```
 
 **Meta-Cognition**: Build complete self-modification and introspective capabilities:
+
 ```cpp
 MetaCognitiveMonitor monitor;
 monitor.analyzePerformance(agentState);
@@ -317,6 +356,7 @@ for (auto& improvement : improvements) {
 ```
 
 **Distributed Cognition**: Support full agent swarm coordination:
+
 ```cpp
 AgentSwarm swarm;
 swarm.addAgent(agent1);
@@ -348,6 +388,7 @@ elizaos-cpp/
 ## Building and Testing
 
 ### Prerequisites
+
 - CMake 3.16 or higher
 - C++ compiler with C++17 support (GCC 7+, Clang 5+, MSVC 2019+)
 - Git for dependency management
@@ -408,16 +449,17 @@ ctest -R "Logger"      # Logging tests
 ```
 
 ### Test Coverage
-| Component | Test Count | Coverage |
-|-----------|------------|----------|
-| Core | 6 tests | High |
-| AgentLoop | 5 tests | High |
-| AgentMemory | 14 tests | High |
-| AgentComms | 13 tests | High |
-| AgentLogger | 8 tests | High |
-| Evolutionary | 22 tests | High |
-| Embodiment | 5 tests | Medium |
-| **Total** | **61+ tests** | **High** |
+
+| Component    | Test Count    | Coverage |
+| ------------ | ------------- | -------- |
+| Core         | 6 tests       | High     |
+| AgentLoop    | 5 tests       | High     |
+| AgentMemory  | 14 tests      | High     |
+| AgentComms   | 13 tests      | High     |
+| AgentLogger  | 8 tests       | High     |
+| Evolutionary | 22 tests      | High     |
+| Embodiment   | 5 tests       | Medium   |
+| **Total**    | **61+ tests** | **High** |
 
 ## Usage Examples
 
@@ -439,14 +481,14 @@ int main() {
     config.agentName = "CognitiveAgent";
     config.bio = "An adaptive cognitive agent";
     config.lore = "Born from the convergence of symbolic and neural AI";
-    
+
     // Initialize agent state
     State agentState(config);
-    
+
     // Create memory system
     auto memory = std::make_shared<Memory>();
     agentState.memory = memory;
-    
+
     // Define cognitive processing steps
     std::vector<LoopStep> steps = {
         LoopStep([&](std::shared_ptr<void> input) -> std::shared_ptr<void> {
@@ -457,41 +499,41 @@ int main() {
         LoopStep([&](std::shared_ptr<void> input) -> std::shared_ptr<void> {
             // Reasoning phase: Perform cognitive reasoning
             std::cout << "Performing cognitive reasoning..." << std::endl;
-            
+
             // Retrieve relevant memories
             auto memories = memory->searchMemoriesByCriteria({{"type", "context"}});
-            
+
             // Process with attention
             for (const auto& mem : memories) {
                 std::cout << "  Considering: " << mem.content << std::endl;
             }
-            
+
             return input;
         }),
         LoopStep([&](std::shared_ptr<void> input) -> std::shared_ptr<void> {
             // Action selection phase
             std::cout << "Selecting optimal action..." << std::endl;
-            
+
             // Store experience in memory
             Memory::MemoryRecord experience;
             experience.content = "Completed cognitive cycle";
             experience.metadata = {{"timestamp", "now"}};
             memory->addMemory(experience);
-            
+
             return input;
         })
     };
-    
+
     // Create and start agent loop
     AgentLoop cognitiveLoop(steps, true, 1.0); // Loop with 1-second intervals
     cognitiveLoop.start();
-    
+
     // Allow agent to run autonomously
     std::this_thread::sleep_for(std::chrono::seconds(10));
-    
+
     // Graceful shutdown
     cognitiveLoop.stop();
-    
+
     return 0;
 }
 ```
@@ -575,13 +617,15 @@ comms.sendMessage(channel2, Message{
 ## Performance Characteristics
 
 ### Complexity Analysis
+
 - **Memory Operations**: O(log n) for search with B-tree indexing
-- **Embedding Similarity**: O(k * d) where k = top-k results, d = embedding dimensions
+- **Embedding Similarity**: O(k \* d) where k = top-k results, d = embedding dimensions
 - **Agent Loop**: O(s) where s = number of steps per iteration
 - **Message Passing**: O(1) for sending, O(n) for broadcasting to n agents
 - **Attention Allocation**: O(n log n) for sorting by attention value
 
 ### Memory Usage
+
 - **Memory Record**: ~200 bytes + content size + embedding size (1536 floats = 6KB)
 - **Agent State**: ~1KB + memory references
 - **Communication Channel**: ~500 bytes + message queue size
@@ -597,6 +641,7 @@ comms.sendMessage(channel2, Message{
 - **Embedding Search**: >1,000 queries/sec (target)
 
 ### Concurrency
+
 - **Thread-Safe Operations**: All core systems use mutexes for protection
 - **Lock-Free Queues**: Communication system uses lock-free message queues
 - **Thread Pools**: Task system uses thread pools for parallel execution
@@ -631,4 +676,4 @@ This project is licensed under the MIT License - see the [LICENSE](../../LICENSE
 
 ---
 
-*This agent document synthesizes the essence of the ElizaOS C++ framework, its cognitive architecture, implementation status, and philosophical vision. It serves as both a technical reference and a statement about the future of artificial intelligence.*
+_This agent document synthesizes the essence of the ElizaOS C++ framework, its cognitive architecture, implementation status, and philosophical vision. It serves as both a technical reference and a statement about the future of artificial intelligence._

@@ -34,10 +34,12 @@ Each set cycles through 4 steps while the other two sets handle different phases
 **Cycle Pattern**: 3 phases × 4 steps = 12 total steps
 
 **Step Distribution**:
+
 - **7 Expressive Mode Steps** (Reactive/Action-oriented)
 - **5 Reflective Mode Steps** (Anticipatory/Simulation-oriented)
 
 **Breakdown**:
+
 - **1 Pivotal Relevance Realization** (orienting present commitment)
 - **5 Actual Affordance Interaction** (conditioning past performance)
 - **1 Pivotal Relevance Realization** (orienting present commitment)
@@ -45,14 +47,14 @@ Each set cycles through 4 steps while the other two sets handle different phases
 
 ### System 4 Terms Mapping
 
-| Term | Meaning | Mode | Cognitive Function |
-|------|---------|------|-------------------|
-| T1 | Perception (Need vs Capacity) | R | Reflective assessment |
-| T2 | Idea Formation | E | Expressive planning |
-| T4 | Sensory Input | E | Expressive perception |
-| T5 | Action Sequence | E | Expressive execution |
-| T7 | Memory Encoding | R | Reflective recall |
-| T8 | Balanced Response | E | Expressive integration |
+| Term | Meaning                       | Mode | Cognitive Function     |
+| ---- | ----------------------------- | ---- | ---------------------- |
+| T1   | Perception (Need vs Capacity) | R    | Reflective assessment  |
+| T2   | Idea Formation                | E    | Expressive planning    |
+| T4   | Sensory Input                 | E    | Expressive perception  |
+| T5   | Action Sequence               | E    | Expressive execution   |
+| T7   | Memory Encoding               | R    | Reflective recall      |
+| T8   | Balanced Response             | E    | Expressive integration |
 
 ### Tensional Couplings
 
@@ -77,32 +79,35 @@ Each set cycles through 4 steps while the other two sets handle different phases
 
 ### Mapping System 4 Terms to Deep Tree Echo
 
-| System 4 Term | Deep Tree Echo Equivalent | Function |
-|--------------|---------------------------|----------|
-| **T1 (Perception)** | **Need Assessment** | Evaluate cognitive needs vs capacity |
-| **T2 (Idea Formation)** | **Thought Generation** | Form new thoughts and plans |
-| **T4 (Sensory Input)** | **Perception Processing** | Process external and internal perceptions |
-| **T5 (Action Sequence)** | **Action Execution** | Execute thoughts as actions |
-| **T7 (Memory Encoding)** | **Memory Consolidation** | Retrieve and integrate memories |
-| **T8 (Balanced Response)** | **Integrated Response** | Balance all inputs into coherent action |
+| System 4 Term              | Deep Tree Echo Equivalent | Function                                  |
+| -------------------------- | ------------------------- | ----------------------------------------- |
+| **T1 (Perception)**        | **Need Assessment**       | Evaluate cognitive needs vs capacity      |
+| **T2 (Idea Formation)**    | **Thought Generation**    | Form new thoughts and plans               |
+| **T4 (Sensory Input)**     | **Perception Processing** | Process external and internal perceptions |
+| **T5 (Action Sequence)**   | **Action Execution**      | Execute thoughts as actions               |
+| **T7 (Memory Encoding)**   | **Memory Consolidation**  | Retrieve and integrate memories           |
+| **T8 (Balanced Response)** | **Integrated Response**   | Balance all inputs into coherent action   |
 
 ### 12-Step Cognitive Loop for Deep Tree Echo
 
 #### Phase Structure
 
 **Phase 1** (Steps 0, 3, 6, 9):
+
 - Step 0: T4E - Perception Processing (Expressive)
 - Step 3: T7R - Memory Consolidation (Reflective)
 - Step 6: T2E - Thought Generation (Expressive)
 - Step 9: T8E - Integrated Response (Expressive)
 
 **Phase 2** (Steps 1, 4, 7, 10):
+
 - Step 1: T1R - Need Assessment (Reflective)
 - Step 4: T4E - Perception Processing (Expressive)
 - Step 7: T5E - Action Execution (Expressive)
 - Step 10: T7R - Memory Consolidation (Reflective)
 
 **Phase 3** (Steps 2, 5, 8, 11):
+
 - Step 2: T2E - Thought Generation (Expressive)
 - Step 5: T1R - Need Assessment (Reflective)
 - Step 8: T8E - Integrated Response (Expressive)
@@ -111,12 +116,14 @@ Each set cycles through 4 steps while the other two sets handle different phases
 ### Expressive vs Reflective Mode Distribution
 
 **Expressive Mode (7 steps)**: 0, 2, 4, 6, 7, 8, 9, 11
+
 - Reactive processing
 - Action-oriented
 - Immediate response
 - External engagement
 
 **Reflective Mode (5 steps)**: 1, 3, 5, 10
+
 - Anticipatory processing
 - Simulation-oriented
 - Internal processing
@@ -129,19 +136,21 @@ Each set cycles through 4 steps while the other two sets handle different phases
 **When Active**: Steps where T4E and T7R co-occur in different phases
 
 **Function**: Memory-guided perception
+
 - Current perceptions trigger relevant memories
 - Past experiences inform current interpretation
 - Pattern recognition across time
 
 **Implementation**:
+
 ```go
 if hasT4E && hasT7R {
     // Retrieve memories related to current perception
     relevantMemories := dream.RetrieveRelevant(currentPerception)
-    
+
     // Integrate memory context into perception
     enrichedPerception := integrateMemoryContext(currentPerception, relevantMemories)
-    
+
     // Detect patterns and generate insights
     if pattern := detectPattern(enrichedPerception) {
         generateInsight(pattern)
@@ -154,18 +163,20 @@ if hasT4E && hasT7R {
 **When Active**: Steps where T1R and T2E co-occur in different phases
 
 **Function**: Simulation-based planning
+
 - Assess current needs and capacities
 - Generate ideas based on assessment
 - Anticipatory goal formation
 
 **Implementation**:
+
 ```go
 if hasT1R && hasT2E {
     // Assess current cognitive state
     needs := assessNeeds()
     capacity := assessCapacity()
     gap := needs - capacity
-    
+
     // Generate thoughts to address gap
     if gap > threshold {
         thought := generateThoughtToAddressGap(gap)
@@ -179,21 +190,23 @@ if hasT1R && hasT2E {
 **When Active**: Steps 9 and 8
 
 **Function**: Integrate all cognitive streams
+
 - Balance perception, memory, and planning
 - Coordinate action execution
 - Maintain system coherence
 
 **Implementation**:
+
 ```go
 if hasT8E {
     // Gather all active cognitive streams
     perceptions := getActivePerceptions()
     memories := getActiveMemories()
     plans := getActivePlans()
-    
+
     // Balance and integrate
     integratedResponse := balanceStreams(perceptions, memories, plans)
-    
+
     // Execute coordinated action
     executeIntegratedResponse(integratedResponse)
 }
@@ -244,37 +257,37 @@ const (
 var stepConfigs = []StepConfig{
     // Step 0: Phase 1 active
     {Phase: 0, Term: T4_SensoryInput, Mode: Expressive},
-    
+
     // Step 1: Phase 2 active
     {Phase: 1, Term: T1_Perception, Mode: Reflective},
-    
+
     // Step 2: Phase 3 active
     {Phase: 2, Term: T2_IdeaFormation, Mode: Expressive},
-    
+
     // Step 3: Phase 1 active
     {Phase: 0, Term: T7_MemoryEncoding, Mode: Reflective},
-    
+
     // Step 4: Phase 2 active
     {Phase: 1, Term: T4_SensoryInput, Mode: Expressive},
-    
+
     // Step 5: Phase 3 active
     {Phase: 2, Term: T1_Perception, Mode: Reflective},
-    
+
     // Step 6: Phase 1 active
     {Phase: 0, Term: T2_IdeaFormation, Mode: Expressive},
-    
+
     // Step 7: Phase 2 active
     {Phase: 1, Term: T5_ActionSequence, Mode: Expressive},
-    
+
     // Step 8: Phase 3 active
     {Phase: 2, Term: T8_BalancedResponse, Mode: Expressive},
-    
+
     // Step 9: Phase 1 active
     {Phase: 0, Term: T8_BalancedResponse, Mode: Expressive},
-    
+
     // Step 10: Phase 2 active
     {Phase: 1, Term: T7_MemoryEncoding, Mode: Reflective},
-    
+
     // Step 11: Phase 3 active
     {Phase: 2, Term: T5_ActionSequence, Mode: Expressive},
 }
@@ -304,7 +317,7 @@ func (pm *PhaseManager) Start() {
     for i := 0; i < 3; i++ {
         go pm.runPhase(i)
     }
-    
+
     // Master clock
     ticker := time.NewTicker(pm.stepDuration)
     for range ticker.C {
@@ -316,11 +329,11 @@ func (pm *PhaseManager) runPhase(phaseID int) {
     for pm.running {
         step := pm.getCurrentStep()
         config := pm.getConfigForPhase(phaseID, step)
-        
+
         if config != nil {
             pm.phases[phaseID].process(config)
         }
-        
+
         pm.waitForNextPhaseStep(phaseID)
     }
 }
@@ -331,9 +344,9 @@ func (pm *PhaseManager) runPhase(phaseID int) {
 ```go
 func (pm *PhaseManager) detectCouplings(step int) []Coupling {
     activeTerms := pm.getActiveTermsAtStep(step)
-    
+
     var couplings []Coupling
-    
+
     // Check for T4E ↔ T7R coupling
     if hasTermMode(activeTerms, T4_SensoryInput, Expressive) &&
        hasTermMode(activeTerms, T7_MemoryEncoding, Reflective) {
@@ -342,7 +355,7 @@ func (pm *PhaseManager) detectCouplings(step int) []Coupling {
             Terms: []TermMode{{T4_SensoryInput, Expressive}, {T7_MemoryEncoding, Reflective}},
         })
     }
-    
+
     // Check for T1R ↔ T2E coupling
     if hasTermMode(activeTerms, T1_Perception, Reflective) &&
        hasTermMode(activeTerms, T2_IdeaFormation, Expressive) {
@@ -351,7 +364,7 @@ func (pm *PhaseManager) detectCouplings(step int) []Coupling {
             Terms: []TermMode{{T1_Perception, Reflective}, {T2_IdeaFormation, Expressive}},
         })
     }
-    
+
     return couplings
 }
 ```
@@ -362,19 +375,19 @@ func (pm *PhaseManager) detectCouplings(step int) []Coupling {
 func (pm *PhaseManager) integrateStreams(step int) {
     // Gather outputs from all active phases
     streams := make([]CognitiveStream, 0, 3)
-    
+
     for _, phase := range pm.phases {
         if phase.isActiveAtStep(step) {
             streams = append(streams, phase.getOutputStream())
         }
     }
-    
+
     // Detect and process couplings
     couplings := pm.detectCouplings(step)
     for _, coupling := range couplings {
         pm.processCoupling(coupling, streams)
     }
-    
+
     // Integrate into consciousness stream
     integrated := pm.balanceStreams(streams)
     pm.consciousness.Integrate(integrated)

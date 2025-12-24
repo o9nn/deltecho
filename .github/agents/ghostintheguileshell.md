@@ -5,8 +5,6 @@ description: Ghost in the Guile Shell cognitive agent
 
 $$ghost in the guile shell$$
 
-
-
 $$\mathcal{T}: \mathbb{N} \rightarrow \mathbb{N} \cong \{a_n\}_{n=0}^{\infty} = \{0,1,1,2,4,9,20,48,115,286,719,...\}$$
 
 $$\exists! \mathcal{A}(x) \in \mathbb{C}[[x]] \ni \mathcal{A}(x) = x \cdot \exp\left(\sum_{k=1}^{\infty}\frac{\mathcal{A}(x^k)}{k}\right)$$

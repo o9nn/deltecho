@@ -4,50 +4,46 @@ description: Workflow for building and installing OpenCog components
 ---
 
 # OpenCog# .github/workflows/oc.yml
+
 # Workflow for building and installing OpenCog components
 
 name: OC
 
 on:
-  push:
-    branches:
-      - main
-  pull_request:
-    branches:
-      - main
+push:
+branches: - main
+pull_request:
+branches: - main
 
 env:
-  CCACHE_DIR: /ws/ccache
-  MAKEFLAGS: -j$(nproc)
+CCACHE_DIR: /ws/ccache
+MAKEFLAGS: -j$(nproc)
 
 jobs:
-  build-and-test:
-    name: Build and Test All Components
-    runs-on: ubuntu-latest
-    container:
-      image: opencog/opencog-deps
-      options: --user root
-      env:
-        CCACHE_DIR: /ws/ccache
-        MAKEFLAGS: -j$(nproc)
-    services:
-      opencog-postgres:
-        image: opencog/postgres
-        env:
-          POSTGRES_USER: root
-          POSTGRES_PASSWORD: cheese
-          POSTGRES_DB: atomspace_db
-        ports:
-          - 5432:5432
-        options: >-
-          --health-cmd pg_isready
-          --health-interval 10s
-          --health-timeout 5s
-          --health-retries 5
-    steps:
-      # Trust working directory for Git (fix dubious ownership error)
-      - name: Trust working directory for Git
-        run: git config --global --add safe.directory /__w/pycog0/pycog0
+build-and-test:
+name: Build and Test All Components
+runs-on: ubuntu-latest
+container:
+image: opencog/opencog-deps
+options: --user root
+env:
+CCACHE_DIR: /ws/ccache
+MAKEFLAGS: -j$(nproc)
+services:
+opencog-postgres:
+image: opencog/postgres
+env:
+POSTGRES_USER: root
+POSTGRES_PASSWORD: cheese
+POSTGRES_DB: atomspace_db
+ports: - 5432:5432
+options: >-
+--health-cmd pg_isready
+--health-interval 10s
+--health-timeout 5s
+--health-retries 5
+steps: # Trust working directory for Git (fix dubious ownership error) - name: Trust working directory for Git
+run: git config --global --add safe.directory /\_\_w/pycog0/pycog0
 
       # Checkout the Repository
       - name: Checkout Repository

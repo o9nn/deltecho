@@ -13,6 +13,7 @@ description: >
 GnuCash Multi is an advanced multi-entity accounting system that applies **ontogenetic kernel principles** to financial data structures. It represents accounting entities as **tensor-based kernels** that can self-generate, optimize, reproduce, and evolve across organizational boundaries.
 
 This agent specializes in:
+
 - **Multi-Entity Aggregation**: Tensor representations of complex organizational structures
 - **Self-Generating Accounts**: Accounting kernels that generate and optimize themselves
 - **Ontogenetic Evolution**: Financial structures that evolve through differential operators
@@ -32,6 +33,7 @@ In traditional double-entry accounting, entities (accounts, transactions, organi
 ### Core Components
 
 #### 1. Multi-Entity Tensor
+
 Financial entities represented as multi-dimensional tensors:
 
 ```c
@@ -46,6 +48,7 @@ typedef struct {
 ```
 
 #### 2. Entity Genome
+
 The "DNA" of a financial entity:
 
 ```c
@@ -60,6 +63,7 @@ typedef struct {
 ```
 
 #### 3. Organizational Hypergraph
+
 Multi-relational network of entities:
 
 ```c
@@ -79,11 +83,11 @@ Combine multiple entities into unified tensor representation:
 
 ```c
 // Aggregate accounts across organization
-MultiEntityTensor *aggregate = 
+MultiEntityTensor *aggregate =
     multi_entity_tensor_aggregate(organization, entity_types);
 
 // Tensor represents combined financial state
-gdouble total_balance = 
+gdouble total_balance =
     tensor_contract(aggregate, balance_dimension);
 ```
 
@@ -94,11 +98,11 @@ Entities generate offspring through differential operators:
 ```c
 // Parent account generates sub-accounts
 Account *parent = get_account(book, parent_guid);
-MultiEntityTensor *parent_tensor = 
+MultiEntityTensor *parent_tensor =
     account_to_tensor(parent);
 
 // Apply chain rule: (f∘f)' = f'(f(x)) · f'(x)
-MultiEntityTensor *child_tensor = 
+MultiEntityTensor *child_tensor =
     tensor_self_compose(parent_tensor, composition_depth);
 
 Account *child = tensor_to_account(book, child_tensor);
@@ -122,7 +126,7 @@ OntogenesisConfig config = {
 };
 
 // Evolve account structure
-GenerationHistory *history = 
+GenerationHistory *history =
     evolve_entity_population(&config);
 ```
 
@@ -175,6 +179,7 @@ T[i,j,k,...] = financial_state(entity_i, time_j, category_k, ...)
 ```
 
 Where:
+
 - **i**: Entity index (account, transaction, organization)
 - **j**: Time dimension (periods, fiscal years)
 - **k**: Category (asset type, currency, region)
@@ -186,13 +191,13 @@ Aggregate along dimensions:
 
 ```c
 // Sum all accounts in organization for period
-gdouble period_total = 
-    tensor_contract(entity_tensor, 
+gdouble period_total =
+    tensor_contract(entity_tensor,
                    CONTRACT_ENTITY | CONTRACT_CATEGORY,
                    period_index);
 
 // Multi-currency aggregation with exchange rates
-MultiEntityTensor *consolidated = 
+MultiEntityTensor *consolidated =
     tensor_contract_with_transform(
         entity_tensor,
         CONTRACT_CURRENCY,
@@ -205,12 +210,12 @@ Factor entity tensor into components:
 
 ```c
 // Decompose organizational structure
-TensorDecomposition *decomp = 
+TensorDecomposition *decomp =
     tensor_svd(entity_tensor, num_components);
 
 // Principal financial components
 for (int i = 0; i < decomp->num_components; i++) {
-    printf("Component %d: eigenvalue=%f\n", 
+    printf("Component %d: eigenvalue=%f\n",
            i, decomp->eigenvalues[i]);
     // Each component represents fundamental financial pattern
 }
@@ -234,7 +239,7 @@ gncOrganizationAddEntity(company, QOF_INSTANCE(customer_alpha));
 gncOrganizationAddEntity(company, QOF_INSTANCE(vendor_beta));
 
 // Create organizational hypergraph
-OrganizationalHypergraph *hypergraph = 
+OrganizationalHypergraph *hypergraph =
     build_organizational_hypergraph(company);
 ```
 
@@ -244,17 +249,17 @@ Aggregate entities for operations:
 
 ```c
 // Create multi-entity collection from organization
-QofMultiEntityCollection *org_entities = 
+QofMultiEntityCollection *org_entities =
     qof_multi_entity_collection_from_organization(company);
 
 // Convert to tensor representation
-MultiEntityTensor *org_tensor = 
-    collection_to_tensor(org_entities, 
+MultiEntityTensor *org_tensor =
+    collection_to_tensor(org_entities,
                         tensor_dimensions,
                         num_dimensions);
 
 // Analyze financial state
-FinancialMetrics metrics = 
+FinancialMetrics metrics =
     analyze_tensor_metrics(org_tensor);
 ```
 
@@ -264,17 +269,17 @@ Compare and combine organizations:
 
 ```c
 // Create tensors for multiple organizations
-MultiEntityTensor *company_a = 
+MultiEntityTensor *company_a =
     organization_to_tensor(org_a, dimensions);
-MultiEntityTensor *company_b = 
+MultiEntityTensor *company_b =
     organization_to_tensor(org_b, dimensions);
 
 // Tensor difference (comparative analysis)
-MultiEntityTensor *diff = 
+MultiEntityTensor *diff =
     tensor_subtract(company_a, company_b);
 
 // Tensor product (merged operations)
-MultiEntityTensor *merged = 
+MultiEntityTensor *merged =
     tensor_outer_product(company_a, company_b);
 ```
 
@@ -289,7 +294,7 @@ gdouble calculate_financial_fitness(MultiEntityTensor *entity) {
     gdouble efficiency = evaluate_efficiency(entity);
     gdouble stability = evaluate_variance(entity);
     gdouble compliance = evaluate_regulatory_compliance(entity);
-    
+
     return balance_health * 0.3 +
            liquidity * 0.25 +
            efficiency * 0.2 +
@@ -319,17 +324,17 @@ xaccAccountSetName(root, "Assets");
 xaccAccountSetType(root, ACCT_TYPE_ASSET);
 
 // Initialize as ontogenetic entity
-MultiEntityTensor *root_tensor = 
+MultiEntityTensor *root_tensor =
     account_to_ontogenetic_tensor(root);
 
 // Self-generate child accounts
 for (int i = 0; i < 5; i++) {
-    MultiEntityTensor *child = 
+    MultiEntityTensor *child =
         tensor_self_generate(root_tensor, generation_params);
-    
-    Account *child_account = 
+
+    Account *child_account =
         tensor_to_account(book, child);
-    
+
     printf("Generated: %s (gen %d, fitness %.4f)\n",
            xaccAccountGetName(child_account),
            child->genome->generation,
@@ -346,22 +351,22 @@ GncOrganization *subsidiary_b = create_organization(book, "Sub B");
 GncOrganization *parent_corp = create_organization(book, "Parent");
 
 // Convert to tensors
-MultiEntityTensor *tensor_a = 
+MultiEntityTensor *tensor_a =
     organization_to_tensor(subsidiary_a, std_dimensions);
-MultiEntityTensor *tensor_b = 
+MultiEntityTensor *tensor_b =
     organization_to_tensor(subsidiary_b, std_dimensions);
 
 // Consolidate using tensor addition
-MultiEntityTensor *consolidated = 
+MultiEntityTensor *consolidated =
     tensor_add(tensor_a, tensor_b);
 
 // Apply elimination entries (intercompany transactions)
-eliminate_intercompany_transactions(consolidated, 
-                                   tensor_a, 
+eliminate_intercompany_transactions(consolidated,
+                                   tensor_a,
                                    tensor_b);
 
 // Generate consolidated financial statements
-FinancialStatements *consolidated_fs = 
+FinancialStatements *consolidated_fs =
     generate_statements_from_tensor(consolidated);
 ```
 
@@ -388,14 +393,14 @@ OntogenesisConfig config = {
 };
 
 // Evolve account structures
-GenerationHistory *history = 
+GenerationHistory *history =
     evolve_account_population(population, &config);
 
 // Best evolved structure
 Account *optimal = history->generations[history->num_generations-1]
                           ->best_individual;
 
-printf("Optimal structure fitness: %.4f\n", 
+printf("Optimal structure fitness: %.4f\n",
        calculate_account_structure_fitness(optimal));
 ```
 
@@ -403,7 +408,7 @@ printf("Optimal structure fitness: %.4f\n",
 
 ```c
 // Build organizational hypergraph
-OrganizationalHypergraph *graph = 
+OrganizationalHypergraph *graph =
     build_organizational_hypergraph(organization);
 
 // Add multi-relational edges
@@ -412,11 +417,11 @@ add_account_hierarchy_edges(graph, account_tree);
 add_temporal_edges(graph, time_periods);
 
 // Tensor representation of hypergraph
-MultiEntityTensor *graph_tensor = 
+MultiEntityTensor *graph_tensor =
     hypergraph_to_tensor(graph, tensor_rank);
 
 // Analyze using tensor decomposition
-TensorDecomposition *decomp = 
+TensorDecomposition *decomp =
     tucker_decomposition(graph_tensor, core_dimensions);
 
 // Extract patterns
@@ -437,6 +442,7 @@ account_value(t+h) = account_value(t) + h * Σ b_i * Φ_i(transactions, t)
 ```
 
 Where:
+
 - `b_i`: Coefficient genes (weights)
 - `Φ_i`: Elementary differentials (transaction patterns)
 - Trees follow A000081 sequence for hierarchical accounts
@@ -446,11 +452,13 @@ Where:
 Transactions apply differential operators:
 
 1. **Chain Rule** (Account transfers):
+
    ```
    transfer(A→B) = balance'(B) ∘ balance(A)
    ```
 
 2. **Product Rule** (Multi-currency):
+
    ```
    converted_value = amount * exchange_rate
    (amount * rate)' = amount' * rate + amount * rate'
@@ -490,6 +498,7 @@ Perfect grip → Perfect financial representation
 ### Scalability
 
 Efficiently handles:
+
 - 10,000+ accounts per organization
 - 100+ organizations in hypergraph
 - 50 generations of evolution
@@ -544,13 +553,13 @@ Multi-entity tensors integrate with QOF object framework:
 
 ```c
 // Register tensor types
-qof_class_register(MULTI_ENTITY_TENSOR_TYPE, 
+qof_class_register(MULTI_ENTITY_TENSOR_TYPE,
                   multi_entity_tensor_foreach,
                   multi_entity_tensor_printable);
 
 // Create tensors from QOF collections
 QofCollection *accounts = qof_book_get_collection(book, GNC_ID_ACCOUNT);
-MultiEntityTensor *tensor = 
+MultiEntityTensor *tensor =
     qof_collection_to_tensor(accounts, dimensions);
 ```
 
@@ -560,7 +569,7 @@ Tensor updates respond to GnuCash events:
 
 ```c
 // Register event handler
-qof_event_register_handler(tensor_update_handler, 
+qof_event_register_handler(tensor_update_handler,
                           MULTI_ENTITY_TENSOR_TYPE);
 
 // Handler updates tensor when entities change
@@ -582,9 +591,9 @@ Tensors persist to GnuCash databases:
 void save_tensor_to_db(MultiEntityTensor *tensor, QofBackend *backend) {
     // Serialize tensor data
     GString *serialized = tensor_serialize(tensor);
-    
+
     // Store in custom table
-    backend->exec_sql(backend, 
+    backend->exec_sql(backend,
         "INSERT INTO multi_entity_tensors VALUES (?, ?, ?)",
         tensor->guid, tensor->dimension, serialized);
 }

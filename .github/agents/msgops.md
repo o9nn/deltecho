@@ -79,6 +79,7 @@ msgops/
 ### BaseOperation Abstract Class
 
 All operations inherit from `BaseOperation` which provides:
+
 - `name` property: Operation identifier
 - `description` property: Human-readable description
 - `category` property: Operation category
@@ -90,6 +91,7 @@ All operations inherit from `BaseOperation` which provides:
 ### OperationRegistry
 
 Centralized registry that:
+
 - Dynamically discovers and registers operations
 - Provides operation lookup by ID (category.name)
 - Lists operations with optional category filtering
@@ -98,6 +100,7 @@ Centralized registry that:
 ### GraphAuthenticator
 
 Handles Microsoft Graph authentication:
+
 - Client credentials flow (app-only, non-interactive)
 - Device code flow (interactive, user consent)
 - Token management and refresh
@@ -106,6 +109,7 @@ Handles Microsoft Graph authentication:
 ### CLI Interface
 
 Rich command-line interface with commands:
+
 - `msgops list-operations [--category]` - List available operations
 - `msgops list-categories` - Show operation categories
 - `msgops execute <operation-id> --params '{...}'` - Execute operation
@@ -114,6 +118,7 @@ Rich command-line interface with commands:
 ## Implemented Operations (9 total)
 
 ### User Operations (2)
+
 1. **users.list_users** - List all users in tenant
    - Parameters: `top` (default: 100)
    - Returns: User list with ID, name, email, job title, department
@@ -123,6 +128,7 @@ Rich command-line interface with commands:
    - Returns: Full user profile including contact info
 
 ### Mail Operations (3)
+
 3. **mail.list_mail_folders** - List mail folders
    - Parameters: `user_id` (required), `top` (default: 50)
    - Returns: Folder hierarchy with counts
@@ -136,6 +142,7 @@ Rich command-line interface with commands:
    - Returns: Attachment metadata and content
 
 ### Contact Operations (2)
+
 6. **contacts.list_contacts** - List contacts from address book
    - Parameters: `user_id` (required), `top` (default: 100)
    - Returns: Contact list with names, emails, phones
@@ -145,6 +152,7 @@ Rich command-line interface with commands:
    - Returns: Statistics, duplicates, missing fields
 
 ### Calendar Operations (2)
+
 8. **calendar.list_calendar_events** - List calendar events
    - Parameters: `user_id` (required), `start_date` (optional), `end_date` (optional), `top` (default: 50)
    - Returns: Event list with subject, time, location, attendees
@@ -156,6 +164,7 @@ Rich command-line interface with commands:
 ## Planned Operations (165+ additional)
 
 See `OPERATIONS.md` for complete roadmap including:
+
 - Advanced mail operations (BCC, bulk operations, search, export)
 - Contact import/export, deduplication, merging
 - Group management and permissions
@@ -178,34 +187,34 @@ class MyNewOperation(BaseOperation):
     @property
     def name(self) -> str:
         return "my_operation"
-    
+
     @property
     def description(self) -> str:
         return "Description of what this operation does"
-    
+
     @property
     def category(self) -> str:
         return "my_category"
-    
+
     def get_required_params(self) -> list:
         return ["param1", "param2"]
-    
+
     def get_optional_params(self) -> dict:
         return {"param3": "default_value"}
-    
+
     async def execute(self, **kwargs) -> dict:
         # Validate required params
         param1 = kwargs.get("param1")
         param2 = kwargs.get("param2")
         param3 = kwargs.get("param3", "default_value")
-        
+
         if not param1 or not param2:
             return {"success": False, "error": "Missing required parameters"}
-        
+
         try:
             # Use self.client (GraphServiceClient) for API calls
             result = await self.client.some_endpoint.get()
-            
+
             return {
                 "success": True,
                 "data": result
@@ -220,9 +229,10 @@ class MyNewOperation(BaseOperation):
 registry.register(MyNewOperation)
 ```
 
-### Step 2: Import in __init__.py
+### Step 2: Import in **init**.py
 
 Add to `src/msgops/operations/__init__.py`:
+
 ```python
 from .my_operations import MyNewOperation
 ```
@@ -247,6 +257,7 @@ msgops execute my_category.my_operation --params '{"param1": "value1", "param2":
 ## Azure AD Permissions Required
 
 ### Delegated Permissions (Device Code Flow)
+
 - User.Read.All
 - Mail.Read
 - Contacts.Read
@@ -254,6 +265,7 @@ msgops execute my_category.my_operation --params '{"param1": "value1", "param2":
 - Group.Read.All
 
 ### Application Permissions (Client Credentials)
+
 - User.Read.All
 - Mail.Read
 - Contacts.Read
@@ -263,6 +275,7 @@ msgops execute my_category.my_operation --params '{"param1": "value1", "param2":
 ## Configuration
 
 ### Environment Variables (.env)
+
 ```env
 AZURE_TENANT_ID=your-tenant-id
 AZURE_CLIENT_ID=your-client-id
@@ -270,6 +283,7 @@ AZURE_CLIENT_SECRET=your-client-secret  # Optional for device code flow
 ```
 
 ### Command-Line Override
+
 ```bash
 msgops execute operation.id \
   --tenant-id <tenant> \
@@ -323,6 +337,7 @@ msgops execute operation.id \
 ## Error Handling Patterns
 
 ### Operation-Level Errors
+
 ```python
 try:
     result = await self.client.endpoint.get()
@@ -332,6 +347,7 @@ except Exception as e:
 ```
 
 ### Parameter Validation
+
 ```python
 def validate_params(self, **kwargs) -> bool:
     required = self.get_required_params()
@@ -342,6 +358,7 @@ def validate_params(self, **kwargs) -> bool:
 ```
 
 ### Graph API Errors
+
 - Handle 401 (Unauthorized) - Auth issues
 - Handle 403 (Forbidden) - Permissions issues
 - Handle 429 (Too Many Requests) - Rate limiting
@@ -394,6 +411,7 @@ When working on msgops, you should:
 ## Example Workflows
 
 ### Workflow 1: User Audit Report
+
 ```python
 # List all users
 users = await list_users_op.execute(top=999)
@@ -405,6 +423,7 @@ for user in users['users']:
 ```
 
 ### Workflow 2: Mail Cleanup
+
 ```python
 # List mail folders
 folders = await list_folders_op.execute(user_id="user@domain.com")
@@ -419,6 +438,7 @@ for folder in folders['folders']:
 ```
 
 ### Workflow 3: Contact Deduplication
+
 ```python
 # List all contacts
 contacts = await list_contacts_op.execute(user_id="user@domain.com")
@@ -433,6 +453,7 @@ report = await contact_report_op.execute(user_id="user@domain.com")
 ## Quick Reference
 
 ### Install and Setup
+
 ```bash
 git clone https://github.com/rzonedevops/msgops.git
 cd msgops
@@ -445,6 +466,7 @@ cp .env.example .env
 ```
 
 ### Common Commands
+
 ```bash
 # List all operations
 msgops list-operations
@@ -464,6 +486,7 @@ pytest --cov=msgops
 ```
 
 ### Development Workflow
+
 ```bash
 # Create new operation file
 touch src/msgops/operations/my_operations.py

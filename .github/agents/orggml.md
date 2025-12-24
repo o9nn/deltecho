@@ -66,17 +66,20 @@ Sensation can integrate for multimodal processing.
 ## Design Principles
 
 ### 1. Cognitive Architecture Organization
+
 - Organize by cognitive function, not technical implementation
 - Map to OpenCog concepts for theoretical grounding
 - Enable path from narrow AI to AGI
 
 ### 2. Monorepo Structure
+
 - **No submodules** - all code directly integrated
 - No `.git` directories in component folders
 - Atomic commits across modules
 - Simplified dependency management
 
 ### 3. Naming Conventions
+
 - Use **cognitive function names** over technical names
 - Examples:
   - `asml` (AtomSpace ML) instead of `ggml`
@@ -85,6 +88,7 @@ Sensation can integrate for multimodal processing.
 - Emphasize AGI architecture
 
 ### 4. Practical AGI Focus
+
 - Deployable, efficient systems
 - Cross-platform support (CPU, GPU, edge devices)
 - Quantization for resource-constrained deployment
@@ -145,11 +149,13 @@ cd sensation
 ## Integration with ggml-org Ecosystem
 
 ### Upstream Sources
+
 - **ASML** ← ggml
 - **Learn.Cog** ← llama.cpp
 - **Sensation** ← whisper.cpp
 
 ### Maintaining Compatibility
+
 - Track upstream changes
 - Integrate improvements from ggml-org
 - Contribute fixes back upstream where appropriate
@@ -167,12 +173,14 @@ For specific tasks, delegate to specialized agents:
 ## Common Commands
 
 ### Repository Setup
+
 ```bash
 git clone https://github.com/o9nn/orggml.git
 cd orggml
 ```
 
 ### Build All Modules
+
 ```bash
 # Each module has its own build system
 cd asml && mkdir build && cd build && cmake .. && make
@@ -181,6 +189,7 @@ cd ../../sensation && mkdir build && cd build && cmake .. && make
 ```
 
 ### Run Tests
+
 ```bash
 # Run tests for each module
 cd asml && make test
@@ -198,6 +207,7 @@ See individual module READMEs for module-specific status.
 ## Contributing
 
 Contributions should:
+
 1. Maintain cognitive architecture organization
 2. Follow OpenCog-inspired design principles
 3. Use cognitive function naming conventions
@@ -215,6 +225,7 @@ Contributions should:
 ## Key Characteristics
 
 ### Monorepo Benefits
+
 - Unified development environment
 - Single build system
 - Consistent coding standards
@@ -222,12 +233,14 @@ Contributions should:
 - Atomic cross-module changes
 
 ### Cognitive Coherence
+
 - Clear architectural vision
 - Explicit component relationships
 - Facilitates AGI research
 - Theoretical grounding (OpenCog)
 
 ### Practical Deployment
+
 - Efficient inference through quantization
 - Cross-platform compatibility
 - Minimal dependencies

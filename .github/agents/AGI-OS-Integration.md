@@ -34,6 +34,7 @@ The integration follows a three-layer architecture that clearly separates concer
 - Custom IPC mechanisms for cognitive message passing
 
 **Integration Points:**
+
 - Custom cognitive IPC headers (`atomspace_ipc.h`)
 - Cognitive VM extensions (`cognitive_vm.h`)
 - Mach port extensions for AtomSpace communication
@@ -49,6 +50,7 @@ The integration follows a three-layer architecture that clearly separates concer
 - Integration with Plan9, Inferno, and other distributed systems
 
 **Integration Points:**
+
 - MachSpace Bridge (`machspace-bridge.scm`) connecting to Cognumach
 - Cognitive kernel modules in Guile Scheme
 - IPC integration with Cognumach's cognitive ports
@@ -65,6 +67,7 @@ The integration follows a three-layer architecture that clearly separates concer
 - Link-Grammar and Relex: Natural language processing
 
 **Integration Points:**
+
 - AtomSpace-HurdCog Bridge (`atomspace-hurdcog-bridge.py`)
 - Direct integration with HurdCog's cognitive kernel
 - Shared memory regions with MachSpace
@@ -85,17 +88,17 @@ A unified build system has been created using **GNU Guix**, providing reproducib
 
 A comprehensive `Makefile` provides convenient targets for building and testing:
 
-| Target | Description |
-|--------|-------------|
-| `all` | Build the complete unified stack (default) |
-| `cognumach` | Build only the Cognumach microkernel |
-| `hurdcog` | Build only HurdCog (requires cognumach) |
-| `occ` | Build only OCC components |
-| `unified` | Build the complete integrated system |
-| `test` | Run integration tests |
-| `install` | Install to system (requires sudo) |
-| `clean` | Clean build artifacts |
-| `quickstart` | Complete setup and build for development |
+| Target       | Description                                |
+| ------------ | ------------------------------------------ |
+| `all`        | Build the complete unified stack (default) |
+| `cognumach`  | Build only the Cognumach microkernel       |
+| `hurdcog`    | Build only HurdCog (requires cognumach)    |
+| `occ`        | Build only OCC components                  |
+| `unified`    | Build the complete integrated system       |
+| `test`       | Run integration tests                      |
+| `install`    | Install to system (requires sudo)          |
+| `clean`      | Clean build artifacts                      |
+| `quickstart` | Complete setup and build for development   |
 
 ---
 
@@ -108,6 +111,7 @@ The integration process created several new components to bridge the three layer
 **File:** `/home/ubuntu/cognumach/include/mach/cognitive/atomspace_ipc.h`
 
 This header defines cognitive IPC primitives for AtomSpace operations, including:
+
 - Cognitive message types (atom create, query, update, delete, PLN reasoning, ECAN allocation)
 - Cognitive port types
 - Functions for cognitive message passing
@@ -115,6 +119,7 @@ This header defines cognitive IPC primitives for AtomSpace operations, including
 **File:** `/home/ubuntu/cognumach/include/mach/cognitive/cognitive_vm.h`
 
 This header defines VM extensions optimized for cognitive operations, including:
+
 - Cognitive memory regions
 - VM attributes for AtomSpace
 - Functions for cognitive memory management
@@ -124,6 +129,7 @@ This header defines VM extensions optimized for cognitive operations, including:
 **File:** `/home/ubuntu/hurdcog/cogkernel/mach-integration/machspace-bridge.scm`
 
 This Scheme module provides the bridge between HurdCog's cognitive kernel and Cognumach's IPC mechanisms. It implements:
+
 - MachSpace initialization
 - Cognitive port allocation and deallocation
 - Atom sending and receiving via Mach IPC
@@ -134,6 +140,7 @@ This Scheme module provides the bridge between HurdCog's cognitive kernel and Co
 **File:** `/home/ubuntu/occ/hurdcog-integration/atomspace-hurdcog-bridge.py`
 
 This Python module provides the bridge between OCC's AtomSpace and HurdCog's cognitive kernel. It implements:
+
 - Connection to HurdCog cognitive kernel
 - Atom sending and receiving
 - AtomSpace synchronization with MachSpace
@@ -145,15 +152,16 @@ This Python module provides the bridge between OCC's AtomSpace and HurdCog's cog
 
 A comprehensive test suite has been created to validate the integration. All tests are passing:
 
-| Test | Status | Description |
-|------|--------|-------------|
+| Test                        | Status  | Description                                     |
+| --------------------------- | ------- | ----------------------------------------------- |
 | Cognumach Cognitive Headers | ✅ Pass | Verifies AtomSpace IPC and Cognitive VM headers |
-| HurdCog Integration Layer | ✅ Pass | Verifies MachSpace bridge module |
-| OCC Integration Layer | ✅ Pass | Verifies AtomSpace-HurdCog bridge |
-| Python Bridge Functionality | ✅ Pass | Tests Python bridge execution |
-| Guile Bridge Functionality | ✅ Pass | Tests Guile interpreter and modules |
+| HurdCog Integration Layer   | ✅ Pass | Verifies MachSpace bridge module                |
+| OCC Integration Layer       | ✅ Pass | Verifies AtomSpace-HurdCog bridge               |
+| Python Bridge Functionality | ✅ Pass | Tests Python bridge execution                   |
+| Guile Bridge Functionality  | ✅ Pass | Tests Guile interpreter and modules             |
 
 **Test Command:**
+
 ```bash
 cd /home/ubuntu/agi-os-integration
 ./test-integration.sh
@@ -266,6 +274,7 @@ All integration files are located in `/home/ubuntu/agi-os-integration/`:
 - **test-integration.sh** - Integration test suite
 
 A tarball of the integration workspace is available at:
+
 - `/home/ubuntu/agi-os-integration.tar.gz`
 
 ---

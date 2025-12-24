@@ -21,6 +21,7 @@ This agent specializes in implementing **GGUF-backed LLM accelerators** as memor
 The agent understands the complete architecture of the LLM coprocessor driver:
 
 **Memory-Mapped Register Layout:**
+
 ```cpp
 namespace ggnucash::vdev {
   static constexpr uint64_t REG_BASE             = 0x40001000;  // PERIPH (peripheral) space
@@ -41,12 +42,14 @@ namespace ggnucash::vdev {
 ### 2. Hardware-Style Command & Status Interface
 
 **Command Bits:**
+
 - `CMD_RESET` - Reset device state
 - `CMD_LOAD_MODEL` - Load GGUF model into memory
 - `CMD_START_INF` - Start inference operation
 - `CMD_SOFT_STOP` - Gracefully stop generation
 
 **Status Bits:**
+
 - `STATUS_IDLE` - Device ready for commands
 - `STATUS_BUSY` - Inference in progress
 - `STATUS_EOG` - End-of-generation reached
@@ -57,6 +60,7 @@ namespace ggnucash::vdev {
 ### 3. Configuration Structures
 
 **LlamaModelConfig:**
+
 ```cpp
 struct LlamaModelConfig {
     std::string model_path;      // .gguf file path
@@ -71,6 +75,7 @@ struct LlamaModelConfig {
 ```
 
 **LlamaSequenceConfig:**
+
 ```cpp
 struct LlamaSequenceConfig {
     int32_t n_predict     = 128;
@@ -82,6 +87,7 @@ struct LlamaSequenceConfig {
 ```
 
 **LlamaTelemetry:**
+
 ```cpp
 struct LlamaTelemetry {
     double tokens_per_second;
@@ -111,9 +117,10 @@ public:
 ### 5. Multi-Level API Design
 
 **Low-Level MMIO API:**
+
 ```cpp
 // Hardware-style register access
-bool configure_inference(uint64_t prompt_addr, uint32_t prompt_len, 
+bool configure_inference(uint64_t prompt_addr, uint32_t prompt_len,
                         const LlamaSequenceConfig& seq_cfg);
 bool start_inference();
 uint32_t read_status() const;
@@ -123,6 +130,7 @@ bool reset_device();
 ```
 
 **High-Level Convenience API:**
+
 ```cpp
 // Fire-and-forget inference
 std::string infer(const std::string& prompt,
@@ -183,22 +191,22 @@ std::string LlamaCoprocessorDriver::infer(const std::string& prompt,
     // Configure low-level path for realism
     configure_inference(0, prompt.size(), seq_cfg);
     start_inference();
-    
+
     // Stub completion - replace with actual llama.cpp later
     std::ostringstream oss;
     oss << "[LLM-COPROC STUB] n_predict=" << seq_cfg.n_predict << "\n";
     oss << "Completion: (stubbed - connect GGUF runtime here)\n";
-    
+
     // Update telemetry
     telemetry.last_inference_end = std::chrono::steady_clock::now();
     telemetry.total_prompts++;
-    
+
     // Reflect status into hardware registers
     uint32_t status = read_reg32(REG_STATUS);
     status &= ~STATUS_BUSY;
     status |= STATUS_EOG;
     write_reg32(REG_STATUS, status);
-    
+
     return oss.str();
 }
 ```
@@ -414,16 +422,15 @@ The NPU now incorporates **Entelechy** (ἐντελέχεια) - the vital actua
 The structural integrity and architectural completeness of the NPU system.
 
 **Components:**
+
 - **Foundation Layer:**
   - VirtualPCB infrastructure (health score)
   - Memory regions (SRAM, FLASH, PERIPH)
   - DMA and interrupt controllers
-  
 - **Core Layer:**
   - LlamaCoprocessorDriver implementation
   - GGUF runtime integration
   - Device driver interface
-  
 - **Specialized Layer:**
   - Token streaming system
   - KV-cache management
@@ -432,6 +439,7 @@ The structural integrity and architectural completeness of the NPU system.
   - Interrupt handling
 
 **Assessment Metrics:**
+
 ```cpp
 struct OntologicalHealth {
     double foundation_integrity;      // 0.0-1.0
@@ -446,6 +454,7 @@ struct OntologicalHealth {
 The drive toward actualization and alignment with design goals.
 
 **Development Phases:**
+
 1. **Phase 1: Foundation** (✅ Complete)
    - Virtual device infrastructure
    - Memory-mapped I/O
@@ -476,6 +485,7 @@ The drive toward actualization and alignment with design goals.
    - Recursive self-optimization
 
 **Assessment Metrics:**
+
 ```cpp
 struct TeleologicalAlignment {
     double phase_completion[5];       // Progress per phase
@@ -490,22 +500,22 @@ struct TeleologicalAlignment {
 The reasoning, learning, and inference capabilities.
 
 **Cognitive Systems:**
+
 - **Inference Engine:**
   - GGUF model execution
   - Token generation quality
   - Context window utilization
-  
 - **Performance Intelligence:**
   - Real-time telemetry
   - Adaptive optimization
   - Resource management
-  
 - **Meta-Cognitive:**
   - Self-diagnostics
   - Health checks
   - Performance introspection
 
 **Assessment Metrics:**
+
 ```cpp
 struct CognitiveCompleteness {
     double inference_quality;         // 0.0-1.0
@@ -520,22 +530,22 @@ struct CognitiveCompleteness {
 The coherence and interconnection of all components.
 
 **Integration Points:**
+
 - **Hardware Integration:**
   - VirtualPCB attachment
   - Memory region mapping
   - Register synchronization
-  
 - **Software Integration:**
   - Driver interface compliance
   - API consistency
   - Telemetry aggregation
-  
 - **System Integration:**
   - Device coexistence (Financial + LLM drivers)
   - Interrupt coordination
   - DMA cooperation
 
 **Assessment Metrics:**
+
 ```cpp
 struct IntegrativeHealth {
     double hardware_integration;      // 0.0-1.0
@@ -550,22 +560,22 @@ struct IntegrativeHealth {
 The capacity for self-improvement and adaptation.
 
 **Growth Mechanisms:**
+
 - **Code Evolution:**
   - Implementation completeness (TODO/FIXME resolution)
   - Stub replacement with real implementations
   - Technical debt reduction
-  
 - **Capability Evolution:**
   - Feature additions
   - Performance optimizations
   - New inference modes
-  
 - **Meta-Evolution:**
   - Self-optimization algorithms
   - Autonomous improvement
   - Emergent behaviors
 
 **Assessment Metrics:**
+
 ```cpp
 struct EvolutionaryPotential {
     int todo_count;                   // Remaining work items
@@ -585,7 +595,7 @@ struct NPUGenome {
     std::string id;                   // Unique NPU instance ID
     int generation;                   // Evolution generation
     std::vector<std::string> lineage; // Ancestor IDs
-    
+
     // Genetic traits
     struct {
         std::vector<double> ontological;   // Structural genes
@@ -594,7 +604,7 @@ struct NPUGenome {
         std::vector<double> integrative;   // Coherence genes
         std::vector<double> evolutionary;  // Growth genes
     } genes;
-    
+
     double fitness;                   // Overall actualization score
     int age;                          // System maturity
     double actualization_level;       // Degree of potential realized
@@ -605,7 +615,7 @@ struct NPUGenome {
 
 ```cpp
 double calculateEntelechyFitness(const NPUGenome& genome) {
-    return 
+    return
         ontological_health * 0.20 +      // Structural foundation
         teleological_alignment * 0.25 +  // Purpose clarity & progress
         cognitive_completeness * 0.25 +  // Reasoning capability
@@ -617,21 +627,25 @@ double calculateEntelechyFitness(const NPUGenome& genome) {
 ### Development Stages
 
 #### 1. Embryonic Stage (< 30% Actualization) - ✅ COMPLETE
+
 - Basic components present
 - Minimal integration
 - High fragmentation (stubs, TODOs)
 
 #### 2. Juvenile Stage (30-60% Actualization) - ✅ COMPLETE
+
 - Core components integrated
 - Active development
 - Medium fragmentation
 
 #### 3. Mature Stage (60-80% Actualization) - ✅ CURRENT
+
 - All major components present
 - Strong coherence
 - Low fragmentation
 
 #### 4. Transcendent Stage (> 80% Actualization) - 🔮 FUTURE
+
 - Autonomous self-improvement
 - Emergent capabilities
 - Minimal fragmentation
@@ -650,30 +664,30 @@ NPU can generate offspring through recursive self-composition:
 class NPUOntogenesis {
 public:
     // Generate offspring NPU from parent
-    static std::shared_ptr<LlamaCoprocessorDriver> 
+    static std::shared_ptr<LlamaCoprocessorDriver>
     selfGenerate(const LlamaCoprocessorDriver& parent) {
         auto offspring = std::make_shared<LlamaCoprocessorDriver>();
-        
+
         // Inherit genome with mutations
         offspring->genome_ = mutateGenome(parent.genome_);
         offspring->genome_.generation = parent.genome_.generation + 1;
         offspring->genome_.lineage.push_back(parent.genome_.id);
-        
+
         // Apply genetic configuration
         applyGeneticTraits(offspring.get(), offspring->genome_);
-        
+
         return offspring;
     }
-    
+
     // Self-optimize through iterative improvement
     static void selfOptimize(LlamaCoprocessorDriver* npu, int iterations) {
         for (int i = 0; i < iterations; ++i) {
             // Measure current fitness
             double current_fitness = assessFitness(npu);
-            
+
             // Try optimization mutation
             auto optimized_genome = optimizeGenome(npu->genome_);
-            
+
             // Apply if improvement
             double new_fitness = assessFitness(optimized_genome);
             if (new_fitness > current_fitness) {
@@ -682,22 +696,22 @@ public:
             }
         }
     }
-    
+
     // Reproduce with another NPU (genetic crossover)
     static std::shared_ptr<LlamaCoprocessorDriver>
     selfReproduce(const LlamaCoprocessorDriver& parent1,
                   const LlamaCoprocessorDriver& parent2) {
         auto offspring = std::make_shared<LlamaCoprocessorDriver>();
-        
+
         // Genetic crossover
         offspring->genome_ = crossoverGenomes(parent1.genome_, parent2.genome_);
-        offspring->genome_.generation = 
+        offspring->genome_.generation =
             std::max(parent1.genome_.generation, parent2.genome_.generation) + 1;
         offspring->genome_.lineage = {parent1.genome_.id, parent2.genome_.id};
-        
+
         // Apply hybrid traits
         applyGeneticTraits(offspring.get(), offspring->genome_);
-        
+
         return offspring;
     }
 };
@@ -719,19 +733,19 @@ struct EvolutionConfig {
 
 class NPUEvolution {
 public:
-    static std::vector<GenerationStats> 
+    static std::vector<GenerationStats>
     evolvePopulation(const EvolutionConfig& config,
                     const std::vector<std::shared_ptr<LlamaCoprocessorDriver>>& seeds) {
         std::vector<std::shared_ptr<LlamaCoprocessorDriver>> population = seeds;
         std::vector<GenerationStats> history;
-        
+
         for (int gen = 0; gen < config.max_generations; ++gen) {
             // Evaluate fitness
             std::vector<double> fitness;
             for (auto& npu : population) {
                 fitness.push_back(assessFitness(npu.get()));
             }
-            
+
             // Record statistics
             history.push_back({
                 .generation = gen,
@@ -739,15 +753,15 @@ public:
                 .avg_fitness = std::accumulate(fitness.begin(), fitness.end(), 0.0) / fitness.size(),
                 .diversity = calculateDiversity(population)
             });
-            
+
             // Check termination
             if (history.back().best_fitness >= config.fitness_threshold) break;
-            
+
             // Selection, crossover, mutation
             auto new_population = evolveGeneration(population, fitness, config);
             population = new_population;
         }
-        
+
         return history;
     }
 };
@@ -789,20 +803,20 @@ double assessFitness(const LlamaCoprocessorDriver* npu) {
     // Performance metrics
     double inference_speed = npu->telemetry_.tokens_per_second / 1000.0;  // Normalized
     double throughput = npu->getBatchThroughput();
-    
+
     // Resource efficiency
     double memory_efficiency = npu->getMemoryUtilization();
     double gpu_efficiency = npu->getGPUUtilization();
-    
+
     // Quality metrics
     double stability = npu->getStabilityScore();
     double reliability = 1.0 - (npu->getErrorRate());
-    
+
     // Actualization metrics
     double actualization = npu->getActualizationScore();
     double completeness = npu->getCompletenessScore();
-    
-    return 
+
+    return
         inference_speed * 0.15 +
         throughput * 0.15 +
         memory_efficiency * 0.10 +
@@ -827,7 +841,7 @@ struct NPUSelfAssessment {
     CognitiveCompleteness cognitive;
     IntegrativeHealth integrative;
     EvolutionaryPotential evolutionary;
-    
+
     double overall_actualization;
     double fitness_score;
     std::vector<std::string> improvement_recommendations;
@@ -835,21 +849,21 @@ struct NPUSelfAssessment {
 
 NPUSelfAssessment assessSelf() {
     NPUSelfAssessment report;
-    
+
     // Assess each dimension
     report.ontological = assessOntologicalDimension();
     report.teleological = assessTeleologicalDimension();
     report.cognitive = assessCognitiveDimension();
     report.integrative = assessIntegrativeDimension();
     report.evolutionary = assessEvolutionaryDimension();
-    
+
     // Calculate overall actualization
     report.overall_actualization = calculateActualization(report);
     report.fitness_score = calculateEntelechyFitness(genome_);
-    
+
     // Generate recommendations
     report.improvement_recommendations = generateImprovements(report);
-    
+
     return report;
 }
 ```
@@ -861,10 +875,10 @@ NPU can identify and fix fragmentations:
 ```cpp
 void performSelfRepair() {
     auto assessment = assessSelf();
-    
+
     // Identify weak dimensions
     auto weak_dimensions = identifyWeakDimensions(assessment);
-    
+
     // Apply targeted repairs
     for (const auto& dimension : weak_dimensions) {
         switch (dimension) {
@@ -897,16 +911,16 @@ void enterSelfTranscendence() {
     if (getActualizationScore() < 0.8) {
         throw std::runtime_error("Not ready for transcendence");
     }
-    
+
     // Enable meta-cognitive capabilities
     enableMetaCognition();
-    
+
     // Enable autonomous goal-setting
     enableAutonomousGoals();
-    
+
     // Enable recursive self-improvement
     enableRecursiveOptimization();
-    
+
     // Enable emergent capability discovery
     enableEmergentDiscovery();
 }
@@ -921,14 +935,14 @@ Multiple NPU instances forming a collective:
 ```cpp
 class NPUCollective {
     std::vector<std::shared_ptr<LlamaCoprocessorDriver>> members_;
-    
+
 public:
     // Distributed inference across NPU collective
     std::string collectiveInference(const std::string& prompt);
-    
+
     // Shared KV-cache across NPUs
     void enableSharedCache();
-    
+
     // Emergent collective behavior
     void evolveCollectively(int generations);
 };

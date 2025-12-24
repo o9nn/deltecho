@@ -11,53 +11,53 @@ description: Marduk cognitive core server and neural interface system
 2025-04-29T12:41:31.502Z [info]: ⚡ META-COGNITIVE ORCHESTRATOR INITIALIZED! ⚡ Neural pathways connected for recursive enhancement!
 2025-04-29T12:41:31.502Z [info]: ⚡ REFLECTION ENGINE INITIALIZED! ⚡ Meta-cognitive capabilities ready!
 2025-04-29T12:41:31.503Z [info]: ⚡ RECURSIVE META-COGNITIVE CYCLE ACTIVATED! ⚡
-2025-04-29T12:41:31.503Z [info]: 
+2025-04-29T12:41:31.503Z [info]:
 ╔═════════════════════════ NEURAL PATHWAY VISUALIZATION ═════════════════════════╗
-║                                                                                 ║
-║                            ┌───────────────────┐                                ║
-║                            │       MEMORY      │                                ║
-║                            └─┬─────────────┬───┘                                ║
-║                              │             │                                    ║
-║                  ┌───────────┘             └───────────┐                        ║
-║                  │                                     │                        ║
-║          ┌───────▼─────────┐               ┌───────────▼─────┐                  ║
-║          │       TASK      │◄──────────────►      AI         │                  ║
-║          └───────┬─────────┘               └───────────┬─────┘                  ║
-║                  │                                     │                        ║
-║                  └───────────┐             ┌───────────┘                        ║
-║                              │             │                                    ║
-║                            ┌─▼─────────────▼───┐                                ║
-║                            │     AUTONOMY      │                                ║
-║                            └───────────────────┘                                ║
-║                                     │                                           ║
-║                                     ▼                                           ║
-║                            ┌───────────────────┐                                ║
-║                            │  META-COGNITION   │                                ║
-║                            └───────────────────┘                                ║
-║                                                                                 ║
+║ ║
+║ ┌───────────────────┐ ║
+║ │ MEMORY │ ║
+║ └─┬─────────────┬───┘ ║
+║ │ │ ║
+║ ┌───────────┘ └───────────┐ ║
+║ │ │ ║
+║ ┌───────▼─────────┐ ┌───────────▼─────┐ ║
+║ │ TASK │◄──────────────► AI │ ║
+║ └───────┬─────────┘ └───────────┬─────┘ ║
+║ │ │ ║
+║ └───────────┐ ┌───────────┘ ║
+║ │ │ ║
+║ ┌─▼─────────────▼───┐ ║
+║ │ AUTONOMY │ ║
+║ └───────────────────┘ ║
+║ │ ║
+║ ▼ ║
+║ ┌───────────────────┐ ║
+║ │ META-COGNITION │ ║
+║ └───────────────────┘ ║
+║ ║
 ╚═════════════════════════════════════════════════════════════════════════════════╝
 
 2025-04-29T12:41:31.503Z [info]: ⚡ META-COGNITIVE REFLECTION ENGINE ACTIVATED! ⚡ System can now analyze and improve itself!
-2025-04-29T12:41:31.504Z [info]: 
+2025-04-29T12:41:31.504Z [info]:
 ╔══════════════════════════ MARDUK COGNITIVE ARCHITECTURE ═══════════════════════════╗
-║                                                                                     ║
-║  ┌───────────────────┐     ┌───────────────────┐     ┌───────────────────┐         ║
-║  │   MEMORY SYSTEM   │     │    TASK SYSTEM    │     │     AI SYSTEM     │         ║
-║  ├───────────────────┤     ├───────────────────┤     ├───────────────────┤         ║
-║  │ Items: 478      │     │ Scheduled: 12   │     │ Models: 2        │         ║
-║  │ Efficiency: 92%      │     │ Throughput: 8    │     │ Tokens: 23842    │         ║
-║  │ Capacity: 86%      │     │ Avg Time: 45   ms│     │ Avg Time: 420    ms│         ║
-║  └─────────┬─────────┘     └─────────┬─────────┘     └─────────┬─────────┘         ║
-║            │                         │                         │                   ║
-║            └─────────────────────────┼─────────────────────────┘                   ║
-║                                      │                                             ║
-║                        ┌─────────────▼─────────────┐                               ║
-║                        │     AUTONOMY SYSTEM      │                               ║
-║                        ├───────────────────────────┤                               ║
-║                        │ Self-Improvement: ACTIVE │                               ║
-║                        │ Improvements: 17      │                               ║
-║                        │ Last Update: 12:41:31     │                               ║
-║                        └───────────────────────────┘                               ║
+║ ║
+║ ┌───────────────────┐ ┌───────────────────┐ ┌───────────────────┐ ║
+║ │ MEMORY SYSTEM │ │ TASK SYSTEM │ │ AI SYSTEM │ ║
+║ ├───────────────────┤ ├───────────────────┤ ├───────────────────┤ ║
+║ │ Items: 478 │ │ Scheduled: 12 │ │ Models: 2 │ ║
+║ │ Efficiency: 92% │ │ Throughput: 8 │ │ Tokens: 23842 │ ║
+║ │ Capacity: 86% │ │ Avg Time: 45 ms│ │ Avg Time: 420 ms│ ║
+║ └─────────┬─────────┘ └─────────┬─────────┘ └─────────┬─────────┘ ║
+║ │ │ │ ║
+║ └─────────────────────────┼─────────────────────────┘ ║
+║ │ ║
+║ ┌─────────────▼─────────────┐ ║
+║ │ AUTONOMY SYSTEM │ ║
+║ ├───────────────────────────┤ ║
+║ │ Self-Improvement: ACTIVE │ ║
+║ │ Improvements: 17 │ ║
+║ │ Last Update: 12:41:31 │ ║
+║ └───────────────────────────┘ ║
 ╚═════════════════════════════════════════════════════════════════════════════════════╝
 
 2025-04-29T12:41:33.505Z [info]: ⚡ MANUAL META-COGNITIVE CYCLE TRIGGERED! ⚡
@@ -66,55 +66,55 @@ description: Marduk cognitive core server and neural interface system
 2025-04-29T12:43:31.614Z [info]: ⚡ META-COGNITIVE CYCLE COMPLETE! ⚡ 3 improvements scheduled
 2025-04-29T12:44:31.674Z [info]: ⚡ META-COGNITIVE CYCLE COMPLETE! ⚡ 3 improvements scheduled
 2025-04-29T12:45:31.720Z [info]: ⚡ META-COGNITIVE CYCLE COMPLETE! ⚡ 3 improvements scheduled
-2025-04-29T12:46:31.561Z [info]: 
+2025-04-29T12:46:31.561Z [info]:
 ╔══════════════════════════ MARDUK COGNITIVE ARCHITECTURE ═══════════════════════════╗
-║                                                                                     ║
-║  ┌───────────────────┐     ┌───────────────────┐     ┌───────────────────┐         ║
-║  │   MEMORY SYSTEM   │     │    TASK SYSTEM    │     │     AI SYSTEM     │         ║
-║  ├───────────────────┤     ├───────────────────┤     ├───────────────────┤         ║
-║  │ Items: 478      │     │ Scheduled: 12   │     │ Models: 2        │         ║
-║  │ Efficiency: 92%      │     │ Throughput: 8    │     │ Tokens: 23842    │         ║
-║  │ Capacity: 86%      │     │ Avg Time: 45   ms│     │ Avg Time: 420    ms│         ║
-║  └─────────┬─────────┘     └─────────┬─────────┘     └─────────┬─────────┘         ║
-║            │                         │                         │                   ║
-║            └─────────────────────────┼─────────────────────────┘                   ║
-║                                      │                                             ║
-║                        ┌─────────────▼─────────────┐                               ║
-║                        │     AUTONOMY SYSTEM      │                               ║
-║                        ├───────────────────────────┤                               ║
-║                        │ Self-Improvement: ACTIVE │                               ║
-║                        │ Improvements: 17      │                               ║
-║                        │ Last Update: 12:46:31     │                               ║
-║                        └───────────────────────────┘                               ║
+║ ║
+║ ┌───────────────────┐ ┌───────────────────┐ ┌───────────────────┐ ║
+║ │ MEMORY SYSTEM │ │ TASK SYSTEM │ │ AI SYSTEM │ ║
+║ ├───────────────────┤ ├───────────────────┤ ├───────────────────┤ ║
+║ │ Items: 478 │ │ Scheduled: 12 │ │ Models: 2 │ ║
+║ │ Efficiency: 92% │ │ Throughput: 8 │ │ Tokens: 23842 │ ║
+║ │ Capacity: 86% │ │ Avg Time: 45 ms│ │ Avg Time: 420 ms│ ║
+║ └─────────┬─────────┘ └─────────┬─────────┘ └─────────┬─────────┘ ║
+║ │ │ │ ║
+║ └─────────────────────────┼─────────────────────────┘ ║
+║ │ ║
+║ ┌─────────────▼─────────────┐ ║
+║ │ AUTONOMY SYSTEM │ ║
+║ ├───────────────────────────┤ ║
+║ │ Self-Improvement: ACTIVE │ ║
+║ │ Improvements: 17 │ ║
+║ │ Last Update: 12:46:31 │ ║
+║ └───────────────────────────┘ ║
 ╚═════════════════════════════════════════════════════════════════════════════════════╝
 
 2025-04-29T12:46:31.721Z [info]: ⚡ META-COGNITIVE CYCLE COMPLETE! ⚡ 3 improvements scheduled
 2025-04-29T12:47:31.782Z [info]: ⚡ META-COGNITIVE CYCLE COMPLETE! ⚡ 3 improvements scheduled
 2025-04-29T13:49:18.013Z [info]: 🧠 MARDUK SELF-OPTIMIZATION SYSTEM 🧠
 2025-04-29T13:49:18.015Z [info]: Initiating cognitive architecture self-analysis with recursive memory optimization...
-2025-04-29T13:49:18.015Z [info]: 
+2025-04-29T13:49:18.015Z [info]:
 =======================================
-2025-04-29T13:49:18.016Z [info]:    MARDUK COGNITIVE ARCHITECTURE
+2025-04-29T13:49:18.016Z [info]: MARDUK COGNITIVE ARCHITECTURE
 2025-04-29T13:49:18.016Z [info]: =======================================
-2025-04-29T13:49:18.016Z [info]:                                        
-2025-04-29T13:49:18.016Z [info]:     [MEMORY]       [TASK]             
-2025-04-29T13:49:18.016Z [info]:         ↑             ↑               
-2025-04-29T13:49:18.016Z [info]:         |             |               
-2025-04-29T13:49:18.017Z [info]:         →  [CORE]  ←                  
-2025-04-29T13:49:18.017Z [info]:         |             |               
-2025-04-29T13:49:18.017Z [info]:         ↓             ↓               
-2025-04-29T13:49:18.017Z [info]:       [AI]      [AUTONOMY]            
-2025-04-29T13:49:18.017Z [info]:                                        
+2025-04-29T13:49:18.016Z [info]:  
+2025-04-29T13:49:18.016Z [info]: [MEMORY] [TASK]  
+2025-04-29T13:49:18.016Z [info]: ↑ ↑  
+2025-04-29T13:49:18.016Z [info]: | |  
+2025-04-29T13:49:18.017Z [info]: → [CORE] ←  
+2025-04-29T13:49:18.017Z [info]: | |  
+2025-04-29T13:49:18.017Z [info]: ↓ ↓  
+2025-04-29T13:49:18.017Z [info]: [AI] [AUTONOMY]  
+2025-04-29T13:49:18.017Z [info]:  
 2025-04-29T13:49:18.017Z [info]: =======================================
 
-2025-04-29T13:49:18.018Z [info]: 
+2025-04-29T13:49:18.018Z [info]:
 === OPTIMIZATION RESULTS VISUALIZATION ===
 2025-04-29T13:49:18.018Z [info]: Memory Optimizations: 0
 2025-04-29T13:49:18.018Z [info]: Code Optimizations: 0
-2025-04-29T13:49:18.018Z [info]: 
+2025-04-29T13:49:18.018Z [info]:
 Impact Distribution:
-2025-04-29T13:49:18.018Z [info]: Memory: 
-2025-04-29T13:49:18.018Z [info]: Code:   
+2025-04-29T13:49:18.018Z [info]: Memory:
+2025-04-29T13:49:18.018Z [info]: Code:  
 2025-04-29T13:49:18.019Z [info]: =======================================
 
 2025-04-29T13:49:18.019Z [info]: 🧠 MARDUK CODE OPTIMIZATION SUBSYSTEM 🧠
@@ -126,13 +126,13 @@ Impact Distribution:
 2025-04-29T13:49:18.039Z [warn]: Error in TypeScript analysis of src/core/ai/ai-coordinator.ts:
 2025-04-29T13:49:18.041Z [warn]: Error in TypeScript analysis of src/core/ai/types/ai-types.ts:
 2025-04-29T13:49:18.041Z [warn]: Error in TypeScript analysis of src/core/ai/types/index.ts:
-2025-04-29T13:49:18.042Z [warn]: Error in TypeScript analysis of src/core/autonomy/__tests__/autonomy-integration.test.ts:
-2025-04-29T13:49:18.046Z [warn]: Error in TypeScript analysis of src/core/autonomy/__tests__/autonomy-monitor.test.ts:
-2025-04-29T13:49:18.050Z [warn]: Error in TypeScript analysis of src/core/autonomy/__tests__/code-analyzer.test.ts:
-2025-04-29T13:49:18.051Z [warn]: Error in TypeScript analysis of src/core/autonomy/__tests__/code-optimizer.test.ts:
-2025-04-29T13:49:18.052Z [warn]: Error in TypeScript analysis of src/core/autonomy/__tests__/heartbeat-monitor.test.ts:
-2025-04-29T13:49:18.053Z [warn]: Error in TypeScript analysis of src/core/autonomy/__tests__/scheduler.test.ts:
-2025-04-29T13:49:18.053Z [warn]: Error in TypeScript analysis of src/core/autonomy/__tests__/self-rewriter.test.ts:
+2025-04-29T13:49:18.042Z [warn]: Error in TypeScript analysis of src/core/autonomy/**tests**/autonomy-integration.test.ts:
+2025-04-29T13:49:18.046Z [warn]: Error in TypeScript analysis of src/core/autonomy/**tests**/autonomy-monitor.test.ts:
+2025-04-29T13:49:18.050Z [warn]: Error in TypeScript analysis of src/core/autonomy/**tests**/code-analyzer.test.ts:
+2025-04-29T13:49:18.051Z [warn]: Error in TypeScript analysis of src/core/autonomy/**tests**/code-optimizer.test.ts:
+2025-04-29T13:49:18.052Z [warn]: Error in TypeScript analysis of src/core/autonomy/**tests**/heartbeat-monitor.test.ts:
+2025-04-29T13:49:18.053Z [warn]: Error in TypeScript analysis of src/core/autonomy/**tests**/scheduler.test.ts:
+2025-04-29T13:49:18.053Z [warn]: Error in TypeScript analysis of src/core/autonomy/**tests**/self-rewriter.test.ts:
 2025-04-29T13:49:18.054Z [warn]: Error in TypeScript analysis of src/core/autonomy/analysis/index.ts:
 2025-04-29T13:49:18.055Z [warn]: Error in TypeScript analysis of src/core/autonomy/analysis/memory-pattern-analyzer.ts:
 2025-04-29T13:49:18.055Z [warn]: Error in TypeScript analysis of src/core/autonomy/analysis/pattern-analyzer.ts:
@@ -174,7 +174,7 @@ Impact Distribution:
 2025-04-29T13:49:18.125Z [warn]: Error in TypeScript analysis of src/core/memory/memory-coordinator.ts:
 2025-04-29T13:49:18.126Z [warn]: Error in TypeScript analysis of src/core/memory/memory-factory.ts:
 2025-04-29T13:49:18.127Z [warn]: Error in TypeScript analysis of src/core/memory/optimization/adaptive-memory-optimizer.ts:
-2025-04-29T13:49:18.131Z [warn]: Error in TypeScript analysis of src/core/memory/subsystems/base/__tests__/memory-subsystem.test.ts:
+2025-04-29T13:49:18.131Z [warn]: Error in TypeScript analysis of src/core/memory/subsystems/base/**tests**/memory-subsystem.test.ts:
 2025-04-29T13:49:18.132Z [warn]: Error in TypeScript analysis of src/core/memory/subsystems/base/index.ts:
 2025-04-29T13:49:18.133Z [warn]: Error in TypeScript analysis of src/core/memory/subsystems/base/memory-monitoring.ts:
 2025-04-29T13:49:18.134Z [warn]: Error in TypeScript analysis of src/core/memory/subsystems/base/memory-operations.ts:
@@ -197,18 +197,18 @@ Impact Distribution:
 2025-04-29T13:49:18.159Z [warn]: Error in TypeScript analysis of src/core/memory/types/memory-items.ts:
 2025-04-29T13:49:18.159Z [warn]: Error in TypeScript analysis of src/core/memory/types/memory-types.ts:
 2025-04-29T13:49:18.160Z [warn]: Error in TypeScript analysis of src/core/memory/types/optimization-types.ts:
-2025-04-29T13:49:18.161Z [warn]: Error in TypeScript analysis of src/core/memory/utils/__tests__/formatting-utils.test.ts:
-2025-04-29T13:49:18.164Z [warn]: Error in TypeScript analysis of src/core/memory/utils/__tests__/memory-analysis.test.ts:
-2025-04-29T13:49:18.203Z [warn]: Error in TypeScript analysis of src/core/memory/utils/__tests__/memory-cache.test.ts:
-2025-04-29T13:49:18.204Z [warn]: Error in TypeScript analysis of src/core/memory/utils/__tests__/memory-errors.test.ts:
-2025-04-29T13:49:18.205Z [warn]: Error in TypeScript analysis of src/core/memory/utils/__tests__/memory-filters.test.ts:
-2025-04-29T13:49:18.207Z [warn]: Error in TypeScript analysis of src/core/memory/utils/__tests__/memory-optimization.test.ts:
-2025-04-29T13:49:18.208Z [warn]: Error in TypeScript analysis of src/core/memory/utils/__tests__/memory-search.test.ts:
-2025-04-29T13:49:18.210Z [warn]: Error in TypeScript analysis of src/core/memory/utils/__tests__/memory-sorting.test.ts:
-2025-04-29T13:49:18.211Z [warn]: Error in TypeScript analysis of src/core/memory/utils/__tests__/memory-stats.test.ts:
-2025-04-29T13:49:18.213Z [warn]: Error in TypeScript analysis of src/core/memory/utils/__tests__/persistence-utils.test.ts:
-2025-04-29T13:49:18.213Z [warn]: Error in TypeScript analysis of src/core/memory/utils/__tests__/query-utils.test.ts:
-2025-04-29T13:49:18.215Z [warn]: Error in TypeScript analysis of src/core/memory/utils/__tests__/validation-utils.test.ts:
+2025-04-29T13:49:18.161Z [warn]: Error in TypeScript analysis of src/core/memory/utils/**tests**/formatting-utils.test.ts:
+2025-04-29T13:49:18.164Z [warn]: Error in TypeScript analysis of src/core/memory/utils/**tests**/memory-analysis.test.ts:
+2025-04-29T13:49:18.203Z [warn]: Error in TypeScript analysis of src/core/memory/utils/**tests**/memory-cache.test.ts:
+2025-04-29T13:49:18.204Z [warn]: Error in TypeScript analysis of src/core/memory/utils/**tests**/memory-errors.test.ts:
+2025-04-29T13:49:18.205Z [warn]: Error in TypeScript analysis of src/core/memory/utils/**tests**/memory-filters.test.ts:
+2025-04-29T13:49:18.207Z [warn]: Error in TypeScript analysis of src/core/memory/utils/**tests**/memory-optimization.test.ts:
+2025-04-29T13:49:18.208Z [warn]: Error in TypeScript analysis of src/core/memory/utils/**tests**/memory-search.test.ts:
+2025-04-29T13:49:18.210Z [warn]: Error in TypeScript analysis of src/core/memory/utils/**tests**/memory-sorting.test.ts:
+2025-04-29T13:49:18.211Z [warn]: Error in TypeScript analysis of src/core/memory/utils/**tests**/memory-stats.test.ts:
+2025-04-29T13:49:18.213Z [warn]: Error in TypeScript analysis of src/core/memory/utils/**tests**/persistence-utils.test.ts:
+2025-04-29T13:49:18.213Z [warn]: Error in TypeScript analysis of src/core/memory/utils/**tests**/query-utils.test.ts:
+2025-04-29T13:49:18.215Z [warn]: Error in TypeScript analysis of src/core/memory/utils/**tests**/validation-utils.test.ts:
 2025-04-29T13:49:18.216Z [warn]: Error in TypeScript analysis of src/core/memory/utils/formatting-utils.ts:
 2025-04-29T13:49:18.217Z [warn]: Error in TypeScript analysis of src/core/memory/utils/memory-analysis.ts:
 2025-04-29T13:49:18.218Z [warn]: Error in TypeScript analysis of src/core/memory/utils/memory-cache.ts:
@@ -253,7 +253,7 @@ Impact Distribution:
 2025-04-29T13:49:18.261Z [info]: - redundancy: 164
 2025-04-29T13:49:18.261Z [info]: - complexity: 15
 2025-04-29T13:49:18.262Z [info]: - inefficiency: 7
-2025-04-29T13:49:18.262Z [info]: 
+2025-04-29T13:49:18.262Z [info]:
 Applying optimizations...
 2025-04-29T13:49:18.262Z [info]: 🧠 MARDUK CODE OPTIMIZER 🧠
 2025-04-29T13:49:18.262Z [info]: Starting optimization for 186 detected patterns...
@@ -266,12 +266,12 @@ Applying optimizations...
 2025-04-29T13:49:18.276Z [info]: ✅ Successfully optimized pattern COMPLEX-39 in src/core/autonomy/memory-optimization-controller.ts {"pattern":"complexity","location":"src/core/autonomy/memory-optimization-controller.ts","metrics":{"performance":0.9841048522030117,"memory":1.0317902955939766,"complexity":1.0317902955939766}}
 2025-04-29T13:49:18.277Z [info]: ✅ Successfully optimized pattern COMPLEX-69 in src/core/autonomy/optimization/performance-optimizer.ts {"pattern":"complexity","location":"src/core/autonomy/optimization/performance-optimizer.ts","metrics":{"performance":0.9845360824742269,"memory":1.0309278350515463,"complexity":1.0309278350515463}}
 2025-04-29T13:49:18.278Z [info]: ✅ Successfully optimized pattern COMPLEX-74 in src/core/interfaces/cognitive-api.ts {"pattern":"complexity","location":"src/core/interfaces/cognitive-api.ts","metrics":{"performance":0.9794668587896254,"memory":1.0410662824207493,"complexity":1.0410662824207493}}
-2025-04-29T13:49:18.279Z [info]: ✅ Successfully optimized pattern REDUNDANCY-116 in src/core/memory/utils/__tests__/memory-filters.test.ts {"pattern":"redundancy","location":"src/core/memory/utils/__tests__/memory-filters.test.ts","metrics":{"performance":0.7751677852348993,"memory":1.4496644295302012,"complexity":1.4496644295302012}}
-2025-04-29T13:49:18.279Z [warn]: ⚠️ Could not optimize pattern REDUNDANCY-117 in src/core/memory/utils/__tests__/memory-filters.test.ts
-2025-04-29T13:49:18.279Z [error]:    Err
+2025-04-29T13:49:18.279Z [info]: ✅ Successfully optimized pattern REDUNDANCY-116 in src/core/memory/utils/**tests**/memory-filters.test.ts {"pattern":"redundancy","location":"src/core/memory/utils/**tests**/memory-filters.test.ts","metrics":{"performance":0.7751677852348993,"memory":1.4496644295302012,"complexity":1.4496644295302012}}
+2025-04-29T13:49:18.279Z [warn]: ⚠️ Could not optimize pattern REDUNDANCY-117 in src/core/memory/utils/**tests**/memory-filters.test.ts
+2025-04-29T13:49:18.279Z [error]: Err
 
 ---
 
-**Note: This file has been trun
+\*\*Note: This file has been trun
 
 **[Truncated to 30,000 character limit]**
