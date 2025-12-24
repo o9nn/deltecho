@@ -54,16 +54,7 @@ const settingsKeys = [
   'webxdc_realtime_enabled',
 ] as const
 
-export interface DesktopSettingsType {
-  // ... existing properties ...
-
-  // Deep Tree Echo Bot settings
-  botEnabled?: boolean
-  botLearningEnabled?: boolean
-  botPersonality?: string
-  botApiKey?: string
-  botApiEndpoint?: string
-}
+// Deep Tree Echo Bot settings are now defined in shared-types
 
 class SettingsStore extends Store<SettingsStoreState | null> {
   reducer = {

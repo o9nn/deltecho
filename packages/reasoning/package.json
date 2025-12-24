@@ -45,7 +45,7 @@
   ],
   "license": "GPL-3.0-or-later",
   "dependencies": {
-    "@deltecho/cognitive": "file:../cognitive"
+    "@deltecho/cognitive": "workspace:*"
   },
   "devDependencies": {
     "@types/node": "^20.0.0",

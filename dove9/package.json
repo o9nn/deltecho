@@ -43,7 +43,7 @@
   "author": "Deep Tree Echo",
   "license": "MIT",
   "dependencies": {
-    "deep-tree-echo-core": "file:../deep-tree-echo-core"
+    "deep-tree-echo-core": "workspace:*"
   },
   "devDependencies": {
     "@types/node": "^20.0.0",

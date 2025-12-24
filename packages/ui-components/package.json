@@ -37,8 +37,8 @@
   },
   "dependencies": {
     "3d-force-graph": "^1.79.0",
-    "@deltecho/cognitive": "file:../cognitive",
-    "@deltecho/shared": "file:../shared",
+    "@deltecho/cognitive": "workspace:*",
+    "@deltecho/shared": "workspace:*",
     "@types/three": "^0.182.0",
     "lucide-react": "^0.562.0",
     "three": "^0.182.0",
