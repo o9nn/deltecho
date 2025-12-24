@@ -32,9 +32,9 @@
     }
   },
   "scripts": {
-    "build": "tsc",
+    "build": "tsc -b",
     "check:types": "tsc --noEmit",
-    "clean": "rm -rf dist",
+    "clean": "rm -rf dist tsconfig.tsbuildinfo",
     "test": "echo 'Tests pending'"
   },
   "keywords": [
