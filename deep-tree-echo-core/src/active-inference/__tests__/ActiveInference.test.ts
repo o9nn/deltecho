@@ -38,20 +38,22 @@ describe('ActiveInference', () => {
 
   describe('start and stop', () => {
     it('should start active inference', () => {
-      const startedCallback = jest.fn()
+      let called = false
+      const startedCallback = () => { called = true }
       activeInference.on('started', startedCallback)
 
       activeInference.start()
-      expect(startedCallback).toHaveBeenCalled()
+      expect(called).toBe(true)
     })
 
     it('should stop active inference', () => {
-      const stoppedCallback = jest.fn()
+      let called = false
+      const stoppedCallback = () => { called = true }
       activeInference.on('stopped', stoppedCallback)
 
       activeInference.start()
       activeInference.stop()
-      expect(stoppedCallback).toHaveBeenCalled()
+      expect(called).toBe(true)
     })
 
     it('should handle multiple start calls', () => {
@@ -76,7 +78,8 @@ describe('ActiveInference', () => {
     })
 
     it('should emit beliefs_updated event', async () => {
-      const callback = jest.fn()
+      let called = false
+      const callback = () => { called = true }
       activeInference.on('beliefs_updated', callback)
 
       const observation: Observation = {
@@ -89,7 +92,7 @@ describe('ActiveInference', () => {
       }
 
       await activeInference.perceive(observation)
-      expect(callback).toHaveBeenCalled()
+      expect(called).toBe(true)
     })
 
     it('should detect emotional valence from content', async () => {
@@ -193,7 +196,8 @@ describe('ActiveInference', () => {
     })
 
     it('should emit action_selected event', async () => {
-      const callback = jest.fn()
+      let called = false
+      const callback = () => { called = true }
       activeInference.on('action_selected', callback)
 
       const actions: Action[] = [
@@ -209,7 +213,7 @@ describe('ActiveInference', () => {
       ]
 
       await activeInference.selectAction(actions)
-      expect(callback).toHaveBeenCalled()
+      expect(called).toBe(true)
     })
 
     it('should favor high epistemic value actions when uncertain', async () => {
@@ -278,11 +282,12 @@ describe('ActiveInference', () => {
         reliability: 1.0,
       }
 
-      const callback = jest.fn()
+      let called = false
+      const callback = () => { called = true }
       activeInference.on('learning_complete', callback)
 
       await activeInference.learnFromOutcome(action, outcome)
-      expect(callback).toHaveBeenCalled()
+      expect(called).toBe(true)
     })
   })
 

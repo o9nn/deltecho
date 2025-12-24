@@ -1,15 +1,35 @@
 import { LLMService, CognitiveFunctionType } from '../LLMService';
 
-// Mock fetch for all tests to avoid real API calls
-global.fetch = jest.fn();
-
 describe('LLMService', () => {
   let llmService: LLMService;
 
   beforeEach(() => {
     llmService = new LLMService();
-    // Reset fetch mock before each test
-    (global.fetch as jest.Mock).mockReset();
+    
+    // Mock fetch for all tests to avoid real API calls
+    global.fetch = (() => {
+      const mockFn: any = (...args: any[]) => {
+        mockFn.calls.push(args);
+        return mockFn.mockReturnValue;
+      };
+      mockFn.calls = [];
+      mockFn.mockReturnValue = Promise.resolve({
+        ok: true,
+        json: async () => ({ choices: [{ message: { content: 'Mocked response' } }] }),
+      });
+      mockFn.mockReset = function() {
+        this.calls = [];
+      };
+      mockFn.mockResolvedValue = function(value: any) {
+        this.mockReturnValue = Promise.resolve(value);
+        return this;
+      };
+      mockFn.mockResolvedValueOnce = function(value: any) {
+        this.mockReturnValue = Promise.resolve(value);
+        return this;
+      };
+      return mockFn;
+    })();
   });
 
   describe('initialization', () => {
@@ -143,19 +163,11 @@ describe('LLMService', () => {
     });
 
     it('should generate response with configured API key', async () => {
-      // Mock successful API response
-      (global.fetch as jest.Mock).mockResolvedValueOnce({
-        ok: true,
-        json: async () => ({
-          choices: [{ message: { content: 'Test response' } }],
-        }),
-      });
-
       llmService.setConfig({ apiKey: 'test-key' });
       const response = await llmService.generateResponse('Hello');
       
       // Should return the mocked response
-      expect(response).toBe('Test response');
+      expect(response).toBe('Mocked response');
     });
   });
 
@@ -167,14 +179,6 @@ describe('LLMService', () => {
       llmService.setFunctionConfig(CognitiveFunctionType.AFFECTIVE_CORE, {
         apiKey: 'affective-key',
       });
-
-      // Mock successful API responses for all function calls
-      (global.fetch as jest.Mock).mockResolvedValue({
-        ok: true,
-        json: async () => ({
-          choices: [{ message: { content: 'Mocked response' } }],
-        }),
-      });
     });
 
     it('should use specific function when configured', async () => {
@@ -185,7 +189,7 @@ describe('LLMService', () => {
       
       // Should return the mocked response
       expect(response).toBe('Mocked response');
-      expect(global.fetch).toHaveBeenCalled();
+      expect((global.fetch as any).calls.length).toBeGreaterThan(0);
     });
 
     it('should use affective core for emotional processing', async () => {
@@ -196,7 +200,7 @@ describe('LLMService', () => {
       
       // Should return the mocked response
       expect(response).toBe('Mocked response');
-      expect(global.fetch).toHaveBeenCalled();
+      expect((global.fetch as any).calls.length).toBeGreaterThan(0);
     });
 
     it('should fall back to general function when specific not configured', async () => {
@@ -209,7 +213,7 @@ describe('LLMService', () => {
       
       // Should return the mocked response
       expect(response).toBe('Mocked response');
-      expect(global.fetch).toHaveBeenCalled();
+      expect((global.fetch as any).calls.length).toBeGreaterThan(0);
     });
 
     it('should track usage statistics', async () => {

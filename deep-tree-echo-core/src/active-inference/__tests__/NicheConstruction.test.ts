@@ -39,20 +39,22 @@ describe('NicheConstruction', () => {
 
   describe('start and stop', () => {
     it('should start maintenance timer', () => {
-      const startedCallback = jest.fn()
+      let called = false
+      const startedCallback = () => { called = true }
       nicheConstruction.on('started', startedCallback)
 
       nicheConstruction.start()
-      expect(startedCallback).toHaveBeenCalled()
+      expect(called).toBe(true)
     })
 
     it('should stop maintenance timer', () => {
-      const stoppedCallback = jest.fn()
+      let called = false
+      const stoppedCallback = () => { called = true }
       nicheConstruction.on('stopped', stoppedCallback)
 
       nicheConstruction.start()
       nicheConstruction.stop()
-      expect(stoppedCallback).toHaveBeenCalled()
+      expect(called).toBe(true)
     })
 
     it('should handle multiple start calls gracefully', () => {
@@ -126,7 +128,8 @@ describe('NicheConstruction', () => {
     })
 
     it('should emit artifact_created event when creating artifacts', async () => {
-      const callback = jest.fn()
+      let called = false
+      const callback = () => { called = true }
       nicheConstruction.on('artifact_created', callback)
 
       nicheConstruction.start()
