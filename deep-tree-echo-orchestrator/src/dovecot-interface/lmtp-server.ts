@@ -333,7 +333,11 @@ export class LMTPServer {
       }
     }
 
-    const body = lines.slice(bodyStart).join('\r\n')
+    const rawBody = lines.slice(bodyStart).join('\r\n')
+    const contentType = headers.get('content-type') || 'text/plain'
+
+    // Parse MIME structure for attachments and body
+    const { body, attachments } = this.parseMimeContent(rawBody, contentType)
 
     return {
       messageId: headers.get('message-id') || `<${Date.now()}@deep-tree-echo>`,
@@ -344,9 +348,152 @@ export class LMTPServer {
       subject: headers.get('subject') || '(no subject)',
       body: body,
       headers: headers,
-      attachments: [], // TODO: Parse MIME attachments
+      attachments: attachments,
       receivedAt: new Date(),
     }
+  }
+
+  /**
+   * Parse MIME content and extract body text and attachments
+   */
+  private parseMimeContent(
+    rawBody: string,
+    contentType: string
+  ): { body: string; attachments: EmailAttachment[] } {
+    const attachments: EmailAttachment[] = []
+
+    // Check if this is a multipart message
+    const boundaryMatch = contentType.match(/boundary="?([^";\s]+)"?/i)
+
+    if (!boundaryMatch) {
+      // Not multipart - return raw body as-is
+      return { body: this.decodeBodyContent(rawBody, contentType), attachments: [] }
+    }
+
+    const boundary = boundaryMatch[1]
+    const parts = rawBody.split(`--${boundary}`)
+    let textBody = ''
+
+    for (const part of parts) {
+      const trimmedPart = part.trim()
+
+      // Skip empty parts and closing boundary
+      if (!trimmedPart || trimmedPart === '--' || trimmedPart.startsWith('--')) {
+        continue
+      }
+
+      // Parse part headers
+      const partLines = trimmedPart.split('\r\n')
+      const partHeaders = new Map<string, string>()
+      let partBodyStart = 0
+
+      for (let i = 0; i < partLines.length; i++) {
+        if (partLines[i] === '') {
+          partBodyStart = i + 1
+          break
+        }
+        const colonIdx = partLines[i].indexOf(':')
+        if (colonIdx > 0) {
+          const headerName = partLines[i].substring(0, colonIdx).toLowerCase()
+          const headerValue = partLines[i].substring(colonIdx + 1).trim()
+          partHeaders.set(headerName, headerValue)
+        }
+      }
+
+      const partBody = partLines.slice(partBodyStart).join('\r\n')
+      const partContentType = partHeaders.get('content-type') || 'text/plain'
+      const partDisposition = partHeaders.get('content-disposition') || ''
+      const partEncoding = partHeaders.get('content-transfer-encoding') || '7bit'
+
+      // Check if this part is an attachment
+      const isAttachment =
+        partDisposition.toLowerCase().includes('attachment') ||
+        partDisposition.toLowerCase().includes('inline') &&
+          !partContentType.startsWith('text/')
+
+      if (isAttachment) {
+        // Extract filename
+        let filename = 'attachment'
+        const filenameMatch =
+          partDisposition.match(/filename="?([^";\r\n]+)"?/i) ||
+          partContentType.match(/name="?([^";\r\n]+)"?/i)
+        if (filenameMatch) {
+          filename = filenameMatch[1].trim()
+        }
+
+        // Decode attachment content
+        let content: Buffer
+        if (partEncoding.toLowerCase() === 'base64') {
+          content = Buffer.from(partBody.replace(/\s/g, ''), 'base64')
+        } else if (partEncoding.toLowerCase() === 'quoted-printable') {
+          content = this.decodeQuotedPrintable(partBody)
+        } else {
+          content = Buffer.from(partBody)
+        }
+
+        attachments.push({
+          filename,
+          contentType: partContentType.split(';')[0].trim(),
+          content,
+          size: content.length,
+        })
+      } else if (partContentType.startsWith('text/plain') && !textBody) {
+        // Extract plain text body
+        textBody = this.decodeBodyContent(partBody, partContentType, partEncoding)
+      } else if (partContentType.startsWith('text/html') && !textBody) {
+        // Fall back to HTML if no plain text
+        textBody = this.decodeBodyContent(partBody, partContentType, partEncoding)
+      } else if (partContentType.startsWith('multipart/')) {
+        // Recursively parse nested multipart
+        const nested = this.parseMimeContent(partBody, partContentType)
+        if (!textBody && nested.body) {
+          textBody = nested.body
+        }
+        attachments.push(...nested.attachments)
+      }
+    }
+
+    return { body: textBody || rawBody, attachments }
+  }
+
+  /**
+   * Decode body content based on encoding
+   */
+  private decodeBodyContent(
+    body: string,
+    contentType: string,
+    encoding: string = '7bit'
+  ): string {
+    let decoded = body
+
+    // Handle transfer encoding
+    const lowerEncoding = encoding.toLowerCase()
+    if (lowerEncoding === 'base64') {
+      try {
+        decoded = Buffer.from(body.replace(/\s/g, ''), 'base64').toString('utf-8')
+      } catch {
+        log.warn('Failed to decode base64 body content')
+      }
+    } else if (lowerEncoding === 'quoted-printable') {
+      decoded = this.decodeQuotedPrintable(body).toString('utf-8')
+    }
+
+    return decoded
+  }
+
+  /**
+   * Decode quoted-printable encoded content
+   */
+  private decodeQuotedPrintable(input: string): Buffer {
+    // Remove soft line breaks
+    const normalized = input.replace(/=\r?\n/g, '')
+
+    // Decode hex sequences
+    const decoded = normalized.replace(/=([0-9A-Fa-f]{2})/g, (_, hex) => {
+      return String.fromCharCode(parseInt(hex, 16))
+    })
+
+    return Buffer.from(decoded, 'binary')
   }
 
   /**

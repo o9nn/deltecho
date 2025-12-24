@@ -66,27 +66,29 @@ export function translate(
       if (typeof opts.quantity === 'string') {
         message = entry[opts.quantity]
       } else if (typeof opts.quantity === 'number') {
-        message =
-          entry[opts.quantity as unknown as keyof LocaleData['messages'][0]] ||
-          // TODO fix: simply using `pluralRules.select()` to index
-          // into the object is not quite right,
-          // because the string could be untranslated, and it'd fall back to
-          // English, with only 'one' and 'other' plural categories,
-          // in which case we must apply the English
-          // plural rules instead of the current locale's rules.
-          //
-          // Currently this is behaves incorrectly e.g. for untranslated
-          // Indonesian (id), which only has the 'other' plural category,
-          // so even when we have to use 'one' for English, we'd use 'other'.
-          //
-          // But currently we don't have a way to distinguish between translated
-          // and untranslated strings in this code.
-          // See https://github.com/deltachat/deltachat-desktop/blob/b342a1d47b505e68caaec71f79c381c3f304405a/src/main/load-translations.ts#L44-L64
-          entry[pluralRules.select(opts.quantity)] ||
-          // This also catches the case where we failed to construct
-          // `Intl.PluralRules` for the currentl locale, and fall back to
-          // English (see `try catch` above).
-          entry['other']
+        // First try exact numeric match
+        message = entry[opts.quantity as unknown as keyof LocaleData['messages'][0]]
+
+        if (!message) {
+          // Use locale-specific plural rules
+          const pluralCategory = pluralRules.select(opts.quantity)
+          message = entry[pluralCategory]
+
+          // If the locale's plural category doesn't exist, the string may be
+          // untranslated (falling back to English). In that case, apply English
+          // plural rules: 'one' for 1, 'other' for everything else.
+          if (!message && pluralCategory !== 'one' && pluralCategory !== 'other') {
+            // Try English plural rules as fallback for untranslated strings
+            const englishPluralRules = new Intl.PluralRules('en')
+            const englishCategory = englishPluralRules.select(opts.quantity)
+            message = entry[englishCategory]
+          }
+
+          // Final fallback to 'other' which should always exist
+          if (!message) {
+            message = entry['other']
+          }
+        }
       } else {
         message = undefined
       }
