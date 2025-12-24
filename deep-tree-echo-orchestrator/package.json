@@ -5,12 +5,12 @@
   "type": "module",
   "main": "./dist/index.js",
   "bin": {
-    "deep-tree-echo": "./dist/daemon/daemon.js"
+    "deep-tree-echo-daemon": "./dist/bin/daemon.js"
   },
   "scripts": {
     "build": "tsc",
-    "start": "node dist/daemon/daemon.js",
-    "dev": "tsc && node dist/daemon/daemon.js",
+    "start": "node dist/bin/daemon.js",
+    "dev": "tsc && node dist/bin/daemon.js",
     "check:types": "tsc --noEmit",
     "clean": "rm -rf dist"
   },

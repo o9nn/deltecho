@@ -14,3 +14,14 @@ export {
   type DovecotConfig,
   type EmailMessage,
 } from './dovecot-interface/index.js'
+export {
+  IPCServer,
+  IPCMessageType,
+  type IPCMessage,
+  type IPCRequestHandler,
+  type IPCServerConfig,
+} from './ipc/server.js'
+export { StorageManager } from './ipc/storage-manager.js'
+export { TaskScheduler, TaskStatus, type ScheduledTask, type TaskResult } from './scheduler/task-scheduler.js'
+export { WebhookServer, type WebhookServerConfig } from './webhooks/webhook-server.js'
+export { Dove9Integration, type Dove9IntegrationConfig, type Dove9Response } from './dove9-integration.js'
