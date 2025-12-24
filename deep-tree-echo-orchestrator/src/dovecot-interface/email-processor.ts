@@ -167,8 +167,7 @@ Deep Tree Echo`
     const contentType = email.headers.get('content-type') || ''
 
     if (contentType.includes('multipart')) {
-      // TODO: Properly parse MIME multipart messages
-      // For now, try to extract text parts
+      // Parse MIME multipart messages with full encoding support
       body = this.extractTextFromMultipart(body)
     } else if (contentType.includes('text/html')) {
       // Strip HTML tags (basic)
@@ -182,34 +181,118 @@ Deep Tree Echo`
   }
 
   /**
-   * Extract text from multipart message
+   * Extract text from multipart message with full MIME parsing
    */
   private extractTextFromMultipart(body: string): string {
-    // Look for text/plain part boundary
-    const boundaryMatch = body.match(/boundary="?([^"\r\n]+)"?/i)
+    // Look for boundary in content-type header or body
+    const boundaryMatch = body.match(/boundary=["']?([^"'\r\n;]+)["']?/i)
     if (!boundaryMatch) return body
 
-    const boundary = boundaryMatch[1]
-    const parts = body.split('--' + boundary)
+    const boundary = boundaryMatch[1].trim()
+    const parts = body.split(new RegExp(`--${this.escapeRegex(boundary)}`))
+
+    // Parse each MIME part
+    const parsedParts: { contentType: string; encoding: string; content: string }[] = []
 
     for (const part of parts) {
-      if (part.includes('Content-Type: text/plain')) {
-        // Extract content after headers
-        const contentStart = part.indexOf('\r\n\r\n')
-        if (contentStart > 0) {
-          return part.substring(contentStart + 4).trim()
+      // Skip empty parts and closing boundary
+      if (!part.trim() || part.trim() === '--') continue
+
+      // Parse headers and content
+      const headerEndIdx = part.indexOf('\r\n\r\n')
+      const altHeaderEndIdx = part.indexOf('\n\n')
+      const splitIdx = headerEndIdx > 0 ? headerEndIdx : altHeaderEndIdx
+      const headerOffset = headerEndIdx > 0 ? 4 : 2
+
+      if (splitIdx < 0) continue
+
+      const headers = part.substring(0, splitIdx).toLowerCase()
+      let content = part.substring(splitIdx + headerOffset)
+
+      // Extract content type
+      const contentTypeMatch = headers.match(/content-type:\s*([^\r\n;]+)/i)
+      const contentType = contentTypeMatch ? contentTypeMatch[1].trim() : 'text/plain'
+
+      // Extract transfer encoding
+      const encodingMatch = headers.match(/content-transfer-encoding:\s*([^\r\n]+)/i)
+      const encoding = encodingMatch ? encodingMatch[1].trim().toLowerCase() : '7bit'
+
+      // Decode content based on transfer encoding
+      content = this.decodeContent(content, encoding)
+
+      // Handle nested multipart
+      if (contentType.includes('multipart')) {
+        const nestedContent = this.extractTextFromMultipart(content)
+        if (nestedContent) {
+          parsedParts.push({ contentType: 'text/plain', encoding: '7bit', content: nestedContent })
         }
+      } else {
+        parsedParts.push({ contentType, encoding, content })
       }
     }
 
-    // Fallback to first part with content
-    for (const part of parts) {
-      if (part.trim() && !part.includes('--')) {
-        return this.stripHtml(part)
-      }
+    // Prefer text/plain over text/html
+    const plainTextPart = parsedParts.find(p => p.contentType === 'text/plain')
+    if (plainTextPart) {
+      return plainTextPart.content.trim()
+    }
+
+    // Fall back to HTML and strip tags
+    const htmlPart = parsedParts.find(p => p.contentType === 'text/html')
+    if (htmlPart) {
+      return this.stripHtml(htmlPart.content).trim()
+    }
+
+    // Return first text-like part
+    const textPart = parsedParts.find(p => p.contentType.startsWith('text/'))
+    if (textPart) {
+      return textPart.content.trim()
     }
 
     return body
+  }
+
+  /**
+   * Decode content based on transfer encoding
+   */
+  private decodeContent(content: string, encoding: string): string {
+    switch (encoding) {
+      case 'base64':
+        try {
+          return Buffer.from(content.replace(/\s/g, ''), 'base64').toString('utf-8')
+        } catch {
+          return content
+        }
+
+      case 'quoted-printable':
+        return this.decodeQuotedPrintable(content)
+
+      case '7bit':
+      case '8bit':
+      case 'binary':
+      default:
+        return content
+    }
+  }
+
+  /**
+   * Decode quoted-printable encoded content
+   */
+  private decodeQuotedPrintable(content: string): string {
+    return content
+      // Remove soft line breaks
+      .replace(/=\r?\n/g, '')
+      // Decode hex-encoded characters
+      .replace(/=([0-9A-Fa-f]{2})/g, (_, hex) => {
+        return String.fromCharCode(parseInt(hex, 16))
+      })
+  }
+
+  /**
+   * Escape special regex characters in boundary string
+   */
+  private escapeRegex(str: string): string {
+    return str.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')
   }
 
   /**

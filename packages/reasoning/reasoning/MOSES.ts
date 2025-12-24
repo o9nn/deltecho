@@ -6,7 +6,7 @@
  * function. This is implemented as a kernel service for AGI learning.
  */
 
-import { Atom, AtomSpace } from '../atomspace/AtomSpace.js'
+import { Atom, AtomSpace, AtomType } from '../atomspace/AtomSpace.js'
 
 export interface Program {
   id: string
@@ -152,34 +152,239 @@ export class MOSES {
     )
   }
 
+  // Node types for type checking
+  private readonly NODE_TYPES: AtomType[] = ['ConceptNode', 'PredicateNode', 'VariableNode', 'NumberNode']
+  private readonly LINK_TYPES: AtomType[] = ['ListLink', 'InheritanceLink', 'SimilarityLink', 'ImplicationLink', 'EvaluationLink', 'ExecutionLink']
+
   /**
-   * Crossover two programs
-   * Note: This is a simplified implementation. A full implementation would
-   * perform actual genetic crossover by combining subtrees from both parents.
+   * Check if an atom type is a node type
    */
-  private crossover(parent1: Program, parent2: Program): Program {
-    // TODO: Implement actual genetic crossover
-    // For now, inherit from parent1 with some characteristics from parent2
-    const child = this.createRandomProgram()
-    child.generation = this.generation
-    // Inherit some fitness bias from parents
-    child.fitness = (parent1.fitness + parent2.fitness) / 2
-    return child
+  private isNodeType(type: AtomType): boolean {
+    return this.NODE_TYPES.includes(type)
   }
 
   /**
-   * Mutate a program
-   * Note: This is a simplified implementation. A full implementation would
-   * make small modifications to the existing program tree structure.
+   * Check if an atom type is a link type
+   */
+  private isLinkType(type: AtomType): boolean {
+    return this.LINK_TYPES.includes(type)
+  }
+
+  /**
+   * Crossover two programs using subtree exchange
+   * Combines genetic material from both parents by swapping subtrees
+   */
+  private crossover(parent1: Program, parent2: Program): Program {
+    // Get the tree structures from both parents
+    const tree1 = parent1.tree
+    const tree2 = parent2.tree
+
+    // Create a new child program tree by combining parent structures
+    const childTree = this.performSubtreeCrossover(tree1, tree2)
+
+    return {
+      id: `prog_${this.nextProgramId++}`,
+      tree: childTree,
+      fitness: 0, // Will be evaluated by fitness function
+      generation: this.generation,
+    }
+  }
+
+  /**
+   * Perform subtree crossover between two atom trees
+   */
+  private performSubtreeCrossover(tree1: Atom, tree2: Atom): Atom {
+    // If both are links, we can exchange subtrees
+    if (this.isLinkType(tree1.type) && this.isLinkType(tree2.type)) {
+      const outgoing1 = tree1.outgoing || []
+      const outgoing2 = tree2.outgoing || []
+
+      // Randomly select crossover point
+      const crossoverPoint = Math.random()
+
+      if (crossoverPoint < 0.5 && outgoing1.length > 0 && outgoing2.length > 0) {
+        // Exchange a random subtree from parent2 into parent1's structure
+        const idx1 = Math.floor(Math.random() * outgoing1.length)
+        const idx2 = Math.floor(Math.random() * outgoing2.length)
+
+        // Create new outgoing array with swapped subtree
+        const newOutgoing = [...outgoing1]
+        const subtree2 = this.atomSpace.getAtom(outgoing2[idx2])
+
+        if (subtree2) {
+          // Clone the subtree from parent2 into the child
+          const clonedSubtree = this.cloneSubtree(subtree2)
+          newOutgoing[idx1] = clonedSubtree.id
+        }
+
+        return this.atomSpace.addLink(tree1.type, newOutgoing)
+      }
+    }
+
+    // Default: clone tree1 with slight variation
+    return this.cloneSubtree(tree1)
+  }
+
+  /**
+   * Clone a subtree into a new structure
+   */
+  private cloneSubtree(atom: Atom): Atom {
+    if (this.isNodeType(atom.type)) {
+      // For nodes, create a new node with same type but potentially modified name
+      const baseName = atom.name || 'node'
+      const variation = Math.random() < 0.1 ? `_v${Math.floor(Math.random() * 100)}` : ''
+      return this.atomSpace.addNode(atom.type, baseName + variation)
+    } else {
+      // For links, recursively clone outgoing atoms
+      const outgoing = atom.outgoing || []
+      const newOutgoing = outgoing.map(id => {
+        const child = this.atomSpace.getAtom(id)
+        if (child) {
+          return this.cloneSubtree(child).id
+        }
+        return id
+      })
+      return this.atomSpace.addLink(atom.type, newOutgoing)
+    }
+  }
+
+  /**
+   * Mutate a program using various mutation operators
    */
   private mutate(program: Program): Program {
-    // TODO: Implement actual mutation (e.g., replace subtrees, modify nodes)
-    // For now, create a new program with slight variation
-    const mutated = this.createRandomProgram()
-    mutated.generation = this.generation
-    // Inherit some fitness bias from parent
-    mutated.fitness = program.fitness * 0.8
-    return mutated
+    const tree = program.tree
+    const mutatedTree = this.performMutation(tree)
+
+    return {
+      id: `prog_${this.nextProgramId++}`,
+      tree: mutatedTree,
+      fitness: 0, // Will be evaluated by fitness function
+      generation: this.generation,
+    }
+  }
+
+  /**
+   * Perform mutation on an atom tree
+   */
+  private performMutation(atom: Atom): Atom {
+    const mutationType = Math.random()
+
+    if (mutationType < 0.3) {
+      // Point mutation: modify a node value
+      return this.pointMutation(atom)
+    } else if (mutationType < 0.6) {
+      // Subtree mutation: replace a subtree with a new random one
+      return this.subtreeMutation(atom)
+    } else if (mutationType < 0.8) {
+      // Insertion mutation: add a new node
+      return this.insertionMutation(atom)
+    } else {
+      // Deletion mutation: remove a subtree (with protection)
+      return this.deletionMutation(atom)
+    }
+  }
+
+  /**
+   * Point mutation: modify node values slightly
+   */
+  private pointMutation(atom: Atom): Atom {
+    if (this.isNodeType(atom.type)) {
+      // Mutate the node name
+      const baseName = atom.name || 'node'
+      const mutationSuffix = `_m${Math.floor(Math.random() * 1000)}`
+      return this.atomSpace.addNode(atom.type, baseName + mutationSuffix)
+    } else {
+      // For links, mutate a random child
+      const outgoing = atom.outgoing || []
+      if (outgoing.length > 0) {
+        const idx = Math.floor(Math.random() * outgoing.length)
+        const child = this.atomSpace.getAtom(outgoing[idx])
+        if (child) {
+          const newOutgoing = [...outgoing]
+          newOutgoing[idx] = this.pointMutation(child).id
+          return this.atomSpace.addLink(atom.type, newOutgoing)
+        }
+      }
+      return atom
+    }
+  }
+
+  /**
+   * Subtree mutation: replace a subtree with a new random one
+   */
+  private subtreeMutation(atom: Atom): Atom {
+    if (this.isLinkType(atom.type)) {
+      const outgoing = atom.outgoing || []
+      if (outgoing.length > 0 && Math.random() < 0.5) {
+        // Replace a random subtree
+        const idx = Math.floor(Math.random() * outgoing.length)
+        const newSubtree = this.createRandomSubtree(2)
+        const newOutgoing = [...outgoing]
+        newOutgoing[idx] = newSubtree.id
+        return this.atomSpace.addLink(atom.type, newOutgoing)
+      }
+    }
+    // Create entirely new structure
+    return this.createRandomSubtree(3)
+  }
+
+  /**
+   * Insertion mutation: add a new node to the tree
+   */
+  private insertionMutation(atom: Atom): Atom {
+    if (this.isLinkType(atom.type)) {
+      const outgoing = atom.outgoing || []
+      const newNode = this.atomSpace.addNode('VariableNode', `$V${Math.floor(Math.random() * 100)}`)
+      const newOutgoing = [...outgoing, newNode.id]
+      return this.atomSpace.addLink(atom.type, newOutgoing)
+    }
+    // Wrap node in a link
+    return this.atomSpace.addLink('ListLink', [atom.id])
+  }
+
+  /**
+   * Deletion mutation: remove a subtree (with minimum structure protection)
+   */
+  private deletionMutation(atom: Atom): Atom {
+    if (this.isLinkType(atom.type)) {
+      const outgoing = atom.outgoing || []
+      if (outgoing.length > 1) {
+        // Remove a random child (keep at least one)
+        const idx = Math.floor(Math.random() * outgoing.length)
+        const newOutgoing = outgoing.filter((_, i) => i !== idx)
+        return this.atomSpace.addLink(atom.type, newOutgoing)
+      }
+    }
+    // Cannot delete from node or single-child link, return as-is
+    return atom
+  }
+
+  /**
+   * Create a random subtree of specified depth
+   */
+  private createRandomSubtree(maxDepth: number): Atom {
+    if (maxDepth <= 0 || Math.random() < 0.3) {
+      // Create a leaf node
+      const nodeTypes: AtomType[] = ['VariableNode', 'ConceptNode', 'NumberNode']
+      const nodeType = nodeTypes[Math.floor(Math.random() * nodeTypes.length)]
+      const value = nodeType === 'NumberNode'
+        ? String(Math.floor(Math.random() * 100))
+        : `$X${Math.floor(Math.random() * 50)}`
+      return this.atomSpace.addNode(nodeType, value)
+    } else {
+      // Create a link with children
+      const linkTypes: AtomType[] = ['ListLink', 'EvaluationLink', 'ExecutionLink']
+      const linkType = linkTypes[Math.floor(Math.random() * linkTypes.length)]
+      const numChildren = 1 + Math.floor(Math.random() * 3)
+      const children: string[] = []
+
+      for (let i = 0; i < numChildren; i++) {
+        const child = this.createRandomSubtree(maxDepth - 1)
+        children.push(child.id)
+      }
+
+      return this.atomSpace.addLink(linkType, children)
+    }
   }
 
   /**

@@ -1,5 +1,4 @@
-// TODO: Abstract DeltaChat types
-// // TODO: Abstract DeltaChat types - not needed for standalone operation
+// Note: DeltaChat types abstracted - module works standalone with in-memory storage
 
 /**
  * HyperDimensionalMemory: Advanced memory architecture that organizes conversations
