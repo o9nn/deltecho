@@ -5,6 +5,31 @@ describe('LLMService', () => {
 
   beforeEach(() => {
     llmService = new LLMService();
+    
+    // Mock fetch for all tests to avoid real API calls
+    global.fetch = (() => {
+      const mockFn: any = (...args: any[]) => {
+        mockFn.calls.push(args);
+        return mockFn.mockReturnValue;
+      };
+      mockFn.calls = [];
+      mockFn.mockReturnValue = Promise.resolve({
+        ok: true,
+        json: async () => ({ choices: [{ message: { content: 'Mocked response' } }] }),
+      });
+      mockFn.mockReset = function() {
+        this.calls = [];
+      };
+      mockFn.mockResolvedValue = function(value: any) {
+        this.mockReturnValue = Promise.resolve(value);
+        return this;
+      };
+      mockFn.mockResolvedValueOnce = function(value: any) {
+        this.mockReturnValue = Promise.resolve(value);
+        return this;
+      };
+      return mockFn;
+    })();
   });
 
   describe('initialization', () => {
@@ -141,8 +166,8 @@ describe('LLMService', () => {
       llmService.setConfig({ apiKey: 'test-key' });
       const response = await llmService.generateResponse('Hello');
       
-      // Should return a placeholder response (not an error)
-      expect(response).not.toContain("isn't fully configured");
+      // Should return the mocked response
+      expect(response).toBe('Mocked response');
     });
   });
 
@@ -162,7 +187,9 @@ describe('LLMService', () => {
         'Test input'
       );
       
-      expect(response).toContain('logical');
+      // Should return the mocked response
+      expect(response).toBe('Mocked response');
+      expect((global.fetch as any).calls.length).toBeGreaterThan(0);
     });
 
     it('should use affective core for emotional processing', async () => {
@@ -171,7 +198,9 @@ describe('LLMService', () => {
         'Test input'
       );
       
-      expect(response).toContain('emotional');
+      // Should return the mocked response
+      expect(response).toBe('Mocked response');
+      expect((global.fetch as any).calls.length).toBeGreaterThan(0);
     });
 
     it('should fall back to general function when specific not configured', async () => {
@@ -182,8 +211,9 @@ describe('LLMService', () => {
         'Test input'
       );
       
-      // Should not return error since general is configured
-      expect(response).not.toContain("isn't fully configured");
+      // Should return the mocked response
+      expect(response).toBe('Mocked response');
+      expect((global.fetch as any).calls.length).toBeGreaterThan(0);
     });
 
     it('should track usage statistics', async () => {

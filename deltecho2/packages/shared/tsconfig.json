@@ -9,7 +9,8 @@
     "strictNullChecks": true,
     "strict": true,
     "resolveJsonModule": true,
-    "moduleResolution": "NodeNext"
+    "moduleResolution": "NodeNext",
+    "types": []
   },
   "include": ["./**/*.ts", "./**/*.js", "../../_locales/*.json"],
   "exclude": ["./ts-compiled-for-tests"]
