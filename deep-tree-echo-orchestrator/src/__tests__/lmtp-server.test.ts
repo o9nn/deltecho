@@ -1,3 +1,5 @@
+import { describe, it, expect, beforeEach, afterEach, jest } from '@jest/globals';
+
 import { LMTPServer, LMTPConfig } from '../dovecot-interface/lmtp-server.js'
 
 describe('LMTPServer', () => {
