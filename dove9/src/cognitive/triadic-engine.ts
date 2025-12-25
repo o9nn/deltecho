@@ -522,6 +522,13 @@ export class TriadicCognitiveEngine {
   }
 
   /**
+   * Check if engine is running
+   */
+  public isRunning(): boolean {
+    return this.running;
+  }
+
+  /**
    * Get metrics
    */
   public getMetrics(): {
