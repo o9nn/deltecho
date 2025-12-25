@@ -71,3 +71,6 @@ node_modules/
 # Temporary files
 *.tmp
 .cache/
+
+# Native libraries (large binaries)
+native-libs/**/*.so

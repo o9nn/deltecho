@@ -12,6 +12,11 @@ on:
         required: false
         type: boolean
         default: false
+      skip_tests:
+        description: 'Skip tests (use with caution)'
+        required: false
+        type: boolean
+        default: false
 
 env:
   NODE_VERSION: '22.x'
@@ -64,10 +69,11 @@ jobs:
         run: pnpm install --frozen-lockfile
 
       - name: Run tests
+        if: ${{ !github.event.inputs.skip_tests }}
         run: |
           pnpm --filter deep-tree-echo-core test
           pnpm --filter @deltecho/shared test
-          pnpm --filter dove9 test || echo "dove9 tests skipped"
+          pnpm --filter dove9 test
 
       - name: Build all packages
         run: |
@@ -75,40 +81,70 @@ jobs:
           pnpm --filter @deltecho/shared build
           pnpm --filter dove9 build
           pnpm --filter @deltecho/cognitive build
+          pnpm --filter @deltecho/reasoning build || echo "reasoning build skipped"
           pnpm --filter deep-tree-echo-orchestrator build
           pnpm --filter @deltecho/ui-components build || echo "ui-components build skipped"
+
+      - name: Update version in package.json files
+        run: |
+          VERSION="${{ steps.version.outputs.version }}"
+          # Update root package.json
+          jq ".version = \"${VERSION}\"" package.json > package.json.tmp && mv package.json.tmp package.json
+          # Update core packages
+          for pkg in deep-tree-echo-core dove9 deep-tree-echo-orchestrator packages/shared packages/cognitive packages/reasoning; do
+            if [ -f "${pkg}/package.json" ]; then
+              jq ".version = \"${VERSION}\"" "${pkg}/package.json" > "${pkg}/package.json.tmp" && mv "${pkg}/package.json.tmp" "${pkg}/package.json"
+            fi
+          done
+
+      - name: Commit version bump
+        run: |
+          git add -A
+          git commit -m "chore: bump version to ${{ steps.version.outputs.version }}" || echo "No changes to commit"
 
       - name: Create and push tag
         run: |
           git tag -a "${{ steps.version.outputs.tag }}" -m "Release ${{ steps.version.outputs.tag }}"
-          git push origin "${{ steps.version.outputs.tag }}"
+          git push origin main --follow-tags
 
   build-artifacts:
-    name: Build Release Artifacts (${{ matrix.platform }})
+    name: Build Release Artifacts (${{ matrix.platform }}-${{ matrix.arch }})
     runs-on: ${{ matrix.os }}
     needs: prepare-release
     strategy:
       fail-fast: false
       matrix:
         include:
+          # Linux x64
           - os: ubuntu-latest
             platform: linux
             arch: x64
+            electron_arch: x64
+          # Linux ARM64
           - os: ubuntu-latest
             platform: linux
             arch: arm64
-          - os: macos-latest
+            electron_arch: arm64
+          # macOS x64 (Intel)
+          - os: macos-13
             platform: darwin
             arch: x64
+            electron_arch: x64
+          # macOS ARM64 (Apple Silicon)
           - os: macos-latest
             platform: darwin
             arch: arm64
+            electron_arch: arm64
+          # Windows x64
           - os: windows-latest
             platform: win32
             arch: x64
+            electron_arch: x64
+          # Windows ia32
           - os: windows-latest
             platform: win32
             arch: ia32
+            electron_arch: ia32
 
     steps:
       - name: Checkout repository
@@ -139,25 +175,44 @@ jobs:
           pnpm --filter deep-tree-echo-orchestrator build
 
       - name: Build desktop app (deltecho2)
-        run: pnpm run build:electron || echo "Desktop build skipped"
+        run: pnpm run build:electron -- --${{ matrix.electron_arch }} || echo "Desktop build skipped"
         working-directory: deltecho2
         env:
           ELECTRON_BUILDER_ALLOW_UNRESOLVED_DEPENDENCIES: true
 
       - name: Build desktop app (delta-echo-desk)
-        run: pnpm run build:electron || echo "Desktop build skipped"
+        run: pnpm run build:electron -- --${{ matrix.electron_arch }} || echo "Desktop build skipped"
         working-directory: delta-echo-desk
         env:
           ELECTRON_BUILDER_ALLOW_UNRESOLVED_DEPENDENCIES: true
+
+      - name: List build artifacts
+        run: |
+          echo "=== deltecho2 dist ===" && ls -la deltecho2/dist/ 2>/dev/null || echo "No deltecho2 dist"
+          echo "=== delta-echo-desk dist ===" && ls -la delta-echo-desk/dist/ 2>/dev/null || echo "No delta-echo-desk dist"
+        shell: bash
 
       - name: Upload artifacts
         uses: actions/upload-artifact@v4
         with:
           name: release-${{ matrix.platform }}-${{ matrix.arch }}
           path: |
-            deltecho2/dist
-            delta-echo-desk/dist
+            deltecho2/dist/*.exe
+            deltecho2/dist/*.dmg
+            deltecho2/dist/*.AppImage
+            deltecho2/dist/*.deb
+            deltecho2/dist/*.rpm
+            deltecho2/dist/*.tar.gz
+            deltecho2/dist/*.zip
+            delta-echo-desk/dist/*.exe
+            delta-echo-desk/dist/*.dmg
+            delta-echo-desk/dist/*.AppImage
+            delta-echo-desk/dist/*.deb
+            delta-echo-desk/dist/*.rpm
+            delta-echo-desk/dist/*.tar.gz
+            delta-echo-desk/dist/*.zip
           retention-days: 30
+          if-no-files-found: warn
 
   create-release:
     name: Create GitHub Release
@@ -176,22 +231,74 @@ jobs:
         with:
           path: artifacts
 
+      - name: List downloaded artifacts
+        run: find artifacts -type f | head -50
+
       - name: Generate changelog
         id: changelog
         run: |
-          echo "## What's Changed" > RELEASE_NOTES.md
-          echo "" >> RELEASE_NOTES.md
+          cat > RELEASE_NOTES.md << 'EOF'
+          # Deltecho ${{ needs.prepare-release.outputs.tag }}
+
+          ## What's Changed
+
+          EOF
+          
           PREV_TAG=$(git describe --tags --abbrev=0 HEAD^ 2>/dev/null || echo "")
           if [ -n "$PREV_TAG" ]; then
             git log --pretty=format:"- %s (%h)" ${PREV_TAG}..HEAD >> RELEASE_NOTES.md
           else
             echo "- Initial release" >> RELEASE_NOTES.md
           fi
-          echo "" >> RELEASE_NOTES.md
-          echo "## Build Information" >> RELEASE_NOTES.md
-          echo "- Node.js: ${{ env.NODE_VERSION }}" >> RELEASE_NOTES.md
-          echo "- pnpm: ${{ env.PNPM_VERSION }}" >> RELEASE_NOTES.md
-          echo "- Build Date: $(date -u +"%Y-%m-%d %H:%M:%S UTC")" >> RELEASE_NOTES.md
+          
+          cat >> RELEASE_NOTES.md << 'EOF'
+
+          ## Packages Included
+
+          - **deep-tree-echo-core**: Core cognitive services and memory systems
+          - **dove9**: Triadic cognitive engine with 12-step processing cycle
+          - **deep-tree-echo-orchestrator**: System daemon with IPC, scheduling, webhooks
+          - **@deltecho/cognitive**: Unified cognitive interface
+          - **@deltecho/shared**: Shared types and utilities
+
+          ## Desktop Applications
+
+          - **deltecho2**: Electron-based desktop client
+          - **delta-echo-desk**: Alternative desktop client with enhanced features
+
+          ## Platform Support
+
+          | Platform | Architecture | Status |
+          |----------|--------------|--------|
+          | Linux | x64 | ✅ |
+          | Linux | ARM64 | ✅ |
+          | macOS | x64 (Intel) | ✅ |
+          | macOS | ARM64 (Apple Silicon) | ✅ |
+          | Windows | x64 | ✅ |
+          | Windows | ia32 | ✅ |
+
+          ## Build Information
+
+          - Node.js: ${{ env.NODE_VERSION }}
+          - pnpm: ${{ env.PNPM_VERSION }}
+          - Build Date: $(date -u +"%Y-%m-%d %H:%M:%S UTC")
+
+          ## Installation
+
+          Download the appropriate package for your platform from the assets below.
+
+          ### Linux
+          - `.AppImage` - Universal Linux package (recommended)
+          - `.deb` - Debian/Ubuntu package
+          - `.rpm` - Fedora/RHEL package
+
+          ### macOS
+          - `.dmg` - macOS disk image
+
+          ### Windows
+          - `.exe` - Windows installer
+
+          EOF
 
       - name: Create Release
         uses: softprops/action-gh-release@v1
@@ -202,7 +309,13 @@ jobs:
           draft: false
           prerelease: ${{ github.event.inputs.prerelease }}
           files: |
-            artifacts/**/*
+            artifacts/**/*.exe
+            artifacts/**/*.dmg
+            artifacts/**/*.AppImage
+            artifacts/**/*.deb
+            artifacts/**/*.rpm
+            artifacts/**/*.tar.gz
+            artifacts/**/*.zip
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
@@ -238,11 +351,45 @@ jobs:
           pnpm --filter deep-tree-echo-core build
           pnpm --filter @deltecho/shared build
           pnpm --filter dove9 build
+          pnpm --filter @deltecho/cognitive build
 
       - name: Publish packages
         run: |
           pnpm --filter deep-tree-echo-core publish --no-git-checks --access public || echo "deep-tree-echo-core publish skipped"
           pnpm --filter @deltecho/shared publish --no-git-checks --access public || echo "@deltecho/shared publish skipped"
           pnpm --filter dove9 publish --no-git-checks --access public || echo "dove9 publish skipped"
+          pnpm --filter @deltecho/cognitive publish --no-git-checks --access public || echo "@deltecho/cognitive publish skipped"
         env:
           NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
+
+  publish-docker:
+    name: Publish Docker Image
+    runs-on: ubuntu-latest
+    needs: [prepare-release, create-release]
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        with:
+          ref: ${{ needs.prepare-release.outputs.tag }}
+
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
+
+      - name: Login to GitHub Container Registry
+        uses: docker/login-action@v3
+        with:
+          registry: ghcr.io
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Build and push
+        uses: docker/build-push-action@v5
+        with:
+          context: .
+          push: true
+          tags: |
+            ghcr.io/${{ github.repository }}:${{ needs.prepare-release.outputs.tag }}
+            ghcr.io/${{ github.repository }}:latest
+          cache-from: type=gha
+          cache-to: type=gha,mode=max

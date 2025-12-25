@@ -1,4 +1,5 @@
 /* Deep Tree Echo Bot Styling - Celestial Consciousness Interface */
+@use 'sass:color';
 
 /* Mesmerizing Toggle Switch Styling */
 .toggle-switch-container {
@@ -464,7 +465,7 @@ $echo-security-color: #f1c40f;
   position: relative;
   font-family: 'Open Sans', system-ui, sans-serif;
   border-radius: 12px;
-  background-color: rgba(lighten($echo-dark-color, 65%), 0.8);
+  background-color: rgba(color.adjust($echo-dark-color, $lightness: 65%), 0.8);
   padding: 20px;
   margin: 10px 0;
   box-shadow: 0 4px 12px rgba($echo-dark-color, 0.1);

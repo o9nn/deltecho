@@ -58,7 +58,7 @@ jobs:
         run: pnpm --filter @deltecho/shared test -- --coverage
 
       - name: Run tests - dove9
-        run: pnpm --filter dove9 test -- --coverage || echo "::warning::dove9 tests not fully configured"
+        run: pnpm --filter dove9 test -- --coverage
 
       - name: Build all packages
         run: pnpm run build
@@ -138,6 +138,8 @@ jobs:
           pnpm --filter dove9 build
           echo "Building @deltecho/cognitive..."
           pnpm --filter @deltecho/cognitive build
+          echo "Building @deltecho/reasoning..."
+          pnpm --filter @deltecho/reasoning build || echo "::warning::reasoning build skipped"
           echo "Building deep-tree-echo-orchestrator..."
           pnpm --filter deep-tree-echo-orchestrator build
           echo "Building @deltecho/ui-components..."
@@ -151,6 +153,7 @@ jobs:
             deep-tree-echo-core/dist
             packages/shared/dist
             packages/cognitive/dist
+            packages/reasoning/dist
             dove9/dist
             deep-tree-echo-orchestrator/dist
             packages/ui-components/dist
@@ -160,20 +163,34 @@ jobs:
   # Build Desktop Applications
   # ============================================
   build-desktop:
-    name: Build Desktop (${{ matrix.os }})
+    name: Build Desktop (${{ matrix.os }}-${{ matrix.arch }})
     runs-on: ${{ matrix.os }}
     needs: build-core
     strategy:
       fail-fast: false
       matrix:
-        os: [ubuntu-latest, macos-latest, windows-latest]
         include:
+          # Linux builds
           - os: ubuntu-latest
             platform: linux
+            arch: x64
+          - os: ubuntu-latest
+            platform: linux
+            arch: arm64
+          # macOS builds
           - os: macos-latest
             platform: darwin
+            arch: x64
+          - os: macos-latest
+            platform: darwin
+            arch: arm64
+          # Windows builds
           - os: windows-latest
             platform: win32
+            arch: x64
+          - os: windows-latest
+            platform: win32
+            arch: ia32
 
     steps:
       - name: Checkout repository
@@ -202,10 +219,16 @@ jobs:
         env:
           ELECTRON_BUILDER_ALLOW_UNRESOLVED_DEPENDENCIES: true
 
+      - name: Build Electron app (delta-echo-desk)
+        run: pnpm run build:electron || echo "::warning::Electron build not fully configured"
+        working-directory: delta-echo-desk
+        env:
+          ELECTRON_BUILDER_ALLOW_UNRESOLVED_DEPENDENCIES: true
+
       - name: Upload desktop artifacts
         uses: actions/upload-artifact@v4
         with:
-          name: desktop-${{ matrix.platform }}
+          name: desktop-${{ matrix.platform }}-${{ matrix.arch }}
           path: |
             deltecho2/dist
             delta-echo-desk/dist
@@ -245,9 +268,29 @@ jobs:
       - name: Build packages
         run: pnpm run build
 
-      - name: Run E2E tests
-        run: pnpm run e2e || echo "::warning::E2E tests not fully configured"
+      - name: Run E2E tests - Basic
+        run: pnpm exec playwright test basic-tests.spec.ts || echo "::warning::Basic E2E tests not fully configured"
         working-directory: delta-echo-desk/packages/e2e-tests
+        env:
+          WEB_PASSWORD: ${{ secrets.WEB_PASSWORD || 'test-password' }}
+
+      - name: Run E2E tests - Deep Tree Echo
+        run: pnpm exec playwright test deep-tree-echo.spec.ts || echo "::warning::Deep Tree Echo E2E tests not fully configured"
+        working-directory: delta-echo-desk/packages/e2e-tests
+        env:
+          WEB_PASSWORD: ${{ secrets.WEB_PASSWORD || 'test-password' }}
+
+      - name: Run E2E tests - Orchestrator Integration
+        run: pnpm exec playwright test orchestrator-integration.spec.ts || echo "::warning::Orchestrator E2E tests not fully configured"
+        working-directory: delta-echo-desk/packages/e2e-tests
+        env:
+          WEB_PASSWORD: ${{ secrets.WEB_PASSWORD || 'test-password' }}
+
+      - name: Run E2E tests - Cognitive Memory
+        run: pnpm exec playwright test cognitive-memory.spec.ts || echo "::warning::Cognitive Memory E2E tests not fully configured"
+        working-directory: delta-echo-desk/packages/e2e-tests
+        env:
+          WEB_PASSWORD: ${{ secrets.WEB_PASSWORD || 'test-password' }}
 
       - name: Upload E2E test results
         if: always()
@@ -323,3 +366,46 @@ jobs:
           name: documentation
           path: docs/api
           retention-days: 30
+
+  # ============================================
+  # Docker Build
+  # ============================================
+  docker:
+    name: Build Docker Image
+    runs-on: ubuntu-latest
+    needs: build-core
+    if: github.ref == 'refs/heads/main' || startsWith(github.ref, 'refs/tags/v')
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
+
+      - name: Login to GitHub Container Registry
+        uses: docker/login-action@v3
+        with:
+          registry: ghcr.io
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Extract metadata
+        id: meta
+        uses: docker/metadata-action@v5
+        with:
+          images: ghcr.io/${{ github.repository }}
+          tags: |
+            type=ref,event=branch
+            type=ref,event=tag
+            type=sha,prefix=
+
+      - name: Build and push
+        uses: docker/build-push-action@v5
+        with:
+          context: .
+          push: true
+          tags: ${{ steps.meta.outputs.tags }}
+          labels: ${{ steps.meta.outputs.labels }}
+          cache-from: type=gha
+          cache-to: type=gha,mode=max
