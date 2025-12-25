@@ -1,30 +1,22 @@
 packages:
-  # Core cognitive packages
-  - 'deep-tree-echo-core'
-  - 'deep-tree-echo-orchestrator'
-  - 'dove9'
-
-  # Unified packages (extracted and consolidated)
-  - 'packages/cognitive'
-  - 'packages/reasoning'
-  - 'packages/shared'
-  - 'packages/ui-components'
-
-  # Desktop applications (to be unified)
-  - 'delta-echo-desk'
-  - 'delta-echo-desk/packages/*'
-  - 'deltecho2'
-  - 'deltecho2/packages/*'
+  - deep-tree-echo-core
+  - deep-tree-echo-orchestrator
+  - dove9
+  - packages/cognitive
+  - packages/reasoning
+  - packages/shared
+  - packages/ui-components
+  - delta-echo-desk
+  - delta-echo-desk/packages/*
+  - deltecho2
+  - deltecho2/packages/*
 
 catalog:
-  # deltachat specific
   '@deltachat/jsonrpc-client': 1.159.4
   '@deltachat/stdio-rpc-server': 1.159.4
-  '@webxdc/types': ^2.1.2
-  # dependencies
   '@types/mime-types': ^2.1.4
+  '@webxdc/types': ^2.1.2
   mime-types: ^2.1.35
-  # tools / dev dependencies
-  typescript: ^5.5.4
-  typescript-plugin-css-modules: ^5.1.0
-  sass: ^1.86.3
+  sass: ^1.97.1
+  typescript: ^5.9.3
+  typescript-plugin-css-modules: ^5.2.0

@@ -28,7 +28,7 @@
     "dove9": "workspace:*"
   },
   "devDependencies": {
-    "@types/node": "^20.11.0",
-    "typescript": "^5.4.5"
+    "@types/node": "^20.19.27",
+    "typescript": "^5.9.3"
   }
 }
