@@ -105,6 +105,8 @@ const AVAILABLE_CAPABILITIES: {
   embeddings: { name: 'Memory & Embeddings', icon: Brain },
   text_to_speech: { name: 'Voice Generation', icon: Music },
   speech_to_text: { name: 'Voice Recognition', icon: Mic },
+  fine_tuning: { name: 'Fine Tuning', icon: Sliders },
+  retrieval: { name: 'Retrieval', icon: Database },
   roleplaying: { name: 'Roleplaying', icon: Bot },
 }
 
@@ -147,7 +149,7 @@ const AICompanionCreatorContent: React.FC<{
     if (platformType) {
       const platform = AI_PLATFORM_TYPES.find(p => p.id === platformType)
       if (platform) {
-        setSelectedCapabilities([...platform.capabilities])
+        setSelectedCapabilities([...platform.capabilities] as AICapability[])
       }
     } else {
       setSelectedCapabilities([])

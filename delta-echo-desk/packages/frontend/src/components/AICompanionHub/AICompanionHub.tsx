@@ -373,9 +373,7 @@ const AICompanionHubContent: React.FC = () => {
                     <span>Memories</span>
                   </button>
                   <button
-                    className={`tab ${
-                      view === 'visualization' ? 'active' : ''
-                    }`}
+                    className='tab'
                     onClick={() => setView('visualization')}
                   >
                     <Network size={18} />
@@ -498,10 +496,6 @@ const AICompanionHubContent: React.FC = () => {
                 )}
               </div>
             </>
-          ) : view === 'visualization' ? (
-            <div className='memory-visualization-container'>
-              <MemoryVisualization />
-            </div>
           ) : view === 'settings' ? (
             <div className='companion-settings'>
               <h3>Companion Settings</h3>
