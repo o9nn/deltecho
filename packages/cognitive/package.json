@@ -35,7 +35,9 @@
     "build": "tsc -b",
     "check:types": "tsc --noEmit",
     "clean": "rm -rf dist tsconfig.tsbuildinfo",
-    "test": "echo 'Tests pending'"
+    "test": "NODE_OPTIONS='--experimental-vm-modules' jest --config jest.config.cjs",
+    "test:watch": "NODE_OPTIONS='--experimental-vm-modules' jest --config jest.config.cjs --watch",
+    "test:coverage": "NODE_OPTIONS='--experimental-vm-modules' jest --config jest.config.cjs --coverage"
   },
   "keywords": [
     "cognitive",
@@ -52,7 +54,10 @@
     "dove9": "workspace:*"
   },
   "devDependencies": {
+    "@types/jest": "^29.5.14",
     "@types/node": "^20.19.27",
+    "jest": "^29.7.0",
+    "ts-jest": "^29.4.6",
     "typescript": "^5.9.3"
   },
   "engines": {
