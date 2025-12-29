@@ -13,6 +13,7 @@ import {
   Eye,
   EyeOff,
   Loader,
+  X,
 } from 'lucide-react'
 import { AICompanionProvider, useAICompanion } from './AICompanionController'
 import { AIMemory } from './MemoryPersistenceLayer'
@@ -32,11 +33,15 @@ interface MemoryNode {
   color: string
   group?: string
   memory?: AIMemory
+  // 3D position properties added by force-graph
+  x?: number
+  y?: number
+  z?: number
 }
 
 interface MemoryLink {
-  source: string
-  target: string
+  source: string | MemoryNode
+  target: string | MemoryNode
   strength: number
   type:
     | 'memory-topic'
@@ -286,13 +291,15 @@ const MemoryVisualizationContent: React.FC = () => {
       .height(containerRef.current.clientHeight)
       .backgroundColor('rgba(248, 250, 252, 0.8)')
       .nodeVal('val')
-      .nodeLabel(node => node.label)
-      .nodeColor(node => node.color)
-      .linkWidth(link =>
-        highlightedLinks.has(`${link.source.id}-${link.target.id}`) ? 2 : 0.5
-      )
-      .linkColor(link => link.color)
-      .nodeThreeObject(node => {
+      .nodeLabel((node: MemoryNode) => node.label)
+      .nodeColor((node: MemoryNode) => node.color)
+      .linkWidth((link: MemoryLink) => {
+        const sourceId = typeof link.source === 'string' ? link.source : link.source.id
+        const targetId = typeof link.target === 'string' ? link.target : link.target.id
+        return highlightedLinks.has(`${sourceId}-${targetId}`) ? 2 : 0.5
+      })
+      .linkColor((link: MemoryLink) => link.color)
+      .nodeThreeObject((node: MemoryNode) => {
         // Use sprite text for node labels
         const sprite = new SpriteText(node.label)
         sprite.color = node.color
@@ -305,7 +312,7 @@ const MemoryVisualizationContent: React.FC = () => {
         sprite.padding = 2
         return sprite
       })
-      .onNodeClick(node => {
+      .onNodeClick((node: MemoryNode) => {
         setSelectedNode(node === selectedNode ? null : node)
 
         // Highlight related nodes and links
@@ -314,11 +321,12 @@ const MemoryVisualizationContent: React.FC = () => {
           const relatedLinks = new Set<string>()
 
           graphData.links.forEach(link => {
-            if (link.source === node.id || link.target === node.id) {
-              const otherNodeId =
-                link.source === node.id ? link.target : link.source
+            const sourceId = typeof link.source === 'string' ? link.source : link.source.id
+            const targetId = typeof link.target === 'string' ? link.target : link.target.id
+            if (sourceId === node.id || targetId === node.id) {
+              const otherNodeId = sourceId === node.id ? targetId : sourceId
               relatedNodes.add(otherNodeId)
-              relatedLinks.add(`${link.source}-${link.target}`)
+              relatedLinks.add(`${sourceId}-${targetId}`)
             }
           })
 
@@ -329,7 +337,7 @@ const MemoryVisualizationContent: React.FC = () => {
           setHighlightedLinks(new Set())
         }
       })
-      .onNodeHover(node => {
+      .onNodeHover((node: MemoryNode | null) => {
         containerRef.current!.style.cursor = node ? 'pointer' : 'default'
       })
       .graphData(graphData)
@@ -337,7 +345,7 @@ const MemoryVisualizationContent: React.FC = () => {
     // Apply force simulation settings
     graphRef.current.d3Force('charge').strength(-120)
 
-    graphRef.current.d3Force('link').distance(link => {
+    graphRef.current.d3Force('link').distance((link: MemoryLink) => {
       // Different link distances based on link type
       switch (link.type) {
         case 'memory-topic':
@@ -410,12 +418,13 @@ const MemoryVisualizationContent: React.FC = () => {
 
         // Find related links
         graphData.links.forEach(link => {
-          if (link.source === memoryNodeId || link.target === memoryNodeId) {
-            matchingLinks.add(`${link.source}-${link.target}`)
+          const sourceId = typeof link.source === 'string' ? link.source : link.source.id
+          const targetId = typeof link.target === 'string' ? link.target : link.target.id
+          if (sourceId === memoryNodeId || targetId === memoryNodeId) {
+            matchingLinks.add(`${sourceId}-${targetId}`)
 
             // Add related nodes
-            const otherNodeId =
-              link.source === memoryNodeId ? link.target : link.source
+            const otherNodeId = sourceId === memoryNodeId ? targetId : sourceId
             matchingNodes.add(otherNodeId)
           }
         })

@@ -108,7 +108,7 @@ export const AICompanionProvider: React.FC<{ children: ReactNode }> = ({
       // Also update the companion if it differs from current active companion
       const conversation = conversations[id]
       if (conversation.companionId !== activeCompanionId) {
-        setActiveCompanionId(conversation.companionId)
+        setActiveCompanionId(conversation.companionId ?? null)
       }
       return true
     }

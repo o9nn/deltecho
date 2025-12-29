@@ -179,6 +179,9 @@ export interface Runtime {
 
   // undefined if the platform does not support askForMediaAccess
   askForMediaAccess: (mediaType: MediaType) => Promise<boolean | undefined>
+
+  /** Run a shell command (optional - may not be supported on all platforms) */
+  runCommand?: (command: string) => Promise<string>
 }
 
 export const runtime: Runtime = (window as any).r

@@ -31,6 +31,12 @@ export class PlaywrightAutomation {
     }
 
     try {
+      // Check if runCommand is available on this runtime
+      if (!runtime.runCommand) {
+        log.warn('runCommand is not available on this runtime')
+        return false
+      }
+
       // We'll use the Node.js integration to run the Playwright server
       const result = await runtime.runCommand(
         'npx playwright install chromium && node -e "console.log(\'Playwright is ready\')"'
@@ -86,6 +92,10 @@ export class PlaywrightAutomation {
         })();
       `)
 
+      if (!runtime.runCommand) {
+        return "Web search is not available on this platform."
+      }
+
       const output = await runtime.runCommand(`node "${scriptPath}"`)
 
       // Parse the results
@@ -136,6 +146,10 @@ export class PlaywrightAutomation {
           console.log(screenshotPath);
         })();
       `)
+
+      if (!runtime.runCommand) {
+        throw new Error('runCommand is not available on this platform')
+      }
 
       const screenshotPath = await runtime.runCommand(`node "${scriptPath}"`)
       return screenshotPath.trim()

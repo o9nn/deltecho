@@ -126,10 +126,10 @@ describe('DeepTreeEchoBot', () => {
       isContactRequest: false,
     }
 
-    BackendRemote.rpc.getMessage.mockImplementation(() =>
+    ;(BackendRemote.rpc.getMessage as jest.Mock).mockImplementation(() =>
       Promise.resolve(mockMessage)
     )
-    BackendRemote.rpc.getBasicChatInfo.mockImplementation(() =>
+    ;(BackendRemote.rpc.getBasicChatInfo as jest.Mock).mockImplementation(() =>
       Promise.resolve(mockChatInfo)
     )
 
@@ -192,10 +192,10 @@ describe('DeepTreeEchoBot', () => {
       isContactRequest: true, // This should cause the bot to skip processing
     }
 
-    BackendRemote.rpc.getMessage.mockImplementation(() =>
+    ;(BackendRemote.rpc.getMessage as jest.Mock).mockImplementation(() =>
       Promise.resolve(mockMessage)
     )
-    BackendRemote.rpc.getBasicChatInfo.mockImplementation(() =>
+    ;(BackendRemote.rpc.getBasicChatInfo as jest.Mock).mockImplementation(() =>
       Promise.resolve(mockChatInfo)
     )
 
@@ -240,7 +240,7 @@ describe('DeepTreeEchoBot', () => {
       },
     }
 
-    BackendRemote.rpc.getMessage.mockImplementation(() =>
+    ;(BackendRemote.rpc.getMessage as jest.Mock).mockImplementation(() =>
       Promise.resolve(mockMessage)
     )
 
