@@ -405,7 +405,14 @@ Respond in a way that reflects these characteristics while being helpful and inf
 
   private emit(event: CognitiveEvent): void {
     const listeners = this.eventListeners.get(event.type) || []
-    listeners.forEach((listener) => listener(event))
+    listeners.forEach((listener) => {
+      try {
+        listener(event)
+      } catch (error) {
+        // Log error but don't crash - event handlers shouldn't break message processing
+        log.error('Event handler error:', error)
+      }
+    })
   }
 }
 
