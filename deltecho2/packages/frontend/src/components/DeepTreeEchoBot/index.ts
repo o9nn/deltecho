@@ -14,6 +14,24 @@ import { LLMService, CognitiveFunctionType } from './LLMService'
 import { PersonaCore } from './PersonaCore'
 import { RAGMemoryStore } from './RAGMemoryStore'
 import { SelfReflection } from './SelfReflection'
+
+// Import unified cognitive bridge (@deltecho/cognitive integration)
+import {
+  initCognitiveOrchestrator,
+  getOrchestrator,
+  cleanupOrchestrator,
+  processMessageUnified,
+  getCognitiveState,
+  configureLLM,
+  onCognitiveEvent,
+  clearHistory,
+} from './CognitiveBridge'
+import type {
+  DeepTreeEchoBotConfig as UnifiedBotConfig,
+  UnifiedMessage,
+  UnifiedCognitiveState,
+  CognitiveEvent,
+} from './CognitiveBridge'
 import BotSettings from './BotSettings'
 import DeepTreeEchoSettingsScreen from './DeepTreeEchoSettingsScreen'
 import {
@@ -67,4 +85,23 @@ export {
   QuantumBeliefPropagation,
   EmotionalIntelligence,
   SecureIntegration,
+}
+
+// Export unified cognitive framework integration
+export {
+  initCognitiveOrchestrator,
+  getOrchestrator,
+  cleanupOrchestrator,
+  processMessageUnified,
+  getCognitiveState,
+  configureLLM,
+  onCognitiveEvent,
+  clearHistory,
+}
+
+export type {
+  UnifiedBotConfig,
+  UnifiedMessage,
+  UnifiedCognitiveState,
+  CognitiveEvent,
 }

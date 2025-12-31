@@ -15,12 +15,7 @@ describe('CognitiveOrchestrator', () => {
   let orchestrator: CognitiveOrchestrator;
   const defaultConfig: DeepTreeEchoBotConfig = {
     enabled: true,
-    botId: 'test-bot',
-    personality: {
-      name: 'Test Echo',
-      traits: ['helpful', 'curious'],
-      mood: 'neutral',
-    },
+    enableAsMainUser: false,
     apiKey: '',
     apiEndpoint: '',
     model: 'gpt-4',
@@ -319,7 +314,7 @@ describe('CognitiveOrchestrator', () => {
       });
 
       const state = orchestrator.getState();
-      expect(state?.cognitiveContext.emotionalValence).toBeGreaterThan(0);
+      expect(state?.cognitiveContext?.emotionalValence).toBeGreaterThan(0);
     });
 
     it('should detect negative sentiment', async () => {
@@ -331,7 +326,7 @@ describe('CognitiveOrchestrator', () => {
       });
 
       const state = orchestrator.getState();
-      expect(state?.cognitiveContext.emotionalValence).toBeLessThan(0);
+      expect(state?.cognitiveContext?.emotionalValence).toBeLessThan(0);
     });
 
     it('should calculate salience for urgent messages', async () => {
@@ -343,7 +338,7 @@ describe('CognitiveOrchestrator', () => {
       });
 
       const state = orchestrator.getState();
-      expect(state?.cognitiveContext.salienceScore).toBeGreaterThan(0.3);
+      expect(state?.cognitiveContext?.salienceScore).toBeGreaterThan(0.3);
     });
   });
 });
