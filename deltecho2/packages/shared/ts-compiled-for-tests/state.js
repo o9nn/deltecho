@@ -33,6 +33,7 @@ export function getDefaultState() {
     autostart: true,
     // Deep Tree Echo Bot settings
     deepTreeEchoBotEnabled: false,
+    deepTreeEchoBotEnableAsMainUser: false,
     deepTreeEchoBotMemoryEnabled: false,
     deepTreeEchoBotVisionEnabled: false,
     deepTreeEchoBotWebAutomationEnabled: false,
