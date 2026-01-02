@@ -137,6 +137,7 @@ import {
   cleanupDraftTempDir,
   cleanupInternalTempDirs,
 } from './cleanup_temp_dir.js'
+import { initCognitiveStorage } from './cognitive-storage.js'
 
 app.ipcReady = false
 app.isQuitting = false
@@ -161,6 +162,7 @@ Also make sure you are not trying to run multiple instances of deltachat.`
   })
 
 let ipc_shutdown_function: (() => void) | null = null
+let cognitive_storage_cleanup: (() => Promise<void>) | null = null
 
 async function onReady([_appReady, _loadedState, _appx, _webxdc_cleanup]: [
   any,
@@ -176,6 +178,14 @@ async function onReady([_appReady, _loadedState, _appx, _webxdc_cleanup]: [
   const cwd = getAccountsPath()
   log.info(`cwd ${cwd}`)
   ipc_shutdown_function = await ipc.init(cwd, logHandler)
+
+  // Initialize cognitive storage handlers for Deep Tree Echo
+  try {
+    cognitive_storage_cleanup = await initCognitiveStorage()
+    log.info('Cognitive storage initialized')
+  } catch (error) {
+    log.error('Failed to initialize cognitive storage:', error)
+  }
 
   mainWindow.init({ hidden: app.rc['minimized'] })
   initMenu(logHandler)
@@ -256,6 +266,13 @@ export function quit(e?: Electron.Event) {
 
   // does stop io and other things
   ipc_shutdown_function && ipc_shutdown_function()
+
+  // Cleanup cognitive storage
+  if (cognitive_storage_cleanup) {
+    cognitive_storage_cleanup().catch(err =>
+      log.error('Failed to cleanup cognitive storage:', err)
+    )
+  }
 
   cleanupDraftTempDir()
 

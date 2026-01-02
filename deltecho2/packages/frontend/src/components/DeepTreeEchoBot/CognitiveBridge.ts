@@ -1,11 +1,56 @@
 /**
- * CognitiveBridge - Bridge between unified cognitive framework and desktop app
+ * CognitiveBridge - Browser-Safe Cognitive Framework Interface
  *
- * This module provides a browser-safe interface that mirrors the @deltecho/cognitive
- * API but works in the frontend without Node.js dependencies.
+ * This module provides a browser-compatible implementation of the @deltecho/cognitive
+ * CognitiveOrchestrator API. It mirrors the same interface but runs entirely in the
+ * browser/renderer process without Node.js dependencies.
  *
- * For full orchestrator integration (with IPC, storage, etc.), use the
- * @deltecho/cognitive package directly in Node.js contexts (Electron main process).
+ * Architecture:
+ * ```
+ * ┌─────────────────────────────────────────────────────────────────────┐
+ * │                    Electron Main Process                            │
+ * │  ┌─────────────────────────────────────────────────────────────┐   │
+ * │  │              @deltecho/cognitive (Full Stack)                │   │
+ * │  │    - dove9 triadic engine (Node.js EventEmitter)            │   │
+ * │  │    - deep-tree-echo-core (memory, LLM, personality)         │   │
+ * │  │    - Storage via cognitive-storage.ts IPC handlers          │   │
+ * │  └─────────────────────────────────────────────────────────────┘   │
+ * │                              ▲                                      │
+ * │                              │ IPC (storage:get, storage:set, ...)  │
+ * │                              ▼                                      │
+ * │  ┌─────────────────────────────────────────────────────────────┐   │
+ * │  │                 Renderer Process (Browser)                   │   │
+ * │  │                                                             │   │
+ * │  │  ┌───────────────────────────────────────────────────────┐  │   │
+ * │  │  │            CognitiveBridge (This File)                 │  │   │
+ * │  │  │    - Browser-safe CognitiveOrchestrator                │  │   │
+ * │  │  │    - Same API as @deltecho/cognitive                   │  │   │
+ * │  │  │    - Uses fetch() for LLM calls                        │  │   │
+ * │  │  │    - In-memory state (can persist via IPC)             │  │   │
+ * │  │  └───────────────────────────────────────────────────────┘  │   │
+ * │  └─────────────────────────────────────────────────────────────┘   │
+ * └─────────────────────────────────────────────────────────────────────┘
+ * ```
+ *
+ * Usage:
+ * ```typescript
+ * // Initialize the orchestrator
+ * const orchestrator = await initCognitiveOrchestrator({
+ *   enabled: true,
+ *   enableAsMainUser: false,
+ *   apiKey: 'your-api-key',
+ *   provider: 'openai'
+ * });
+ *
+ * // Process messages
+ * const response = await processMessageUnified('Hello!', { chatId: 123 });
+ * ```
+ *
+ * For persistent storage integration, the main process should set up IPC handlers
+ * using cognitive-storage.ts, and this bridge can communicate via ipcRenderer.
+ *
+ * @see {@link @deltecho/cognitive} for the full Node.js implementation
+ * @see {@link cognitive-storage.ts} for Electron main process storage handlers
  */
 
 import { getLogger } from '@deltachat-desktop/shared/logger'
