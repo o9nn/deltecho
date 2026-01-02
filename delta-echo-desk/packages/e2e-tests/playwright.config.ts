@@ -2,7 +2,9 @@ import { defineConfig, devices } from '@playwright/test'
 
 const port = process.env.PORT ?? 3000
 
-const baseURL = `https://localhost:${port}`
+// Use HTTP in CI environment to avoid SSL certificate issues
+const protocol = process.env.CI ? 'http' : 'https'
+const baseURL = `${protocol}://localhost:${port}`
 
 /**
  * See https://playwright.dev/docs/test-configuration.
@@ -87,8 +89,13 @@ export default defineConfig({
   /* Run your local dev server before starting the tests */
   webServer: {
     command: `node ${
-      process.env.CI ? '' : '--env-file .env'
+      process.env.CI ? '--env-file /dev/null' : '--env-file .env'
     } ../target-browser/dist/server.js`,
+    env: {
+      ...process.env,
+      NODE_TLS_REJECT_UNAUTHORIZED: '0',
+      HTTPS_ENABLED: process.env.CI ? 'false' : 'true',
+    },
     url: baseURL,
     timeout: 120 * 1000,
     ignoreHTTPSErrors: true,

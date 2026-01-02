@@ -45,14 +45,14 @@ describe('RAGMemoryStore', () => {
         text: 'Memory in chat 123',
         sender: 'user' as const,
         chatId: 123,
-        messageId: null,
+        messageId: 0,
       })
 
       await memoryStore.addMemory({
         text: 'Memory in chat 456',
         sender: 'bot' as const,
         chatId: 456,
-        messageId: null,
+        messageId: 0,
       })
 
       const memories123 = memoryStore.getMemoriesByChatId(123)
@@ -78,7 +78,7 @@ describe('RAGMemoryStore', () => {
           text: `Memory ${i}`,
           sender: i % 2 === 0 ? ('user' as const) : ('bot' as const),
           chatId: 123,
-          messageId: null,
+          messageId: 0,
         })
 
         // Small delay to ensure different timestamps
@@ -100,7 +100,7 @@ describe('RAGMemoryStore', () => {
           text: `Memory ${i}`,
           sender: 'user' as const,
           chatId: 123,
-          messageId: null,
+          messageId: 0,
         })
       }
 
@@ -115,21 +115,21 @@ describe('RAGMemoryStore', () => {
         text: 'I like apples and bananas',
         sender: 'user' as const,
         chatId: 123,
-        messageId: null,
+        messageId: 0,
       })
 
       await memoryStore.addMemory({
         text: 'Bananas are yellow',
         sender: 'bot' as const,
         chatId: 123,
-        messageId: null,
+        messageId: 0,
       })
 
       await memoryStore.addMemory({
         text: 'Apples are red or green',
         sender: 'user' as const,
         chatId: 123,
-        messageId: null,
+        messageId: 0,
       })
 
       const bananaResults = memoryStore.searchMemories('banana')
@@ -153,21 +153,21 @@ describe('RAGMemoryStore', () => {
         text: 'Memory in chat 123',
         sender: 'user' as const,
         chatId: 123,
-        messageId: null,
+        messageId: 0,
       })
 
       await memoryStore.addMemory({
         text: 'Another memory in chat 123',
         sender: 'bot' as const,
         chatId: 123,
-        messageId: null,
+        messageId: 0,
       })
 
       await memoryStore.addMemory({
         text: 'Memory in chat 456',
         sender: 'user' as const,
         chatId: 456,
-        messageId: null,
+        messageId: 0,
       })
 
       // Verify initial state
@@ -190,27 +190,27 @@ describe('RAGMemoryStore', () => {
         text: 'Memory 1 in chat 123',
         sender: 'user' as const,
         chatId: 123,
-        messageId: null,
+        messageId: 0,
       })
 
       await memoryStore.addMemory({
         text: 'Memory 2 in chat 123',
         sender: 'bot' as const,
         chatId: 123,
-        messageId: null,
+        messageId: 0,
       })
 
       await memoryStore.addMemory({
         text: 'Memory 1 in chat 456',
         sender: 'user' as const,
         chatId: 456,
-        messageId: null,
+        messageId: 0,
       })
 
       const stats = memoryStore.getStats()
 
       expect(stats.totalMemories).toBe(3)
-      expect(stats.chatCount).toBe(2)
+      expect(Object.keys(stats.memoriesByChat).length).toBe(2)
     })
   })
 })

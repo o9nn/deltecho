@@ -667,7 +667,7 @@ var require_rc = __commonJS({
   "../../../node_modules/.pnpm/rc@1.2.8/node_modules/rc/index.js"(exports, module) {
     init_cjs_shim();
     var cc = require_utils();
-    var join17 = __require("path").join;
+    var join18 = __require("path").join;
     var deepExtend = require_deep_extend();
     var etc = "/etc";
     var win2 = process.platform === "win32";
@@ -692,15 +692,15 @@ var require_rc = __commonJS({
       }
       if (!win2)
         [
-          join17(etc, name, "config"),
-          join17(etc, name + "rc")
+          join18(etc, name, "config"),
+          join18(etc, name + "rc")
         ].forEach(addConfigFile);
       if (home)
         [
-          join17(home, ".config", name, "config"),
-          join17(home, ".config", name),
-          join17(home, "." + name, "config"),
-          join17(home, "." + name + "rc")
+          join18(home, ".config", name, "config"),
+          join18(home, ".config", name),
+          join18(home, "." + name, "config"),
+          join18(home, "." + name + "rc")
         ].forEach(addConfigFile);
       addConfigFile(cc.find("." + name + "rc"));
       if (env.config) addConfigFile(env.config);
@@ -3467,7 +3467,7 @@ function createLogHandler() {
 }
 import { readdir, lstat, unlink } from "fs/promises";
 async function cleanupLogFolder() {
-  const log20 = getLogger("logger/log-cleanup");
+  const log21 = getLogger("logger/log-cleanup");
   const logDir = getLogsPath();
   const logDirContent = await readdir(logDir);
   const filesWithDates = await Promise.all(
@@ -3482,9 +3482,9 @@ async function cleanupLogFolder() {
     const fileCount = await Promise.all(
       sortedFiles.map(({ filename }) => unlink(join8(logDir, filename)))
     );
-    log20.info(`Successfuly deleted ${fileCount.length} old logfiles`);
+    log21.info(`Successfuly deleted ${fileCount.length} old logfiles`);
   } else {
-    log20.debug("Nothing to do (not more than 10 logfiles to delete)");
+    log21.debug("Nothing to do (not more than 10 logfiles to delete)");
   }
 }
 function fillString(string, n) {
@@ -5247,7 +5247,7 @@ init_cjs_shim();
 
 // src/get-build-info.ts
 init_cjs_shim();
-var BuildInfo = JSON.parse('{"VERSION":"1.58.2","BUILD_TIMESTAMP":1766664794413,"GIT_REF":"vv1.0.0-alpha.1-3-g5433b5e"}');
+var BuildInfo = JSON.parse('{"VERSION":"1.58.2","BUILD_TIMESTAMP":1767365677174,"GIT_REF":"vv1.0.0-alpha.1-19-g02d26f2"}');
 
 // src/deltachat/stdio_server.ts
 import { spawn } from "child_process";
@@ -5351,16 +5351,16 @@ import { startDeltaChat } from "@deltachat/stdio-rpc-server";
 import { existsSync as existsSync5, lstatSync } from "fs";
 import { join as join13 } from "path";
 import { mkdir, readdir as readdir4, rename, rm, rmdir as rmdir2, stat as stat3 } from "fs/promises";
-async function migrateAccountsIfNeeded(cwd, log20, treatFailedMigrationAsError = false) {
+async function migrateAccountsIfNeeded(cwd, log21, treatFailedMigrationAsError = false) {
   let tmpDC;
-  const eventLogger = (accountId, event) => log20.debug("core-event", { accountId, ...event });
+  const eventLogger = (accountId, event) => log21.debug("core-event", { accountId, ...event });
   try {
     const new_accounts_format = existsSync5(join13(cwd, "accounts.toml"));
     if (new_accounts_format) {
-      log20.debug("migration not needed: accounts.toml already exists");
+      log21.debug("migration not needed: accounts.toml already exists");
       return false;
     }
-    log20.debug("accounts.toml not found, checking if there is previous data");
+    log21.debug("accounts.toml not found, checking if there is previous data");
     const configPath = join13(cwd, "..");
     const accountFoldersFormat1 = (await readdir4(configPath)).filter(
       (folderName) => {
@@ -5369,7 +5369,7 @@ async function migrateAccountsIfNeeded(cwd, log20, treatFailedMigrationAsError =
           const db_path = join13(path4, "db.sqlite");
           return lstatSync(path4).isDirectory() && existsSync5(db_path) && lstatSync(db_path).isFile() && !lstatSync(path4).isSymbolicLink();
         } catch (error) {
-          log20.debug("error while testing if folder is account", error);
+          log21.debug("error while testing if folder is account", error);
           return false;
         }
       }
@@ -5377,13 +5377,13 @@ async function migrateAccountsIfNeeded(cwd, log20, treatFailedMigrationAsError =
     const migrateFromFormat1 = accountFoldersFormat1.length !== 0;
     const migrateFromFormat2 = existsSync5(cwd);
     if (!migrateFromFormat1 && !migrateFromFormat2) {
-      log20.info("migration not needed: nothing to migrate");
+      log21.info("migration not needed: nothing to migrate");
       return false;
     }
     const path_accounts = join13(cwd, "..", "accounts");
     const pathAccountsOld = join13(cwd, "..", "accounts_old");
     if (migrateFromFormat2) {
-      log20.info(`found old some accounts (format 2), we need to migrate...`);
+      log21.info(`found old some accounts (format 2), we need to migrate...`);
       await rename(path_accounts, pathAccountsOld);
     }
     tmpDC = await startDeltaChat(path_accounts, {
@@ -5392,11 +5392,11 @@ async function migrateAccountsIfNeeded(cwd, log20, treatFailedMigrationAsError =
     tmpDC.on("ALL", eventLogger);
     const oldFoldersToDelete = [];
     if (migrateFromFormat1) {
-      log20.info(
+      log21.info(
         `found old ${accountFoldersFormat1.length} legacy accounts (1), we need to migrate...`
       );
       for (const folder of accountFoldersFormat1) {
-        log20.debug(`migrating legacy account "${folder}"`);
+        log21.debug(`migrating legacy account "${folder}"`);
         const pathDBFile = join13(configPath, folder, "db.sqlite");
         const blobsFolder = join13(configPath, folder, "db.sqlite-blobs");
         if (!existsSync5(blobsFolder)) {
@@ -5406,7 +5406,7 @@ async function migrateAccountsIfNeeded(cwd, log20, treatFailedMigrationAsError =
           await tmpDC.rpc.migrateAccount(pathDBFile);
           oldFoldersToDelete.push(folder);
         } catch (error) {
-          log20.error(`Failed to migrate account at path "${pathDBFile}"`, error);
+          log21.error(`Failed to migrate account at path "${pathDBFile}"`, error);
           if (treatFailedMigrationAsError) {
             throw error;
           }
@@ -5417,10 +5417,10 @@ async function migrateAccountsIfNeeded(cwd, log20, treatFailedMigrationAsError =
       for (const entry of await readdir4(pathAccountsOld)) {
         const stat_result = await stat3(join13(pathAccountsOld, entry));
         if (!stat_result.isDirectory()) continue;
-        log20.debug(`migrating account "${join13(pathAccountsOld, entry)}"`);
+        log21.debug(`migrating account "${join13(pathAccountsOld, entry)}"`);
         const path_dbfile = join13(pathAccountsOld, entry, "db.sqlite");
         if (!existsSync5(path_dbfile)) {
-          log20.warn(
+          log21.warn(
             "found an old accounts folder without a db.sqlite file, skipping"
           );
           continue;
@@ -5433,7 +5433,7 @@ async function migrateAccountsIfNeeded(cwd, log20, treatFailedMigrationAsError =
           const account_id = await tmpDC.rpc.migrateAccount(path_dbfile);
           const old_sticker_folder = join13(pathAccountsOld, entry, "stickers");
           if (existsSync5(old_sticker_folder)) {
-            log20.debug("found stickers, migrating them", old_sticker_folder);
+            log21.debug("found stickers, migrating them", old_sticker_folder);
             try {
               const blobdir = await tmpDC.rpc.getBlobDir(account_id);
               if (!blobdir) {
@@ -5442,7 +5442,7 @@ async function migrateAccountsIfNeeded(cwd, log20, treatFailedMigrationAsError =
               const new_sticker_folder = join13(blobdir, "../stickers");
               await rename(old_sticker_folder, new_sticker_folder);
             } catch (error) {
-              log20.error("stickers migration failed", old_sticker_folder, error);
+              log21.error("stickers migration failed", old_sticker_folder, error);
               if (treatFailedMigrationAsError) {
                 throw error;
               }
@@ -5450,7 +5450,7 @@ async function migrateAccountsIfNeeded(cwd, log20, treatFailedMigrationAsError =
           }
           oldFoldersToDelete.push(join13(pathAccountsOld, entry));
         } catch (error) {
-          log20.error(
+          log21.error(
             `Failed to migrate account at path "${path_dbfile}":`,
             error
           );
@@ -5467,10 +5467,10 @@ async function migrateAccountsIfNeeded(cwd, log20, treatFailedMigrationAsError =
         }
         await rmdir2(oldFolder);
       } catch (error) {
-        log20.error("Failed to cleanup old folder:", oldFolder, error);
+        log21.error("Failed to cleanup old folder:", oldFolder, error);
       }
     }
-    log20.info("migration completed");
+    log21.info("migration completed");
     return true;
   } catch (err) {
     tmpDC?.off("ALL", eventLogger);
@@ -6124,10 +6124,148 @@ async function cleanupInternalTempDirs() {
   }
 }
 
+// src/cognitive-storage.ts
+init_cjs_shim();
+import { ipcMain as ipcMain8 } from "electron";
+import { readFile as readFile5, writeFile as writeFile3, mkdir as mkdir4 } from "fs/promises";
+import { existsSync as existsSync7 } from "fs";
+import { join as join16 } from "path";
+var log19 = getLogger("main/cognitive-storage");
+var storageCache = /* @__PURE__ */ new Map();
+var saveTimeout = null;
+var SAVE_DEBOUNCE_MS = 100;
+function getStoragePath() {
+  return join16(getConfigPath(), "cognitive-storage.json");
+}
+async function ensureStorageDir() {
+  const configPath = getConfigPath();
+  if (!existsSync7(configPath)) {
+    await mkdir4(configPath, { recursive: true });
+  }
+}
+async function loadStorage() {
+  try {
+    await ensureStorageDir();
+    const storagePath = getStoragePath();
+    if (existsSync7(storagePath)) {
+      const data = await readFile5(storagePath, "utf-8");
+      const parsed = JSON.parse(data);
+      storageCache.clear();
+      for (const [key, value] of Object.entries(parsed)) {
+        storageCache.set(key, value);
+      }
+      log19.info(`Loaded ${storageCache.size} cognitive storage entries`);
+    } else {
+      log19.info("No existing cognitive storage found, starting fresh");
+    }
+  } catch (error) {
+    log19.error("Failed to load cognitive storage:", error);
+  }
+}
+function scheduleSave() {
+  if (saveTimeout) {
+    clearTimeout(saveTimeout);
+  }
+  saveTimeout = setTimeout(async () => {
+    try {
+      await ensureStorageDir();
+      const storagePath = getStoragePath();
+      const data = {};
+      for (const [key, value] of storageCache.entries()) {
+        data[key] = value;
+      }
+      const tempPath = `${storagePath}.tmp`;
+      await writeFile3(tempPath, JSON.stringify(data, null, 2), "utf-8");
+      const { rename: rename2 } = await import("fs/promises");
+      await rename2(tempPath, storagePath);
+      log19.debug(`Saved ${storageCache.size} cognitive storage entries`);
+    } catch (error) {
+      log19.error("Failed to save cognitive storage:", error);
+    }
+  }, SAVE_DEBOUNCE_MS);
+}
+async function saveImmediate() {
+  if (saveTimeout) {
+    clearTimeout(saveTimeout);
+    saveTimeout = null;
+  }
+  try {
+    await ensureStorageDir();
+    const storagePath = getStoragePath();
+    const data = {};
+    for (const [key, value] of storageCache.entries()) {
+      data[key] = value;
+    }
+    await writeFile3(storagePath, JSON.stringify(data, null, 2), "utf-8");
+    log19.info("Cognitive storage saved on shutdown");
+  } catch (error) {
+    log19.error("Failed to save cognitive storage on shutdown:", error);
+  }
+}
+async function initCognitiveStorage() {
+  log19.info("Initializing cognitive storage handlers");
+  await loadStorage();
+  ipcMain8.handle("storage:get", async (_event, key) => {
+    const value = storageCache.get(key);
+    log19.debug(`storage:get ${key} -> ${value ? "found" : "not found"}`);
+    return value ?? null;
+  });
+  ipcMain8.handle("storage:set", async (_event, key, value) => {
+    storageCache.set(key, value);
+    scheduleSave();
+    log19.debug(`storage:set ${key}`);
+    return true;
+  });
+  ipcMain8.handle("storage:delete", async (_event, key) => {
+    const deleted = storageCache.delete(key);
+    if (deleted) {
+      scheduleSave();
+    }
+    log19.debug(`storage:delete ${key} -> ${deleted}`);
+    return deleted;
+  });
+  ipcMain8.handle("storage:clear", async (_event, prefix) => {
+    const keysToDelete = [];
+    for (const key of storageCache.keys()) {
+      if (key.startsWith(`${prefix}:`)) {
+        keysToDelete.push(key);
+      }
+    }
+    for (const key of keysToDelete) {
+      storageCache.delete(key);
+    }
+    if (keysToDelete.length > 0) {
+      scheduleSave();
+    }
+    log19.debug(`storage:clear ${prefix} -> deleted ${keysToDelete.length} keys`);
+    return keysToDelete.length;
+  });
+  ipcMain8.handle("storage:keys", async (_event, prefix) => {
+    const keys = [];
+    for (const key of storageCache.keys()) {
+      if (key.startsWith(`${prefix}:`)) {
+        keys.push(key);
+      }
+    }
+    log19.debug(`storage:keys ${prefix} -> found ${keys.length} keys`);
+    return keys;
+  });
+  log19.info("Cognitive storage handlers initialized");
+  return async () => {
+    await saveImmediate();
+    ipcMain8.removeHandler("storage:get");
+    ipcMain8.removeHandler("storage:set");
+    ipcMain8.removeHandler("storage:delete");
+    ipcMain8.removeHandler("storage:clear");
+    ipcMain8.removeHandler("storage:keys");
+    log19.info("Cognitive storage handlers cleaned up");
+  };
+}
+
 // src/index.ts
 console.time("init");
 import { mkdirSync, watchFile as watchFile2 } from "fs";
-import { app as rawApp6, dialog as dialog5, ipcMain as ipcMain8, protocol as protocol2 } from "electron";
+import { app as rawApp6, dialog as dialog5, ipcMain as ipcMain9, protocol as protocol2 } from "electron";
 var hostRules = "MAP * ~NOTFOUND, EXCLUDE *.openstreetmap.org";
 rawApp6.commandLine.appendSwitch("host-resolver-rules", hostRules);
 rawApp6.commandLine.appendSwitch("host-rules", hostRules);
@@ -6184,16 +6322,16 @@ mkdirSync(getConfigPath(), { recursive: true });
 mkdirSync(getLogsPath(), { recursive: true });
 mkdirSync(getCustomThemesPath(), { recursive: true });
 var logHandler = createLogHandler();
-var log19 = getLogger("main/index");
+var log20 = getLogger("main/index");
 setLogHandler(logHandler.log, rc_default);
-log19.info(
+log20.info(
   `Deltachat Version ${BuildInfo.VERSION} ${BuildInfo.GIT_REF} ${BuildInfo.BUILD_TIMESTAMP}`
 );
 process.on("exit", logHandler.end);
 process.on("uncaughtException", (err) => {
   const error = { message: err.message, stack: err.stack };
-  if (log19) {
-    log19.error("uncaughtError", error);
+  if (log20) {
+    log20.error("uncaughtError", error);
   } else {
     console.error("uncaughtException", error);
   }
@@ -6211,7 +6349,7 @@ Promise.all([
   isWindowsStorePackage(),
   webxdcStartUpCleanup()
 ]).then(onReady).catch((error) => {
-  log19.critical("Fatal Error during init", error);
+  log20.critical("Fatal Error during init", error);
   dialog5.showErrorBox(
     "Fatal Error during init",
     `[Version: ${BuildInfo.VERSION} | ${platform11()} | ${arch2()}]]
@@ -6222,12 +6360,19 @@ Also make sure you are not trying to run multiple instances of deltachat.`
   process.exit(1);
 });
 var ipc_shutdown_function = null;
+var cognitive_storage_cleanup = null;
 async function onReady([_appReady, _loadedState, _appx, _webxdc_cleanup]) {
   acceptThemeCLI();
   setLanguage(DesktopSettings.state.locale || app12.getLocale());
   const cwd = getAccountsPath();
-  log19.info(`cwd ${cwd}`);
+  log20.info(`cwd ${cwd}`);
   ipc_shutdown_function = await init3(cwd, logHandler);
+  try {
+    cognitive_storage_cleanup = await initCognitiveStorage();
+    log20.info("Cognitive storage initialized");
+  } catch (error) {
+    log20.error("Failed to initialize cognitive storage:", error);
+  }
   init({ hidden: app12.rc["minimized"] });
   init2(logHandler);
   if (rc_default.devmode) {
@@ -6235,18 +6380,18 @@ async function onReady([_appReady, _loadedState, _appx, _webxdc_cleanup]) {
   }
   if (app12.rc["translation-watch"]) {
     watchFile2(
-      join16(getLocaleDirectoryPath(), "/_untranslated_en.json"),
+      join17(getLocaleDirectoryPath(), "/_untranslated_en.json"),
       (curr, prev) => {
         if (curr.mtime !== prev.mtime) {
-          log19.info("translation-watch: File changed reloading translation data");
+          log20.info("translation-watch: File changed reloading translation data");
           chooseLanguage(getCurrentLocaleDate().locale);
-          log19.info("translation-watch: reloading translation data - done");
+          log20.info("translation-watch: reloading translation data - done");
         }
       }
     );
   }
   cleanupLogFolder().catch(
-    (err) => log19.error("Cleanup of old logfiles failed: ", err)
+    (err) => log20.error("Cleanup of old logfiles failed: ", err)
   );
   cleanupDraftTempDir();
   cleanupInternalTempDirs();
@@ -6263,20 +6408,20 @@ app12.once("ipcReady", () => {
   }
   updateTrayIcon();
   window2.on("close", (e) => {
-    log19.debug("mainWindow.window.on('close')");
+    log20.debug("mainWindow.window.on('close')");
     if (!app12.isQuitting) {
       e.preventDefault();
       if (app12.rc["minimized"] || DesktopSettings.state.minimizeToTray) {
-        log19.debug("mainWindow.window.on('close') Hiding main window");
+        log20.debug("mainWindow.window.on('close') Hiding main window");
         hideDeltaChat();
       } else {
         if (process.platform === "darwin") {
-          log19.debug(
+          log20.debug(
             "mainWindow.window.on('close') We are on mac, so lets hide the main window"
           );
           hideDeltaChat();
         } else {
-          log19.debug("mainWindow.window.on('close') Quitting deltachat");
+          log20.debug("mainWindow.window.on('close') Quitting deltachat");
           quit(e);
         }
       }
@@ -6287,38 +6432,43 @@ function quit(e) {
   if (app12.isQuitting) return;
   app12.isQuitting = true;
   e?.preventDefault();
-  log19.info("Starting app shutdown process");
+  log20.info("Starting app shutdown process");
   try {
     window2?.close();
     window2?.destroy();
   } catch (error) {
-    log19.error("failed to close window, error:", error);
+    log20.error("failed to close window, error:", error);
   }
   ipc_shutdown_function && ipc_shutdown_function();
+  if (cognitive_storage_cleanup) {
+    cognitive_storage_cleanup().catch(
+      (err) => log20.error("Failed to cleanup cognitive storage:", err)
+    );
+  }
   cleanupDraftTempDir();
   function doQuit() {
-    log19.info("Quitting now. Bye.");
+    log20.info("Quitting now. Bye.");
     app12.quit();
   }
   DesktopSettings.saveImmediate().then(() => {
     setTimeout(doQuit, 500);
   });
   setTimeout(() => {
-    log19.error("Saving state took too long. Quitting.");
+    log20.error("Saving state took too long. Quitting.");
     doQuit();
   }, 4e3);
 }
 app12.on("activate", () => {
-  log19.debug("app.on('activate')");
+  log20.debug("app.on('activate')");
   if (!window2) {
-    log19.warn("window not set, this is normal on startup");
+    log20.warn("window not set, this is normal on startup");
     return;
   }
   if (window2.isVisible() === false) {
-    log19.debug("app.on('activate') showing main window");
+    log20.debug("app.on('activate') showing main window");
     showDeltaChat();
   } else {
-    log19.debug("app.on('activate') mainWindow is visible, no need to show it");
+    log20.debug("app.on('activate') mainWindow is visible, no need to show it");
   }
 });
 app12.on("before-quit", (e) => quit(e));
@@ -6358,7 +6508,7 @@ app12.on("web-contents-created", (_ev, contents) => {
     });
   } else {
     contents.on("will-navigate", (e, navigationUrl) => {
-      log19.warn("blocked navigation attempt to", navigationUrl);
+      log20.warn("blocked navigation attempt to", navigationUrl);
       e.preventDefault();
     });
     contents.setWindowOpenHandler((_details) => {
@@ -6370,10 +6520,10 @@ app12.on("web-contents-created", (_ev, contents) => {
   });
 });
 electron_context_menu_default();
-import { join as join16 } from "path";
+import { join as join17 } from "path";
 import { arch as arch2, platform as platform11 } from "os";
 openUrlsAndFilesFromArgv(process.argv);
-ipcMain8.handle("restart_app", async (_ev) => {
+ipcMain9.handle("restart_app", async (_ev) => {
   app12.relaunch();
   app12.quit();
 });

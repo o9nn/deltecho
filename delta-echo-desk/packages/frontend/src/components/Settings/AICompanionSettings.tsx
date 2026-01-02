@@ -98,11 +98,9 @@ const AICompanionSettings: React.FC = () => {
       })
 
       // Update settings store with correct typing
-      SettingsStoreInstance.setState(
-        {
-          desktopSettings: updatedSettings,
-        },
-        true
+      SettingsStoreInstance.reducer.setDesktopSetting(
+        'deepTreeEchoBotCognitiveKeys',
+        JSON.stringify(keys)
       )
 
       return true

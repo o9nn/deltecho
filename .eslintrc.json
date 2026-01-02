@@ -6,6 +6,7 @@
     "sourceType": "module",
     "project": [
       "./tsconfig.json",
+      "./tsconfig.test.json",
       "./packages/*/tsconfig.json",
       "./deep-tree-echo-*/tsconfig.json",
       "./dove9/tsconfig.json"
@@ -36,5 +37,18 @@
     "delta-echo-desk",
     "deltecho2",
     "dovecot-core"
+  ],
+  "overrides": [
+    {
+      "files": ["**/__tests__/**/*.ts", "**/*.test.ts", "**/*.spec.ts", "test/**/*.ts", "**/jest.setup.ts"],
+      "rules": {
+        "@typescript-eslint/no-unsafe-assignment": "off",
+        "@typescript-eslint/no-unsafe-call": "off",
+        "@typescript-eslint/no-unsafe-member-access": "off",
+        "@typescript-eslint/no-unsafe-return": "off",
+        "@typescript-eslint/no-explicit-any": "off",
+        "@typescript-eslint/unbound-method": "off"
+      }
+    }
   ]
 }
