@@ -7,6 +7,9 @@
  */
 
 import { Atom, AtomSpace, AtomType } from '../atomspace/AtomSpace.js';
+import { getLogger } from '../utils/logger.js';
+
+const logger = getLogger('MOSES');
 
 export interface Program {
   id: string;
@@ -60,7 +63,7 @@ export class MOSES {
       this.population.push(program);
     }
 
-    console.log(`[MOSES] Initialized population: ${this.population.length} programs`);
+    logger.info(`Initialized population: ${this.population.length} programs`);
   }
 
   /**
@@ -93,8 +96,8 @@ export class MOSES {
     // Sort by fitness
     this.population.sort((a, b) => b.fitness - a.fitness);
 
-    console.log(
-      `[MOSES] Generation ${this.generation}: Best fitness = ${this.population[0].fitness}`
+    logger.debug(
+      `Generation ${this.generation}: Best fitness = ${this.population[0].fitness}`
     );
 
     // Create next generation
@@ -414,13 +417,13 @@ export class MOSES {
 
       // Early stopping if fitness threshold reached
       if (best.fitness > 0.99) {
-        console.log(`[MOSES] Converged at generation ${i}`);
+        logger.info(`Converged at generation ${i}`);
         break;
       }
     }
 
     const best = this.population[0];
-    console.log(`[MOSES] Evolution complete. Best fitness: ${best.fitness}`);
+    logger.info(`Evolution complete. Best fitness: ${best.fitness}`);
     return best;
   }
 

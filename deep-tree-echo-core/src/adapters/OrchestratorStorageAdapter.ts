@@ -1,6 +1,9 @@
 import { MemoryStorage } from '../memory/storage.js';
 import * as net from 'net';
 import { EventEmitter } from 'events';
+import { getLogger } from '../utils/logger.js';
+
+const logger = getLogger('OrchestratorStorageAdapter');
 
 /**
  * IPC message types (must match orchestrator's IPCMessageType)
@@ -79,10 +82,10 @@ export class OrchestratorStorageAdapter extends EventEmitter implements MemorySt
       this.socket.on('connect', () => {
         this.connected = true;
         this.emit('connected');
-        console.log(`[OrchestratorStorageAdapter] Connected to orchestrator at ${this.socketPath}`);
+        logger.info(`Connected to orchestrator at ${this.socketPath}`);
 
         // Send initial ping
-        this.sendPing().catch(console.error);
+        this.sendPing().catch((err) => logger.error('Ping failed:', err));
 
         resolve();
       });
@@ -92,7 +95,7 @@ export class OrchestratorStorageAdapter extends EventEmitter implements MemorySt
       });
 
       this.socket.on('error', (error: Error) => {
-        console.error('[OrchestratorStorageAdapter] Socket error:', error);
+        logger.error('Socket error:', error);
         this.emit('error', error);
         if (!this.connected) {
           reject(error);
@@ -100,7 +103,7 @@ export class OrchestratorStorageAdapter extends EventEmitter implements MemorySt
       });
 
       this.socket.on('close', () => {
-        console.log('[OrchestratorStorageAdapter] Disconnected from orchestrator');
+        logger.info('Disconnected from orchestrator');
         this.connected = false;
         this.socket = null;
         this.emit('disconnected');
@@ -150,9 +153,9 @@ export class OrchestratorStorageAdapter extends EventEmitter implements MemorySt
 
     this.reconnectTimer = setTimeout(() => {
       this.reconnectTimer = null;
-      console.log('[OrchestratorStorageAdapter] Attempting to reconnect...');
+      logger.info('Attempting to reconnect...');
       this.connect().catch((error) => {
-        console.error('[OrchestratorStorageAdapter] Reconnection failed:', error);
+        logger.error('Reconnection failed:', error);
       });
     }, this.reconnectInterval);
   }
@@ -175,7 +178,7 @@ export class OrchestratorStorageAdapter extends EventEmitter implements MemorySt
           const message: IPCMessage = JSON.parse(line);
           this.handleMessage(message);
         } catch (error) {
-          console.error('[OrchestratorStorageAdapter] Failed to parse message:', error);
+          logger.error('Failed to parse message:', error);
         }
       }
     }
@@ -251,7 +254,7 @@ export class OrchestratorStorageAdapter extends EventEmitter implements MemorySt
     try {
       await this.sendMessage(IPCMessageType.PING, {}, 2000);
     } catch (error) {
-      console.error('[OrchestratorStorageAdapter] Ping failed:', error);
+      logger.error('Ping failed:', error);
     }
   }
 
@@ -273,7 +276,7 @@ export class OrchestratorStorageAdapter extends EventEmitter implements MemorySt
       });
       return response?.value ?? undefined;
     } catch (error) {
-      console.error(`[OrchestratorStorageAdapter] Failed to load key ${key}:`, error);
+      logger.error(`Failed to load key ${key}:`, error);
       return undefined;
     }
   }
@@ -286,7 +289,7 @@ export class OrchestratorStorageAdapter extends EventEmitter implements MemorySt
       const prefixedKey = `${this.storagePrefix}:${key}`;
       await this.sendMessage(IPCMessageType.REQUEST_STORAGE_SET, { key: prefixedKey, value });
     } catch (error) {
-      console.error(`[OrchestratorStorageAdapter] Failed to save key ${key}:`, error);
+      logger.error(`Failed to save key ${key}:`, error);
       throw error;
     }
   }
@@ -299,7 +302,7 @@ export class OrchestratorStorageAdapter extends EventEmitter implements MemorySt
       const prefixedKey = `${this.storagePrefix}:${key}`;
       await this.sendMessage(IPCMessageType.REQUEST_STORAGE_DELETE, { key: prefixedKey });
     } catch (error) {
-      console.error(`[OrchestratorStorageAdapter] Failed to delete key ${key}:`, error);
+      logger.error(`Failed to delete key ${key}:`, error);
       throw error;
     }
   }
@@ -311,7 +314,7 @@ export class OrchestratorStorageAdapter extends EventEmitter implements MemorySt
     try {
       await this.sendMessage(IPCMessageType.REQUEST_STORAGE_CLEAR, { prefix: this.storagePrefix });
     } catch (error) {
-      console.error('[OrchestratorStorageAdapter] Failed to clear storage:', error);
+      logger.error('Failed to clear storage:', error);
       throw error;
     }
   }
@@ -327,7 +330,7 @@ export class OrchestratorStorageAdapter extends EventEmitter implements MemorySt
       const allKeys = response?.keys || [];
       return allKeys.map((key: string) => key.replace(`${this.storagePrefix}:`, ''));
     } catch (error) {
-      console.error('[OrchestratorStorageAdapter] Failed to list keys:', error);
+      logger.error('Failed to list keys:', error);
       return [];
     }
   }

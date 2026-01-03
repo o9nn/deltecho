@@ -7,6 +7,10 @@
  * intelligence as core kernel services.
  */
 
+import { getLogger } from '../utils/logger.js';
+
+const logger = getLogger('InfernoKernel');
+
 export interface KernelConfig {
   maxAtoms: number;
   maxThreads: number;
@@ -62,9 +66,9 @@ export class InfernoKernel {
    * Initialize the kernel and boot cognitive services
    */
   async boot(): Promise<void> {
-    console.log('[InfernoKernel] Booting AGI operating system...');
-    console.log(`[InfernoKernel] Max atoms: ${this.config.maxAtoms}`);
-    console.log(`[InfernoKernel] Distributed nodes: ${this.config.distributedNodes.length}`);
+    logger.info('Booting AGI operating system...');
+    logger.info(`Max atoms: ${this.config.maxAtoms}`);
+    logger.info(`Distributed nodes: ${this.config.distributedNodes.length}`);
 
     // Initialize core cognitive subsystems
     await this.initializeAtomSpace();
@@ -72,7 +76,7 @@ export class InfernoKernel {
     await this.initializeAttentionAllocation();
     await this.initializeLearningSystem();
 
-    console.log('[InfernoKernel] AGI kernel booted successfully');
+    logger.info('AGI kernel booted successfully');
   }
 
   /**
@@ -88,7 +92,7 @@ export class InfernoKernel {
       atomSpaceId: `atomspace_${pid}`,
     };
     this.processes.set(pid, process);
-    console.log(`[InfernoKernel] Created ${type} process with PID ${pid}`);
+    logger.debug(`Created ${type} process with PID ${pid}`);
     return pid;
   }
 
@@ -102,7 +106,7 @@ export class InfernoKernel {
     }
     process.state = 'zombie';
     this.processes.delete(pid);
-    console.log(`[InfernoKernel] Terminated process PID ${pid}`);
+    logger.debug(`Terminated process PID ${pid}`);
     return true;
   }
 
@@ -145,29 +149,29 @@ export class InfernoKernel {
    * Shutdown the kernel gracefully
    */
   async shutdown(): Promise<void> {
-    console.log('[InfernoKernel] Shutting down AGI kernel...');
+    logger.info('Shutting down AGI kernel...');
 
     // Terminate all processes
     for (const pid of this.processes.keys()) {
       this.terminateCognitiveProcess(pid);
     }
 
-    console.log('[InfernoKernel] Kernel shutdown complete');
+    logger.info('Kernel shutdown complete');
   }
 
   private async initializeAtomSpace(): Promise<void> {
-    console.log('[InfernoKernel] Initializing AtomSpace kernel module...');
+    logger.debug('Initializing AtomSpace kernel module...');
   }
 
   private async initializeReasoningEngine(): Promise<void> {
-    console.log('[InfernoKernel] Initializing reasoning engine...');
+    logger.debug('Initializing reasoning engine...');
   }
 
   private async initializeAttentionAllocation(): Promise<void> {
-    console.log('[InfernoKernel] Initializing attention allocation system...');
+    logger.debug('Initializing attention allocation system...');
   }
 
   private async initializeLearningSystem(): Promise<void> {
-    console.log('[InfernoKernel] Initializing learning system...');
+    logger.debug('Initializing learning system...');
   }
 }

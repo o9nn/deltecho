@@ -7,6 +7,9 @@
  */
 
 import { Atom, AtomSpace, AttentionValue } from '../atomspace/AtomSpace.js';
+import { getLogger } from '../utils/logger.js';
+
+const logger = getLogger('AttentionAllocation');
 
 export interface AttentionConfig {
   maxSTI: number;
@@ -53,7 +56,7 @@ export class AttentionAllocation {
       this.updateAttentionalFocus(atom);
     }
 
-    console.log(`[AttentionAllocation] Attentional focus: ${this.attentionalFocus.size} atoms`);
+    logger.debug(`Attentional focus: ${this.attentionalFocus.size} atoms`);
   }
 
   /**
@@ -120,7 +123,7 @@ export class AttentionAllocation {
       sti: newSTI,
     });
 
-    console.log(`[AttentionAllocation] Stimulated atom ${atomId}: STI = ${newSTI}`);
+    logger.debug(`Stimulated atom ${atomId}: STI = ${newSTI}`);
   }
 
   /**
@@ -161,7 +164,7 @@ export class AttentionAllocation {
       confidence: link.truthValue.confidence,
     });
 
-    console.log('[AttentionAllocation] Applied Hebbian learning');
+    logger.debug('Applied Hebbian learning');
   }
 
   /**
@@ -179,7 +182,7 @@ export class AttentionAllocation {
       }
     }
 
-    console.log(`[AttentionAllocation] Rent collection: removed ${removed} atoms`);
+    logger.debug(`Rent collection: removed ${removed} atoms`);
     return removed;
   }
 

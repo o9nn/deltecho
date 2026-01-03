@@ -8,6 +8,9 @@
 
 import { Atom, AtomSpace, TruthValue } from '../atomspace/AtomSpace.js';
 import { PatternMatcher } from '../atomspace/PatternMatcher.js';
+import { getLogger } from '../utils/logger.js';
+
+const logger = getLogger('PLNEngine');
 
 export interface InferenceRule {
   name: string;
@@ -81,7 +84,7 @@ export class PLNEngine {
    */
   registerRule(rule: InferenceRule): void {
     this.rules.set(rule.name, rule);
-    console.log(`[PLNEngine] Registered rule: ${rule.name}`);
+    logger.debug(`Registered rule: ${rule.name}`);
   }
 
   /**
@@ -105,7 +108,7 @@ export class PLNEngine {
 
     const conclusion = atomSpace.addLink('ImplicationLink', [ab.outgoing[0], bc.outgoing[1]], tv);
 
-    console.log('[PLNEngine] Applied deduction rule');
+    logger.debug('Applied deduction rule');
     return conclusion;
   }
 
@@ -124,7 +127,7 @@ export class PLNEngine {
     // Find or create generalized inheritance link
     const conclusion = atomSpace.addLink('InheritanceLink', example.outgoing, tv);
 
-    console.log('[PLNEngine] Applied induction rule');
+    logger.debug('Applied induction rule');
     return conclusion;
   }
 
@@ -144,7 +147,7 @@ export class PLNEngine {
 
     const conclusion = atomSpace.addLink('EvaluationLink', [implication.outgoing[0]], tv);
 
-    console.log('[PLNEngine] Applied abduction rule');
+    logger.debug('Applied abduction rule');
     return conclusion;
   }
 
@@ -169,7 +172,7 @@ export class PLNEngine {
       tv
     );
 
-    console.log('[PLNEngine] Applied similarity rule');
+    logger.debug('Applied similarity rule');
     return conclusion;
   }
 
@@ -237,7 +240,7 @@ export class PLNEngine {
       }
     }
 
-    console.log(`[PLNEngine] Forward chaining: ${inferences} inferences`);
+    logger.debug(`Forward chaining: ${inferences} inferences`);
     return newAtoms;
   }
 
