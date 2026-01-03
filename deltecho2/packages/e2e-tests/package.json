@@ -1,14 +1,37 @@
 {
   "private": true,
-  "name": "@deltachat-desktop/e2e-tests",
+  "name": "@deltecho/e2e-tests",
+  "version": "1.0.0",
   "type": "module",
   "license": "GPL-3.0-or-later",
+  "description": "Comprehensive E2E test suite for Deltecho cognitive ecosystem",
   "devDependencies": {
     "@playwright/test": "^1.57.0",
     "@types/node": "^20.19.27"
   },
   "scripts": {
     "e2e": "pnpm exec playwright test",
-    "e2e:report": "pnpm exec playwright show-report"
-  }
+    "e2e:headed": "pnpm exec playwright test --headed",
+    "e2e:debug": "pnpm exec playwright test --debug",
+    "e2e:ui": "pnpm exec playwright test --ui",
+    "e2e:report": "pnpm exec playwright show-report",
+    "e2e:cognitive": "pnpm exec playwright test cognitive-integration.spec.ts triadic-cognitive-loop.spec.ts",
+    "e2e:memory": "pnpm exec playwright test memory-persistence.spec.ts cognitive-memory.spec.ts",
+    "e2e:llm": "pnpm exec playwright test llm-service.spec.ts",
+    "e2e:ui-tests": "pnpm exec playwright test ui-components.spec.ts",
+    "e2e:sys6": "pnpm exec playwright test sys6-triality.spec.ts",
+    "e2e:ipc": "pnpm exec playwright test ipc-electron.spec.ts",
+    "e2e:orchestrator": "pnpm exec playwright test orchestrator-integration.spec.ts",
+    "e2e:basic": "pnpm exec playwright test basic-tests.spec.ts group-tests.spec.ts qrcode-tests.spec.ts",
+    "e2e:all": "pnpm exec playwright test --reporter=html",
+    "test:install": "pnpm exec playwright install chromium",
+    "test:ci": "CI=true pnpm exec playwright test --reporter=github"
+  },
+  "keywords": [
+    "e2e",
+    "playwright",
+    "testing",
+    "deltecho",
+    "cognitive"
+  ]
 }
