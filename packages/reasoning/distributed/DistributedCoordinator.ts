@@ -7,6 +7,9 @@
  */
 
 import { Atom, AtomSpace } from '../atomspace/AtomSpace.js';
+import { getLogger } from '../utils/logger.js';
+
+const logger = getLogger('DistributedCoordinator');
 
 export interface NodeInfo {
   nodeId: string;
@@ -72,7 +75,7 @@ export class DistributedCoordinator {
     };
     this.nodes.set(this.config.nodeId, localNode);
 
-    console.log(`[DistributedCoordinator] Node ${this.config.nodeId} initialized`);
+    logger.info(`Node ${this.config.nodeId} initialized`);
   }
 
   /**
@@ -85,7 +88,7 @@ export class DistributedCoordinator {
     };
     this.nodes.set(node.nodeId, nodeInfo);
 
-    console.log(`[DistributedCoordinator] Registered node ${node.nodeId}`);
+    logger.debug(`Registered node ${node.nodeId}`);
   }
 
   /**
@@ -116,7 +119,7 @@ export class DistributedCoordinator {
     }
 
     if (deadNodes.length > 0) {
-      console.log(`[DistributedCoordinator] Pruned dead nodes: ${deadNodes.join(', ')}`);
+      logger.warn(`Pruned dead nodes: ${deadNodes.join(', ')}`);
     }
 
     return deadNodes;
@@ -136,7 +139,7 @@ export class DistributedCoordinator {
     };
 
     this.tasks.set(taskId, task);
-    console.log(`[DistributedCoordinator] Created task ${taskId} of type ${type}`);
+    logger.debug(`Created task ${taskId} of type ${type}`);
 
     return taskId;
   }
@@ -160,7 +163,7 @@ export class DistributedCoordinator {
     }
 
     if (!bestNode) {
-      console.log(`[DistributedCoordinator] No suitable node for task ${taskId}`);
+      logger.warn(`No suitable node for task ${taskId}`);
       return false;
     }
 
@@ -168,7 +171,7 @@ export class DistributedCoordinator {
     task.status = 'running';
     bestNode.load++;
 
-    console.log(`[DistributedCoordinator] Assigned task ${taskId} to node ${bestNode.nodeId}`);
+    logger.debug(`Assigned task ${taskId} to node ${bestNode.nodeId}`);
     return true;
   }
 
@@ -190,7 +193,7 @@ export class DistributedCoordinator {
       }
     }
 
-    console.log(`[DistributedCoordinator] Task ${taskId} completed`);
+    logger.debug(`Task ${taskId} completed`);
     return true;
   }
 
@@ -212,8 +215,8 @@ export class DistributedCoordinator {
       }
     }
 
-    console.log(
-      `[DistributedCoordinator] Replicated ${atoms.length} atoms across ${distribution.size} nodes`
+    logger.debug(
+      `Replicated ${atoms.length} atoms across ${distribution.size} nodes`
     );
 
     return distribution;
@@ -238,7 +241,7 @@ export class DistributedCoordinator {
    * Synchronize AtomSpace across nodes
    */
   async synchronizeAtomSpace(): Promise<void> {
-    console.log('[DistributedCoordinator] Synchronizing AtomSpace across nodes...');
+    logger.info('Synchronizing AtomSpace across nodes...');
 
     const localAtoms = this.localAtomSpace.getAllAtoms();
     const distribution = this.replicateAtoms(localAtoms);
@@ -246,7 +249,7 @@ export class DistributedCoordinator {
     // In a real implementation, this would send atoms to remote nodes
     // For now, we just log the distribution
     for (const [nodeId, atoms] of distribution.entries()) {
-      console.log(`[DistributedCoordinator] Node ${nodeId}: ${atoms.length} atoms`);
+      logger.debug(`Node ${nodeId}: ${atoms.length} atoms`);
     }
   }
 

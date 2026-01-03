@@ -6,6 +6,9 @@
  */
 
 import { Atom, AtomSpace } from '../atomspace/AtomSpace.js';
+import { getLogger } from '../utils/logger.js';
+
+const logger = getLogger('OpenPsi');
 
 export interface Goal {
   id: string;
@@ -60,7 +63,7 @@ export class OpenPsi {
     this.addDrive('affiliation', 0.5, 0, 1, 0.01);
     this.addDrive('energy', 1.0, 0, 1, 0.02);
 
-    console.log('[OpenPsi] Initialized drives');
+    logger.debug('Initialized drives');
   }
 
   /**
@@ -97,7 +100,7 @@ export class OpenPsi {
     };
 
     this.goals.set(goalId, goal);
-    console.log(`[OpenPsi] Created goal: ${name} (priority: ${priority})`);
+    logger.debug(`Created goal: ${name} (priority: ${priority})`);
 
     return goal;
   }
@@ -142,7 +145,7 @@ export class OpenPsi {
     }
 
     if (bestGoal) {
-      console.log(`[OpenPsi] Selected goal: ${bestGoal.name}`);
+      logger.debug(`Selected goal: ${bestGoal.name}`);
     }
 
     return bestGoal;
@@ -171,7 +174,7 @@ export class OpenPsi {
     if (!drive) return false;
 
     drive.value = Math.min(drive.max, drive.value + amount);
-    console.log(`[OpenPsi] Satisfied drive ${driveName}: ${drive.value}`);
+    logger.debug(`Satisfied drive ${driveName}: ${drive.value}`);
 
     return true;
   }
@@ -187,7 +190,7 @@ export class OpenPsi {
       duration,
     });
 
-    console.log(`[OpenPsi] Emotion: ${name} (valence: ${valence}, arousal: ${arousal})`);
+    logger.debug(`Emotion: ${name} (valence: ${valence}, arousal: ${arousal})`);
   }
 
   /**

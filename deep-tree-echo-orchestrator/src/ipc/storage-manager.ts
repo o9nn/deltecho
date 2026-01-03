@@ -1,5 +1,8 @@
 import * as fs from 'fs';
 import * as path from 'path';
+import { getLogger } from '../utils/logger.js';
+
+const logger = getLogger('StorageManager');
 
 /**
  * Simple key-value storage manager for the orchestrator
@@ -43,7 +46,7 @@ export class StorageManager {
         }
       }
     } catch (error) {
-      console.error('[StorageManager] Failed to load from disk:', error);
+      logger.error('Failed to load from disk:', error);
     }
   }
 
@@ -83,7 +86,7 @@ export class StorageManager {
       fs.writeFileSync(tempFile, JSON.stringify(data, null, 2), 'utf-8');
       fs.renameSync(tempFile, this.persistenceFile);
     } catch (error) {
-      console.error('[StorageManager] Failed to persist to disk:', error);
+      logger.error('Failed to persist to disk:', error);
     }
   }
 

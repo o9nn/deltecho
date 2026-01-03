@@ -32,6 +32,9 @@ import {
   CognitiveProcessor,
   TriadicEvent,
 } from '../cognitive/triadic-engine.js';
+import { getLogger } from '../utils/logger.js';
+
+const logger = getLogger('Dove9Kernel');
 
 /**
  * Generate a unique process ID
@@ -217,7 +220,7 @@ export class Dove9Kernel extends EventEmitter {
       await this.executeProcess(process);
     } catch (error) {
       process.state = ProcessState.TERMINATED;
-      console.error(`Process ${processId} failed:`, error);
+      logger.error(`Process ${processId} failed:`, error);
     }
   }
 
