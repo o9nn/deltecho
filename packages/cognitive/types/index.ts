@@ -58,6 +58,12 @@ export interface MessageMetadata {
     valence: number;
     arousal: number;
   };
+  sys6Telemetry?: {
+    cycleNumber: number;
+    processingTimeMs: number;
+    steps: number;
+    mode: string;
+  };
 }
 
 /**
