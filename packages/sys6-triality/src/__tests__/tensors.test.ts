@@ -15,7 +15,7 @@ import {
   getPrimaryStreamForStep,
   getDyadicPairForStep,
   getTriadicPermutationsForStep,
-} from '../tensors/types.js';
+} from '../tensors/types';
 
 import {
   add,
@@ -40,7 +40,7 @@ import {
   transpose,
   sum,
   mean,
-} from '../tensors/operations.js';
+} from '../tensors/operations';
 
 describe('Tensor Creation', () => {
   test('createTensor creates tensor with correct shape', () => {
