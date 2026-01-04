@@ -338,7 +338,7 @@ var localStorage = new LocalStorage2(
 );
 
 // src/get-build-info.ts
-var BuildInfo = JSON.parse('{"VERSION":"1.58.2","BUILD_TIMESTAMP":1767365677269,"GIT_REF":"vv1.0.0-alpha.1-19-g02d26f2"}');
+var BuildInfo = JSON.parse('{"VERSION":"1.58.2","BUILD_TIMESTAMP":1767483213694,"GIT_REF":"vv1.0.0-alpha.1-23-gabd2b6f"}');
 
 // src/rc-config.ts
 var RCConfig = {

@@ -6,6 +6,7 @@ packages:
   - packages/reasoning
   - packages/shared
   - packages/ui-components
+  - packages/double-membrane
   - delta-echo-desk
   - delta-echo-desk/packages/*
   - deltecho2

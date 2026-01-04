@@ -1,5 +1,6 @@
 import { basename, dirname, join } from 'path'
 import express from 'express'
+import http from 'http'
 import https from 'https'
 import { readFile, stat, unlink } from 'fs/promises'
 import session from 'express-session'
@@ -23,6 +24,7 @@ import {
   LOCALES_DIR,
   DATA_DIR,
   DC_ACCOUNTS_DIR,
+  USE_HTTP_IN_TEST,
 } from './config'
 import { startDeltaChat } from './deltachat-rpc'
 import { helpRoute } from './help'
@@ -61,7 +63,7 @@ const sessionParser = session({
   cookie: {
     sameSite: 'strict',
     priority: 'high',
-    secure: true, // This makes it only work in https
+    secure: !USE_HTTP_IN_TEST, // Allow HTTP in test/CI mode
     httpOnly: true,
   },
 })
@@ -191,27 +193,37 @@ app.get('/themes.json', async (req, res) => {
   res.json(await readThemeDir())
 })
 
-let certificate = ''
-if (process.env.PRIVATE_CERTIFICATE_CERT) {
-  certificate = process.env.PRIVATE_CERTIFICATE_CERT
-} else {
-  certificate = await readFile(PRIVATE_CERTIFICATE_CERT, 'utf8')
-}
+// Create server based on environment
+let server: http.Server | https.Server
 
-let certificateKey = ''
-if (process.env.PRIVATE_CERTIFICATE_KEY) {
-  certificateKey = process.env.PRIVATE_CERTIFICATE_KEY
+if (USE_HTTP_IN_TEST) {
+  // Use plain HTTP in test/CI mode
+  log.info('Starting in HTTP mode for test/CI environment')
+  server = http.createServer(app)
 } else {
-  certificateKey = await readFile(PRIVATE_CERTIFICATE_KEY, 'utf8')
-}
+  // Use HTTPS in production
+  let certificate = ''
+  if (process.env.PRIVATE_CERTIFICATE_CERT) {
+    certificate = process.env.PRIVATE_CERTIFICATE_CERT
+  } else {
+    certificate = await readFile(PRIVATE_CERTIFICATE_CERT, 'utf8')
+  }
 
-const sslserver = https.createServer(
-  {
-    key: certificateKey,
-    cert: certificate,
-  },
-  app
-)
+  let certificateKey = ''
+  if (process.env.PRIVATE_CERTIFICATE_KEY) {
+    certificateKey = process.env.PRIVATE_CERTIFICATE_KEY
+  } else {
+    certificateKey = await readFile(PRIVATE_CERTIFICATE_KEY, 'utf8')
+  }
+
+  server = https.createServer(
+    {
+      key: certificateKey,
+      cert: certificate,
+    },
+    app
+  )
+}
 
 const wssBackend = new WebSocketServer({
   noServer: true,
@@ -241,7 +253,7 @@ wssBackend.on('connection', function connection(ws) {
   log.debug('connected backend socket')
 })
 
-sslserver.on('upgrade', (request, socket, head) => {
+server.on('upgrade', (request, socket, head) => {
   socket.on('error', console.error)
 
   sessionParser(request as any, {} as any, () => {
@@ -251,7 +263,8 @@ sslserver.on('upgrade', (request, socket, head) => {
       socket.destroy()
       return
     }
-    const { pathname } = new URL(request.url || '', 'wss://base.url')
+    const baseUrl = USE_HTTP_IN_TEST ? 'ws://base.url' : 'wss://base.url'
+    const { pathname } = new URL(request.url || '', baseUrl)
     if (pathname === '/ws/dc') {
       wssDC.handleUpgrade(request, socket, head, function (ws) {
         wssDC.emit('connection', ws, request)
@@ -264,13 +277,14 @@ sslserver.on('upgrade', (request, socket, head) => {
   })
 })
 
-sslserver.listen(ENV_WEB_PORT, () => {
-  log.info(`HTTPS app listening on port ${ENV_WEB_PORT}`)
+server.listen(ENV_WEB_PORT, () => {
+  const protocol = USE_HTTP_IN_TEST ? 'HTTP' : 'HTTPS'
+  log.info(`${protocol} app listening on port ${ENV_WEB_PORT}`)
 })
 
 process.on('exit', () => {
-  sslserver.closeAllConnections()
-  sslserver.close()
+  server.closeAllConnections()
+  server.close()
   shutdownDC()
   logHandler.end
 })

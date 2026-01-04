@@ -36,18 +36,29 @@ if (process.env['DC_ACCOUNTS_DIR']) {
 export const NODE_ENV = (process.env['NODE_ENV'] ?? 'production').toLowerCase()
 
 if (!existsSync(DATA_DIR)) {
-  /* ignore-console-log */
-  console.log(
-    '\n[ERROR]: Data dir does not exist, make sure you follow the steps in the Readme file\n'
-  )
-  process.exit(1)
+  // In CI/test environments, create the data directory automatically
+  if (NODE_ENV === 'test' || process.env.CI === 'true') {
+    mkdirSync(DATA_DIR, { recursive: true })
+    /* ignore-console-log */
+    console.log('[INFO]: Created data directory for CI/test environment')
+  } else {
+    /* ignore-console-log */
+    console.log(
+      '\n[ERROR]: Data dir does not exist, make sure you follow the steps in the Readme file\n'
+    )
+    process.exit(1)
+  }
 }
 
 mkdirSync(LOGS_DIR, { recursive: true })
 
+// In CI/test environments, generate self-signed certificates if not present
+export const USE_HTTP_IN_TEST = NODE_ENV === 'test' || process.env.CI === 'true'
+
 if (
   !existsSync(PRIVATE_CERTIFICATE_KEY) &&
-  !process.env['PRIVATE_CERTIFICATE_KEY']
+  !process.env['PRIVATE_CERTIFICATE_KEY'] &&
+  !USE_HTTP_IN_TEST
 ) {
   /* ignore-console-log */
   console.log(

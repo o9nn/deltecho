@@ -7,6 +7,8 @@
  * - Hypergraphs: Relationships between memories across cognitive dimensions
  * - Inference: Recognition of patterns across conversation history
  */
+import { getLogger } from '../utils/logger.js';
+const logger = getLogger('HyperDimensionalMemory');
 export class HyperDimensionalMemory {
     DIMENSIONS;
     MEMORY_DECAY;
@@ -16,10 +18,18 @@ export class HyperDimensionalMemory {
     temporalIndex = new Map();
     associativeNetwork = new Map();
     emotionalWeighting = new Map();
+    // Batched decay optimization
+    storeCount = 0;
+    DECAY_BATCH_SIZE;
+    lastDecayTime = Date.now();
+    DECAY_INTERVAL_MS;
     constructor(options) {
         this.DIMENSIONS = options?.dimensions || 10000;
         this.MEMORY_DECAY = options?.memoryDecay || 0.98;
         this.CONTEXT_WINDOW = options?.contextWindow || 128;
+        this.DECAY_BATCH_SIZE = options?.decayBatchSize || 10;
+        this.DECAY_INTERVAL_MS = options?.decayIntervalMs || 60000; // 1 minute default
+        logger.debug(`Initialized with ${this.DIMENSIONS} dimensions, decay=${this.MEMORY_DECAY}`);
     }
     /**
      * Creates a hypervector encoding of input text with emotional context
@@ -39,10 +49,16 @@ export class HyperDimensionalMemory {
     }
     /**
      * Binds memories together using circular convolution (simplified)
+     *
+     * NOTE: For production use with high-dimensional vectors, this should be
+     * replaced with FFT-based convolution for O(n log n) complexity instead
+     * of the current O(n²) naive implementation. Consider using a library
+     * like fft.js or implementing Cooley-Tukey FFT for performance.
      */
     bindMemories(memory1, memory2) {
         const result = new Float32Array(this.DIMENSIONS);
-        // Simplified circular convolution (in practice use FFT for performance)
+        // Simplified circular convolution - O(n²) complexity
+        // TODO: Replace with FFT-based convolution for large vectors
         for (let i = 0; i < this.DIMENSIONS; i++) {
             for (let j = 0; j < this.DIMENSIONS; j++) {
                 const idx = (i + j) % this.DIMENSIONS;
@@ -82,13 +98,40 @@ export class HyperDimensionalMemory {
             }
             this.associativeNetwork.get(related.id)?.set(messageId, related.similarity);
         }
-        // Apply memory decay to old memories
+        // Apply batched memory decay for performance optimization
+        this.storeCount++;
+        this.applyBatchedMemoryDecay();
+        logger.debug(`Stored memory ${messageId}, total memories: ${this.memoryVectors.size}`);
+    }
+    /**
+     * Apply memory decay in batches for better performance
+     * Only applies decay after DECAY_BATCH_SIZE stores or DECAY_INTERVAL_MS has passed
+     */
+    applyBatchedMemoryDecay() {
+        const now = Date.now();
+        const shouldDecay = this.storeCount >= this.DECAY_BATCH_SIZE ||
+            now - this.lastDecayTime >= this.DECAY_INTERVAL_MS;
+        if (shouldDecay) {
+            this.applyMemoryDecay();
+            this.storeCount = 0;
+            this.lastDecayTime = now;
+            logger.debug(`Applied batched memory decay, ${this.memoryVectors.size} memories affected`);
+        }
+    }
+    /**
+     * Force memory decay (useful before persistence or shutdown)
+     */
+    forceDecay() {
         this.applyMemoryDecay();
+        this.storeCount = 0;
+        this.lastDecayTime = Date.now();
+        logger.info('Forced memory decay applied');
     }
     /**
      * Recalls memories related to query within a context window
      */
     recallMemories(query, limit = 10) {
+        const startTime = Date.now();
         const queryVector = this.createHypervector(query);
         const related = this.findRelatedMemories(queryVector, limit * 3);
         // Add associative expansion from the graph
@@ -106,7 +149,7 @@ export class HyperDimensionalMemory {
             }
         }
         // Convert to array, sort by relevance, and apply emotional weighting
-        return Array.from(expandedResults.entries())
+        const results = Array.from(expandedResults.entries())
             .map(([id, similarity]) => {
             const emotionalWeight = this.emotionalWeighting.get(id) || 1.0;
             return {
@@ -117,6 +160,26 @@ export class HyperDimensionalMemory {
         })
             .sort((a, b) => b.relevance - a.relevance)
             .slice(0, limit);
+        logger.debug(`Recalled ${results.length} memories in ${Date.now() - startTime}ms`);
+        return results;
+    }
+    /**
+     * Get memory system statistics for monitoring
+     */
+    getStats() {
+        let totalEmotionalWeight = 0;
+        for (const weight of this.emotionalWeighting.values()) {
+            totalEmotionalWeight += weight;
+        }
+        return {
+            totalMemories: this.memoryVectors.size,
+            associativeNetworkSize: this.associativeNetwork.size,
+            temporalBuckets: this.temporalIndex.size,
+            pendingDecay: this.storeCount,
+            avgEmotionalWeight: this.emotionalWeighting.size > 0
+                ? totalEmotionalWeight / this.emotionalWeighting.size
+                : 0,
+        };
     }
     /**
      * Finds memories similar to the given vector

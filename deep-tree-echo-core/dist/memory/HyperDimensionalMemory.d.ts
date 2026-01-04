@@ -16,10 +16,16 @@ export declare class HyperDimensionalMemory {
     private temporalIndex;
     private associativeNetwork;
     private emotionalWeighting;
+    private storeCount;
+    private readonly DECAY_BATCH_SIZE;
+    private lastDecayTime;
+    private readonly DECAY_INTERVAL_MS;
     constructor(options?: {
         dimensions?: number;
         memoryDecay?: number;
         contextWindow?: number;
+        decayBatchSize?: number;
+        decayIntervalMs?: number;
     });
     /**
      * Creates a hypervector encoding of input text with emotional context
@@ -27,12 +33,26 @@ export declare class HyperDimensionalMemory {
     private createHypervector;
     /**
      * Binds memories together using circular convolution (simplified)
+     *
+     * NOTE: For production use with high-dimensional vectors, this should be
+     * replaced with FFT-based convolution for O(n log n) complexity instead
+     * of the current O(n²) naive implementation. Consider using a library
+     * like fft.js or implementing Cooley-Tukey FFT for performance.
      */
     private bindMemories;
     /**
      * Integrates new memory into the hyperdimensional space
      */
     storeMemory(messageId: string, text: string, timestamp: number, emotionalSignificance?: number): void;
+    /**
+     * Apply memory decay in batches for better performance
+     * Only applies decay after DECAY_BATCH_SIZE stores or DECAY_INTERVAL_MS has passed
+     */
+    private applyBatchedMemoryDecay;
+    /**
+     * Force memory decay (useful before persistence or shutdown)
+     */
+    forceDecay(): void;
     /**
      * Recalls memories related to query within a context window
      */
@@ -41,6 +61,16 @@ export declare class HyperDimensionalMemory {
         text: string;
         relevance: number;
     }[];
+    /**
+     * Get memory system statistics for monitoring
+     */
+    getStats(): {
+        totalMemories: number;
+        associativeNetworkSize: number;
+        temporalBuckets: number;
+        pendingDecay: number;
+        avgEmotionalWeight: number;
+    };
     /**
      * Finds memories similar to the given vector
      */

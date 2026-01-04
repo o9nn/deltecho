@@ -1,0 +1,74 @@
+{
+  "name": "@deltecho/double-membrane",
+  "version": "1.0.0",
+  "description": "Bio-inspired double membrane architecture for Deep Tree Echo providing autonomous operation with API acceleration",
+  "type": "module",
+  "main": "dist/index.js",
+  "types": "dist/index.d.ts",
+  "exports": {
+    ".": {
+      "import": "./dist/index.js",
+      "types": "./dist/index.d.ts"
+    },
+    "./inner-membrane": {
+      "import": "./dist/inner-membrane/index.js",
+      "types": "./dist/inner-membrane/index.d.ts"
+    },
+    "./outer-membrane": {
+      "import": "./dist/outer-membrane/index.js",
+      "types": "./dist/outer-membrane/index.d.ts"
+    },
+    "./intermembrane-space": {
+      "import": "./dist/intermembrane-space/index.js",
+      "types": "./dist/intermembrane-space/index.d.ts"
+    }
+  },
+  "scripts": {
+    "build": "tsc",
+    "clean": "rm -rf dist",
+    "test": "vitest run",
+    "test:watch": "vitest",
+    "test:coverage": "vitest run --coverage",
+    "lint": "eslint src --ext .ts",
+    "typecheck": "tsc --noEmit"
+  },
+  "keywords": [
+    "deep-tree-echo",
+    "cognitive-architecture",
+    "double-membrane",
+    "autonomous-ai",
+    "active-inference",
+    "aar-core",
+    "mitochondria-inspired"
+  ],
+  "author": "Deep Tree Echo Team",
+  "license": "MIT",
+  "dependencies": {
+    "events": "^3.3.0"
+  },
+  "devDependencies": {
+    "@types/node": "^20.10.0",
+    "typescript": "^5.3.0",
+    "vitest": "^1.6.1"
+  },
+  "peerDependencies": {
+    "@anthropic-ai/sdk": "^0.10.0",
+    "openai": "^4.0.0"
+  },
+  "peerDependenciesMeta": {
+    "openai": {
+      "optional": true
+    },
+    "@anthropic-ai/sdk": {
+      "optional": true
+    }
+  },
+  "engines": {
+    "node": ">=18.0.0"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/o9nn/deltecho.git",
+    "directory": "packages/double-membrane"
+  }
+}
