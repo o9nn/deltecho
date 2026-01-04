@@ -165,6 +165,49 @@ export {
 } from './transjective/Sys6MembraneClock.js';
 
 // ============================================================
+// IPC Bridge for Electron Integration
+// ============================================================
+
+export {
+  IPCBridge,
+  createPreloadScript,
+  type IPCMessageType,
+  type IPCChannel,
+  type IPCMessage,
+  type IPCHandler,
+  type IPCBridgeConfig,
+} from './ipc/IPCBridge.js';
+
+// ============================================================
+// Cognitive Processing Pipeline
+// ============================================================
+
+export {
+  CognitiveProcessor,
+  type StreamPhase,
+  type StepMode,
+  type StepType,
+  type StreamState,
+  type ProcessingContext,
+  type ProcessingResult as CognitiveProcessingResult,
+  type CognitiveEvent,
+  type ProcessorConfig,
+} from './cognitive/CognitiveProcessor.js';
+
+// ============================================================
+// Memory Persistence
+// ============================================================
+
+export {
+  MemoryPersistence,
+  type MemoryType,
+  type MemoryEntry as PersistentMemoryEntry,
+  type MemoryQuery,
+  type MemoryStats,
+  type PersistenceConfig,
+} from './inner-membrane/MemoryPersistence.js';
+
+// ============================================================
 // Main Entry Point - Complete Double Membrane System
 // ============================================================
 

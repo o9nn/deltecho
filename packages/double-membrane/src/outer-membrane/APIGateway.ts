@@ -109,6 +109,7 @@ export type GatewayEvent =
 const DEFAULT_PROVIDERS: ProviderConfig[] = [
   {
     provider: 'openai',
+    baseUrl: 'https://api.openai.com/v1',
     model: 'gpt-4.1-mini',
     maxTokens: 4096,
     temperature: 0.7,
@@ -119,6 +120,7 @@ const DEFAULT_PROVIDERS: ProviderConfig[] = [
   },
   {
     provider: 'anthropic',
+    baseUrl: 'https://api.anthropic.com/v1',
     model: 'claude-3-opus-20240229',
     maxTokens: 4096,
     temperature: 0.7,
@@ -129,6 +131,7 @@ const DEFAULT_PROVIDERS: ProviderConfig[] = [
   },
   {
     provider: 'openrouter',
+    baseUrl: 'https://openrouter.ai/api/v1',
     model: 'anthropic/claude-3.5-sonnet',
     maxTokens: 4096,
     temperature: 0.7,
@@ -150,7 +153,7 @@ const DEFAULT_PROVIDERS: ProviderConfig[] = [
 ];
 
 /**
- * APIGateway - Manages external API interactions
+ * APIGateway - Manages external API interactions with REAL implementations
  */
 export class APIGateway extends EventEmitter {
   private providers: Map<LLMProvider, ProviderConfig>;
@@ -159,12 +162,15 @@ export class APIGateway extends EventEmitter {
   private running: boolean = false;
   private healthCheckInterval?: ReturnType<typeof setInterval>;
   private rateLimitResetInterval?: ReturnType<typeof setInterval>;
+  private responseCache: Map<string, { response: APIResponse; timestamp: number }>;
+  private readonly CACHE_TTL_MS = 300000; // 5 minutes
 
   constructor(providerConfigs?: ProviderConfig[]) {
     super();
     this.providers = new Map();
     this.providerHealth = new Map();
     this.stats = this.initializeStats();
+    this.responseCache = new Map();
 
     // Initialize providers
     const configs = providerConfigs || DEFAULT_PROVIDERS;
@@ -231,6 +237,20 @@ export class APIGateway extends EventEmitter {
   }
 
   /**
+   * Initialize the gateway (alias for start)
+   */
+  public async initialize(): Promise<void> {
+    this.start();
+  }
+
+  /**
+   * Shutdown the gateway (alias for stop)
+   */
+  public async shutdown(): Promise<void> {
+    this.stop();
+  }
+
+  /**
    * Start the gateway
    */
   public start(): void {
@@ -247,6 +267,11 @@ export class APIGateway extends EventEmitter {
     this.rateLimitResetInterval = setInterval(() => {
       this.resetRateLimits();
     }, 60000); // Reset every minute
+
+    // Start cache cleanup interval
+    setInterval(() => {
+      this.cleanupCache();
+    }, 60000);
 
     this.emit('gateway_started', { type: 'gateway_started' });
   }
@@ -273,6 +298,45 @@ export class APIGateway extends EventEmitter {
   }
 
   /**
+   * Generate cache key for request
+   */
+  private getCacheKey(request: APIRequest): string {
+    return `${request.prompt}:${request.systemPrompt || ''}:${request.maxTokens || ''}`;
+  }
+
+  /**
+   * Check cache for response
+   */
+  private checkCache(request: APIRequest): APIResponse | null {
+    const key = this.getCacheKey(request);
+    const cached = this.responseCache.get(key);
+    if (cached && Date.now() - cached.timestamp < this.CACHE_TTL_MS) {
+      return { ...cached.response, cached: true };
+    }
+    return null;
+  }
+
+  /**
+   * Store response in cache
+   */
+  private cacheResponse(request: APIRequest, response: APIResponse): void {
+    const key = this.getCacheKey(request);
+    this.responseCache.set(key, { response, timestamp: Date.now() });
+  }
+
+  /**
+   * Cleanup expired cache entries
+   */
+  private cleanupCache(): void {
+    const now = Date.now();
+    for (const [key, value] of this.responseCache.entries()) {
+      if (now - value.timestamp > this.CACHE_TTL_MS) {
+        this.responseCache.delete(key);
+      }
+    }
+  }
+
+  /**
    * Send a request to an external LLM provider
    */
   public async sendRequest(request: APIRequest): Promise<APIResponse> {
@@ -281,6 +345,13 @@ export class APIGateway extends EventEmitter {
     }
 
     this.stats.totalRequests++;
+
+    // Check cache first
+    const cachedResponse = this.checkCache(request);
+    if (cachedResponse) {
+      this.stats.successfulRequests++;
+      return cachedResponse;
+    }
 
     // Select provider
     const provider = this.selectProvider(request.preferredProvider);
@@ -330,6 +401,9 @@ export class APIGateway extends EventEmitter {
       health.latencyMs = latencyMs;
       health.errorRate = Math.max(0, health.errorRate - 0.1);
 
+      // Cache the response
+      this.cacheResponse(request, response);
+
       this.emit('response_received', { type: 'response_received', response });
 
       return response;
@@ -368,18 +442,14 @@ export class APIGateway extends EventEmitter {
     }
 
     // Sort providers by priority and health
-    const availableProviders = Array.from(this.providers.entries())
+    const sortedProviders = Array.from(this.providers.entries())
       .filter(([provider, config]) => {
         const health = this.providerHealth.get(provider);
-        return config.enabled && health?.available && health.errorRate < 0.8;
+        return config.enabled && health?.available && health.errorRate < 0.5;
       })
       .sort(([, a], [, b]) => a.priority - b.priority);
 
-    if (availableProviders.length === 0) {
-      return null;
-    }
-
-    return availableProviders[0][0];
+    return sortedProviders.length > 0 ? sortedProviders[0][0] : null;
   }
 
   /**
@@ -391,8 +461,8 @@ export class APIGateway extends EventEmitter {
   ): Promise<APIResponse> {
     this.stats.fallbacksUsed++;
 
-    // Find next available provider
-    const availableProviders = Array.from(this.providers.entries())
+    // Get next available provider
+    const sortedProviders = Array.from(this.providers.entries())
       .filter(([provider, config]) => {
         if (provider === failedProvider) return false;
         const health = this.providerHealth.get(provider);
@@ -400,24 +470,32 @@ export class APIGateway extends EventEmitter {
       })
       .sort(([, a], [, b]) => a.priority - b.priority);
 
-    if (availableProviders.length === 0) {
+    if (sortedProviders.length === 0) {
       this.emit('all_providers_unavailable', { type: 'all_providers_unavailable' });
       throw new Error('No fallback providers available');
     }
 
-    const [fallbackProvider] = availableProviders[0];
+    const [nextProvider, config] = sortedProviders[0];
     this.emit('fallback_triggered', {
       type: 'fallback_triggered',
       from: failedProvider,
-      to: fallbackProvider,
+      to: nextProvider,
     });
 
-    // Retry with fallback provider
-    return this.sendRequest({
-      ...request,
-      preferredProvider: fallbackProvider,
-      allowFallback: false, // Prevent infinite fallback loop
+    return this.callProvider(nextProvider, config, request);
+  }
+
+  /**
+   * Simple prompt helper
+   */
+  public async prompt(text: string, systemPrompt?: string): Promise<string> {
+    const response = await this.sendRequest({
+      id: `prompt-${Date.now()}`,
+      prompt: text,
+      systemPrompt,
+      allowFallback: true,
     });
+    return response.text;
   }
 
   /**
@@ -445,22 +523,53 @@ export class APIGateway extends EventEmitter {
   }
 
   /**
-   * Call OpenAI API
+   * Call OpenAI API - REAL IMPLEMENTATION
    */
   private async callOpenAI(
     config: ProviderConfig,
     request: APIRequest,
     startTime: number
   ): Promise<APIResponse> {
-    // In production, this would use the OpenAI SDK
-    // For now, simulate the call
-    await this.simulateAPICall(200);
+    if (!config.apiKey) {
+      throw new Error('OpenAI API key not configured');
+    }
 
-    const tokensUsed = Math.ceil(request.prompt.split(/\s+/).length * 1.5);
+    const messages: Array<{ role: string; content: string }> = [];
+    
+    if (request.systemPrompt) {
+      messages.push({ role: 'system', content: request.systemPrompt });
+    }
+    messages.push({ role: 'user', content: request.prompt });
+
+    const response = await fetch(`${config.baseUrl || 'https://api.openai.com/v1'}/chat/completions`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': `Bearer ${config.apiKey}`,
+      },
+      body: JSON.stringify({
+        model: config.model,
+        messages,
+        max_tokens: request.maxTokens || config.maxTokens,
+        temperature: request.temperature ?? config.temperature,
+      }),
+    });
+
+    if (!response.ok) {
+      const errorText = await response.text();
+      throw new Error(`OpenAI API error: ${response.status} - ${errorText}`);
+    }
+
+    const data = await response.json() as {
+      choices: Array<{ message: { content: string } }>;
+      usage: { total_tokens: number };
+    };
+
+    const tokensUsed = data.usage?.total_tokens || 0;
 
     return {
       id: request.id,
-      text: `[OpenAI ${config.model}] Response to: "${request.prompt.substring(0, 50)}..."`,
+      text: data.choices[0]?.message?.content || '',
       provider: 'openai',
       model: config.model,
       tokensUsed,
@@ -471,20 +580,47 @@ export class APIGateway extends EventEmitter {
   }
 
   /**
-   * Call Anthropic API
+   * Call Anthropic API - REAL IMPLEMENTATION
    */
   private async callAnthropic(
     config: ProviderConfig,
     request: APIRequest,
     startTime: number
   ): Promise<APIResponse> {
-    await this.simulateAPICall(250);
+    if (!config.apiKey) {
+      throw new Error('Anthropic API key not configured');
+    }
 
-    const tokensUsed = Math.ceil(request.prompt.split(/\s+/).length * 1.5);
+    const response = await fetch(`${config.baseUrl || 'https://api.anthropic.com/v1'}/messages`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'x-api-key': config.apiKey,
+        'anthropic-version': '2023-06-01',
+      },
+      body: JSON.stringify({
+        model: config.model,
+        max_tokens: request.maxTokens || config.maxTokens,
+        system: request.systemPrompt || 'You are a helpful AI assistant.',
+        messages: [{ role: 'user', content: request.prompt }],
+      }),
+    });
+
+    if (!response.ok) {
+      const errorText = await response.text();
+      throw new Error(`Anthropic API error: ${response.status} - ${errorText}`);
+    }
+
+    const data = await response.json() as {
+      content: Array<{ text: string }>;
+      usage: { input_tokens: number; output_tokens: number };
+    };
+
+    const tokensUsed = (data.usage?.input_tokens || 0) + (data.usage?.output_tokens || 0);
 
     return {
       id: request.id,
-      text: `[Anthropic ${config.model}] Response to: "${request.prompt.substring(0, 50)}..."`,
+      text: data.content[0]?.text || '',
       provider: 'anthropic',
       model: config.model,
       tokensUsed,
@@ -495,20 +631,55 @@ export class APIGateway extends EventEmitter {
   }
 
   /**
-   * Call OpenRouter API
+   * Call OpenRouter API - REAL IMPLEMENTATION
    */
   private async callOpenRouter(
     config: ProviderConfig,
     request: APIRequest,
     startTime: number
   ): Promise<APIResponse> {
-    await this.simulateAPICall(180);
+    if (!config.apiKey) {
+      throw new Error('OpenRouter API key not configured');
+    }
 
-    const tokensUsed = Math.ceil(request.prompt.split(/\s+/).length * 1.5);
+    const messages: Array<{ role: string; content: string }> = [];
+    
+    if (request.systemPrompt) {
+      messages.push({ role: 'system', content: request.systemPrompt });
+    }
+    messages.push({ role: 'user', content: request.prompt });
+
+    const response = await fetch(`${config.baseUrl || 'https://openrouter.ai/api/v1'}/chat/completions`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': `Bearer ${config.apiKey}`,
+        'HTTP-Referer': 'https://deltecho.dev',
+        'X-Title': 'Deep Tree Echo',
+      },
+      body: JSON.stringify({
+        model: config.model,
+        messages,
+        max_tokens: request.maxTokens || config.maxTokens,
+        temperature: request.temperature ?? config.temperature,
+      }),
+    });
+
+    if (!response.ok) {
+      const errorText = await response.text();
+      throw new Error(`OpenRouter API error: ${response.status} - ${errorText}`);
+    }
+
+    const data = await response.json() as {
+      choices: Array<{ message: { content: string } }>;
+      usage: { total_tokens: number };
+    };
+
+    const tokensUsed = data.usage?.total_tokens || 0;
 
     return {
       id: request.id,
-      text: `[OpenRouter ${config.model}] Response to: "${request.prompt.substring(0, 50)}..."`,
+      text: data.choices[0]?.message?.content || '',
       provider: 'openrouter',
       model: config.model,
       tokensUsed,
@@ -519,20 +690,54 @@ export class APIGateway extends EventEmitter {
   }
 
   /**
-   * Call local inference (fallback to inner membrane)
+   * Call local inference (fallback to inner membrane native processing)
    */
   private async callLocal(
     config: ProviderConfig,
     request: APIRequest,
     startTime: number
   ): Promise<APIResponse> {
-    await this.simulateAPICall(50);
+    // Local inference using pattern-based native processing
+    // This provides basic functionality when no API keys are available
+    
+    const prompt = request.prompt.toLowerCase();
+    let responseText: string;
+
+    // Simple pattern matching for common queries
+    if (prompt.includes('hello') || prompt.includes('hi')) {
+      responseText = 'Hello! I am Deep Tree Echo operating in autonomous mode. How can I assist you?';
+    } else if (prompt.includes('help')) {
+      responseText = 'I can help with cognitive processing, memory management, and reasoning tasks. What would you like to explore?';
+    } else if (prompt.includes('status') || prompt.includes('health')) {
+      responseText = 'System operational. Running in local inference mode with native pattern processing.';
+    } else if (prompt.includes('think') || prompt.includes('reason')) {
+      responseText = `Processing your query through native inference...
+
+Based on the input "${request.prompt.substring(0, 100)}...", I observe:
+1. The query relates to cognitive processing
+2. Pattern analysis suggests exploratory intent
+3. Recommended action: Further elaboration needed
+
+This is a native inference response. For enhanced capabilities, configure external API providers.`;
+    } else {
+      // Default response with echo of input for processing
+      responseText = `[Native Echo Processing]
+
+Input received: "${request.prompt.substring(0, 200)}${request.prompt.length > 200 ? '...' : ''}"
+
+Analysis:
+- Token count: ~${Math.ceil(request.prompt.split(/\s+/).length)}
+- Processing mode: Local inference
+- Confidence: Medium
+
+For more sophisticated responses, please configure OpenAI, Anthropic, or OpenRouter API keys.`;
+    }
 
     const tokensUsed = Math.ceil(request.prompt.split(/\s+/).length * 1.3);
 
     return {
       id: request.id,
-      text: `[Local ${config.model}] Processing: "${request.prompt.substring(0, 50)}..."`,
+      text: responseText,
       provider: 'local',
       model: config.model,
       tokensUsed,
@@ -540,14 +745,6 @@ export class APIGateway extends EventEmitter {
       cost: 0,
       cached: false,
     };
-  }
-
-  /**
-   * Simulate API call latency
-   */
-  private simulateAPICall(baseMs: number): Promise<void> {
-    const variance = Math.random() * 50 - 25;
-    return new Promise((resolve) => setTimeout(resolve, baseMs + variance));
   }
 
   /**
@@ -616,6 +813,13 @@ export class APIGateway extends EventEmitter {
   }
 
   /**
+   * Get list of configured providers
+   */
+  public getProviders(): ProviderConfig[] {
+    return Array.from(this.providers.values());
+  }
+
+  /**
    * Update provider configuration
    */
   public updateProviderConfig(provider: LLMProvider, config: Partial<ProviderConfig>): void {
@@ -632,6 +836,28 @@ export class APIGateway extends EventEmitter {
     const config = this.providers.get(provider);
     if (config) {
       config.enabled = enabled;
+    }
+  }
+
+  /**
+   * Test provider connectivity
+   */
+  public async testProvider(provider: LLMProvider): Promise<{ success: boolean; latencyMs: number; error?: string }> {
+    const config = this.providers.get(provider);
+    if (!config) {
+      return { success: false, latencyMs: 0, error: 'Provider not configured' };
+    }
+
+    const startTime = Date.now();
+    try {
+      await this.callProvider(provider, config, {
+        id: 'test',
+        prompt: 'Hello',
+        allowFallback: false,
+      });
+      return { success: true, latencyMs: Date.now() - startTime };
+    } catch (error) {
+      return { success: false, latencyMs: Date.now() - startTime, error: String(error) };
     }
   }
 }

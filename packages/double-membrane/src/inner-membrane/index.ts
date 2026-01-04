@@ -15,3 +15,4 @@ export { CoreIdentity, type AARCore, type CorePriors, type IdentityState, type C
 export { NativeInferenceEngine, type InferenceRequest, type InferenceResponse, type EngineStats } from './NativeInferenceEngine.js';
 export { AutonomousController, type ControllerConfig, type ProcessingResult, type ControllerEvent } from './AutonomousController.js';
 export { SelfState, type IdentityInvariant, type Commitment, type Belief, type MemoryEntry, type AuditEntry, type SelfStateConfig } from './SelfState.js';
+export { MemoryPersistence, type MemoryType, type MemoryEntry as PersistentMemoryEntry, type MemoryQuery, type MemoryStats, type PersistenceConfig } from './MemoryPersistence.js';
