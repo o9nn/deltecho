@@ -8,6 +8,8 @@ packages:
   - packages/ui-components
   - packages/double-membrane
   - packages/sys6-triality
+  - packages/membrane-transport
+  - packages/gesture-glyph
   - delta-echo-desk
   - delta-echo-desk/packages/*
   - deltecho2

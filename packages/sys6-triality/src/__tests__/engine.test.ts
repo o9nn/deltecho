@@ -2,9 +2,9 @@
  * @fileoverview Tests for Sys6 Cycle Engine
  */
 
-import { createTensor, randn } from '../tensors/types';
+import { createTensor, randn } from '../tensors/types.js';
 
-import { Sys6CycleEngine, PHASE_NAMES, STAGE_NAMES } from '../engine/Sys6CycleEngine';
+import { Sys6CycleEngine, PHASE_NAMES, STAGE_NAMES } from '../engine/Sys6CycleEngine.js';
 
 describe('Sys6CycleEngine', () => {
   const dim = 64;

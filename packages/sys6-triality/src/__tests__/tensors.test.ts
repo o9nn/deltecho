@@ -15,7 +15,7 @@ import {
   getPrimaryStreamForStep,
   getDyadicPairForStep,
   getTriadicPermutationsForStep,
-} from '../tensors/types';
+} from '../tensors/types.js';
 
 import {
   add,
@@ -40,7 +40,7 @@ import {
   transpose,
   sum,
   mean,
-} from '../tensors/operations';
+} from '../tensors/operations.js';
 
 describe('Tensor Creation', () => {
   test('createTensor creates tensor with correct shape', () => {
@@ -140,7 +140,7 @@ describe('Activation Functions', () => {
     const tensor = createTensor([1, 2, 3], [1, 3]);
     const result = softmax(tensor, -1);
     const values = Array.from(result.data);
-    const sum = values.reduce((a, b) => a + b, 0);
+    const sum = values.reduce((a: number, b: number) => a + b, 0);
     expect(sum).toBeCloseTo(1, 5);
   });
 

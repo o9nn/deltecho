@@ -2,7 +2,7 @@
  * @fileoverview Tests for LLM Integration
  */
 
-import { Sys6LLMIntegration, MockLLMProvider } from '../integration/LLMIntegration';
+import { Sys6LLMIntegration, MockLLMProvider } from '../integration/LLMIntegration.js';
 
 describe('MockLLMProvider', () => {
   let provider: MockLLMProvider;
