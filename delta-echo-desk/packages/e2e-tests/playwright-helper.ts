@@ -13,8 +13,13 @@ export type User = {
   password?: string
 }
 
+// Use HTTP in CI/test environment, HTTPS otherwise
+const BASE_URL = process.env.CI || process.env.NODE_ENV === 'test' 
+  ? 'http://localhost:3000/' 
+  : 'https://localhost:3000/'
+
 export async function reloadPage(page: Page): Promise<void> {
-  await page.goto('https://localhost:3000/')
+  await page.goto(BASE_URL)
 }
 
 export async function clickThroughTestIds(

@@ -311,13 +311,19 @@ if (process.env["DC_ACCOUNTS_DIR"]) {
 }
 var NODE_ENV = (process.env["NODE_ENV"] ?? "production").toLowerCase();
 if (!existsSync(DATA_DIR)) {
-  console.log(
-    "\n[ERROR]: Data dir does not exist, make sure you follow the steps in the Readme file\n"
-  );
-  process.exit(1);
+  if (NODE_ENV === "test" || process.env.CI === "true") {
+    mkdirSync(DATA_DIR, { recursive: true });
+    console.log("[INFO]: Created data directory for CI/test environment");
+  } else {
+    console.log(
+      "\n[ERROR]: Data dir does not exist, make sure you follow the steps in the Readme file\n"
+    );
+    process.exit(1);
+  }
 }
 mkdirSync(LOGS_DIR, { recursive: true });
-if (!existsSync(PRIVATE_CERTIFICATE_KEY) && !process.env["PRIVATE_CERTIFICATE_KEY"]) {
+var USE_HTTP_IN_TEST = NODE_ENV === "test" || process.env.CI === "true";
+if (!existsSync(PRIVATE_CERTIFICATE_KEY) && !process.env["PRIVATE_CERTIFICATE_KEY"] && !USE_HTTP_IN_TEST) {
   console.log(
     `
 [ERROR]: Certificate at "${PRIVATE_CERTIFICATE_KEY}" not exist, make sure you follow the steps in the Readme file
@@ -338,7 +344,7 @@ var localStorage = new LocalStorage2(
 );
 
 // src/get-build-info.ts
-var BuildInfo = JSON.parse('{"VERSION":"1.58.2","BUILD_TIMESTAMP":1767483213694,"GIT_REF":"vv1.0.0-alpha.1-23-gabd2b6f"}');
+var BuildInfo = JSON.parse('{"VERSION":"1.58.2","BUILD_TIMESTAMP":1767489939679,"GIT_REF":"vv1.0.0-alpha.1-26-gcd41858"}');
 
 // src/rc-config.ts
 var RCConfig = {
@@ -824,6 +830,7 @@ async function readThemeDir(path = dc_theme_dir, prefix = "dc") {
 // src/index.ts
 import { basename as basename3, dirname as dirname2, join as join7 } from "path";
 import express4 from "express";
+import http from "http";
 import https from "https";
 import { readFile as readFile2, stat as stat2, unlink as unlink3 } from "fs/promises";
 import session from "express-session";
@@ -855,8 +862,8 @@ var sessionParser = session({
   cookie: {
     sameSite: "strict",
     priority: "high",
-    secure: true,
-    // This makes it only work in https
+    secure: !USE_HTTP_IN_TEST,
+    // Allow HTTP in test/CI mode
     httpOnly: true
   }
 });
@@ -962,25 +969,31 @@ app.use(helpRoute);
 app.get("/themes.json", async (req, res) => {
   res.json(await readThemeDir());
 });
-var certificate = "";
-if (process.env.PRIVATE_CERTIFICATE_CERT) {
-  certificate = process.env.PRIVATE_CERTIFICATE_CERT;
+var server;
+if (USE_HTTP_IN_TEST) {
+  log5.info("Starting in HTTP mode for test/CI environment");
+  server = http.createServer(app);
 } else {
-  certificate = await readFile2(PRIVATE_CERTIFICATE_CERT, "utf8");
+  let certificate = "";
+  if (process.env.PRIVATE_CERTIFICATE_CERT) {
+    certificate = process.env.PRIVATE_CERTIFICATE_CERT;
+  } else {
+    certificate = await readFile2(PRIVATE_CERTIFICATE_CERT, "utf8");
+  }
+  let certificateKey = "";
+  if (process.env.PRIVATE_CERTIFICATE_KEY) {
+    certificateKey = process.env.PRIVATE_CERTIFICATE_KEY;
+  } else {
+    certificateKey = await readFile2(PRIVATE_CERTIFICATE_KEY, "utf8");
+  }
+  server = https.createServer(
+    {
+      key: certificateKey,
+      cert: certificate
+    },
+    app
+  );
 }
-var certificateKey = "";
-if (process.env.PRIVATE_CERTIFICATE_KEY) {
-  certificateKey = process.env.PRIVATE_CERTIFICATE_KEY;
-} else {
-  certificateKey = await readFile2(PRIVATE_CERTIFICATE_KEY, "utf8");
-}
-var sslserver = https.createServer(
-  {
-    key: certificateKey,
-    cert: certificate
-  },
-  app
-);
 var wssBackend = new WebSocketServer2({
   noServer: true,
   perMessageDeflate: true
@@ -1003,7 +1016,7 @@ wssBackend.on("connection", function connection(ws) {
   });
   log5.debug("connected backend socket");
 });
-sslserver.on("upgrade", (request, socket, head) => {
+server.on("upgrade", (request, socket, head) => {
   socket.on("error", console.error);
   sessionParser(request, {}, () => {
     if (!request.session.isAuthenticated) {
@@ -1012,7 +1025,8 @@ sslserver.on("upgrade", (request, socket, head) => {
       socket.destroy();
       return;
     }
-    const { pathname } = new URL(request.url || "", "wss://base.url");
+    const baseUrl = USE_HTTP_IN_TEST ? "ws://base.url" : "wss://base.url";
+    const { pathname } = new URL(request.url || "", baseUrl);
     if (pathname === "/ws/dc") {
       wssDC.handleUpgrade(request, socket, head, function(ws) {
         wssDC.emit("connection", ws, request);
@@ -1024,12 +1038,13 @@ sslserver.on("upgrade", (request, socket, head) => {
     }
   });
 });
-sslserver.listen(ENV_WEB_PORT, () => {
-  log5.info(`HTTPS app listening on port ${ENV_WEB_PORT}`);
+server.listen(ENV_WEB_PORT, () => {
+  const protocol = USE_HTTP_IN_TEST ? "HTTP" : "HTTPS";
+  log5.info(`${protocol} app listening on port ${ENV_WEB_PORT}`);
 });
 process.on("exit", () => {
-  sslserver.closeAllConnections();
-  sslserver.close();
+  server.closeAllConnections();
+  server.close();
   shutdownDC();
   logHandler.end;
 });
