@@ -86,3 +86,13 @@ export {
   type HealthStatus,
   type Alert,
 } from './telemetry/index.js';
+
+// Double Membrane Integration - Bio-inspired cognitive architecture
+export {
+  DoubleMembraneIntegration,
+  createDoubleMembraneIntegration,
+  type DoubleMembraneIntegrationConfig,
+  type DoubleMembraneRequest,
+  type DoubleMembraneResponse,
+  type IntegrationStatus,
+} from './double-membrane-integration.js';

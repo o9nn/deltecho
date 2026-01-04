@@ -53,6 +53,14 @@
     "deep-tree-echo-core": "workspace:*",
     "dove9": "workspace:*"
   },
+  "peerDependencies": {
+    "@deltecho/sys6-triality": "workspace:*"
+  },
+  "peerDependenciesMeta": {
+    "@deltecho/sys6-triality": {
+      "optional": true
+    }
+  },
   "devDependencies": {
     "@types/jest": "^29.5.14",
     "@types/node": "^20.19.27",
