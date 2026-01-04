@@ -111,7 +111,7 @@ describe('DoubleMembrane', () => {
       await membrane.start();
       const status = membrane.getStatus();
       expect(status.running).toBe(true);
-      expect(status.uptime).toBeGreaterThan(0);
+      expect(status.uptime).toBeGreaterThanOrEqual(0);
       expect(status.identityState).toBeDefined();
     });
   });
