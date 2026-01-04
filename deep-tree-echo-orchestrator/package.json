@@ -32,6 +32,18 @@
     "deep-tree-echo-core": "workspace:*",
     "dove9": "workspace:*"
   },
+  "peerDependencies": {
+    "@deltecho/double-membrane": "workspace:*",
+    "@deltecho/sys6-triality": "workspace:*"
+  },
+  "peerDependenciesMeta": {
+    "@deltecho/double-membrane": {
+      "optional": true
+    },
+    "@deltecho/sys6-triality": {
+      "optional": true
+    }
+  },
   "devDependencies": {
     "@jest/globals": "^29.7.0",
     "@types/jest": "^29.5.14",
