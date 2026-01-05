@@ -1,21 +1,14 @@
-Installation
-============
+# Installation
 
 See [INSTALL.md](INSTALL.md) file.
 
-
-Configuration
-=============
+# Configuration
 
 See [doc/documentation.txt](doc/documentation.txt) or [https://doc.dovecot.org](https://doc.dovecot.org)
 
+# RFCs conformed
 
-RFCs conformed
-==============
-
-
-email
------
+## email
 
 - [RFC822 - Standard for ARPA Internet Text Messages](https://tools.ietf.org/html/rfc822)
 - [RFC2822 - Internet Message Format (updated RFC822)](https://tools.ietf.org/html/rfc2822)
@@ -26,7 +19,8 @@ email
 - [RFC2049 - Multipurpose Internet Mail Extensions (MIME) (part 5)](https://tools.ietf.org/html/rfc2049)
 
 Auth
-----         
+
+---
 
 - [RFC2245 - Anonymous SASL Mechanism.](https://tools.ietf.org/html/rfc2245)
 - [RFC2595 - Using TLS with IMAP, POP3 and ACAP](https://tools.ietf.org/html/rfc2595)
@@ -37,7 +31,8 @@ Auth
 - [Google XOAUTH2 protocol](https://developers.google.com/gmail/xoauth2_protocol)
 
 POP3
-----           
+
+---
 
 - [RFC1939 - Post Office Protocol - Version 3](https://tools.ietf.org/html/rfc1939)
 - [RFC2449 - POP3 Extension Mechanism](https://tools.ietf.org/html/rfc2449)
@@ -45,16 +40,14 @@ POP3
 - [RFC3206 - The SYS and AUTH POP Response Codes](https://tools.ietf.org/html/rfc3206)
 - [RFC5034 - The Post Office Protocol (POP3) - Simple Authentication and Security Layer (SASL) Authentication Mechanism](https://tools.ietf.org/html/rfc5034)
 
-IMAP base
----------
+## IMAP base
 
 - [RFC3501 - IMAP4rev1](https://tools.ietf.org/html/rfc3501)
 - [RFC2180 - IMAP4 Multi-Accessed Mailbox Practice](https://tools.ietf.org/html/rfc2180)
 - [RFC2595 - Using TLS with IMAP, POP3 and ACAP](https://tools.ietf.org/html/rfc2595)
 - [RFC2683 - IMAP4 Implementation Recommendations](https://tools.ietf.org/html/rfc2683)
 
-IMAP extensions
----------------
+## IMAP extensions
 
 - [RFC2087 - IMAP4 QUOTA extension](https://tools.ietf.org/html/rfc2087)
 - [RFC2088 - IMAP4 non-synchronizing literals (LITERAL+)](https://tools.ietf.org/html/rfc2088)
@@ -97,8 +90,7 @@ IMAP extensions
 - [RFC8457 - IMAP "$Important" Keyword and "\Important" Special-Use Attribute](https://tools.ietf.org/html/rfc8457)
 - [RFC8970 - IMAP4 Extension: Message Preview Generation](https://tools.ietf.org/html/rfc8970)
 
-SMTP/LMTP base
---------------
+## SMTP/LMTP base
 
 - [RFC821 - Simple Mail Transfer Protocol](https://tools.ietf.org/html/rfc821)
 - [RFC2821 - Simple Mail Transfer Protocol (updated RFC821)](https://tools.ietf.org/html/rfc2821)
@@ -106,8 +98,7 @@ SMTP/LMTP base
 - [RFC2033 - Local Mail Transfer Protocol](https://tools.ietf.org/html/rfc2033)
 - [RFC6409 - Message Submission for Mail](https://tools.ietf.org/html/rfc6409)
 
-SMTP/LMTP extensions
---------------------
+## SMTP/LMTP extensions
 
 - [RFC1870 - SMTP Service Extension for Message Size Declaration](https://tools.ietf.org/html/rfc1870)
 - [RFC2034 - SMTP Service Extension for Returning Enhanced Error Codes](https://tools.ietf.org/html/rfc2034)
@@ -118,8 +109,7 @@ SMTP/LMTP extensions
 - [RFC4954 - SMTP Service Extension for Authentication](https://tools.ietf.org/html/rfc4954)
 - [RFC6152 - SMTP Service Extension for 8-bit MIME Transport](https://tools.ietf.org/html/rfc6152)
 
-Contact info
-============
+# Contact info
 
 [https://www.dovecot.org/](https://www.dovecot.org/)
 

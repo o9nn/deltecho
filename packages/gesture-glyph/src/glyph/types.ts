@@ -1,6 +1,6 @@
 /**
  * Gesture Glyph Types
- * 
+ *
  * Visual representation of execution trajectories
  * Maps trajectories (τ) to glyphs (γ) and back
  */
@@ -28,19 +28,19 @@ export interface Point3D {
 export interface Action {
   /** Action type */
   type: string;
-  
+
   /** Action parameters */
   params: Record<string, unknown>;
-  
+
   /** Timestamp */
   timestamp: number;
-  
+
   /** Spatial location (if applicable) */
   location?: Point2D | Point3D;
-  
+
   /** Velocity/speed */
   velocity?: number;
-  
+
   /** Direction vector */
   direction?: Point2D | Point3D;
 }
@@ -51,10 +51,10 @@ export interface Action {
 export interface State {
   /** State representation */
   data: Record<string, unknown>;
-  
+
   /** Timestamp */
   timestamp: number;
-  
+
   /** Belief confidence */
   confidence: number;
 }
@@ -65,10 +65,10 @@ export interface State {
 export interface Observation {
   /** Observation data */
   data: unknown;
-  
+
   /** Timestamp */
   timestamp: number;
-  
+
   /** Observation type */
   type: string;
 }
@@ -79,31 +79,31 @@ export interface Observation {
 export interface Trajectory {
   /** Unique identifier */
   id: string;
-  
+
   /** Goal/intent */
   goal: string;
-  
+
   /** Context */
   context: Record<string, unknown>;
-  
+
   /** Actions sequence */
   actions: Action[];
-  
+
   /** States sequence */
   states: State[];
-  
+
   /** Observations sequence */
   observations: Observation[];
-  
+
   /** Start time */
   startTime: number;
-  
+
   /** End time */
   endTime: number;
-  
+
   /** Success indicator */
   success: boolean;
-  
+
   /** Metadata */
   metadata: Record<string, unknown>;
 }
@@ -114,13 +114,13 @@ export interface Trajectory {
 export interface Stroke {
   /** Path points */
   points: Point2D[];
-  
+
   /** Thickness at each point (encodes speed) */
   thickness: number[];
-  
+
   /** Color at each point (encodes phase) */
   color: string[];
-  
+
   /** Timestamp at each point */
   timestamps: number[];
 }
@@ -131,13 +131,13 @@ export interface Stroke {
 export interface TimeChannel {
   /** Width of raster */
   width: number;
-  
+
   /** Height of raster */
   height: number;
-  
+
   /** Number of time bins */
   timeBins: number;
-  
+
   /** Data as 3D array [time][y][x] */
   data: number[][][];
 }
@@ -148,10 +148,10 @@ export interface TimeChannel {
 export interface VectorField {
   /** Grid width */
   width: number;
-  
+
   /** Grid height */
   height: number;
-  
+
   /** Vectors at each grid point */
   vectors: Array<{
     position: Point2D;
@@ -167,10 +167,10 @@ export interface VectorField {
 export interface ContactMap {
   /** Time dimension size */
   timeSteps: number;
-  
+
   /** Spatial dimension size */
   spatialDim: number;
-  
+
   /** Contact events */
   contacts: Array<{
     time: number;
@@ -196,16 +196,16 @@ export enum GlyphFormat {
 export interface Glyph {
   /** Unique identifier */
   id: string;
-  
+
   /** Source trajectory ID */
   trajectoryId: string;
-  
+
   /** Glyph format */
   format: GlyphFormat;
-  
+
   /** Visual data (format-specific) */
   data: Stroke | TimeChannel | VectorField | ContactMap;
-  
+
   /** Rendering metadata */
   metadata: {
     /** Canvas dimensions */
@@ -213,14 +213,14 @@ export interface Glyph {
       width: number;
       height: number;
     };
-    
+
     /** Color palette */
     palette?: string[];
-    
+
     /** Rendering hints */
     hints?: Record<string, unknown>;
   };
-  
+
   /** Timestamp */
   timestamp: number;
 }
@@ -233,7 +233,7 @@ export interface GlyphCodec {
    * Render trajectory to glyph
    */
   render(trajectory: Trajectory, format: GlyphFormat): Glyph;
-  
+
   /**
    * Decode glyph to trajectory
    */

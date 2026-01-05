@@ -1,6 +1,6 @@
 /**
  * @fileoverview Validation script for Sys6 Triality package
- * 
+ *
  * Run with: npx ts-node --esm validate.ts
  */
 
@@ -15,13 +15,7 @@ import {
   getDoubleStepDelayState,
 } from './src/tensors/types.js';
 
-import {
-  add,
-  matmul,
-  relu,
-  softmax,
-  opponentProcess,
-} from './src/tensors/operations.js';
+import { add, matmul, relu, softmax, opponentProcess } from './src/tensors/operations.js';
 
 import { Sys6CycleEngine } from './src/engine/Sys6CycleEngine.js';
 import { Sys6LLMIntegration, MockLLMProvider } from './src/integration/LLMIntegration.js';
@@ -71,12 +65,12 @@ test('createTensor creates correct shape', () => {
 
 test('zeros creates all-zero tensor', () => {
   const t = zeros([3, 3]);
-  return Array.from(t.data).every(x => x === 0);
+  return Array.from(t.data).every((x) => x === 0);
 });
 
 test('ones creates all-one tensor', () => {
   const t = ones([2, 2]);
-  return Array.from(t.data).every(x => x === 1);
+  return Array.from(t.data).every((x) => x === 1);
 });
 
 test('randn creates tensor with values', () => {
@@ -148,10 +142,16 @@ test('getDoubleStepDelayState follows A1->A2->B2->B3 pattern', () => {
   const s2 = getDoubleStepDelayState(2);
   const s3 = getDoubleStepDelayState(3);
   const s4 = getDoubleStepDelayState(4);
-  return s1.dyad === 'A' && s1.triad === 1 &&
-         s2.dyad === 'A' && s2.triad === 2 &&
-         s3.dyad === 'B' && s3.triad === 2 &&
-         s4.dyad === 'B' && s4.triad === 3;
+  return (
+    s1.dyad === 'A' &&
+    s1.triad === 1 &&
+    s2.dyad === 'A' &&
+    s2.triad === 2 &&
+    s3.dyad === 'B' &&
+    s3.triad === 2 &&
+    s4.dyad === 'B' &&
+    s4.triad === 3
+  );
 });
 
 test('all 30 steps have unique addresses', () => {
@@ -222,10 +222,12 @@ await testAsync('Sys6LLMIntegration processTriadic returns all perspectives', as
     provider: new MockLLMProvider(),
   });
   const result = await integration.processTriadic('test');
-  return result.cognitive !== undefined &&
-         result.affective !== undefined &&
-         result.relevance !== undefined &&
-         result.integrated !== undefined;
+  return (
+    result.cognitive !== undefined &&
+    result.affective !== undefined &&
+    result.relevance !== undefined &&
+    result.integrated !== undefined
+  );
 });
 
 // Summary

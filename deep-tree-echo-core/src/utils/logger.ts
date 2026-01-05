@@ -40,8 +40,8 @@ let globalConfig: LoggerConfig = {
 const COLORS = {
   reset: '\x1b[0m',
   debug: '\x1b[36m', // cyan
-  info: '\x1b[32m',  // green
-  warn: '\x1b[33m',  // yellow
+  info: '\x1b[32m', // green
+  warn: '\x1b[33m', // yellow
   error: '\x1b[31m', // red
   context: '\x1b[90m', // gray
 };
@@ -72,9 +72,9 @@ class SimpleLogger implements Logger {
       timestamp: new Date().toISOString(),
       level: level.toUpperCase(),
       context: this.context,
-      message: args.map(arg =>
-        typeof arg === 'object' ? JSON.stringify(arg) : String(arg)
-      ).join(' '),
+      message: args
+        .map((arg) => (typeof arg === 'object' ? JSON.stringify(arg) : String(arg)))
+        .join(' '),
     };
     return JSON.stringify(entry);
   }
@@ -84,7 +84,9 @@ class SimpleLogger implements Logger {
 
     if (globalConfig.enableTimestamp) {
       const timestamp = new Date().toISOString();
-      parts.push(globalConfig.enableColors ? `${COLORS.context}${timestamp}${COLORS.reset}` : timestamp);
+      parts.push(
+        globalConfig.enableColors ? `${COLORS.context}${timestamp}${COLORS.reset}` : timestamp
+      );
     }
 
     const levelStr = level.toUpperCase().padEnd(5);
@@ -95,7 +97,9 @@ class SimpleLogger implements Logger {
     }
 
     const contextStr = `[${this.context}]`;
-    parts.push(globalConfig.enableColors ? `${COLORS.context}${contextStr}${COLORS.reset}` : contextStr);
+    parts.push(
+      globalConfig.enableColors ? `${COLORS.context}${contextStr}${COLORS.reset}` : contextStr
+    );
 
     return parts.join(' ');
   }

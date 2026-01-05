@@ -348,7 +348,9 @@ export interface EventRecorder<T> {
 /**
  * Measure execution time of a function
  */
-export async function measureTime<T>(fn: () => T | Promise<T>): Promise<{ result: T; duration: number }> {
+export async function measureTime<T>(
+  fn: () => T | Promise<T>
+): Promise<{ result: T; duration: number }> {
   const start = performance.now();
   const result = await fn();
   const duration = performance.now() - start;

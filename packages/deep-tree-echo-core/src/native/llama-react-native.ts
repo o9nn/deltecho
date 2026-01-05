@@ -225,13 +225,9 @@ export class LlamaReactNativeBridge extends EventEmitter {
       let result: CompletionResult;
 
       if (generationParams.stream) {
-        result = await this.nativeModule.generateStream(
-          prompt,
-          generationParams,
-          (token) => {
-            this.emit('token', token);
-          }
-        );
+        result = await this.nativeModule.generateStream(prompt, generationParams, (token) => {
+          this.emit('token', token);
+        });
       } else {
         result = await this.nativeModule.generate(prompt, generationParams);
       }

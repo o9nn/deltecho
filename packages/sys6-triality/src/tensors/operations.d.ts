@@ -36,7 +36,11 @@ export declare function cat(tensors: ShapedTensor[], dim?: number): ShapedTensor
 /**
  * Split tensor along a dimension
  */
-export declare function split(tensor: ShapedTensor, splitSize: number, dim?: number): ShapedTensor[];
+export declare function split(
+  tensor: ShapedTensor,
+  splitSize: number,
+  dim?: number
+): ShapedTensor[];
 /**
  * ReLU activation
  */
@@ -60,7 +64,11 @@ export declare function softmax(tensor: ShapedTensor, dim?: number): ShapedTenso
 /**
  * Layer normalization
  */
-export declare function layerNorm(tensor: ShapedTensor, normalizedShape: number[], eps?: number): ShapedTensor;
+export declare function layerNorm(
+  tensor: ShapedTensor,
+  normalizedShape: number[],
+  eps?: number
+): ShapedTensor;
 /**
  * Opponent processing: compute the interaction between two poles
  */
@@ -75,28 +83,37 @@ export declare function entangle(edge: DyadicEdge): ShapedTensor;
  * Each thread is the average of its two adjacent edges
  */
 export declare function extractThreadsFromFace(face: TriadicFace): {
-    thread_i: ShapedTensor;
-    thread_j: ShapedTensor;
-    thread_k: ShapedTensor;
+  thread_i: ShapedTensor;
+  thread_j: ShapedTensor;
+  thread_k: ShapedTensor;
 };
 /**
  * Triadic integration: combine three thread states
  */
-export declare function triadicIntegrate(thread_i: ShapedTensor, thread_j: ShapedTensor, thread_k: ShapedTensor): ShapedTensor;
+export declare function triadicIntegrate(
+  thread_i: ShapedTensor,
+  thread_j: ShapedTensor,
+  thread_k: ShapedTensor
+): ShapedTensor;
 /**
  * Extract vertex (thread) states from tetradic bundle
  * Each vertex appears in exactly 3 faces
  */
 export declare function extractVerticesFromBundle(bundle: TetradicBundle): {
-    vertex1: ShapedTensor;
-    vertex2: ShapedTensor;
-    vertex3: ShapedTensor;
-    vertex4: ShapedTensor;
+  vertex1: ShapedTensor;
+  vertex2: ShapedTensor;
+  vertex3: ShapedTensor;
+  vertex4: ShapedTensor;
 };
 /**
  * Tetradic integration: combine four vertex states
  */
-export declare function tetradicIntegrate(vertex1: ShapedTensor, vertex2: ShapedTensor, vertex3: ShapedTensor, vertex4: ShapedTensor): ShapedTensor;
+export declare function tetradicIntegrate(
+  vertex1: ShapedTensor,
+  vertex2: ShapedTensor,
+  vertex3: ShapedTensor,
+  vertex4: ShapedTensor
+): ShapedTensor;
 /**
  * Clone a tensor
  */

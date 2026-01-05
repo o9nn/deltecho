@@ -52,7 +52,7 @@ describe('TelemetryMonitor', () => {
 
     it('should register default metrics', () => {
       const metrics = monitor.getAllMetrics();
-      const metricNames = metrics.map(m => m.name);
+      const metricNames = metrics.map((m) => m.name);
 
       expect(metricNames).toContain('system_memory_usage_bytes');
       expect(metricNames).toContain('system_uptime_seconds');
@@ -82,7 +82,7 @@ describe('TelemetryMonitor', () => {
 
   describe('Lifecycle Management', () => {
     it('should start the monitor', async () => {
-      const startedPromise = new Promise<void>(resolve => {
+      const startedPromise = new Promise<void>((resolve) => {
         monitor.once('started', () => resolve());
       });
 
@@ -90,7 +90,7 @@ describe('TelemetryMonitor', () => {
       await startedPromise;
 
       // Monitor should be collecting metrics
-      await new Promise(resolve => setTimeout(resolve, 150));
+      await new Promise((resolve) => setTimeout(resolve, 150));
 
       const memoryMetric = monitor.getMetric('system_memory_usage_bytes');
       expect(memoryMetric?.dataPoints.length).toBeGreaterThan(0);
@@ -101,7 +101,7 @@ describe('TelemetryMonitor', () => {
       await monitor.start(); // Should not throw
 
       // Should still work
-      await new Promise(resolve => setTimeout(resolve, 150));
+      await new Promise((resolve) => setTimeout(resolve, 150));
       const metrics = monitor.getAllMetrics();
       expect(metrics.length).toBeGreaterThan(0);
     });
@@ -109,7 +109,7 @@ describe('TelemetryMonitor', () => {
     it('should stop the monitor', async () => {
       await monitor.start();
 
-      const stoppedPromise = new Promise<void>(resolve => {
+      const stoppedPromise = new Promise<void>((resolve) => {
         monitor.once('stopped', () => resolve());
       });
 
@@ -120,7 +120,7 @@ describe('TelemetryMonitor', () => {
       const memoryMetric = monitor.getMetric('system_memory_usage_bytes');
       const countBefore = memoryMetric?.dataPoints.length || 0;
 
-      await new Promise(resolve => setTimeout(resolve, 150));
+      await new Promise((resolve) => setTimeout(resolve, 150));
 
       const countAfter = memoryMetric?.dataPoints.length || 0;
       expect(countAfter).toBe(countBefore);
@@ -131,7 +131,7 @@ describe('TelemetryMonitor', () => {
       monitor.on('metrics_collected', (event) => events.push(event));
 
       await monitor.start();
-      await new Promise(resolve => setTimeout(resolve, 250));
+      await new Promise((resolve) => setTimeout(resolve, 250));
       await monitor.stop();
 
       expect(events.length).toBeGreaterThan(0);
@@ -294,13 +294,13 @@ describe('TelemetryMonitor', () => {
     });
 
     it('should emit alert_created event', () => {
-      const alertPromise = new Promise<Alert>(resolve => {
+      const alertPromise = new Promise<Alert>((resolve) => {
         monitor.once('alert_created', resolve);
       });
 
       monitor.createAlert('error', 'Test error', 'test');
 
-      return alertPromise.then(alert => {
+      return alertPromise.then((alert) => {
         expect(alert.severity).toBe('error');
       });
     });
@@ -312,7 +312,7 @@ describe('TelemetryMonitor', () => {
       expect(result).toBe(true);
 
       const alerts = monitor.getAllAlerts();
-      const acknowledged = alerts.find(a => a.id === alert.id);
+      const acknowledged = alerts.find((a) => a.id === alert.id);
       expect(acknowledged?.acknowledged).toBe(true);
     });
 
@@ -323,7 +323,7 @@ describe('TelemetryMonitor', () => {
       expect(result).toBe(true);
 
       const alerts = monitor.getAllAlerts();
-      const resolved = alerts.find(a => a.id === alert.id);
+      const resolved = alerts.find((a) => a.id === alert.id);
       expect(resolved?.resolvedAt).toBeDefined();
     });
 
@@ -340,17 +340,17 @@ describe('TelemetryMonitor', () => {
 
       const activeAlerts = monitor.getActiveAlerts();
       expect(activeAlerts.length).toBe(2);
-      expect(activeAlerts.every(a => !a.resolvedAt)).toBe(true);
+      expect(activeAlerts.every((a) => !a.resolvedAt)).toBe(true);
     });
 
     it('should create alert on error recording', () => {
-      const alertPromise = new Promise<Alert>(resolve => {
+      const alertPromise = new Promise<Alert>((resolve) => {
         monitor.once('alert_created', resolve);
       });
 
       monitor.recordError('test', 'Error message');
 
-      return alertPromise.then(alert => {
+      return alertPromise.then((alert) => {
         expect(alert.severity).toBe('error');
         expect(alert.message).toBe('Error message');
       });
@@ -370,7 +370,7 @@ describe('TelemetryMonitor', () => {
     it('should include component health', () => {
       const health = monitor.getHealthStatus();
 
-      const componentNames = health.components.map(c => c.name);
+      const componentNames = health.components.map((c) => c.name);
       expect(componentNames).toContain('memory');
       expect(componentNames).toContain('error_rate');
       expect(componentNames).toContain('cognitive_engine');
@@ -396,7 +396,7 @@ describe('TelemetryMonitor', () => {
       monitor.recordMessageProcessed(50);
 
       const health = monitor.getHealthStatus();
-      const errorComponent = health.components.find(c => c.name === 'error_rate');
+      const errorComponent = health.components.find((c) => c.name === 'error_rate');
 
       // Error rate should be high
       expect(['degraded', 'unhealthy']).toContain(errorComponent?.status);
@@ -406,7 +406,7 @@ describe('TelemetryMonitor', () => {
   describe('Telemetry Snapshot', () => {
     it('should provide complete snapshot', async () => {
       await monitor.start();
-      await new Promise(resolve => setTimeout(resolve, 150));
+      await new Promise((resolve) => setTimeout(resolve, 150));
 
       const snapshot = monitor.getSnapshot();
 
@@ -421,7 +421,7 @@ describe('TelemetryMonitor', () => {
 
     it('should include system info in snapshot', async () => {
       await monitor.start();
-      await new Promise(resolve => setTimeout(resolve, 150));
+      await new Promise((resolve) => setTimeout(resolve, 150));
 
       const snapshot = monitor.getSnapshot();
 
@@ -487,7 +487,7 @@ describe('TelemetryMonitor', () => {
       await shortRetentionMonitor.start();
 
       // Wait for retention period to pass
-      await new Promise(resolve => setTimeout(resolve, 200));
+      await new Promise((resolve) => setTimeout(resolve, 200));
 
       const metric = shortRetentionMonitor.getMetric('system_memory_usage_bytes');
 
@@ -518,11 +518,11 @@ describe('TelemetryMonitor', () => {
       alertMonitor.recordCycleComplete(5000);
 
       await alertMonitor.start();
-      await new Promise(resolve => setTimeout(resolve, 100));
+      await new Promise((resolve) => setTimeout(resolve, 100));
       await alertMonitor.stop();
 
       // Should have created alerts for threshold violations
-      const latencyAlert = alerts.find(a => a.message.includes('latency'));
+      const latencyAlert = alerts.find((a) => a.message.includes('latency'));
       expect(latencyAlert).toBeDefined();
     });
   });

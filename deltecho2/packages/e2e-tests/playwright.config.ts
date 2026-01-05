@@ -95,7 +95,7 @@ export default defineConfig({
       ...process.env,
       NODE_TLS_REJECT_UNAUTHORIZED: '0',
       HTTPS_ENABLED: process.env.CI ? 'false' : 'true',
-      NODE_ENV: process.env.CI ? 'test' : (process.env.NODE_ENV || 'development'),
+      NODE_ENV: process.env.CI ? 'test' : process.env.NODE_ENV || 'development',
     },
     url: baseURL,
     timeout: 120 * 1000,

@@ -117,7 +117,7 @@ export interface IntegrationStatus {
 
 /**
  * Double Membrane Integration
- * 
+ *
  * Provides orchestrator with double membrane cognitive capabilities
  */
 export class DoubleMembraneIntegration extends EventEmitter {
@@ -126,7 +126,7 @@ export class DoubleMembraneIntegration extends EventEmitter {
   private running: boolean = false;
   private startTime: number = 0;
   private requestCount: number = 0;
-  
+
   // Stats tracking
   private stats = {
     totalRequests: 0,
@@ -209,9 +209,7 @@ export class DoubleMembraneIntegration extends EventEmitter {
             name: 'openrouter',
             type: 'openai',
             apiKey: this.config.llmProviders.openrouter.apiKey,
-            model:
-              this.config.llmProviders.openrouter.model ||
-              'anthropic/claude-3.5-sonnet:beta',
+            model: this.config.llmProviders.openrouter.model || 'anthropic/claude-3.5-sonnet:beta',
             endpoint: 'https://openrouter.ai/api/v1/chat/completions',
           });
         }
@@ -263,10 +261,10 @@ export class DoubleMembraneIntegration extends EventEmitter {
 
       // Start the membrane
       await this.doubleMembrane.start();
-      
+
       this.running = true;
       this.startTime = Date.now();
-      
+
       log.info('Double membrane integration started successfully');
     } catch (error) {
       log.error('Failed to start double membrane integration:', error);
@@ -283,10 +281,10 @@ export class DoubleMembraneIntegration extends EventEmitter {
     }
 
     log.info('Stopping double membrane integration...');
-    
+
     await this.doubleMembrane.stop();
     this.running = false;
-    
+
     log.info('Double membrane integration stopped');
   }
 
@@ -299,7 +297,7 @@ export class DoubleMembraneIntegration extends EventEmitter {
     }
 
     const requestId = request.id || `req-${++this.requestCount}`;
-    
+
     log.debug(`Processing request ${requestId}: ${request.prompt.substring(0, 50)}...`);
 
     const response = await this.doubleMembrane.process({
@@ -321,7 +319,10 @@ export class DoubleMembraneIntegration extends EventEmitter {
   /**
    * Use chat interface for conversational processing
    */
-  async chat(message: string, conversationHistory?: Array<{ role: string; content: string }>): Promise<string> {
+  async chat(
+    message: string,
+    conversationHistory?: Array<{ role: string; content: string }>
+  ): Promise<string> {
     if (!this.running || !this.doubleMembrane) {
       throw new Error('Double membrane integration not running');
     }
@@ -346,9 +347,7 @@ export class DoubleMembraneIntegration extends EventEmitter {
         externalRequests: this.stats.externalRequests,
         hybridRequests: this.stats.hybridRequests,
         averageLatency:
-          this.stats.totalRequests > 0
-            ? this.stats.totalLatency / this.stats.totalRequests
-            : 0,
+          this.stats.totalRequests > 0 ? this.stats.totalLatency / this.stats.totalRequests : 0,
         queueLength: 0,
       },
       providers: [],
@@ -360,7 +359,7 @@ export class DoubleMembraneIntegration extends EventEmitter {
 
     // Get detailed status from double membrane
     const membraneStatus = this.doubleMembrane.getStatus();
-    
+
     return {
       ...baseStatus,
       identityEnergy: membraneStatus.identityState?.aarCore?.energy || 0,

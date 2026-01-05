@@ -68,7 +68,7 @@ describe('EnhancedLLMService', () => {
         { role: 'system', content: 'You are a helpful assistant.' },
         { role: 'user', content: 'Hello!' },
       ];
-      
+
       // The service should accept these messages without error
       expect(messages.length).toBe(2);
       expect(messages[0].role).toBe('system');

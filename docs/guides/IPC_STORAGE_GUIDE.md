@@ -44,6 +44,7 @@ Location: `deep-tree-echo-core/src/adapters/OrchestratorStorageAdapter.ts`
 A storage adapter that implements the `MemoryStorage` interface and communicates with the orchestrator's IPC server via Unix socket or TCP.
 
 **Features:**
+
 - Automatic reconnection on disconnection
 - Request/response protocol with timeouts
 - Newline-delimited JSON message format
@@ -56,6 +57,7 @@ Location: `deep-tree-echo-orchestrator/src/ipc/server.ts`
 The server-side component that handles storage requests from desktop applications.
 
 **Supported Message Types:**
+
 - `REQUEST_STORAGE_GET` - Retrieve a value by key
 - `REQUEST_STORAGE_SET` - Store a key-value pair
 - `REQUEST_STORAGE_DELETE` - Delete a key
@@ -79,7 +81,7 @@ import { RAGMemoryStore, PersonaCore } from 'deep-tree-echo-core';
 // 1. Create the storage adapter
 const storage = new OrchestratorStorageAdapter({
   socketPath: '/tmp/deep-tree-echo.sock',
-  storagePrefix: 'deltecho'
+  storagePrefix: 'deltecho',
 });
 
 // 2. Connect to the orchestrator
@@ -116,7 +118,7 @@ import { IPCServer } from 'deep-tree-echo-orchestrator';
 const ipcServer = new IPCServer({
   socketPath: '/tmp/deep-tree-echo.sock',
   useTcp: false,
-  maxConnections: 10
+  maxConnections: 10,
 });
 
 // 2. Start the server
@@ -167,23 +169,25 @@ Messages are sent as newline-delimited JSON over the socket:
 ### Socket Path
 
 **Unix Socket (default):** `/tmp/deep-tree-echo.sock`
+
 - Fast, local-only communication
 - Recommended for single-machine setups
 
 **TCP Socket:** `localhost:9876`
+
 - Network communication support
 - Useful for multi-machine setups or testing
 
 ```typescript
 // Unix socket (default)
 const storage = new OrchestratorStorageAdapter({
-  socketPath: '/tmp/deep-tree-echo.sock'
+  socketPath: '/tmp/deep-tree-echo.sock',
 });
 
 // TCP socket (not yet implemented in adapter)
 const ipcServer = new IPCServer({
   useTcp: true,
-  tcpPort: 9876
+  tcpPort: 9876,
 });
 ```
 
@@ -193,7 +197,7 @@ All keys are automatically prefixed to avoid collisions:
 
 ```typescript
 const storage = new OrchestratorStorageAdapter({
-  storagePrefix: 'deltecho'  // Keys become "deltecho:key"
+  storagePrefix: 'deltecho', // Keys become "deltecho:key"
 });
 ```
 
@@ -249,21 +253,25 @@ npm run dev
 ## Troubleshooting
 
 ### "Connection refused"
+
 - Ensure orchestrator daemon is running
 - Check socket path is correct
 - Verify socket file exists (`ls -la /tmp/deep-tree-echo.sock`)
 
 ### "Connection timeout"
+
 - Orchestrator may be slow to start
 - Check orchestrator logs for errors
 - Verify no firewall blocking the socket
 
 ### "ENOENT: no such file or directory"
+
 - Socket file doesn't exist
 - Orchestrator hasn't created the socket yet
 - Check orchestrator is running and has started IPC server
 
 ### Frequent disconnections
+
 - Check orchestrator logs for crashes
 - Verify system resources (memory, CPU)
 - Look for network issues if using TCP

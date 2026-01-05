@@ -13,21 +13,22 @@ This update implements a comprehensive **Mitochondrial Model Enhancement** for D
 
 ### Biological Inspiration
 
-| Mitochondrial Component | Deep Tree Echo Analog |
-|------------------------|----------------------|
-| Outer Membrane | APIGateway - External interface for AI providers |
-| Inner Membrane | SelfState - Sealed identity with write protection |
-| Intermembrane Space | Transjective Buffer - Packet routing and transformation |
-| Matrix | Core Identity - AAR self-model and native inference |
-| Proton Gradient | Sys6 Clock - Information gradient powering transport |
-| Transport Proteins | Codec Pipeline - Selective transformation of data |
-| Selective Permeability | CrossingPolicy - Access control for membrane crossings |
+| Mitochondrial Component | Deep Tree Echo Analog                                   |
+| ----------------------- | ------------------------------------------------------- |
+| Outer Membrane          | APIGateway - External interface for AI providers        |
+| Inner Membrane          | SelfState - Sealed identity with write protection       |
+| Intermembrane Space     | Transjective Buffer - Packet routing and transformation |
+| Matrix                  | Core Identity - AAR self-model and native inference     |
+| Proton Gradient         | Sys6 Clock - Information gradient powering transport    |
+| Transport Proteins      | Codec Pipeline - Selective transformation of data       |
+| Selective Permeability  | CrossingPolicy - Access control for membrane crossings  |
 
 ### New Components
 
 #### 1. Transjective Buffer (`src/transjective/`)
 
 **packets.ts** - Typed packet schemas for membrane communication:
+
 - `EvidencePacket` - What crosses inward (Objective → Subjective)
 - `IntentPacket` - What crosses outward (Subjective → Objective)
 - `MemoryWritePacket` - Append-only memory writes
@@ -36,18 +37,21 @@ This update implements a comprehensive **Mitochondrial Model Enhancement** for D
 - `Provenance` - Full chain of custody tracking
 
 **MembraneBus.ts** - Append-only event log:
+
 - Immutable event recording
 - Temporal ordering preservation
 - Queue management (inward, outward, internal)
 - Replay and audit capabilities
 
 **CodecPipeline.ts** - Transformation layer:
+
 - `graphize()` - Convert arena events → hypergraph
 - `tensorize()` - Convert features → embeddings
 - `summarize()` - Compress information
 - `redact()` - Remove sensitive data before crossing
 
 **CrossingPolicy.ts** - Access control:
+
 - Trust level verification
 - Risk score evaluation
 - Rate limiting
@@ -56,6 +60,7 @@ This update implements a comprehensive **Mitochondrial Model Enhancement** for D
 - Sys6 phase alignment
 
 **Sys6MembraneClock.ts** - Transport discipline:
+
 - 30-step cycle (LCM of 2, 3, 5)
 - 3 phases × 5 stages × 2 steps
 - Delta-2 lanes (8-way cubic concurrency)
@@ -121,13 +126,14 @@ This update implements a comprehensive **Mitochondrial Model Enhancement** for D
 
 The Sys6 cycle serves as the "heartbeat" of the membrane system:
 
-| Step Range | Phase | Description |
-|------------|-------|-------------|
-| 1-10 | Perception-Orientation | Inward crossings preferred |
-| 11-20 | Evaluation-Generation | Mixed crossings |
-| 21-30 | Action-Integration | Outward crossings preferred |
+| Step Range | Phase                  | Description                 |
+| ---------- | ---------------------- | --------------------------- |
+| 1-10       | Perception-Orientation | Inward crossings preferred  |
+| 11-20      | Evaluation-Generation  | Mixed crossings             |
+| 21-30      | Action-Integration     | Outward crossings preferred |
 
 Each phase has 5 stages with 2 steps each, creating a 30-step cycle that governs:
+
 - When packets can cross membranes
 - Which Delta-2 lanes are active
 - Which Delta-3 transformation phase is running
@@ -149,6 +155,7 @@ Each phase has 5 stages with 2 steps each, creating a 30-step cycle that governs
 ### Files Changed
 
 **New Files:**
+
 - `src/transjective/packets.ts` - Typed packet schemas
 - `src/transjective/MembraneBus.ts` - Append-only event log
 - `src/transjective/CodecPipeline.ts` - Transformation layer
@@ -160,6 +167,7 @@ Each phase has 5 stages with 2 steps each, creating a 30-step cycle that governs
 - `tests/SelfState.test.ts` - SelfState tests
 
 **Modified Files:**
+
 - `src/index.ts` - Updated exports
 - `src/inner-membrane/index.ts` - Updated exports
 

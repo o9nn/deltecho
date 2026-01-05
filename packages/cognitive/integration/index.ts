@@ -24,10 +24,10 @@ interface LLMProviderConfig {
  * Sys6 Cognitive Processing Mode
  */
 export enum Sys6ProcessingMode {
-  DISABLED = 'disabled',           // Use basic cognitive processing
-  SINGLE_CYCLE = 'single_cycle',   // Run one 30-step cycle per message
-  CONTINUOUS = 'continuous',       // Maintain continuous cognitive streams
-  ADAPTIVE = 'adaptive',           // Adapt cycle count based on complexity
+  DISABLED = 'disabled', // Use basic cognitive processing
+  SINGLE_CYCLE = 'single_cycle', // Run one 30-step cycle per message
+  CONTINUOUS = 'continuous', // Maintain continuous cognitive streams
+  ADAPTIVE = 'adaptive', // Adapt cycle count based on complexity
 }
 
 /**
@@ -49,7 +49,7 @@ export class CognitiveOrchestrator {
   private eventListeners: Map<string, Array<(event: CognitiveEvent) => void>> = new Map();
   private conversationHistory: Array<{ role: string; content: string }> = [];
   private llmConfig: LLMProviderConfig | null = null;
-  
+
   // Sys6 integration
   private sys6Mode: Sys6ProcessingMode = Sys6ProcessingMode.DISABLED;
   private sys6Engine: any | null = null; // Will be Sys6CycleEngine if enabled
@@ -64,9 +64,12 @@ export class CognitiveOrchestrator {
     lastCycleSteps: 0,
   };
 
-  constructor(config: DeepTreeEchoBotConfig, options?: { sys6Mode?: Sys6ProcessingMode; sys6Dim?: number }) {
+  constructor(
+    config: DeepTreeEchoBotConfig,
+    options?: { sys6Mode?: Sys6ProcessingMode; sys6Dim?: number }
+  ) {
     this.config = config;
-    
+
     // Initialize LLM config from settings if available
     if (config.apiKey) {
       this.llmConfig = {
@@ -77,7 +80,7 @@ export class CognitiveOrchestrator {
         maxTokens: config.maxTokens ?? 1000,
       };
     }
-    
+
     // Initialize Sys6 if requested
     if (options?.sys6Mode && options.sys6Mode !== Sys6ProcessingMode.DISABLED) {
       this.sys6Mode = options.sys6Mode;
@@ -207,7 +210,7 @@ export class CognitiveOrchestrator {
     if (this.sys6Mode !== Sys6ProcessingMode.DISABLED) {
       try {
         const sys6Result = await this.processSys6Cycle(message);
-        
+
         // Update metadata with Sys6 telemetry
         return {
           ...message,
@@ -235,9 +238,7 @@ export class CognitiveOrchestrator {
   /**
    * Run Sys6 30-step cognitive cycle processing
    */
-  private async processSys6Cycle(
-    message: UnifiedMessage
-  ): Promise<{
+  private async processSys6Cycle(message: UnifiedMessage): Promise<{
     cycleNumber: number;
     processingTimeMs: number;
     steps: number;
@@ -248,8 +249,12 @@ export class CognitiveOrchestrator {
       try {
         // Dynamic import to avoid loading sys6-triality unless needed
         // Using string literal to avoid TypeScript compile-time resolution
-        const sys6Module: any = await (new Function('return import("@deltecho/sys6-triality")')() as Promise<any>).catch(() => {
-          throw new Error('Sys6-Triality package not installed. Install with: pnpm add @deltecho/sys6-triality');
+        const sys6Module: any = await (
+          new Function('return import("@deltecho/sys6-triality")')() as Promise<any>
+        ).catch(() => {
+          throw new Error(
+            'Sys6-Triality package not installed. Install with: pnpm add @deltecho/sys6-triality'
+          );
         });
         this.sys6Engine = new sys6Module.Sys6CycleEngine({ dim: 256 });
       } catch (error) {
@@ -258,10 +263,10 @@ export class CognitiveOrchestrator {
     }
 
     const startTime = Date.now();
-    
+
     // Encode message into tensor representation
     const inputTensor = this.encodeMessageToTensor(message.content);
-    
+
     // Determine number of cycles based on mode
     let numCycles = 1;
     if (this.sys6Mode === Sys6ProcessingMode.ADAPTIVE) {
@@ -269,12 +274,12 @@ export class CognitiveOrchestrator {
     } else if (this.sys6Mode === Sys6ProcessingMode.CONTINUOUS) {
       numCycles = 3; // Multiple cycles for deeper processing
     }
-    
+
     // Run the cognitive cycle(s)
     const result = this.sys6Engine.forward(inputTensor, numCycles);
-    
+
     const processingTimeMs = Date.now() - startTime;
-    
+
     // Update telemetry
     this.sys6CycleCount++;
     this.sys6Telemetry.totalCycles += numCycles;
@@ -282,13 +287,15 @@ export class CognitiveOrchestrator {
     this.sys6Telemetry.averageProcessingMs =
       (this.sys6Telemetry.averageProcessingMs * (this.sys6CycleCount - 1) + processingTimeMs) /
       this.sys6CycleCount;
-    
+
     // Update cognitive context with Sys6 results
     if (this.state?.cognitiveContext) {
-      this.state.cognitiveContext.attentionWeight = this.extractAttentionFromState(result.finalState);
+      this.state.cognitiveContext.attentionWeight = this.extractAttentionFromState(
+        result.finalState
+      );
       this.state.cognitiveContext.salienceScore = this.extractSalienceFromState(result.finalState);
     }
-    
+
     return {
       cycleNumber: this.sys6CycleCount,
       processingTimeMs,
@@ -304,28 +311,28 @@ export class CognitiveOrchestrator {
     // Simple encoding: create a 256-dimensional vector from text features
     const dim = 256;
     const data = new Float32Array(dim);
-    
+
     // Fill with features derived from text
     const words = text.toLowerCase().split(/\s+/);
     const chars = text.toLowerCase().split('');
-    
+
     // Character frequency features (first 128 dimensions)
     for (let i = 0; i < Math.min(chars.length, 128); i++) {
       const charCode = chars[i].charCodeAt(0);
       data[i] = (charCode % 256) / 255.0; // Normalize to [0, 1]
     }
-    
+
     // Word-based features (last 128 dimensions)
     for (let i = 0; i < Math.min(words.length, 128); i++) {
       const wordHash = this.hashString(words[i]);
       data[128 + i] = (wordHash % 1000) / 1000.0; // Normalize to [0, 1]
     }
-    
+
     // Add noise for robustness
     for (let i = 0; i < dim; i++) {
       data[i] += (Math.random() - 0.5) * 0.01; // Small random perturbation
     }
-    
+
     return {
       data,
       shape: [1, dim],
@@ -354,7 +361,7 @@ export class CognitiveOrchestrator {
       text.length / 100 + // Length factor
       (text.split('?').length - 1) * 0.5 + // Question complexity
       (text.split('.').length - 1) * 0.3; // Sentence complexity
-    
+
     return Math.max(1, Math.min(5, Math.ceil(complexity)));
   }
 
@@ -363,7 +370,7 @@ export class CognitiveOrchestrator {
    */
   private extractAttentionFromState(state: any): number {
     if (!state || !state.data) return 0.5;
-    
+
     // Calculate mean activation across dimensions
     const data = state.data as Float32Array;
     const sum = Array.from(data).reduce((a, b) => a + Math.abs(b), 0);
@@ -375,13 +382,12 @@ export class CognitiveOrchestrator {
    */
   private extractSalienceFromState(state: any): number {
     if (!state || !state.data) return 0.5;
-    
+
     // Calculate variance as proxy for salience
     const data = state.data as Float32Array;
     const mean = Array.from(data).reduce((a, b) => a + b, 0) / data.length;
-    const variance =
-      Array.from(data).reduce((a, b) => a + Math.pow(b - mean, 2), 0) / data.length;
-    
+    const variance = Array.from(data).reduce((a, b) => a + Math.pow(b - mean, 2), 0) / data.length;
+
     return Math.min(1, Math.sqrt(variance));
   }
 
@@ -637,7 +643,7 @@ Keep responses concise but thoughtful. Show genuine curiosity and engagement wit
 
 /**
  * Factory function for creating a configured orchestrator
- * 
+ *
  * @param config - Basic Deep Tree Echo bot configuration
  * @param options - Optional advanced configuration including Sys6 mode
  */

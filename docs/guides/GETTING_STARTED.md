@@ -26,12 +26,14 @@ Before you begin, ensure you have:
 ### Obtaining API Keys
 
 **OpenAI:**
+
 1. Visit [platform.openai.com](https://platform.openai.com)
 2. Create an account or sign in
 3. Navigate to API Keys section
 4. Create a new secret key
 
 **Anthropic:**
+
 1. Visit [console.anthropic.com](https://console.anthropic.com)
 2. Create an account or sign in
 3. Navigate to API Keys
@@ -61,6 +63,7 @@ pnpm build
 ```
 
 This will compile all core packages:
+
 - `deep-tree-echo-core` - Core cognitive functions
 - `@deltecho/shared` - Shared utilities and abstractions
 - `@deltecho/cognitive` - Cognitive architecture components
@@ -142,25 +145,27 @@ The Deltecho CLI provides a command-line interface for cognitive AI processing.
 
 ### Commands
 
-| Command | Description |
-|---------|-------------|
-| `chat` | Interactive chat session |
-| `triadic <prompt>` | Process through all three cognitive cores |
-| `cognitive <prompt>` | Logical reasoning (Cognitive Core) |
-| `affective <prompt>` | Emotional understanding (Affective Core) |
+| Command              | Description                                     |
+| -------------------- | ----------------------------------------------- |
+| `chat`               | Interactive chat session                        |
+| `triadic <prompt>`   | Process through all three cognitive cores       |
+| `cognitive <prompt>` | Logical reasoning (Cognitive Core)              |
+| `affective <prompt>` | Emotional understanding (Affective Core)        |
 | `relevance <prompt>` | Integration and prioritization (Relevance Core) |
-| `cycle <prompt>` | Run full 12-step cognitive cycle |
-| `status` | Show provider configuration |
-| `help` | Show help message |
+| `cycle <prompt>`     | Run full 12-step cognitive cycle                |
+| `status`             | Show provider configuration                     |
+| `help`               | Show help message                               |
 
 ### Examples
 
 **Interactive Chat:**
+
 ```bash
 npx ts-node bin/deltecho-cli.ts chat
 ```
 
 In chat mode, you can switch between cognitive modes:
+
 - `/cognitive` - Switch to Cognitive Core
 - `/affective` - Switch to Affective Core
 - `/relevance` - Switch to Relevance Core
@@ -168,17 +173,20 @@ In chat mode, you can switch between cognitive modes:
 - `/quit` - Exit chat
 
 **Triadic Processing:**
+
 ```bash
 npx ts-node bin/deltecho-cli.ts triadic "What are the implications of AI in healthcare?"
 ```
 
 This processes your input through all three cognitive cores and provides:
+
 1. **Cognitive Analysis** - Logical reasoning
 2. **Affective Analysis** - Emotional understanding
 3. **Relevance Analysis** - Integration and prioritization
 4. **Synthesis** - Unified response combining all perspectives
 
 **12-Step Cognitive Cycle:**
+
 ```bash
 npx ts-node bin/deltecho-cli.ts cycle "A customer is threatening to leave due to a service issue"
 ```
@@ -201,10 +209,12 @@ import {
 
 // Initialize
 const registry = LLMProviderRegistry.getInstance();
-registry.register(new OpenAIProvider({
-  apiKey: process.env.OPENAI_API_KEY,
-  model: 'gpt-4-turbo-preview',
-}));
+registry.register(
+  new OpenAIProvider({
+    apiKey: process.env.OPENAI_API_KEY,
+    model: 'gpt-4-turbo-preview',
+  })
+);
 
 const llmService = new UnifiedLLMService({
   defaultProvider: 'openai',
@@ -215,7 +225,7 @@ await llmService.initialize();
 
 // Process through Cognitive Core
 const response = await llmService.process(
-  "Analyze the key factors for startup success",
+  'Analyze the key factors for startup success',
   CognitiveFunction.COGNITIVE_CORE
 );
 
@@ -226,9 +236,7 @@ console.log(response.content);
 
 ```typescript
 // Process through all three cores in parallel
-const triadicResponse = await llmService.processTriadic(
-  "Should we pivot our product strategy?"
-);
+const triadicResponse = await llmService.processTriadic('Should we pivot our product strategy?');
 
 console.log('Cognitive:', triadicResponse.cognitive);
 console.log('Affective:', triadicResponse.affective);
@@ -246,7 +254,7 @@ integration.initializeFromEnvironment();
 
 if (integration.isReady()) {
   const response = await integration.generate(
-    "How should we respond to this customer complaint?",
+    'How should we respond to this customer complaint?',
     CognitiveFunctionType.AFFECTIVE_CORE
   );
   console.log(response.content);
@@ -261,11 +269,11 @@ if (integration.isReady()) {
 
 Deltecho implements a triadic cognitive architecture with three specialized cores:
 
-| Core | Function | Focus |
-|------|----------|-------|
-| **Cognitive Core** | Logical reasoning | Analysis, planning, problem-solving |
-| **Affective Core** | Emotional processing | Empathy, feelings, motivations |
-| **Relevance Core** | Integration | Prioritization, synthesis, action |
+| Core               | Function             | Focus                               |
+| ------------------ | -------------------- | ----------------------------------- |
+| **Cognitive Core** | Logical reasoning    | Analysis, planning, problem-solving |
+| **Affective Core** | Emotional processing | Empathy, feelings, motivations      |
+| **Relevance Core** | Integration          | Prioritization, synthesis, action   |
 
 These cores process in parallel (120° phase separation) and their outputs are synthesized into unified responses.
 
@@ -274,6 +282,7 @@ These cores process in parallel (120° phase separation) and their outputs are s
 The full cognitive loop consists of 12 steps across 3 concurrent streams:
 
 **Expressive Mode (Steps 1-7):**
+
 1. PERCEIVE - Identify key elements
 2. ORIENT - Direct attention
 3. EVALUATE - Assess significance
@@ -282,16 +291,12 @@ The full cognitive loop consists of 12 steps across 3 concurrent streams:
 6. SELECT - Choose action
 7. EXECUTE - Formulate response
 
-**Reflective Mode (Steps 8-12):**
-8. OBSERVE - Document results
-9. COMPARE - Check expectations
-10. UPDATE - Revise understanding
-11. CONSOLIDATE - Extract patterns
-12. INTEGRATE - Connect to context
+**Reflective Mode (Steps 8-12):** 8. OBSERVE - Document results 9. COMPARE - Check expectations 10. UPDATE - Revise understanding 11. CONSOLIDATE - Extract patterns 12. INTEGRATE - Connect to context
 
 ### Nested Shells Structure
 
 The architecture follows the OEIS A000081 sequence for nested shells:
+
 - 1 nest → 1 term
 - 2 nests → 2 terms
 - 3 nests → 4 terms
@@ -332,24 +337,29 @@ This defines the relationship between the 3 concurrent streams and the 9 terms o
 ### Common Issues
 
 **"No providers configured"**
+
 - Ensure `OPENAI_API_KEY` or `ANTHROPIC_API_KEY` is set
 - Check environment variable spelling
 
 **"API error: 401"**
+
 - Verify your API key is correct
 - Check if the key has expired
 
 **"Build errors"**
+
 - Run `pnpm install` to ensure dependencies are installed
 - Run `pnpm build` to compile packages
 
 **"Module not found"**
+
 - Ensure you're running from the repository root
 - Check that packages are built (`pnpm build`)
 
 ### Getting Help
 
 If you encounter issues:
+
 1. Check the error message carefully
 2. Review this documentation
 3. Search existing GitHub issues
@@ -357,4 +367,4 @@ If you encounter issues:
 
 ---
 
-*Happy cognitive computing with Deltecho!* 🧠
+_Happy cognitive computing with Deltecho!_ 🧠

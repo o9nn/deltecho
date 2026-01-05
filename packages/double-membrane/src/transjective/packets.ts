@@ -476,11 +476,7 @@ export function createProvenance(
 /**
  * Add a processing step to provenance
  */
-export function addProvenanceStep(
-  provenance: Provenance,
-  step: string,
-  agent: string
-): Provenance {
+export function addProvenanceStep(provenance: Provenance, step: string, agent: string): Provenance {
   return {
     ...provenance,
     processingChain: [

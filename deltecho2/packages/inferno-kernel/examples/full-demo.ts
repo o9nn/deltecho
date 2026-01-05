@@ -1,6 +1,6 @@
 /**
  * Full Inferno Kernel AGI Demo
- * 
+ *
  * Demonstrates the complete AGI operating system with all cognitive components
  * working together: AtomSpace, PLN reasoning, attention allocation, MOSES
  * learning, OpenPsi motivation, and distributed coordination.
@@ -108,7 +108,9 @@ async function runFullDemo() {
   const focusAtoms = attention.getAttentionalFocus()
   console.log('Atoms in attentional focus:')
   for (const atom of focusAtoms) {
-    console.log(`  - ${atom.name || atom.type} (STI: ${atom.attentionValue.sti.toFixed(0)})`)
+    console.log(
+      `  - ${atom.name || atom.type} (STI: ${atom.attentionValue.sti.toFixed(0)})`
+    )
   }
 
   // 6. Hebbian Learning

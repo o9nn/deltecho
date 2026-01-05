@@ -1,26 +1,26 @@
 import { describe, it, expect, beforeEach, afterEach, jest } from '@jest/globals';
 
-import { LMTPServer, LMTPConfig } from '../dovecot-interface/lmtp-server.js'
+import { LMTPServer, LMTPConfig } from '../dovecot-interface/lmtp-server.js';
 
 describe('LMTPServer', () => {
-  let server: LMTPServer
+  let server: LMTPServer;
   const testConfig: LMTPConfig = {
     socketPath: '127.0.0.1:2525',
     allowedDomains: ['example.com', 'test.local'],
-  }
+  };
 
   beforeEach(() => {
-    server = new LMTPServer(testConfig)
-  })
+    server = new LMTPServer(testConfig);
+  });
 
   afterEach(async () => {
-    await server.stop()
-  })
+    await server.stop();
+  });
 
   describe('constructor', () => {
     it('should create server with default timeout and max message size', () => {
-      expect(server).toBeDefined()
-    })
+      expect(server).toBeDefined();
+    });
 
     it('should accept custom configuration', () => {
       const customConfig: LMTPConfig = {
@@ -28,43 +28,45 @@ describe('LMTPServer', () => {
         allowedDomains: ['*'],
         timeout: 30000,
         maxMessageSize: 10 * 1024 * 1024,
-      }
-      const customServer = new LMTPServer(customConfig)
-      expect(customServer).toBeDefined()
-    })
-  })
+      };
+      const customServer = new LMTPServer(customConfig);
+      expect(customServer).toBeDefined();
+    });
+  });
 
   describe('event handling', () => {
     it('should register event listeners', () => {
-      const callback = jest.fn()
-      server.on('email', callback)
+      const callback = jest.fn();
+      server.on('email', callback);
 
       // Simulate emitting an event
-      server.emit('email', { subject: 'Test' })
+      server.emit('email', { subject: 'Test' });
 
-      expect(callback).toHaveBeenCalledWith({ subject: 'Test' })
-    })
+      expect(callback).toHaveBeenCalledWith({ subject: 'Test' });
+    });
 
     it('should handle multiple listeners for same event', () => {
-      const callback1 = jest.fn()
-      const callback2 = jest.fn()
+      const callback1 = jest.fn();
+      const callback2 = jest.fn();
 
-      server.on('email', callback1)
-      server.on('email', callback2)
+      server.on('email', callback1);
+      server.on('email', callback2);
 
-      server.emit('email', { subject: 'Test' })
+      server.emit('email', { subject: 'Test' });
 
-      expect(callback1).toHaveBeenCalled()
-      expect(callback2).toHaveBeenCalled()
-    })
-  })
+      expect(callback1).toHaveBeenCalled();
+      expect(callback2).toHaveBeenCalled();
+    });
+  });
 
   describe('MIME parsing', () => {
     it('should parse basic email headers correctly', () => {
       // Access the private method through type casting for testing
-      const parseEmail = (server as unknown as {
-        parseEmail: (raw: string, from: string, to: string[]) => unknown
-      }).parseEmail.bind(server)
+      const parseEmail = (
+        server as unknown as {
+          parseEmail: (raw: string, from: string, to: string[]) => unknown;
+        }
+      ).parseEmail.bind(server);
 
       const rawEmail = [
         'From: sender@example.com',
@@ -73,26 +75,28 @@ describe('LMTPServer', () => {
         'Message-ID: <12345@example.com>',
         '',
         'This is the body of the email.',
-      ].join('\r\n')
+      ].join('\r\n');
 
       const parsed = parseEmail(rawEmail, 'sender@example.com', ['recipient@example.com']) as {
-        from: string
-        subject: string
-        messageId: string
-        body: string
-        attachments: unknown[]
-      }
+        from: string;
+        subject: string;
+        messageId: string;
+        body: string;
+        attachments: unknown[];
+      };
 
-      expect(parsed.from).toBe('sender@example.com')
-      expect(parsed.subject).toBe('Test Subject')
-      expect(parsed.messageId).toBe('<12345@example.com>')
-      expect(parsed.body).toBe('This is the body of the email.')
-    })
+      expect(parsed.from).toBe('sender@example.com');
+      expect(parsed.subject).toBe('Test Subject');
+      expect(parsed.messageId).toBe('<12345@example.com>');
+      expect(parsed.body).toBe('This is the body of the email.');
+    });
 
     it('should handle multipart MIME messages with attachments', () => {
-      const parseEmail = (server as unknown as {
-        parseEmail: (raw: string, from: string, to: string[]) => unknown
-      }).parseEmail.bind(server)
+      const parseEmail = (
+        server as unknown as {
+          parseEmail: (raw: string, from: string, to: string[]) => unknown;
+        }
+      ).parseEmail.bind(server);
 
       const rawEmail = [
         'Content-Type: multipart/mixed; boundary="boundary123"',
@@ -108,45 +112,51 @@ describe('LMTPServer', () => {
         '',
         'SGVsbG8gV29ybGQ=',
         '--boundary123--',
-      ].join('\r\n')
+      ].join('\r\n');
 
       const parsed = parseEmail(rawEmail, 'sender@example.com', ['recipient@example.com']) as {
-        body: string
-        attachments: Array<{ filename: string; contentType: string }>
-      }
+        body: string;
+        attachments: Array<{ filename: string; contentType: string }>;
+      };
 
-      expect(parsed.body).toBe('Plain text body')
-      expect(parsed.attachments).toHaveLength(1)
-      expect(parsed.attachments[0].filename).toBe('test.pdf')
-      expect(parsed.attachments[0].contentType).toBe('application/pdf')
-    })
+      expect(parsed.body).toBe('Plain text body');
+      expect(parsed.attachments).toHaveLength(1);
+      expect(parsed.attachments[0].filename).toBe('test.pdf');
+      expect(parsed.attachments[0].contentType).toBe('application/pdf');
+    });
 
     it('should decode quoted-printable content', () => {
-      const decodeQuotedPrintable = (server as unknown as {
-        decodeQuotedPrintable: (input: string) => Buffer
-      }).decodeQuotedPrintable.bind(server)
+      const decodeQuotedPrintable = (
+        server as unknown as {
+          decodeQuotedPrintable: (input: string) => Buffer;
+        }
+      ).decodeQuotedPrintable.bind(server);
 
-      const encoded = 'Hello=20World=0D=0ANew=20Line'
-      const decoded = decodeQuotedPrintable(encoded).toString('utf-8')
+      const encoded = 'Hello=20World=0D=0ANew=20Line';
+      const decoded = decodeQuotedPrintable(encoded).toString('utf-8');
 
-      expect(decoded).toBe('Hello World\r\nNew Line')
-    })
+      expect(decoded).toBe('Hello World\r\nNew Line');
+    });
 
     it('should decode base64 content', () => {
-      const decodeBodyContent = (server as unknown as {
-        decodeBodyContent: (body: string, contentType: string, encoding: string) => string
-      }).decodeBodyContent.bind(server)
+      const decodeBodyContent = (
+        server as unknown as {
+          decodeBodyContent: (body: string, contentType: string, encoding: string) => string;
+        }
+      ).decodeBodyContent.bind(server);
 
-      const base64Content = Buffer.from('Hello World').toString('base64')
-      const decoded = decodeBodyContent(base64Content, 'text/plain', 'base64')
+      const base64Content = Buffer.from('Hello World').toString('base64');
+      const decoded = decodeBodyContent(base64Content, 'text/plain', 'base64');
 
-      expect(decoded).toBe('Hello World')
-    })
+      expect(decoded).toBe('Hello World');
+    });
 
     it('should handle nested multipart messages', () => {
-      const parseEmail = (server as unknown as {
-        parseEmail: (raw: string, from: string, to: string[]) => unknown
-      }).parseEmail.bind(server)
+      const parseEmail = (
+        server as unknown as {
+          parseEmail: (raw: string, from: string, to: string[]) => unknown;
+        }
+      ).parseEmail.bind(server);
 
       const rawEmail = [
         'Content-Type: multipart/mixed; boundary="outer"',
@@ -170,15 +180,15 @@ describe('LMTPServer', () => {
         '',
         'YmluYXJ5',
         '--outer--',
-      ].join('\r\n')
+      ].join('\r\n');
 
       const parsed = parseEmail(rawEmail, 'sender@example.com', ['recipient@example.com']) as {
-        body: string
-        attachments: Array<{ filename: string }>
-      }
+        body: string;
+        attachments: Array<{ filename: string }>;
+      };
 
-      expect(parsed.body).toBe('Plain text version')
-      expect(parsed.attachments).toHaveLength(1)
-    })
-  })
-})
+      expect(parsed.body).toBe('Plain text version');
+      expect(parsed.attachments).toHaveLength(1);
+    });
+  });
+});

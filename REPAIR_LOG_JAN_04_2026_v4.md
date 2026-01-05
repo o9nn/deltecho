@@ -10,14 +10,15 @@ Replaced all placeholders and mocks with real implementations across the deltech
 
 Replaced simulated API calls with real HTTP requests to LLM providers:
 
-| Provider | Endpoint | Model | Features |
-|----------|----------|-------|----------|
-| OpenAI | `https://api.openai.com/v1/chat/completions` | gpt-4.1-mini | Real HTTP requests, streaming support |
-| Anthropic | `https://api.anthropic.com/v1/messages` | claude-3-opus | Real HTTP requests, proper headers |
-| OpenRouter | `https://openrouter.ai/api/v1/chat/completions` | claude-3.5-sonnet | Real HTTP requests, fallback support |
-| Local | Native inference | native-echo-mini | Offline fallback |
+| Provider   | Endpoint                                        | Model             | Features                              |
+| ---------- | ----------------------------------------------- | ----------------- | ------------------------------------- |
+| OpenAI     | `https://api.openai.com/v1/chat/completions`    | gpt-4.1-mini      | Real HTTP requests, streaming support |
+| Anthropic  | `https://api.anthropic.com/v1/messages`         | claude-3-opus     | Real HTTP requests, proper headers    |
+| OpenRouter | `https://openrouter.ai/api/v1/chat/completions` | claude-3.5-sonnet | Real HTTP requests, fallback support  |
+| Local      | Native inference                                | native-echo-mini  | Offline fallback                      |
 
 **Key Features:**
+
 - Real HTTP requests using native `fetch` API
 - Proper authentication headers for each provider
 - Response caching with 5-minute TTL
@@ -31,6 +32,7 @@ Replaced simulated API calls with real HTTP requests to LLM providers:
 Implemented file-based persistent storage:
 
 **Features:**
+
 - File-based JSON storage with automatic directory creation
 - Four memory types: declarative, procedural, episodic, intentional
 - Metadata tracking (importance, access count, timestamps)
@@ -41,6 +43,7 @@ Implemented file-based persistent storage:
 - Statistics tracking
 
 **API:**
+
 ```typescript
 store(type, content, metadata?) → MemoryEntry
 retrieve(id) → MemoryEntry | null
@@ -58,6 +61,7 @@ import(entries) → number
 Implemented the 12-step triadic cognitive loop:
 
 **Architecture:**
+
 - 3 concurrent streams (perception, action, simulation)
 - 12-step cycle with 4-step phase offset
 - Pattern recognition with weighted responses
@@ -65,6 +69,7 @@ Implemented the 12-step triadic cognitive loop:
 - Confidence scoring based on pattern matches
 
 **Processing Steps:**
+
 1. Input preprocessing (tokenization, normalization)
 2. Pattern matching against knowledge base
 3. Stream-based parallel processing
@@ -77,6 +82,7 @@ Implemented the 12-step triadic cognitive loop:
 Implemented bidirectional IPC for Electron:
 
 **Channels:**
+
 - `cognitive:process` - Cognitive processing requests
 - `cognitive:status` - Status queries
 - `memory:store/retrieve/query` - Memory operations
@@ -85,6 +91,7 @@ Implemented bidirectional IPC for Electron:
 - `identity:state/update` - Identity operations
 
 **Features:**
+
 - Request/response pattern with timeouts
 - Streaming support for long-running operations
 - Pending request tracking
@@ -96,23 +103,24 @@ Implemented bidirectional IPC for Electron:
 
 Updated all tests to work with real implementations:
 
-| Test File | Tests | Status |
-|-----------|-------|--------|
-| CoreIdentity.test.ts | 12 | ✓ Passing |
-| SelfState.test.ts | 27 | ✓ Passing |
-| DoubleMembrane.test.ts | 16 | ✓ Passing |
-| transjective.test.ts | 35 | ✓ Passing |
-| NativeInferenceEngine.test.ts | 15 | ✓ Passing |
-| CognitiveProcessor.test.ts | 32 | ✓ Passing |
-| MemoryPersistence.test.ts | 30 | ✓ Passing |
-| IPCBridge.test.ts | 19 | ✓ Passing |
-| APIGateway.test.ts | 20 | ✓ Passing |
+| Test File                     | Tests | Status    |
+| ----------------------------- | ----- | --------- |
+| CoreIdentity.test.ts          | 12    | ✓ Passing |
+| SelfState.test.ts             | 27    | ✓ Passing |
+| DoubleMembrane.test.ts        | 16    | ✓ Passing |
+| transjective.test.ts          | 35    | ✓ Passing |
+| NativeInferenceEngine.test.ts | 15    | ✓ Passing |
+| CognitiveProcessor.test.ts    | 32    | ✓ Passing |
+| MemoryPersistence.test.ts     | 30    | ✓ Passing |
+| IPCBridge.test.ts             | 19    | ✓ Passing |
+| APIGateway.test.ts            | 20    | ✓ Passing |
 
 **Total: 206 tests passing**
 
 ## Files Changed
 
 ### New Files
+
 - `packages/double-membrane/src/cognitive/CognitiveProcessor.ts` (~700 lines)
 - `packages/double-membrane/src/cognitive/index.ts`
 - `packages/double-membrane/src/inner-membrane/MemoryPersistence.ts` (~600 lines)
@@ -124,6 +132,7 @@ Updated all tests to work with real implementations:
 - `packages/double-membrane/tests/APIGateway.test.ts`
 
 ### Modified Files
+
 - `packages/double-membrane/src/outer-membrane/APIGateway.ts` - Real HTTP implementation
 - `packages/double-membrane/src/index.ts` - Added new exports
 - `packages/double-membrane/src/inner-membrane/index.ts` - Added MemoryPersistence export

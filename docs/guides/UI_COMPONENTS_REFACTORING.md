@@ -11,6 +11,7 @@ The `@deltecho/ui-components` package requires comprehensive refactoring to deco
 ## Current State
 
 ### Completed Refactoring
+
 ✅ Fixed relative logger imports to use `@deltecho/shared/logger`  
 ✅ Created runtime interface abstraction in `@deltecho/shared/runtime`  
 ✅ Fixed most runtime imports to use the new abstraction  
@@ -19,12 +20,15 @@ The `@deltecho/ui-components` package requires comprehensive refactoring to deco
 ### Remaining Issues
 
 #### 1. Missing Dependencies
+
 - **lucide-react**: Icon library used by AICompanionHub components
   - Solution: Add to package.json dependencies
   - `pnpm add lucide-react --filter @deltecho/ui-components`
 
 #### 2. Runtime Import Issues
+
 Several files still reference `runtime` without importing it:
+
 - `AICompanionHub/ConnectorRegistry.ts`
 - `AICompanionHub/MemoryPersistenceLayer.ts`
 - `DeepTreeEchoBot/BotSettings.tsx`
@@ -32,7 +36,9 @@ Several files still reference `runtime` without importing it:
 **Fix:** Add `import { runtime } from '@deltecho/shared/runtime'` to these files
 
 #### 3. Backend Communication Abstraction
+
 Files that depend on `backend-com.js` (Delta Chat Desktop IPC):
+
 - `DeepTreeEchoBot/DeepTreeEchoBot.ts`
 - `DeepTreeEchoBot/DeepTreeEchoDev.ts`
 - `DeepTreeEchoBot/DeepTreeEchoIntegration.ts`
@@ -42,12 +48,15 @@ Files that depend on `backend-com.js` (Delta Chat Desktop IPC):
 **Solution:** Create `@deltecho/shared/backend.ts` with abstract backend interface
 
 #### 4. Screen Controller Abstraction
+
 File that depends on `ScreenController.js`:
+
 - `DeepTreeEchoBot/DeepTreeEchoSettingsScreen.tsx`
 
 **Solution:** Create `@deltecho/shared/navigation.ts` with abstract navigation interface
 
 #### 5. Type Mismatches in AICompanionHub
+
 - `AICompanionController.tsx`: Missing `companionId` property in `ConversationContext`
 - `AICompanionCreator.tsx`: Invalid `roleplaying` capability, type mismatch for capabilities
 - `AICompanionHub.tsx`: Invalid tab comparisons
@@ -58,6 +67,7 @@ File that depends on `ScreenController.js`:
 ## Refactoring Strategy
 
 ### Phase 1: Add Missing Dependencies (Immediate)
+
 ```bash
 cd /home/ubuntu/deltecho
 pnpm add lucide-react --filter @deltecho/ui-components
@@ -65,26 +75,28 @@ pnpm add react react-dom --save-peer --filter @deltecho/ui-components
 ```
 
 ### Phase 2: Fix Runtime Imports (Immediate)
+
 Add missing runtime imports to files that use `runtime` but don't import it.
 
 ```typescript
-import { runtime } from '@deltecho/shared/runtime'
+import { runtime } from '@deltecho/shared/runtime';
 ```
 
 ### Phase 3: Create Backend Abstraction (Short-term)
+
 Create `/home/ubuntu/deltecho/packages/shared/backend.ts`:
 
 ```typescript
 export interface BackendInterface {
-  sendMessage(chatId: number, text: string): Promise<void>
-  getChats(): Promise<Chat[]>
-  getMessages(chatId: number): Promise<Message[]>
+  sendMessage(chatId: number, text: string): Promise<void>;
+  getChats(): Promise<Chat[]>;
+  getMessages(chatId: number): Promise<Message[]>;
   // ... other backend methods
 }
 
 export const backend: BackendInterface = {
   // Default no-op implementations
-}
+};
 
 export function setBackend(impl: BackendInterface): void {
   // Set backend implementation
@@ -92,18 +104,19 @@ export function setBackend(impl: BackendInterface): void {
 ```
 
 ### Phase 4: Create Navigation Abstraction (Short-term)
+
 Create `/home/ubuntu/deltecho/packages/shared/navigation.ts`:
 
 ```typescript
 export interface NavigationInterface {
-  navigate(screen: string, params?: any): void
-  goBack(): void
+  navigate(screen: string, params?: any): void;
+  goBack(): void;
   // ... other navigation methods
 }
 
 export const navigation: NavigationInterface = {
   // Default no-op implementations
-}
+};
 
 export function setNavigation(impl: NavigationInterface): void {
   // Set navigation implementation
@@ -111,10 +124,13 @@ export function setNavigation(impl: NavigationInterface): void {
 ```
 
 ### Phase 5: Fix Type Definitions (Medium-term)
+
 Review and correct all type definitions in AICompanionHub components to ensure type safety.
 
 ### Phase 6: Remove Desktop-Specific Code (Long-term)
+
 Identify and abstract or remove code that is tightly coupled to Delta Chat Desktop:
+
 - DeltaChat JSON-RPC client usage
 - Desktop-specific settings storage
 - Electron-specific APIs
@@ -122,20 +138,25 @@ Identify and abstract or remove code that is tightly coupled to Delta Chat Deskt
 ## Architecture Goals
 
 ### Standalone Operation
+
 The ui-components package should be usable in:
+
 1. **Delta Chat Desktop** - With full backend integration
 2. **Standalone Web App** - With mock/demo backend
 3. **Mobile App** - With native backend bridge
 4. **Storybook** - For component development and testing
 
 ### Dependency Injection
+
 All external dependencies should be injected through interfaces:
+
 - **Runtime**: Platform-specific operations (file I/O, notifications, etc.)
 - **Backend**: Chat backend operations (send message, get chats, etc.)
 - **Navigation**: Screen navigation and routing
 - **Storage**: Persistent data storage
 
 ### Clean Separation of Concerns
+
 ```
 ui-components/
 ├── DeepTreeEchoBot/        # Deep Tree Echo bot UI
@@ -157,23 +178,27 @@ ui-components/
 ## Implementation Checklist
 
 ### Immediate Actions
+
 - [ ] Add lucide-react dependency
 - [ ] Fix missing runtime imports in 3 files
 - [ ] Test build after fixes
 
 ### Short-term Actions
+
 - [ ] Create backend interface abstraction
 - [ ] Create navigation interface abstraction
 - [ ] Update components to use abstractions
 - [ ] Add peer dependencies (react, react-dom)
 
 ### Medium-term Actions
+
 - [ ] Fix all type mismatches in AICompanionHub
 - [ ] Review and update type definitions
 - [ ] Add comprehensive JSDoc documentation
 - [ ] Create Storybook stories for components
 
 ### Long-term Actions
+
 - [ ] Remove all Delta Chat Desktop specific code
 - [ ] Create demo backend implementation
 - [ ] Add unit tests for all components
@@ -183,31 +208,37 @@ ui-components/
 ## Testing Strategy
 
 ### Unit Tests
+
 Test individual components in isolation:
+
 ```typescript
 describe('DeepTreeEchoBot', () => {
   it('should render with mock runtime', () => {
-    const mockRuntime = createMockRuntime()
-    setRuntime(mockRuntime)
+    const mockRuntime = createMockRuntime();
+    setRuntime(mockRuntime);
     // ... test component
-  })
-})
+  });
+});
 ```
 
 ### Integration Tests
+
 Test components with real (or realistic) backends:
+
 ```typescript
 describe('AICompanionHub Integration', () => {
   it('should create and interact with companion', async () => {
-    const testBackend = createTestBackend()
-    setBackend(testBackend)
+    const testBackend = createTestBackend();
+    setBackend(testBackend);
     // ... test full workflow
-  })
-})
+  });
+});
 ```
 
 ### Storybook Stories
+
 Create interactive component documentation:
+
 ```typescript
 export const Default: Story = {
   args: {
@@ -215,9 +246,9 @@ export const Default: Story = {
   },
   parameters: {
     runtime: mockRuntime,
-    backend: mockBackend
-  }
-}
+    backend: mockBackend,
+  },
+};
 ```
 
 ## Migration Path for Desktop Apps
@@ -226,44 +257,49 @@ When integrating with Delta Chat Desktop applications:
 
 ```typescript
 // In desktop app initialization
-import { setRuntime, setBackend, setNavigation } from '@deltecho/shared'
-import { runtime as desktopRuntime } from '@deltachat-desktop/runtime-interface'
-import { BackendRemote } from './backend-com'
-import { ScreenController } from './ScreenController'
+import { setRuntime, setBackend, setNavigation } from '@deltecho/shared';
+import { runtime as desktopRuntime } from '@deltachat-desktop/runtime-interface';
+import { BackendRemote } from './backend-com';
+import { ScreenController } from './ScreenController';
 
 // Inject desktop implementations
 setRuntime({
   getConfig: (key) => desktopRuntime.getDesktopSettings()[key],
   setConfig: (key, value) => desktopRuntime.setDesktopSetting(key, value),
   // ... map other methods
-})
+});
 
 setBackend({
   sendMessage: (chatId, text) => BackendRemote.rpc.sendMessage(chatId, text),
   // ... map other methods
-})
+});
 
 setNavigation({
   navigate: (screen, params) => ScreenController.navigate(screen, params),
   // ... map other methods
-})
+});
 ```
 
 ## Benefits of Refactoring
 
 ### Reusability
+
 Components can be used across multiple applications without modification.
 
 ### Testability
+
 Components can be tested in isolation with mock implementations.
 
 ### Maintainability
+
 Clear separation of concerns makes code easier to understand and modify.
 
 ### Flexibility
+
 New backends and runtimes can be added without changing component code.
 
 ### Documentation
+
 Storybook stories serve as interactive documentation and examples.
 
 ## Conclusion

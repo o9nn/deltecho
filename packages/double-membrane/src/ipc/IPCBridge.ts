@@ -357,7 +357,7 @@ export class IPCBridge extends EventEmitter {
         if (streamQueue.length > 0) {
           yield streamQueue.shift();
         } else {
-          await new Promise<void>(resolve => {
+          await new Promise<void>((resolve) => {
             resolveNext = resolve;
           });
         }
@@ -424,7 +424,7 @@ export class IPCBridge extends EventEmitter {
 
     try {
       // Execute all handlers
-      const results = await Promise.all(handlers.map(handler => handler(message)));
+      const results = await Promise.all(handlers.map((handler) => handler(message)));
       const result = results.length === 1 ? results[0] : results;
 
       // Send response if this was a request

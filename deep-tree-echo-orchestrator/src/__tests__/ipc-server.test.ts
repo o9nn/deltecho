@@ -30,7 +30,9 @@ describe('IPCServer', () => {
 
   describe('message handlers', () => {
     it('should register custom handlers', () => {
-      const handler: IPCRequestHandler = jest.fn<IPCRequestHandler>().mockResolvedValue({ result: 'ok' });
+      const handler: IPCRequestHandler = jest
+        .fn<IPCRequestHandler>()
+        .mockResolvedValue({ result: 'ok' });
       server.registerHandler(IPCMessageType.REQUEST_COGNITIVE, handler);
 
       // Handler registration should not throw

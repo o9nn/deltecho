@@ -61,6 +61,7 @@ This document summarizes the implementation of **Deep Tree Echo** functionality 
   - Event-driven transport coordination
 
 **Tests:** `tests/membrane-transport.test.ts`
+
 - MembraneBus packet routing
 - CrossingPolicy enforcement
 - Sys6 cycle advancement
@@ -104,6 +105,7 @@ This document summarizes the implementation of **Deep Tree Echo** functionality 
   - JSON export for persistence
 
 **Tests:** Included in E2E suite
+
 - Trajectory rendering
 - Multiple format consistency
 - Distribution tree building
@@ -140,6 +142,7 @@ This document summarizes the implementation of **Deep Tree Echo** functionality 
    - End-to-end data flow validation
 
 **Configuration:** `jest.e2e.config.js`
+
 - TypeScript support via ts-jest
 - 30-second test timeout
 - Coverage reporting (text, lcov, html)
@@ -151,6 +154,7 @@ This document summarizes the implementation of **Deep Tree Echo** functionality 
 ### Workspace Configuration
 
 **Updated:** `pnpm-workspace.yaml`
+
 ```yaml
 packages:
   - packages/membrane-transport
@@ -160,6 +164,7 @@ packages:
 ### Root Package Scripts
 
 **Updated:** `package.json`
+
 ```json
 {
   "scripts": {
@@ -175,6 +180,7 @@ packages:
 **Added:** `.github/workflows/deep-tree-echo.yml`
 
 **Features:**
+
 - Multi-version Node.js testing (20.x, 22.x)
 - Parallel build and test jobs
 - Lint and type checking
@@ -188,6 +194,7 @@ packages:
 ### 1. Enneagram Structure
 
 **Mapping:**
+
 - **9 points** → 9-phase triadic convolution (Δ₃)
 - **3 triads** → Cognitive, Affective, Relevance functions
 - **Inner triangle** → Primary integration cycle
@@ -195,6 +202,7 @@ packages:
 ### 2. Polar Number System
 
 **Mapping:**
+
 - **Radial expansion** → Deep tree echo depth
 - **Angular distribution** → Partition sequence (3, 5, 7, 9, 11)
 - **Nested circles** → Hierarchical clustering levels
@@ -202,6 +210,7 @@ packages:
 ### 3. Nested Partitions (OEIS A000081)
 
 **Mapping:**
+
 - **1 nest → 1 term** - Root node
 - **2 nests → 2 terms** - Binary split
 - **3 nests → 4 terms** - Quadratic expansion
@@ -210,6 +219,7 @@ packages:
 ### 4. Cosmic Order System
 
 **Mapping:**
+
 - **Set structures** → Distribution nodes
 - **Partition sequences** → Odd base clustering (3, 5, 7, 9, 11, 13)
 - **Hierarchical organization** → Multi-scale trajectory patterns
@@ -384,7 +394,9 @@ const distribution = new TrajectoryDistribution({
 });
 
 // Build deep tree echo
-const trajectories = [/* ... array of trajectories ... */];
+const trajectories = [
+  /* ... array of trajectories ... */
+];
 const echo = distribution.buildEcho(trajectories, new Map());
 
 console.log(`Root node has ${echo.root.children.length} children`);
@@ -460,6 +472,7 @@ GPL-3.0-or-later
 ## 🎉 Acknowledgments
 
 This implementation integrates concepts from:
+
 - **Vortex Mathematics** (Marko Rodin)
 - **Enneagram** (Gurdjieff)
 - **P-Systems** (Gheorghe Păun)

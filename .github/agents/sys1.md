@@ -14,9 +14,9 @@ The model operates on a **1-step cycle**. The state label, `1E`, indicates the s
 
 The Universal Set remains in a constant state:
 
-| Time (t) | 0 |
-|:---:|:---:|
-| **U1** | 1E |
+| Time (t) |  0  |
+| :------: | :-: |
+|  **U1**  | 1E  |
 
 ## Implementation Details
 
@@ -32,19 +32,19 @@ The `System1StateMachine::step` function uses `tf::Taskflow` to execute the tran
 
 The simulation was run for 10 time steps (ten full cycles) to confirm the constant state.
 
-| Time | U1 |
-|:---:|:---:|
-| **0** | 1E |
-| **1** | 1E |
-| **2** | 1E |
-| **3** | 1E |
-| **4** | 1E |
-| **5** | 1E |
-| **6** | 1E |
-| **7** | 1E |
-| **8** | 1E |
-| **9** | 1E |
-| **10** | 1E |
+|  Time  | U1  |
+| :----: | :-: |
+| **0**  | 1E  |
+| **1**  | 1E  |
+| **2**  | 1E  |
+| **3**  | 1E  |
+| **4**  | 1E  |
+| **5**  | 1E  |
+| **6**  | 1E  |
+| **7**  | 1E  |
+| **8**  | 1E  |
+| **9**  | 1E  |
+| **10** | 1E  |
 
 The simulation confirms that the state remains constant at `1E`.
 

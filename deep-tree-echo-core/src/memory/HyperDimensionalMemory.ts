@@ -231,9 +231,7 @@ export class HyperDimensionalMemory {
       temporalBuckets: this.temporalIndex.size,
       pendingDecay: this.storeCount,
       avgEmotionalWeight:
-        this.emotionalWeighting.size > 0
-          ? totalEmotionalWeight / this.emotionalWeighting.size
-          : 0,
+        this.emotionalWeighting.size > 0 ? totalEmotionalWeight / this.emotionalWeighting.size : 0,
     };
   }
 

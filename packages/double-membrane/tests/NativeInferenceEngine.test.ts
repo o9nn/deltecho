@@ -113,8 +113,7 @@ describe('NativeInferenceEngine', () => {
     });
 
     it('should estimate higher complexity for technical prompts', () => {
-      const technicalPrompt =
-        'What algorithm should I use for this data processing system?';
+      const technicalPrompt = 'What algorithm should I use for this data processing system?';
       const complexity = engine.estimateComplexity(technicalPrompt);
       expect(complexity).toBeGreaterThan(0.2);
     });
@@ -147,11 +146,7 @@ describe('NativeInferenceEngine', () => {
 
   describe('custom patterns', () => {
     it('should allow adding custom patterns', async () => {
-      engine.addPattern(
-        /custom test pattern/i,
-        ['Custom response!'],
-        0.95
-      );
+      engine.addPattern(/custom test pattern/i, ['Custom response!'], 0.95);
 
       const response = await engine.infer({
         id: 'test-14',

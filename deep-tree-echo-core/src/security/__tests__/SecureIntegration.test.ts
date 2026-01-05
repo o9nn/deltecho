@@ -43,20 +43,20 @@ describe('SecureIntegration', () => {
     it('should block SQL injection attempts', () => {
       const result = security.validateInput('SELECT * FROM users WHERE id = 1');
       expect(result.valid).toBe(false);
-      expect(result.errors.some(e => e.includes('sql_injection'))).toBe(true);
+      expect(result.errors.some((e) => e.includes('sql_injection'))).toBe(true);
     });
 
     it('should sanitize XSS script tags', () => {
       const result = security.validateInput('Hello <script>alert("xss")</script> World');
       expect(result.valid).toBe(true);
       expect(result.sanitized).not.toContain('<script>');
-      expect(result.warnings.some(w => w.includes('xss_script'))).toBe(true);
+      expect(result.warnings.some((w) => w.includes('xss_script'))).toBe(true);
     });
 
     it('should block path traversal attempts', () => {
       const result = security.validateInput('../../etc/passwd');
       expect(result.valid).toBe(false);
-      expect(result.errors.some(e => e.includes('path_traversal'))).toBe(true);
+      expect(result.errors.some((e) => e.includes('path_traversal'))).toBe(true);
     });
 
     it('should sanitize HTML event handlers', () => {
@@ -97,10 +97,10 @@ describe('SecureIntegration', () => {
 
       customSecurity.checkRateLimit('client1');
       customSecurity.checkRateLimit('client1');
-      
+
       // client1 should be at limit
       expect(customSecurity.checkRateLimit('client1').allowed).toBe(false);
-      
+
       // client2 should still have requests available
       expect(customSecurity.checkRateLimit('client2').allowed).toBe(true);
     });
@@ -138,11 +138,7 @@ describe('SecureIntegration', () => {
       const encrypted = security.encrypt('sensitive data');
       expect(encrypted).not.toBeNull();
 
-      const decrypted = security.decrypt(
-        encrypted!.encrypted,
-        encrypted!.iv,
-        encrypted!.tag
-      );
+      const decrypted = security.decrypt(encrypted!.encrypted, encrypted!.iv, encrypted!.tag);
       expect(decrypted).toBe('sensitive data');
     });
 
@@ -239,7 +235,7 @@ describe('SecureIntegration', () => {
 
       const result = security.validateInput('This contains badword');
       expect(result.valid).toBe(false);
-      expect(result.errors.some(e => e.includes('custom_filter'))).toBe(true);
+      expect(result.errors.some((e) => e.includes('custom_filter'))).toBe(true);
     });
   });
 

@@ -2,7 +2,7 @@ import { test, expect, Page } from '@playwright/test'
 
 /**
  * UI Components E2E Test Suite
- * 
+ *
  * Tests the Deep Tree Echo UI components including:
  * - DeepTreeEchoBot component
  * - AICompanionHub component
@@ -32,7 +32,9 @@ test.describe('UI Components - DeepTreeEchoBot', () => {
     test.setTimeout(TEST_TIMEOUT)
 
     const botComponent = await page.evaluate(() => {
-      const element = document.querySelector('[data-testid="deep-tree-echo-bot"]')
+      const element = document.querySelector(
+        '[data-testid="deep-tree-echo-bot"]'
+      )
       return element !== null
     })
 
@@ -43,8 +45,11 @@ test.describe('UI Components - DeepTreeEchoBot', () => {
   test('should display bot status indicator', async ({ page }) => {
     test.setTimeout(TEST_TIMEOUT)
 
-    const statusIndicator = await page.locator('[data-testid="bot-status-indicator"]').isVisible().catch(() => false)
-    
+    const statusIndicator = await page
+      .locator('[data-testid="bot-status-indicator"]')
+      .isVisible()
+      .catch(() => false)
+
     // Status indicator presence is optional
     expect(typeof statusIndicator).toBe('boolean')
   })
@@ -53,7 +58,9 @@ test.describe('UI Components - DeepTreeEchoBot', () => {
     test.setTimeout(TEST_TIMEOUT)
 
     const toggleResult = await page.evaluate(() => {
-      const toggle = document.querySelector('[data-testid="bot-toggle"]') as HTMLInputElement
+      const toggle = document.querySelector(
+        '[data-testid="bot-toggle"]'
+      ) as HTMLInputElement
       if (toggle) {
         const initialState = toggle.checked
         toggle.click()
@@ -104,7 +111,9 @@ test.describe('UI Components - AICompanionHub', () => {
     test.setTimeout(TEST_TIMEOUT)
 
     const companions = await page.evaluate(() => {
-      const companionElements = document.querySelectorAll('[data-testid^="companion-"]')
+      const companionElements = document.querySelectorAll(
+        '[data-testid^="companion-"]'
+      )
       return companionElements.length
     })
 
@@ -115,7 +124,9 @@ test.describe('UI Components - AICompanionHub', () => {
     test.setTimeout(TEST_TIMEOUT)
 
     const selectionResult = await page.evaluate(() => {
-      const firstCompanion = document.querySelector('[data-testid^="companion-"]') as HTMLElement
+      const firstCompanion = document.querySelector(
+        '[data-testid^="companion-"]'
+      ) as HTMLElement
       if (firstCompanion) {
         firstCompanion.click()
         return { clicked: true }
@@ -141,8 +152,11 @@ test.describe('UI Components - Settings Panel', () => {
       return page.click('[data-testid="settings-button"]').catch(() => {})
     })
 
-    const settingsVisible = await page.locator('[data-testid="settings-panel"]').isVisible().catch(() => false)
-    
+    const settingsVisible = await page
+      .locator('[data-testid="settings-panel"]')
+      .isVisible()
+      .catch(() => false)
+
     // Settings panel may have different structure
     expect(typeof settingsVisible).toBe('boolean')
   })
@@ -156,7 +170,9 @@ test.describe('UI Components - Settings Panel', () => {
     })
 
     const aiSettingsSection = await page.evaluate(() => {
-      const section = document.querySelector('[data-testid="ai-companion-settings"]')
+      const section = document.querySelector(
+        '[data-testid="ai-companion-settings"]'
+      )
       return section !== null
     })
 
@@ -167,7 +183,9 @@ test.describe('UI Components - Settings Panel', () => {
     test.setTimeout(TEST_TIMEOUT)
 
     const saveResult = await page.evaluate(() => {
-      const saveButton = document.querySelector('[data-testid="save-settings"]') as HTMLButtonElement
+      const saveButton = document.querySelector(
+        '[data-testid="save-settings"]'
+      ) as HTMLButtonElement
       if (saveButton) {
         saveButton.click()
         return { saved: true }
@@ -183,7 +201,9 @@ test.describe('UI Components - Settings Panel', () => {
 
     // Change a setting
     await page.evaluate(() => {
-      const toggle = document.querySelector('[data-testid="bot-enabled-toggle"]') as HTMLInputElement
+      const toggle = document.querySelector(
+        '[data-testid="bot-enabled-toggle"]'
+      ) as HTMLInputElement
       if (toggle) {
         toggle.click()
       }
@@ -195,11 +215,15 @@ test.describe('UI Components - Settings Panel', () => {
 
     // Verify setting persisted
     const settingPersisted = await page.evaluate(() => {
-      const toggle = document.querySelector('[data-testid="bot-enabled-toggle"]') as HTMLInputElement
+      const toggle = document.querySelector(
+        '[data-testid="bot-enabled-toggle"]'
+      ) as HTMLInputElement
       return toggle ? toggle.checked : null
     })
 
-    expect(settingPersisted === null || typeof settingPersisted === 'boolean').toBe(true)
+    expect(
+      settingPersisted === null || typeof settingPersisted === 'boolean'
+    ).toBe(true)
   })
 })
 
@@ -212,16 +236,22 @@ test.describe('UI Components - Chat Interface', () => {
   test('should render chat input area', async ({ page }) => {
     test.setTimeout(TEST_TIMEOUT)
 
-    const chatInput = await page.locator('#composer-textarea').isVisible().catch(() => false)
-    
+    const chatInput = await page
+      .locator('#composer-textarea')
+      .isVisible()
+      .catch(() => false)
+
     expect(typeof chatInput).toBe('boolean')
   })
 
   test('should render send button', async ({ page }) => {
     test.setTimeout(TEST_TIMEOUT)
 
-    const sendButton = await page.locator('button.send-button').isVisible().catch(() => false)
-    
+    const sendButton = await page
+      .locator('button.send-button')
+      .isVisible()
+      .catch(() => false)
+
     expect(typeof sendButton).toBe('boolean')
   })
 
@@ -229,7 +259,9 @@ test.describe('UI Components - Chat Interface', () => {
     test.setTimeout(TEST_TIMEOUT)
 
     const messageList = await page.evaluate(() => {
-      const list = document.querySelector('.chat-list') || document.querySelector('[data-testid="message-list"]')
+      const list =
+        document.querySelector('.chat-list') ||
+        document.querySelector('[data-testid="message-list"]')
       return list !== null
     })
 
@@ -240,8 +272,9 @@ test.describe('UI Components - Chat Interface', () => {
     test.setTimeout(TEST_TIMEOUT)
 
     const timestamps = await page.evaluate(() => {
-      const timestampElements = document.querySelectorAll('[data-testid="message-timestamp"]') ||
-                                document.querySelectorAll('.message-timestamp')
+      const timestampElements =
+        document.querySelectorAll('[data-testid="message-timestamp"]') ||
+        document.querySelectorAll('.message-timestamp')
       return timestampElements.length
     })
 
@@ -282,7 +315,7 @@ test.describe('UI Components - Accessibility', () => {
 
     // Test tab navigation
     await page.keyboard.press('Tab')
-    
+
     const focusedElement = await page.evaluate(() => {
       return document.activeElement?.tagName
     })
@@ -295,8 +328,10 @@ test.describe('UI Components - Accessibility', () => {
 
     const headingHierarchy = await page.evaluate(() => {
       const headings = document.querySelectorAll('h1, h2, h3, h4, h5, h6')
-      const levels = Array.from(headings).map(h => parseInt(h.tagName.charAt(1)))
-      
+      const levels = Array.from(headings).map(h =>
+        parseInt(h.tagName.charAt(1))
+      )
+
       // Check for proper hierarchy (no skipping levels)
       let valid = true
       for (let i = 1; i < levels.length; i++) {
@@ -305,7 +340,7 @@ test.describe('UI Components - Accessibility', () => {
           break
         }
       }
-      
+
       return { valid, count: headings.length }
     })
 
@@ -411,8 +446,9 @@ test.describe('UI Components - Error States', () => {
     test.setTimeout(TEST_TIMEOUT)
 
     const errorHandling = await page.evaluate(() => {
-      const errorElements = document.querySelectorAll('[data-testid="error-message"]') ||
-                           document.querySelectorAll('.error-message')
+      const errorElements =
+        document.querySelectorAll('[data-testid="error-message"]') ||
+        document.querySelectorAll('.error-message')
       return { hasErrorContainer: true }
     })
 
@@ -423,8 +459,9 @@ test.describe('UI Components - Error States', () => {
     test.setTimeout(TEST_TIMEOUT)
 
     const retrySupport = await page.evaluate(() => {
-      const retryButtons = document.querySelectorAll('[data-testid="retry-button"]') ||
-                          document.querySelectorAll('.retry-button')
+      const retryButtons =
+        document.querySelectorAll('[data-testid="retry-button"]') ||
+        document.querySelectorAll('.retry-button')
       return { hasRetrySupport: true }
     })
 
@@ -435,9 +472,10 @@ test.describe('UI Components - Error States', () => {
     test.setTimeout(TEST_TIMEOUT)
 
     const loadingStates = await page.evaluate(() => {
-      const loaders = document.querySelectorAll('[data-testid="loading"]') ||
-                     document.querySelectorAll('.loading') ||
-                     document.querySelectorAll('.spinner')
+      const loaders =
+        document.querySelectorAll('[data-testid="loading"]') ||
+        document.querySelectorAll('.loading') ||
+        document.querySelectorAll('.spinner')
       return { hasLoadingSupport: true }
     })
 
@@ -456,7 +494,10 @@ test.describe('UI Components - Theme Support', () => {
 
     const lightTheme = await page.evaluate(() => {
       const body = document.body
-      return !body.classList.contains('dark') && !body.classList.contains('dark-theme')
+      return (
+        !body.classList.contains('dark') &&
+        !body.classList.contains('dark-theme')
+      )
     })
 
     expect(typeof lightTheme).toBe('boolean')

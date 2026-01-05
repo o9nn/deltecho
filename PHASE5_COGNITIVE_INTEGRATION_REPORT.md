@@ -52,6 +52,7 @@ Both systems are now fully integrated, building successfully, and tested with 41
   - Real-time performance metrics
 
 - **API Methods:**
+
   ```typescript
   constructor(config, options: { sys6Mode?, sys6Dim? })
   getSys6Telemetry() → { totalCycles, averageProcessingMs, lastCycleSteps, mode, engineLoaded }
@@ -65,6 +66,7 @@ Both systems are now fully integrated, building successfully, and tested with 41
   - Graceful fallback to basic processing if Sys6 unavailable
 
 **Files Modified:**
+
 - `packages/cognitive/integration/index.ts` - Enhanced CognitiveOrchestrator (200+ lines added)
 - `packages/cognitive/types/index.ts` - Added sys6Telemetry to MessageMetadata
 - `packages/cognitive/package.json` - Added optional peer dependency
@@ -91,6 +93,7 @@ Both systems are now fully integrated, building successfully, and tested with 41
   - Automatic provider configuration and health monitoring
 
 - **Processing Methods:**
+
   ```typescript
   async start() - Initialize and start double membrane system
   async stop() - Graceful shutdown
@@ -104,6 +107,7 @@ Both systems are now fully integrated, building successfully, and tested with 41
   ```
 
 - **Request/Response Types:**
+
   ```typescript
   DoubleMembraneRequest {
     id: string
@@ -112,7 +116,7 @@ Both systems are now fully integrated, building successfully, and tested with 41
     priority?: 'low' | 'normal' | 'high' | 'critical'
     preferNative?: boolean
   }
-  
+
   DoubleMembraneResponse {
     id: string
     text: string
@@ -152,25 +156,30 @@ Both systems are now fully integrated, building successfully, and tested with 41
   ```
 
 **Files Created:**
+
 - `deep-tree-echo-orchestrator/src/double-membrane-integration.ts` (450+ lines)
 
 **Files Modified:**
+
 - `deep-tree-echo-orchestrator/src/index.ts` - Export integration
 - `deep-tree-echo-orchestrator/package.json` - Add peer dependencies
 
 ### 3. Build System Updates ✅
 
 **Dependencies Added:**
+
 - `@deltecho/sys6-triality` (optional peer dependency in cognitive)
 - `@deltecho/double-membrane` (optional peer dependency in orchestrator)
 
 **Build Status:**
+
 - All 7 core packages building successfully
 - No TypeScript compilation errors
 - Dynamic imports working correctly
 - Optional peer dependencies functioning as expected
 
 **Test Status:**
+
 - `@deltecho/double-membrane`: **206/206 tests passing** ✅
 - `deep-tree-echo-orchestrator`: **206/206 tests passing** ✅
 - `deep-tree-echo-core`: **125/125 tests passing** ✅
@@ -185,21 +194,26 @@ Both systems are now fully integrated, building successfully, and tested with 41
 The deltecho system now provides three tiers of cognitive processing, each with increasing sophistication:
 
 #### Tier 1: Deep Tree Echo Core (Foundation)
+
 **Components:** LLMService, RAGMemoryStore, PersonaCore, Dove9 Kernel  
 **Characteristics:**
+
 - Basic LLM request/response pattern
 - Simple memory storage and retrieval
 - Personality and emotional state management
 - Triadic cognitive loop (inspired by hexapod tripod gait)
 
 **Use Cases:**
+
 - Simple conversational responses
 - Basic memory recall
 - Personality-driven interactions
 
 #### Tier 2: Sys6-Triality (Neural Cognitive Cycle)
+
 **Components:** 30-step cycle engine, triadic streams, neural modules, operadic morphisms  
 **Characteristics:**
+
 - 30 irreducible steps (LCM(2,3,5) = 30)
 - 3 concurrent consciousness streams (120° phase separation)
 - Neural network-based cognitive processing
@@ -207,14 +221,17 @@ The deltecho system now provides three tiers of cognitive processing, each with 
 - Adaptive cycle count based on message complexity
 
 **Use Cases:**
+
 - Complex cognitive tasks requiring deep processing
 - Multi-step reasoning
 - Attention-weighted response generation
 - Salience-based prioritization
 
 #### Tier 3: Double Membrane (Bio-Inspired Architecture)
+
 **Components:** Outer membrane (API gateway), Intermembrane space (transjective buffer), Inner membrane (core identity + native AI)  
 **Characteristics:**
+
 - Strong core identity with AAR (Anticipation-Arousal-Regulation) dynamics
 - API acceleration when external services available
 - Graceful degradation to native processing
@@ -222,6 +239,7 @@ The deltecho system now provides three tiers of cognitive processing, each with 
 - Memory persistence with associative graphs
 
 **Use Cases:**
+
 - Production deployments with API access
 - High-quality responses with external LLMs
 - Autonomous operation during API outages
@@ -257,6 +275,7 @@ User Message
 Both integrations use EventEmitter for real-time monitoring:
 
 **Sys6 Events** (via CognitiveOrchestrator):
+
 - `message_received` - New message entered cognitive pipeline
 - `response_generated` - Response generated
 - `memory_updated` - Memory state changed
@@ -265,6 +284,7 @@ Both integrations use EventEmitter for real-time monitoring:
 - `error` - Error occurred
 
 **Double Membrane Events** (via DoubleMembraneIntegration):
+
 - `started` - System started successfully
 - `stopped` - System stopped gracefully
 - `processing` - Request being processed
@@ -278,16 +298,19 @@ Both integrations use EventEmitter for real-time monitoring:
 ### Sys6-Triality Performance
 
 **Processing Time per Cycle:**
+
 - Single cycle: ~10-50ms (depending on hardware)
 - Multiple cycles: Linear scaling (3 cycles = ~30-150ms)
 - Adaptive mode: Automatically balances quality vs speed
 
 **Memory Usage:**
+
 - Base: ~50MB for engine
 - Per request: ~5KB (256-dim float32 tensor)
 - Scales linearly with concurrent requests
 
 **Throughput:**
+
 - Single cycle mode: ~20-100 requests/second
 - Continuous mode: ~7-33 requests/second
 - Limited primarily by neural network forward pass
@@ -295,22 +318,26 @@ Both integrations use EventEmitter for real-time monitoring:
 ### Double Membrane Performance
 
 **Processing Time:**
+
 - Native inference: ~100-500ms
 - External API (GPT-4): ~1000-5000ms
 - External API (Claude): ~1500-7000ms
 - Hybrid mode: Parallel processing, returns fastest
 
 **Memory Usage:**
+
 - Base system: ~100MB
 - Memory persistence: ~10MB per 1000 entries
 - Scales with conversation history and memory size
 
 **Throughput:**
+
 - Native mode: ~2-10 requests/second
 - External mode: Limited by API rate limits
 - Hybrid mode: Best of both worlds
 
 **Energy Awareness:**
+
 - Identity energy depletes with processing
 - Automatic recharge mechanisms
 - Can prefer native processing when energy low
@@ -407,7 +434,7 @@ console.log('Processing time:', response.metadata.processingTimeMs, 'ms');
 const status = membrane.getStatus();
 console.log('Energy:', status.identityEnergy);
 console.log('Queue length:', status.stats.queueLength);
-console.log('Providers:', status.providers.map(p => p.name).join(', '));
+console.log('Providers:', status.providers.map((p) => p.name).join(', '));
 
 // Recharge energy
 await membrane.rechargeEnergy(50);
@@ -449,6 +476,7 @@ await orchestrator.start();
 For existing deltecho users, the new cognitive systems are 100% optional:
 
 ### Default Behavior (No Changes Required)
+
 ```typescript
 // Existing code continues to work
 const orchestrator = new Orchestrator();
@@ -457,6 +485,7 @@ await orchestrator.start();
 ```
 
 ### Opt-In to Sys6
+
 ```typescript
 import { createCognitiveOrchestrator, Sys6ProcessingMode } from '@deltecho/cognitive';
 
@@ -468,6 +497,7 @@ const orchestrator = createCognitiveOrchestrator(
 ```
 
 ### Opt-In to Double Membrane
+
 ```typescript
 import { createDoubleMembraneIntegration } from 'deep-tree-echo-orchestrator';
 
@@ -510,24 +540,28 @@ await membrane.start();
 ### Next Steps (Priority Order)
 
 #### Immediate (Next Session)
+
 1. Wire DoubleMembraneIntegration into Orchestrator.processMessage()
 2. Add configuration in OrchestratorConfig
 3. Create integration tests for both systems
 4. Add usage examples to documentation
 
 #### Short-term (Next Week)
+
 1. Refactor desktop apps to use @deltecho/cognitive
 2. Add IPC handlers for double membrane
 3. Connect Sys6 to Dove9 triadic loop
 4. Performance benchmarking and optimization
 
 #### Medium-term (Next Month)
+
 1. Complete Dovecot email processing integration
 2. Add memory system consolidation
 3. Create Docker deployment
 4. Add Prometheus metrics export
 
 #### Long-term (Next Quarter)
+
 1. Agent coordination with Sys6 capabilities
 2. Multi-instance coordination
 3. Advanced relevance realization algorithms
@@ -540,6 +574,7 @@ await membrane.start();
 This session achieved major progress in Phase 5 by successfully integrating two sophisticated cognitive systems into the deltecho monorepo. The Sys6-Triality neural cognitive cycle and Double Membrane bio-inspired architecture are now available as optional enhancements that provide significantly more advanced cognitive processing while maintaining full backward compatibility.
 
 **Key Metrics:**
+
 - **2 major systems integrated**
 - **7 files modified, 450+ lines added**
 - **412+ tests passing**

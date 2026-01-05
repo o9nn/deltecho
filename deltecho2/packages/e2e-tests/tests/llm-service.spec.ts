@@ -2,7 +2,7 @@ import { test, expect, Page } from '@playwright/test'
 
 /**
  * LLM Service Integration E2E Test Suite
- * 
+ *
  * Tests the LLM service integration including:
  * - Provider initialization and configuration
  * - Completion requests and streaming
@@ -18,15 +18,17 @@ const LLM_LOAD_TIMEOUT = 20_000
 
 // Helper to wait for LLM service initialization
 async function waitForLLMService(page: Page, timeout = LLM_LOAD_TIMEOUT) {
-  await page.waitForFunction(
-    () => {
-      const win = window as unknown as { __llmServiceReady?: boolean }
-      return win.__llmServiceReady === true
-    },
-    { timeout }
-  ).catch(() => {
-    console.log('LLM service not detected - continuing with basic tests')
-  })
+  await page
+    .waitForFunction(
+      () => {
+        const win = window as unknown as { __llmServiceReady?: boolean }
+        return win.__llmServiceReady === true
+      },
+      { timeout }
+    )
+    .catch(() => {
+      console.log('LLM service not detected - continuing with basic tests')
+    })
 }
 
 // Helper to get LLM service state
@@ -49,7 +51,7 @@ async function getLLMServiceState(page: Page) {
       initialized: false,
       provider: 'none',
       modelId: 'none',
-      available: false
+      available: false,
     }
   })
 }
@@ -60,11 +62,13 @@ test.describe('LLM Service - Provider Initialization', () => {
     await waitForLLMService(page)
   })
 
-  test('should initialize LLM service with default provider', async ({ page }) => {
+  test('should initialize LLM service with default provider', async ({
+    page,
+  }) => {
     test.setTimeout(TEST_TIMEOUT)
 
     const serviceState = await getLLMServiceState(page)
-    
+
     // Service should be initialized (may not be available without API key)
     expect(typeof serviceState.initialized).toBe('boolean')
     expect(typeof serviceState.provider).toBe('string')
@@ -108,7 +112,7 @@ test.describe('LLM Service - Provider Initialization', () => {
       return {
         supported: true,
         models: ['gpt-4', 'gpt-4-turbo', 'gpt-3.5-turbo'],
-        defaultModel: 'gpt-4'
+        defaultModel: 'gpt-4',
       }
     })
 
@@ -135,7 +139,7 @@ test.describe('LLM Service - Provider Initialization', () => {
       return {
         supported: true,
         models: ['claude-3-opus', 'claude-3-sonnet', 'claude-3-haiku'],
-        defaultModel: 'claude-3-sonnet'
+        defaultModel: 'claude-3-sonnet',
       }
     })
 
@@ -143,7 +147,9 @@ test.describe('LLM Service - Provider Initialization', () => {
     expect(anthropicConfig.models.length).toBeGreaterThan(0)
   })
 
-  test('should support Ollama local provider configuration', async ({ page }) => {
+  test('should support Ollama local provider configuration', async ({
+    page,
+  }) => {
     test.setTimeout(TEST_TIMEOUT)
 
     const ollamaConfig = await page.evaluate(() => {
@@ -164,7 +170,7 @@ test.describe('LLM Service - Provider Initialization', () => {
         supported: true,
         models: ['llama2', 'mistral', 'codellama'],
         defaultModel: 'llama2',
-        localOnly: true
+        localOnly: true,
       }
     })
 
@@ -194,7 +200,7 @@ test.describe('LLM Service - Completion Requests', () => {
         return win.__llmService.validateRequestStructure({
           messages: [{ role: 'user', content: 'Hello' }],
           maxTokens: 100,
-          temperature: 0.7
+          temperature: 0.7,
         })
       }
       return { valid: true, errors: [] }
@@ -220,12 +226,12 @@ test.describe('LLM Service - Completion Requests', () => {
         return win.__llmService.validateMessages([
           { role: 'system', content: 'You are helpful' },
           { role: 'user', content: 'Hello' },
-          { role: 'assistant', content: 'Hi there!' }
+          { role: 'assistant', content: 'Hi there!' },
         ])
       }
       return {
         valid: true,
-        supportedRoles: ['system', 'user', 'assistant']
+        supportedRoles: ['system', 'user', 'assistant'],
       }
     })
 
@@ -251,7 +257,7 @@ test.describe('LLM Service - Completion Requests', () => {
       }
       return {
         supported: true,
-        providers: ['openai', 'anthropic', 'ollama']
+        providers: ['openai', 'anthropic', 'ollama'],
       }
     })
 
@@ -284,7 +290,7 @@ test.describe('LLM Service - Token Management', () => {
       return {
         maxInput: 4096,
         maxOutput: 1024,
-        maxTotal: 8192
+        maxTotal: 8192,
       }
     })
 
@@ -321,7 +327,10 @@ test.describe('LLM Service - Token Management', () => {
     const overflowHandling = await page.evaluate(() => {
       const win = window as unknown as {
         __llmService?: {
-          handleTokenOverflow: (tokenCount: number, limit: number) => Promise<{
+          handleTokenOverflow: (
+            tokenCount: number,
+            limit: number
+          ) => Promise<{
             truncated: boolean
             strategy: string
             newCount: number
@@ -334,7 +343,7 @@ test.describe('LLM Service - Token Management', () => {
       return {
         truncated: true,
         strategy: 'truncate-middle',
-        newCount: 4096
+        newCount: 4096,
       }
     })
 
@@ -368,7 +377,7 @@ test.describe('LLM Service - Error Handling', () => {
       return {
         retryEnabled: true,
         maxRetries: 3,
-        backoffStrategy: 'exponential'
+        backoffStrategy: 'exponential',
       }
     })
 
@@ -395,7 +404,7 @@ test.describe('LLM Service - Error Handling', () => {
       return {
         enabled: true,
         requestsPerMinute: 60,
-        tokensPerMinute: 90000
+        tokensPerMinute: 90000,
       }
     })
 
@@ -422,7 +431,7 @@ test.describe('LLM Service - Error Handling', () => {
       return {
         connectionTimeoutMs: 10000,
         readTimeoutMs: 60000,
-        totalTimeoutMs: 120000
+        totalTimeoutMs: 120000,
       }
     })
 
@@ -451,7 +460,7 @@ test.describe('LLM Service - Error Handling', () => {
         authError: 'Authentication failed. Please check your API key.',
         rateLimitError: 'Rate limit exceeded. Please try again later.',
         networkError: 'Network error. Please check your connection.',
-        validationError: 'Invalid request format.'
+        validationError: 'Invalid request format.',
       }
     })
 
@@ -485,7 +494,7 @@ test.describe('LLM Service - Caching and Batching', () => {
       return {
         enabled: true,
         maxCacheSize: 100,
-        ttlSeconds: 3600
+        ttlSeconds: 3600,
       }
     })
 
@@ -512,7 +521,7 @@ test.describe('LLM Service - Caching and Batching', () => {
       return {
         enabled: true,
         maxBatchSize: 10,
-        batchTimeoutMs: 100
+        batchTimeoutMs: 100,
       }
     })
 
@@ -526,7 +535,9 @@ test.describe('LLM Service - Integration with Cognitive System', () => {
     await waitForLLMService(page)
   })
 
-  test('should integrate with Deep Tree Echo cognitive loop', async ({ page }) => {
+  test('should integrate with Deep Tree Echo cognitive loop', async ({
+    page,
+  }) => {
     test.setTimeout(TEST_TIMEOUT)
 
     const cognitiveIntegration = await page.evaluate(() => {
@@ -545,7 +556,7 @@ test.describe('LLM Service - Integration with Cognitive System', () => {
       return {
         connected: true,
         contextAware: true,
-        memoryEnabled: true
+        memoryEnabled: true,
       }
     })
 
@@ -572,7 +583,7 @@ test.describe('LLM Service - Integration with Cognitive System', () => {
       return {
         memoryIntegration: true,
         maxContextTokens: 2048,
-        relevanceThreshold: 0.7
+        relevanceThreshold: 0.7,
       }
     })
 
@@ -599,7 +610,7 @@ test.describe('LLM Service - Integration with Cognitive System', () => {
       return {
         personalityEnabled: true,
         systemPromptInjection: true,
-        toneAdaptation: true
+        toneAdaptation: true,
       }
     })
 
@@ -633,12 +644,14 @@ test.describe('LLM Service - Performance', () => {
       return {
         averageLatencyMs: 500,
         p95LatencyMs: 1000,
-        p99LatencyMs: 2000
+        p99LatencyMs: 2000,
       }
     })
 
     expect(latencyMetrics.averageLatencyMs).toBeGreaterThan(0)
-    expect(latencyMetrics.p95LatencyMs).toBeGreaterThanOrEqual(latencyMetrics.averageLatencyMs)
+    expect(latencyMetrics.p95LatencyMs).toBeGreaterThanOrEqual(
+      latencyMetrics.averageLatencyMs
+    )
   })
 
   test('should track token usage statistics', async ({ page }) => {
@@ -660,7 +673,7 @@ test.describe('LLM Service - Performance', () => {
       return {
         totalTokensUsed: 0,
         totalRequests: 0,
-        averageTokensPerRequest: 0
+        averageTokensPerRequest: 0,
       }
     })
 

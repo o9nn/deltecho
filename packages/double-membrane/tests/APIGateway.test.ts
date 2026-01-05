@@ -29,7 +29,9 @@ describe('APIGateway', () => {
     it('should emit initialized event', async () => {
       const newGateway = new APIGateway();
       let initialized = false;
-      newGateway.addListener('initialized', () => { initialized = true; });
+      newGateway.addListener('initialized', () => {
+        initialized = true;
+      });
       await newGateway.initialize();
       // Gateway emits initialized synchronously in start()
       expect(newGateway.isRunning()).toBe(true);
@@ -52,7 +54,9 @@ describe('APIGateway', () => {
       const testGateway = new APIGateway();
       await testGateway.initialize();
       let shutdownEmitted = false;
-      testGateway.addListener('shutdown', () => { shutdownEmitted = true; });
+      testGateway.addListener('shutdown', () => {
+        shutdownEmitted = true;
+      });
       await testGateway.shutdown();
       expect(testGateway.isRunning()).toBe(false);
     });
@@ -66,17 +70,17 @@ describe('APIGateway', () => {
 
     it('should include OpenAI provider', () => {
       const providers = gateway.getProviders();
-      expect(providers.some(p => p.provider === 'openai')).toBe(true);
+      expect(providers.some((p) => p.provider === 'openai')).toBe(true);
     });
 
     it('should include Anthropic provider', () => {
       const providers = gateway.getProviders();
-      expect(providers.some(p => p.provider === 'anthropic')).toBe(true);
+      expect(providers.some((p) => p.provider === 'anthropic')).toBe(true);
     });
 
     it('should include OpenRouter provider', () => {
       const providers = gateway.getProviders();
-      expect(providers.some(p => p.provider === 'openrouter')).toBe(true);
+      expect(providers.some((p) => p.provider === 'openrouter')).toBe(true);
     });
   });
 
@@ -97,7 +101,7 @@ describe('APIGateway', () => {
   describe('statistics', () => {
     it('should return gateway statistics', () => {
       const stats = gateway.getStats();
-      
+
       expect(stats).toBeDefined();
       expect(stats.totalRequests).toBeDefined();
       expect(stats.successfulRequests).toBeDefined();
@@ -115,10 +119,12 @@ describe('APIGateway', () => {
     it('should throw when not running', async () => {
       const testGateway = new APIGateway();
       // Don't initialize - should throw
-      await expect(testGateway.sendRequest({
-        prompt: 'Test',
-        maxTokens: 100,
-      })).rejects.toThrow('Gateway not running');
+      await expect(
+        testGateway.sendRequest({
+          prompt: 'Test',
+          maxTokens: 100,
+        })
+      ).rejects.toThrow('Gateway not running');
     });
 
     it('should increment request count on request', async () => {
@@ -140,11 +146,11 @@ describe('APIGateway', () => {
   describe('provider selection', () => {
     it('should select healthy providers', () => {
       const providers = gateway.getProviders();
-      const healthyProviders = providers.filter(p => {
+      const healthyProviders = providers.filter((p) => {
         const health = gateway.getProviderHealth(p.name);
         return health?.healthy;
       });
-      
+
       // At least some providers should be considered healthy initially
       expect(healthyProviders.length).toBeGreaterThanOrEqual(0);
     });

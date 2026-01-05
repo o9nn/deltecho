@@ -14,9 +14,10 @@ export type User = {
 }
 
 // Use HTTP in CI/test environment, HTTPS otherwise
-const BASE_URL = process.env.CI || process.env.NODE_ENV === 'test' 
-  ? 'http://localhost:3000/' 
-  : 'https://localhost:3000/'
+const BASE_URL =
+  process.env.CI || process.env.NODE_ENV === 'test'
+    ? 'http://localhost:3000/'
+    : 'https://localhost:3000/'
 
 export async function reloadPage(page: Page): Promise<void> {
   await page.goto(BASE_URL)

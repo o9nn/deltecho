@@ -9,7 +9,7 @@ describe('RAGMemoryStore', () => {
     storage = new InMemoryStorage();
     ragMemory = new RAGMemoryStore(storage);
     // Wait for async initialization
-    await new Promise(resolve => setTimeout(resolve, 50));
+    await new Promise((resolve) => setTimeout(resolve, 50));
   });
 
   describe('initialization', () => {
@@ -94,8 +94,18 @@ describe('RAGMemoryStore', () => {
     });
 
     it('should return memories for specific chat', async () => {
-      await ragMemory.storeMemory({ chatId: 1, messageId: 1, sender: 'user', text: 'Chat 1 message' });
-      await ragMemory.storeMemory({ chatId: 2, messageId: 2, sender: 'user', text: 'Chat 2 message' });
+      await ragMemory.storeMemory({
+        chatId: 1,
+        messageId: 1,
+        sender: 'user',
+        text: 'Chat 1 message',
+      });
+      await ragMemory.storeMemory({
+        chatId: 2,
+        messageId: 2,
+        sender: 'user',
+        text: 'Chat 2 message',
+      });
       await ragMemory.storeMemory({ chatId: 1, messageId: 3, sender: 'bot', text: 'Chat 1 reply' });
 
       const chat1Memories = ragMemory.getMemoriesByChat(1);
@@ -114,8 +124,18 @@ describe('RAGMemoryStore', () => {
     });
 
     it('should search memories by keyword', async () => {
-      await ragMemory.storeMemory({ chatId: 1, messageId: 1, sender: 'user', text: 'I love TypeScript programming' });
-      await ragMemory.storeMemory({ chatId: 1, messageId: 2, sender: 'user', text: 'Python is also great' });
+      await ragMemory.storeMemory({
+        chatId: 1,
+        messageId: 1,
+        sender: 'user',
+        text: 'I love TypeScript programming',
+      });
+      await ragMemory.storeMemory({
+        chatId: 1,
+        messageId: 2,
+        sender: 'user',
+        text: 'Python is also great',
+      });
 
       const results = ragMemory.searchMemories('TypeScript');
       expect(results.length).toBeGreaterThan(0);
@@ -150,7 +170,7 @@ describe('RAGMemoryStore', () => {
   describe('storeMemory when disabled', () => {
     it('should not store memory when disabled', async () => {
       ragMemory.setEnabled(false);
-      
+
       await ragMemory.storeMemory({
         chatId: 1,
         messageId: 100,
@@ -170,7 +190,7 @@ describe('RAGMemoryStore', () => {
 
     it('should store a periodic reflection', async () => {
       await ragMemory.storeReflection('This is a reflection', 'periodic');
-      
+
       const reflections = ragMemory.getRecentReflections(10);
       expect(reflections.length).toBe(1);
       expect(reflections[0].content).toBe('This is a reflection');
@@ -179,7 +199,7 @@ describe('RAGMemoryStore', () => {
 
     it('should store a focused reflection with aspect', async () => {
       await ragMemory.storeReflection('Focused thought', 'focused', 'learning');
-      
+
       const reflections = ragMemory.getRecentReflections(10);
       expect(reflections.length).toBe(1);
       expect(reflections[0].type).toBe('focused');
@@ -199,9 +219,9 @@ describe('RAGMemoryStore', () => {
   describe('storeReflection when disabled', () => {
     it('should not store reflection when disabled', async () => {
       ragMemory.setEnabled(false);
-      
+
       await ragMemory.storeReflection('Should not be stored');
-      
+
       const reflections = ragMemory.getRecentReflections(10);
       expect(reflections.length).toBe(0);
     });

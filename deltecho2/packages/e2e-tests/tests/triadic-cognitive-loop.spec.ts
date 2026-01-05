@@ -2,10 +2,10 @@ import { test, expect, Page } from '@playwright/test'
 
 /**
  * Triadic Cognitive Loop E2E Test Suite
- * 
+ *
  * Tests the 12-step cognitive cycle with 3 concurrent consciousness streams
  * following the OEIS A000081 nested shells structure and 120-degree phase offsets.
- * 
+ *
  * Architecture:
  * - 3 concurrent inference engines (streams)
  * - 12-step cognitive loop (4 steps per stream phase)
@@ -19,16 +19,21 @@ const TEST_TIMEOUT = 90_000
 const COGNITIVE_LOAD_TIMEOUT = 15_000
 
 // Helper to wait for cognitive system initialization
-async function waitForCognitiveSystem(page: Page, timeout = COGNITIVE_LOAD_TIMEOUT) {
-  await page.waitForFunction(
-    () => {
-      const win = window as unknown as { __deepTreeEchoReady?: boolean }
-      return win.__deepTreeEchoReady === true
-    },
-    { timeout }
-  ).catch(() => {
-    console.log('Cognitive system not detected - continuing with basic tests')
-  })
+async function waitForCognitiveSystem(
+  page: Page,
+  timeout = COGNITIVE_LOAD_TIMEOUT
+) {
+  await page
+    .waitForFunction(
+      () => {
+        const win = window as unknown as { __deepTreeEchoReady?: boolean }
+        return win.__deepTreeEchoReady === true
+      },
+      { timeout }
+    )
+    .catch(() => {
+      console.log('Cognitive system not detected - continuing with basic tests')
+    })
 }
 
 // Helper to get triadic loop state
@@ -51,7 +56,7 @@ async function getTriadicLoopState(page: Page) {
       currentStep: 0,
       streamPhases: [0, 4, 8],
       cycleCount: 0,
-      isActive: false
+      isActive: false,
     }
   })
 }
@@ -62,7 +67,9 @@ test.describe('Triadic Cognitive Loop - Core Architecture', () => {
     await waitForCognitiveSystem(page)
   })
 
-  test('should initialize 3 concurrent consciousness streams', async ({ page }) => {
+  test('should initialize 3 concurrent consciousness streams', async ({
+    page,
+  }) => {
     test.setTimeout(TEST_TIMEOUT)
 
     const streamCount = await page.evaluate(() => {
@@ -80,7 +87,9 @@ test.describe('Triadic Cognitive Loop - Core Architecture', () => {
     expect(streamCount).toBe(3)
   })
 
-  test('should maintain 120-degree phase offset (4 steps) between streams', async ({ page }) => {
+  test('should maintain 120-degree phase offset (4 steps) between streams', async ({
+    page,
+  }) => {
     test.setTimeout(TEST_TIMEOUT)
 
     const state = await getTriadicLoopState(page)
@@ -119,7 +128,7 @@ test.describe('Triadic Cognitive Loop - Core Architecture', () => {
         stepsExecuted: 12,
         streamsActive: 3,
         cycleCompleted: true,
-        duration: 0
+        duration: 0,
       }
     })
 
@@ -129,7 +138,9 @@ test.describe('Triadic Cognitive Loop - Core Architecture', () => {
     }
   })
 
-  test('should process step triads correctly ({1,5,9}, {2,6,10}, {3,7,11}, {4,8,12})', async ({ page }) => {
+  test('should process step triads correctly ({1,5,9}, {2,6,10}, {3,7,11}, {4,8,12})', async ({
+    page,
+  }) => {
     test.setTimeout(TEST_TIMEOUT)
 
     const triadResults = await page.evaluate(() => {
@@ -146,12 +157,12 @@ test.describe('Triadic Cognitive Loop - Core Architecture', () => {
         [1, 5, 9],
         [2, 6, 10],
         [3, 7, 11],
-        [4, 8, 12]
+        [4, 8, 12],
       ]
     })
 
     expect(triadResults).toHaveLength(4)
-    
+
     // Verify each triad has 4-step spacing
     for (const triad of triadResults) {
       expect(triad).toHaveLength(3)
@@ -209,7 +220,9 @@ test.describe('Triadic Cognitive Loop - Mode Steps', () => {
     expect(modeSteps.reflective).toBe(5)
   })
 
-  test('should include pivotal relevance realization steps', async ({ page }) => {
+  test('should include pivotal relevance realization steps', async ({
+    page,
+  }) => {
     test.setTimeout(TEST_TIMEOUT)
 
     const pivotalSteps = await page.evaluate(() => {
@@ -226,9 +239,9 @@ test.describe('Triadic Cognitive Loop - Mode Steps', () => {
         return win.__dove9.getPivotalSteps()
       }
       return {
-        orientingPresent: [1, 7],  // 2 pivotal steps
-        conditioningPast: [2, 3, 4, 5, 6],  // 5 affordance interaction steps
-        anticipatingFuture: [8, 9, 10, 11, 12]  // 5 salience simulation steps
+        orientingPresent: [1, 7], // 2 pivotal steps
+        conditioningPast: [2, 3, 4, 5, 6], // 5 affordance interaction steps
+        anticipatingFuture: [8, 9, 10, 11, 12], // 5 salience simulation steps
       }
     })
 
@@ -247,7 +260,9 @@ test.describe('Triadic Cognitive Loop - OEIS A000081 Nested Shells', () => {
     await waitForCognitiveSystem(page)
   })
 
-  test('should follow OEIS A000081 term counts (1, 2, 4, 9)', async ({ page }) => {
+  test('should follow OEIS A000081 term counts (1, 2, 4, 9)', async ({
+    page,
+  }) => {
     test.setTimeout(TEST_TIMEOUT)
 
     const nestingTerms = await page.evaluate(() => {
@@ -263,13 +278,15 @@ test.describe('Triadic Cognitive Loop - OEIS A000081 Nested Shells', () => {
       return [1, 2, 4, 9]
     })
 
-    expect(nestingTerms[0]).toBe(1)  // N=1: 1 term
-    expect(nestingTerms[1]).toBe(2)  // N=2: 2 terms
-    expect(nestingTerms[2]).toBe(4)  // N=3: 4 terms
-    expect(nestingTerms[3]).toBe(9)  // N=4: 9 terms
+    expect(nestingTerms[0]).toBe(1) // N=1: 1 term
+    expect(nestingTerms[1]).toBe(2) // N=2: 2 terms
+    expect(nestingTerms[2]).toBe(4) // N=3: 4 terms
+    expect(nestingTerms[3]).toBe(9) // N=4: 9 terms
   })
 
-  test('should maintain nesting step distances (1, 2, 3, 4)', async ({ page }) => {
+  test('should maintain nesting step distances (1, 2, 3, 4)', async ({
+    page,
+  }) => {
     test.setTimeout(TEST_TIMEOUT)
 
     const nestingDistances = await page.evaluate(() => {
@@ -284,10 +301,10 @@ test.describe('Triadic Cognitive Loop - OEIS A000081 Nested Shells', () => {
       return [1, 2, 3, 4]
     })
 
-    expect(nestingDistances[0]).toBe(1)  // 1 nest: 1 step apart
-    expect(nestingDistances[1]).toBe(2)  // 2 nests: 2 steps apart
-    expect(nestingDistances[2]).toBe(3)  // 3 nests: 3 steps apart
-    expect(nestingDistances[3]).toBe(4)  // 4 nests: 4 steps apart
+    expect(nestingDistances[0]).toBe(1) // 1 nest: 1 step apart
+    expect(nestingDistances[1]).toBe(2) // 2 nests: 2 steps apart
+    expect(nestingDistances[2]).toBe(3) // 3 nests: 3 steps apart
+    expect(nestingDistances[3]).toBe(4) // 4 nests: 4 steps apart
   })
 
   test('should relate 3 streams to 9 terms of 4 nestings', async ({ page }) => {
@@ -321,7 +338,9 @@ test.describe('Triadic Cognitive Loop - Stream Interleaving', () => {
     await waitForCognitiveSystem(page)
   })
 
-  test('should interleave streams as interdependent feedback mechanisms', async ({ page }) => {
+  test('should interleave streams as interdependent feedback mechanisms', async ({
+    page,
+  }) => {
     test.setTimeout(TEST_TIMEOUT)
 
     const interleaveState = await page.evaluate(() => {
@@ -340,7 +359,7 @@ test.describe('Triadic Cognitive Loop - Stream Interleaving', () => {
       return {
         feedbackActive: true,
         feedforwardActive: true,
-        selfBalancing: true
+        selfBalancing: true,
       }
     })
 
@@ -349,7 +368,9 @@ test.describe('Triadic Cognitive Loop - Stream Interleaving', () => {
     expect(interleaveState.selfBalancing).toBe(true)
   })
 
-  test('should project all streams onto salience landscapes simultaneously', async ({ page }) => {
+  test('should project all streams onto salience landscapes simultaneously', async ({
+    page,
+  }) => {
     test.setTimeout(TEST_TIMEOUT)
 
     const salienceProjection = await page.evaluate(() => {
@@ -368,7 +389,7 @@ test.describe('Triadic Cognitive Loop - Stream Interleaving', () => {
       return {
         streamsProjected: 3,
         landscapeDimensions: 12,
-        simultaneousPerception: true
+        simultaneousPerception: true,
       }
     })
 
@@ -376,7 +397,9 @@ test.describe('Triadic Cognitive Loop - Stream Interleaving', () => {
     expect(salienceProjection.simultaneousPerception).toBe(true)
   })
 
-  test('should enable cross-stream awareness (stream 1 perceives stream 2 action)', async ({ page }) => {
+  test('should enable cross-stream awareness (stream 1 perceives stream 2 action)', async ({
+    page,
+  }) => {
     test.setTimeout(TEST_TIMEOUT)
 
     const crossStreamAwareness = await page.evaluate(() => {
@@ -395,7 +418,7 @@ test.describe('Triadic Cognitive Loop - Stream Interleaving', () => {
       return {
         stream1PerceivesStream2: true,
         stream2PerceivesStream3: true,
-        stream3PerceivesStream1: true
+        stream3PerceivesStream1: true,
       }
     })
 
@@ -411,7 +434,9 @@ test.describe('Triadic Cognitive Loop - Performance', () => {
     await waitForCognitiveSystem(page)
   })
 
-  test('should complete cognitive cycle within performance bounds', async ({ page }) => {
+  test('should complete cognitive cycle within performance bounds', async ({
+    page,
+  }) => {
     test.setTimeout(TEST_TIMEOUT * 2)
 
     const performanceMetrics = await page.evaluate(() => {
@@ -430,7 +455,7 @@ test.describe('Triadic Cognitive Loop - Performance', () => {
       return {
         cycleDurationMs: 100,
         stepAverageMs: 8.33,
-        memoryUsageMb: 50
+        memoryUsageMb: 50,
       }
     })
 
@@ -442,7 +467,9 @@ test.describe('Triadic Cognitive Loop - Performance', () => {
     expect(performanceMetrics.memoryUsageMb).toBeLessThan(500)
   })
 
-  test('should maintain stable cycle timing across multiple iterations', async ({ page }) => {
+  test('should maintain stable cycle timing across multiple iterations', async ({
+    page,
+  }) => {
     test.setTimeout(TEST_TIMEOUT * 3)
 
     const stabilityMetrics = await page.evaluate(() => {
@@ -463,14 +490,18 @@ test.describe('Triadic Cognitive Loop - Performance', () => {
         iterations: 5,
         meanDurationMs: 100,
         stdDevMs: 10,
-        maxDurationMs: 120
+        maxDurationMs: 120,
       }
     })
 
     // Standard deviation should be less than 50% of mean
-    expect(stabilityMetrics.stdDevMs).toBeLessThan(stabilityMetrics.meanDurationMs * 0.5)
+    expect(stabilityMetrics.stdDevMs).toBeLessThan(
+      stabilityMetrics.meanDurationMs * 0.5
+    )
     // Max duration should be less than 3x mean
-    expect(stabilityMetrics.maxDurationMs).toBeLessThan(stabilityMetrics.meanDurationMs * 3)
+    expect(stabilityMetrics.maxDurationMs).toBeLessThan(
+      stabilityMetrics.meanDurationMs * 3
+    )
   })
 })
 
@@ -499,7 +530,7 @@ test.describe('Triadic Cognitive Loop - Error Handling', () => {
       return {
         failedStream: 1,
         recovered: true,
-        recoveryTimeMs: 50
+        recoveryTimeMs: 50,
       }
     })
 
@@ -507,7 +538,9 @@ test.describe('Triadic Cognitive Loop - Error Handling', () => {
     expect(recoveryResult.recoveryTimeMs).toBeLessThan(1000)
   })
 
-  test('should maintain cycle integrity during partial failures', async ({ page }) => {
+  test('should maintain cycle integrity during partial failures', async ({
+    page,
+  }) => {
     test.setTimeout(TEST_TIMEOUT)
 
     const integrityResult = await page.evaluate(() => {
@@ -526,7 +559,7 @@ test.describe('Triadic Cognitive Loop - Error Handling', () => {
       return {
         phaseOffsetMaintained: true,
         stepSequenceValid: true,
-        streamSynchronized: true
+        streamSynchronized: true,
       }
     })
 

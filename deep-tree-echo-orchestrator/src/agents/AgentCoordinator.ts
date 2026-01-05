@@ -247,7 +247,13 @@ export class AgentCoordinator extends EventEmitter {
     // Update coordinator's child references
     const coordinator = this.agents.get('coordinator');
     if (coordinator) {
-      coordinator.childIds = ['data-analyst', 'documentation', 'cognitive-processor', 'memory-manager', 'action-executor'];
+      coordinator.childIds = [
+        'data-analyst',
+        'documentation',
+        'cognitive-processor',
+        'memory-manager',
+        'action-executor',
+      ];
     }
   }
 
@@ -264,10 +270,7 @@ export class AgentCoordinator extends EventEmitter {
     this.running = true;
 
     // Start task processing loop
-    this.processInterval = setInterval(
-      () => this.processTaskQueue(),
-      100
-    );
+    this.processInterval = setInterval(() => this.processTaskQueue(), 100);
 
     this.emit('started', { timestamp: Date.now() });
     log.info('Agent Coordinator started');
@@ -390,9 +393,7 @@ export class AgentCoordinator extends EventEmitter {
     if (this.taskQueue.length === 0) return;
 
     // Get pending tasks up to max concurrent
-    const activeTasks = Array.from(this.tasks.values()).filter(
-      t => t.status === 'in_progress'
-    );
+    const activeTasks = Array.from(this.tasks.values()).filter((t) => t.status === 'in_progress');
 
     if (activeTasks.length >= this.config.maxConcurrentTasks) return;
 
@@ -470,7 +471,7 @@ export class AgentCoordinator extends EventEmitter {
    * Find the best agent for a task
    */
   private findBestAgent(task: Task): Agent | null {
-    const activeAgents = Array.from(this.agents.values()).filter(a => a.isActive);
+    const activeAgents = Array.from(this.agents.values()).filter((a) => a.isActive);
 
     // Score agents based on capability match
     let bestAgent: Agent | null = null;
@@ -511,10 +512,7 @@ export class AgentCoordinator extends EventEmitter {
   /**
    * Delegate task to agent
    */
-  private async delegateToAgent(
-    agent: Agent,
-    task: Task
-  ): Promise<TaskResult> {
+  private async delegateToAgent(agent: Agent, task: Task): Promise<TaskResult> {
     const startTime = Date.now();
 
     // Emit delegation event
@@ -526,7 +524,7 @@ export class AgentCoordinator extends EventEmitter {
     });
 
     // Simulate processing based on task type
-    await new Promise(resolve => setTimeout(resolve, 100));
+    await new Promise((resolve) => setTimeout(resolve, 100));
 
     // Generate result based on task type
     const output: Record<string, unknown> = {
@@ -553,14 +551,14 @@ export class AgentCoordinator extends EventEmitter {
     if (!parentTask) return;
 
     // Check if all subtasks are completed
-    const allSubtasksComplete = parentTask.subtaskIds.every(id => {
+    const allSubtasksComplete = parentTask.subtaskIds.every((id) => {
       const subtask = this.tasks.get(id);
       return subtask && subtask.status === 'completed';
     });
 
     if (allSubtasksComplete && parentTask.status === 'in_progress') {
       // Synthesize results
-      const subtaskOutputs = parentTask.subtaskIds.map(id => {
+      const subtaskOutputs = parentTask.subtaskIds.map((id) => {
         const subtask = this.tasks.get(id);
         return subtask?.output;
       });
@@ -622,10 +620,10 @@ export class AgentCoordinator extends EventEmitter {
     return {
       running: this.running,
       agentCount: agents.length,
-      activeAgentCount: agents.filter(a => a.isActive).length,
+      activeAgentCount: agents.filter((a) => a.isActive).length,
       taskCount: tasks.length,
-      pendingTaskCount: tasks.filter(t => t.status === 'pending').length,
-      completedTaskCount: tasks.filter(t => t.status === 'completed').length,
+      pendingTaskCount: tasks.filter((t) => t.status === 'pending').length,
+      completedTaskCount: tasks.filter((t) => t.status === 'completed').length,
     };
   }
 
@@ -640,21 +638,20 @@ export class AgentCoordinator extends EventEmitter {
     agentUtilization: Record<string, number>;
   } {
     const tasks = Array.from(this.tasks.values());
-    const completedTasks = tasks.filter(t => t.status === 'completed');
-    const failedTasks = tasks.filter(t => t.status === 'failed');
+    const completedTasks = tasks.filter((t) => t.status === 'completed');
+    const failedTasks = tasks.filter((t) => t.status === 'failed');
 
     // Calculate average duration
     const durations = completedTasks
-      .filter(t => t.startedAt && t.completedAt)
-      .map(t => t.completedAt! - t.startedAt!);
-    const avgDuration = durations.length > 0
-      ? durations.reduce((a, b) => a + b, 0) / durations.length
-      : 0;
+      .filter((t) => t.startedAt && t.completedAt)
+      .map((t) => t.completedAt! - t.startedAt!);
+    const avgDuration =
+      durations.length > 0 ? durations.reduce((a, b) => a + b, 0) / durations.length : 0;
 
     // Calculate agent utilization
     const agentUtilization: Record<string, number> = {};
     for (const agent of this.agents.values()) {
-      const agentTasks = tasks.filter(t => t.assignedAgentId === agent.id);
+      const agentTasks = tasks.filter((t) => t.assignedAgentId === agent.id);
       agentUtilization[agent.id] = agentTasks.length;
     }
 

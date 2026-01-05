@@ -1,12 +1,12 @@
 /**
  * AtomSpace - Hypergraph Knowledge Representation
- * 
+ *
  * The AtomSpace is the central knowledge store in OpenCog, implemented as
  * a kernel module. It uses a weighted labeled hypergraph to represent
  * knowledge, where nodes represent concepts and links represent relationships.
  */
 
-export type AtomType = 
+export type AtomType =
   | 'ConceptNode'
   | 'PredicateNode'
   | 'VariableNode'
@@ -19,13 +19,13 @@ export type AtomType =
   | 'ExecutionLink'
 
 export interface TruthValue {
-  strength: number    // [0, 1] confidence in truth
-  confidence: number  // [0, 1] amount of evidence
+  strength: number // [0, 1] confidence in truth
+  confidence: number // [0, 1] amount of evidence
 }
 
 export interface AttentionValue {
-  sti: number  // Short-term importance
-  lti: number  // Long-term importance
+  sti: number // Short-term importance
+  lti: number // Long-term importance
   vlti: number // Very long-term importance
 }
 
@@ -33,7 +33,7 @@ export interface Atom {
   id: string
   type: AtomType
   name?: string
-  outgoing?: string[]  // For links: IDs of connected atoms
+  outgoing?: string[] // For links: IDs of connected atoms
   truthValue: TruthValue
   attentionValue: AttentionValue
   timestamp: number
@@ -79,7 +79,7 @@ export class AtomSpace {
     }
 
     this.atoms.set(id, atom)
-    
+
     // Update indices
     if (name) {
       if (!this.nameIndex.has(name)) {
@@ -149,7 +149,9 @@ export class AtomSpace {
   getAtomsByName(name: string): Atom[] {
     const ids = this.nameIndex.get(name)
     if (!ids) return []
-    return Array.from(ids).map(id => this.atoms.get(id)!).filter(a => a)
+    return Array.from(ids)
+      .map(id => this.atoms.get(id)!)
+      .filter(a => a)
   }
 
   /**
@@ -158,7 +160,9 @@ export class AtomSpace {
   getAtomsByType(type: AtomType): Atom[] {
     const ids = this.typeIndex.get(type)
     if (!ids) return []
-    return Array.from(ids).map(id => this.atoms.get(id)!).filter(a => a)
+    return Array.from(ids)
+      .map(id => this.atoms.get(id)!)
+      .filter(a => a)
   }
 
   /**
@@ -167,7 +171,9 @@ export class AtomSpace {
   getIncoming(atomId: string): Atom[] {
     const ids = this.incomingIndex.get(atomId)
     if (!ids) return []
-    return Array.from(ids).map(id => this.atoms.get(id)!).filter(a => a)
+    return Array.from(ids)
+      .map(id => this.atoms.get(id)!)
+      .filter(a => a)
   }
 
   /**

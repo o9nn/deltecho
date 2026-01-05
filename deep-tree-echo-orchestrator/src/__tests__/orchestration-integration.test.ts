@@ -66,42 +66,26 @@ describe('Orchestration Integration', () => {
   });
 
   afterEach(async () => {
-    await Promise.all([
-      sys6Bridge.stop(),
-      agentCoordinator.stop(),
-      telemetryMonitor.stop(),
-    ]);
+    await Promise.all([sys6Bridge.stop(), agentCoordinator.stop(), telemetryMonitor.stop()]);
   });
 
   describe('Full System Startup', () => {
     it('should start all components successfully', async () => {
-      await Promise.all([
-        sys6Bridge.start(),
-        agentCoordinator.start(),
-        telemetryMonitor.start(),
-      ]);
+      await Promise.all([sys6Bridge.start(), agentCoordinator.start(), telemetryMonitor.start()]);
 
       expect(sys6Bridge.getState().running).toBe(true);
       expect(agentCoordinator.getState().running).toBe(true);
 
       // Telemetry should be collecting
-      await new Promise(resolve => setTimeout(resolve, 100));
+      await new Promise((resolve) => setTimeout(resolve, 100));
       const snapshot = telemetryMonitor.getSnapshot();
       expect(snapshot.systemInfo.uptime).toBeGreaterThan(0);
     });
 
     it('should stop all components gracefully', async () => {
-      await Promise.all([
-        sys6Bridge.start(),
-        agentCoordinator.start(),
-        telemetryMonitor.start(),
-      ]);
+      await Promise.all([sys6Bridge.start(), agentCoordinator.start(), telemetryMonitor.start()]);
 
-      await Promise.all([
-        sys6Bridge.stop(),
-        agentCoordinator.stop(),
-        telemetryMonitor.stop(),
-      ]);
+      await Promise.all([sys6Bridge.stop(), agentCoordinator.stop(), telemetryMonitor.stop()]);
 
       expect(sys6Bridge.getState().running).toBe(false);
       expect(agentCoordinator.getState().running).toBe(false);
@@ -110,11 +94,7 @@ describe('Orchestration Integration', () => {
 
   describe('Cognitive Cycle with Agent Delegation', () => {
     it('should execute cognitive cycles and delegate to agents', async () => {
-      await Promise.all([
-        sys6Bridge.start(),
-        agentCoordinator.start(),
-        telemetryMonitor.start(),
-      ]);
+      await Promise.all([sys6Bridge.start(), agentCoordinator.start(), telemetryMonitor.start()]);
 
       // Create a task that will be processed during cognitive cycle
       agentCoordinator.createTask('reasoning', 'Process cognitive input', {
@@ -122,7 +102,7 @@ describe('Orchestration Integration', () => {
       });
 
       // Wait for cycle completion and task processing
-      await new Promise(resolve => setTimeout(resolve, 500));
+      await new Promise((resolve) => setTimeout(resolve, 500));
 
       // Verify cognitive cycles ran
       const sys6Metrics = sys6Bridge.getMetrics();
@@ -134,14 +114,10 @@ describe('Orchestration Integration', () => {
     });
 
     it('should track agent invocations during cognitive processing', async () => {
-      await Promise.all([
-        sys6Bridge.start(),
-        agentCoordinator.start(),
-        telemetryMonitor.start(),
-      ]);
+      await Promise.all([sys6Bridge.start(), agentCoordinator.start(), telemetryMonitor.start()]);
 
       // Wait for processing
-      await new Promise(resolve => setTimeout(resolve, 300));
+      await new Promise((resolve) => setTimeout(resolve, 300));
 
       // Check telemetry recorded agent invocations
       const metric = telemetryMonitor.getMetric('agent_invocations_total');
@@ -151,16 +127,12 @@ describe('Orchestration Integration', () => {
 
   describe('Telemetry During Operation', () => {
     it('should collect metrics from all components', async () => {
-      await Promise.all([
-        sys6Bridge.start(),
-        agentCoordinator.start(),
-        telemetryMonitor.start(),
-      ]);
+      await Promise.all([sys6Bridge.start(), agentCoordinator.start(), telemetryMonitor.start()]);
 
       // Create some activity
       agentCoordinator.createTask('analysis', 'Test analysis', {});
 
-      await new Promise(resolve => setTimeout(resolve, 400));
+      await new Promise((resolve) => setTimeout(resolve, 400));
 
       const snapshot = telemetryMonitor.getSnapshot();
 
@@ -172,13 +144,9 @@ describe('Orchestration Integration', () => {
     });
 
     it('should provide accurate health status during operation', async () => {
-      await Promise.all([
-        sys6Bridge.start(),
-        agentCoordinator.start(),
-        telemetryMonitor.start(),
-      ]);
+      await Promise.all([sys6Bridge.start(), agentCoordinator.start(), telemetryMonitor.start()]);
 
-      await new Promise(resolve => setTimeout(resolve, 200));
+      await new Promise((resolve) => setTimeout(resolve, 200));
 
       const health = telemetryMonitor.getHealthStatus();
 
@@ -186,9 +154,7 @@ describe('Orchestration Integration', () => {
       expect(health.components.length).toBeGreaterThan(0);
 
       // Cognitive engine should be healthy or degraded since cycles are running
-      const cognitiveComponent = health.components.find(
-        c => c.name === 'cognitive_engine'
-      );
+      const cognitiveComponent = health.components.find((c) => c.name === 'cognitive_engine');
       // Accept healthy or degraded (not unhealthy) as valid states during operation
       expect(['healthy', 'degraded']).toContain(cognitiveComponent?.status);
     });
@@ -208,7 +174,7 @@ describe('Orchestration Integration', () => {
       alertMonitor.recordCycleComplete(5000);
 
       await alertMonitor.start();
-      await new Promise(resolve => setTimeout(resolve, 100));
+      await new Promise((resolve) => setTimeout(resolve, 100));
 
       const activeAlerts = alertMonitor.getActiveAlerts();
       expect(activeAlerts.length).toBeGreaterThan(0);
@@ -222,7 +188,7 @@ describe('Orchestration Integration', () => {
       await sys6Bridge.start();
 
       // Wait for multiple cycles
-      await new Promise(resolve => setTimeout(resolve, 400));
+      await new Promise((resolve) => setTimeout(resolve, 400));
 
       const state = sys6Bridge.getState();
 
@@ -252,7 +218,7 @@ describe('Orchestration Integration', () => {
       });
 
       await parallelBridge.start();
-      await new Promise(resolve => setTimeout(resolve, 200));
+      await new Promise((resolve) => setTimeout(resolve, 200));
       await parallelBridge.stop();
 
       // Steps should complete quickly (parallel processing)
@@ -275,7 +241,7 @@ describe('Orchestration Integration', () => {
       ];
 
       // Wait for processing
-      await new Promise(resolve => setTimeout(resolve, 500));
+      await new Promise((resolve) => setTimeout(resolve, 500));
 
       const metrics = agentCoordinator.getMetrics();
       expect(metrics.completedTasks).toBe(3);
@@ -292,7 +258,7 @@ describe('Orchestration Integration', () => {
       agentCoordinator.createTask('child2', 'Child 2', {}, 'medium', parentTask.id);
 
       // Wait for processing
-      await new Promise(resolve => setTimeout(resolve, 500));
+      await new Promise((resolve) => setTimeout(resolve, 500));
 
       const updatedParent = agentCoordinator.getTask(parentTask.id);
 
@@ -318,7 +284,7 @@ describe('Orchestration Integration', () => {
       // Create a task that matches the specialist
       agentCoordinator.createTask('testing', 'Test task for specialist', {});
 
-      await new Promise(resolve => setTimeout(resolve, 300));
+      await new Promise((resolve) => setTimeout(resolve, 300));
 
       const metrics = agentCoordinator.getMetrics();
       expect(metrics.completedTasks).toBeGreaterThan(0);
@@ -327,18 +293,14 @@ describe('Orchestration Integration', () => {
 
   describe('Error Handling and Recovery', () => {
     it('should continue operation after component errors', async () => {
-      await Promise.all([
-        sys6Bridge.start(),
-        agentCoordinator.start(),
-        telemetryMonitor.start(),
-      ]);
+      await Promise.all([sys6Bridge.start(), agentCoordinator.start(), telemetryMonitor.start()]);
 
       // Record some errors
       telemetryMonitor.recordError('test', 'Test error 1');
       telemetryMonitor.recordError('test', 'Test error 2');
 
       // System should continue running
-      await new Promise(resolve => setTimeout(resolve, 200));
+      await new Promise((resolve) => setTimeout(resolve, 200));
 
       expect(sys6Bridge.getState().running).toBe(true);
       expect(agentCoordinator.getState().running).toBe(true);
@@ -357,12 +319,12 @@ describe('Orchestration Integration', () => {
       }
       telemetryMonitor.recordMessageProcessed(100);
 
-      await new Promise(resolve => setTimeout(resolve, 100));
+      await new Promise((resolve) => setTimeout(resolve, 100));
 
       const health = telemetryMonitor.getHealthStatus();
 
       // Error rate component should show degraded/unhealthy
-      const errorComponent = health.components.find(c => c.name === 'error_rate');
+      const errorComponent = health.components.find((c) => c.name === 'error_rate');
       expect(['degraded', 'unhealthy']).toContain(errorComponent?.status);
     });
   });
@@ -378,15 +340,12 @@ describe('Orchestration Integration', () => {
     });
 
     it('should update telemetry during message processing', async () => {
-      await Promise.all([
-        sys6Bridge.start(),
-        telemetryMonitor.start(),
-      ]);
+      await Promise.all([sys6Bridge.start(), telemetryMonitor.start()]);
 
       // Process a message
       await sys6Bridge.processMessage('Test message');
 
-      await new Promise(resolve => setTimeout(resolve, 100));
+      await new Promise((resolve) => setTimeout(resolve, 100));
 
       // Telemetry should have recorded the activity
       const snapshot = telemetryMonitor.getSnapshot();
@@ -396,15 +355,11 @@ describe('Orchestration Integration', () => {
 
   describe('Prometheus Export Integration', () => {
     it('should export comprehensive metrics in Prometheus format', async () => {
-      await Promise.all([
-        sys6Bridge.start(),
-        agentCoordinator.start(),
-        telemetryMonitor.start(),
-      ]);
+      await Promise.all([sys6Bridge.start(), agentCoordinator.start(), telemetryMonitor.start()]);
 
       // Generate some activity
       agentCoordinator.createTask('test', 'Test task', {});
-      await new Promise(resolve => setTimeout(resolve, 300));
+      await new Promise((resolve) => setTimeout(resolve, 300));
 
       const prometheus = telemetryMonitor.exportPrometheus();
 
@@ -427,7 +382,7 @@ describe('Orchestration Integration', () => {
       }
 
       // Wait for processing
-      await new Promise(resolve => setTimeout(resolve, 1000));
+      await new Promise((resolve) => setTimeout(resolve, 1000));
 
       const metrics = agentCoordinator.getMetrics();
       // Should complete at least half the tasks within the timeout
@@ -435,16 +390,13 @@ describe('Orchestration Integration', () => {
     });
 
     it('should maintain stable memory usage during extended operation', async () => {
-      await Promise.all([
-        sys6Bridge.start(),
-        telemetryMonitor.start(),
-      ]);
+      await Promise.all([sys6Bridge.start(), telemetryMonitor.start()]);
 
       // Record initial memory
       const initialMemory = process.memoryUsage().heapUsed;
 
       // Run for a while
-      await new Promise(resolve => setTimeout(resolve, 500));
+      await new Promise((resolve) => setTimeout(resolve, 500));
 
       // Check memory hasn't grown excessively
       const finalMemory = process.memoryUsage().heapUsed;

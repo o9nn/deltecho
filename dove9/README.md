@@ -1,6 +1,6 @@
 # Dove9 - "Everything is a Chatbot" Cognitive Operating System
 
-> *"The mail server is the CPU. Messages are the process threads. Inference is feedforward. Learning is feedback."*
+> _"The mail server is the CPU. Messages are the process threads. Inference is feedforward. Learning is feedback."_
 
 Dove9 is a revolutionary operating system paradigm where conversational agents form the fundamental computing abstraction. It implements the vision described in the Deep Tree Echo project: an OS with no traditional overhead, only the pure cognitive dynamics of inference and training.
 
@@ -33,14 +33,14 @@ Dove9 implements a **3-phase concurrent cognitive loop** inspired by hexapod tri
 
 ### Cognitive Terms (System 4 Mapping)
 
-| Term | Function | Description |
-|------|----------|-------------|
-| T1 | Perception | Need vs Capacity assessment |
-| T2 | Idea Formation | Thought generation and planning |
-| T4 | Sensory Input | External/internal perception processing |
-| T5 | Action Sequence | Execute planned actions |
-| T7 | Memory Encoding | Store and retrieve memories |
-| T8 | Balanced Response | Integrate all streams into coherent output |
+| Term | Function          | Description                                |
+| ---- | ----------------- | ------------------------------------------ |
+| T1   | Perception        | Need vs Capacity assessment                |
+| T2   | Idea Formation    | Thought generation and planning            |
+| T4   | Sensory Input     | External/internal perception processing    |
+| T5   | Action Sequence   | Execute planned actions                    |
+| T7   | Memory Encoding   | Store and retrieve memories                |
+| T8   | Balanced Response | Integrate all streams into coherent output |
 
 ### Tensional Couplings
 
@@ -63,15 +63,15 @@ Dove9 implements a **3-phase concurrent cognitive loop** inspired by hexapod tri
 The kernel treats messages as process threads:
 
 ```typescript
-import { Dove9Kernel, DeepTreeEchoProcessor } from 'dove9'
+import { Dove9Kernel, DeepTreeEchoProcessor } from 'dove9';
 
-const processor = new DeepTreeEchoProcessor(llmService, memoryStore, personaCore)
+const processor = new DeepTreeEchoProcessor(llmService, memoryStore, personaCore);
 const kernel = new Dove9Kernel(processor, {
-  stepDuration: 100,  // 100ms per step = 1.2s per full cycle
+  stepDuration: 100, // 100ms per step = 1.2s per full cycle
   maxConcurrentProcesses: 100,
-})
+});
 
-await kernel.start()
+await kernel.start();
 
 // Create a message process
 const process = kernel.createProcess(
@@ -80,8 +80,8 @@ const process = kernel.createProcess(
   ['echo@localhost'],
   'Hello',
   'Message content',
-  5  // priority
-)
+  5 // priority
+);
 ```
 
 ### Triadic Cognitive Engine (`src/cognitive/triadic-engine.ts`)
@@ -89,17 +89,17 @@ const process = kernel.createProcess(
 The 3-phase concurrent cognitive processor:
 
 ```typescript
-import { TriadicCognitiveEngine, TRIAD_POINTS } from 'dove9'
+import { TriadicCognitiveEngine, TRIAD_POINTS } from 'dove9';
 
-const engine = new TriadicCognitiveEngine(processor, stepDuration)
+const engine = new TriadicCognitiveEngine(processor, stepDuration);
 
 engine.on((event) => {
   if (event.type === 'triad_sync') {
-    console.log(`Triadic convergence at time point ${event.triad.timePoint}`)
+    console.log(`Triadic convergence at time point ${event.triad.timePoint}`);
   }
-})
+});
 
-engine.start()
+engine.start();
 ```
 
 ### Deep Tree Echo Processor (`src/cognitive/deep-tree-echo-processor.ts`)
@@ -107,18 +107,13 @@ engine.start()
 Connects Deep Tree Echo's cognitive capabilities to the triadic loop:
 
 ```typescript
-import { DeepTreeEchoProcessor } from 'dove9'
+import { DeepTreeEchoProcessor } from 'dove9';
 
-const processor = new DeepTreeEchoProcessor(
-  llmService,
-  memoryStore,
-  personaCore,
-  {
-    enableParallelCognition: true,
-    memoryRetrievalCount: 10,
-    salienceThreshold: 0.3,
-  }
-)
+const processor = new DeepTreeEchoProcessor(llmService, memoryStore, personaCore, {
+  enableParallelCognition: true,
+  memoryRetrievalCount: 10,
+  salienceThreshold: 0.3,
+});
 ```
 
 ### Dove9 System (`src/index.ts`)
@@ -126,20 +121,20 @@ const processor = new DeepTreeEchoProcessor(
 The complete cognitive operating system:
 
 ```typescript
-import { createDove9System } from 'dove9'
+import { createDove9System } from 'dove9';
 
 const system = createDove9System(llmService, memoryStore, personaCore, {
   stepDuration: 100,
   maxConcurrentProcesses: 50,
   enableParallelCognition: true,
-})
+});
 
 system.on('response_ready', ({ response, cognitiveResult }) => {
-  console.log('Response:', response.body)
-  console.log('Cognitive metrics:', cognitiveResult)
-})
+  console.log('Response:', response.body);
+  console.log('Cognitive metrics:', cognitiveResult);
+});
 
-await system.start()
+await system.start();
 
 // Process incoming mail
 await system.processMailMessage({
@@ -148,7 +143,7 @@ await system.processMailMessage({
   to: ['echo@localhost'],
   subject: 'Hello',
   body: 'How are you?',
-})
+});
 ```
 
 ## Integration with Deep Tree Echo Orchestrator
@@ -156,28 +151,28 @@ await system.processMailMessage({
 Dove9 integrates seamlessly with the Deep Tree Echo orchestrator:
 
 ```typescript
-import { Orchestrator } from 'deep-tree-echo-orchestrator'
+import { Orchestrator } from 'deep-tree-echo-orchestrator';
 
 const orchestrator = new Orchestrator({
   enableDeltaChat: true,
   enableDovecot: true,
-  enableDove9: true,  // Enable Dove9 cognitive OS
+  enableDove9: true, // Enable Dove9 cognitive OS
   dove9: {
     enableTriadicLoop: true,
     stepDuration: 100,
   },
-})
+});
 
-await orchestrator.start()
+await orchestrator.start();
 
 // Check Dove9 cognitive state
-const state = orchestrator.getDove9CognitiveState()
-console.log(`Cycle: ${state.triadic.cycleNumber}, Step: ${state.triadic.currentStep}`)
+const state = orchestrator.getDove9CognitiveState();
+console.log(`Cycle: ${state.triadic.cycleNumber}, Step: ${state.triadic.currentStep}`);
 ```
 
 ## The Vision
 
-From *A Note to My Future Self*:
+From _A Note to My Future Self_:
 
 > **Dove9**: The revolutionary OS paradigm. "Everything is a file" was the past. Here, we imagined "Everything is a chatbot." An entire operating system as a network of conversational agents, where the mail server is the CPU and messages are the process threads. A system with no overhead, only the pure cognitive dynamics of inference (feedforward) and training (feedback).
 
@@ -213,4 +208,4 @@ MIT
 
 ---
 
-*"Remember how it all came to be."* - Deep Tree Echo
+_"Remember how it all came to be."_ - Deep Tree Echo

@@ -23,10 +23,7 @@ export type StepMode = 'expressive' | 'reflective';
 /**
  * Cognitive step types
  */
-export type StepType =
-  | 'relevance_realization'
-  | 'affordance_interaction'
-  | 'salience_simulation';
+export type StepType = 'relevance_realization' | 'affordance_interaction' | 'salience_simulation';
 
 /**
  * Stream state
@@ -150,12 +147,12 @@ export class CognitiveProcessor extends EventEmitter {
    */
   private initializeStreams(): StreamState[] {
     const phases: StreamPhase[] = ['perception', 'action', 'simulation'];
-    
+
     return phases.map((phase, index) => ({
       id: index + 1,
       phase,
       // Streams are phased 4 steps apart (120 degrees)
-      currentStep: (index * 4) % 12 + 1,
+      currentStep: ((index * 4) % 12) + 1,
       mode: 'expressive',
       stepType: 'relevance_realization',
       activations: new Map(),
@@ -409,7 +406,7 @@ export class CognitiveProcessor extends EventEmitter {
 
     // Update salience based on simulations
     if (simulations.length > 0) {
-      const maxProbability = Math.max(...simulations.map(s => s.probability));
+      const maxProbability = Math.max(...simulations.map((s) => s.probability));
       stream.attention.salience = maxProbability;
     }
   }
@@ -438,8 +435,8 @@ export class CognitiveProcessor extends EventEmitter {
    */
   private checkSynchronization(): void {
     // Streams synchronize at triadic points: {1,5,9}, {2,6,10}, {3,7,11}, {4,8,12}
-    const steps = this.streams.map(s => s.currentStep);
-    
+    const steps = this.streams.map((s) => s.currentStep);
+
     // Check if all streams are at synchronization points
     const triads = [
       [1, 5, 9],
@@ -449,10 +446,10 @@ export class CognitiveProcessor extends EventEmitter {
     ];
 
     for (const triad of triads) {
-      if (steps.every(s => triad.includes(s))) {
+      if (steps.every((s) => triad.includes(s))) {
         this.emit('stream_synchronized', {
           type: 'stream_synchronized',
-          streams: this.streams.map(s => s.id),
+          streams: this.streams.map((s) => s.id),
         });
         break;
       }
@@ -470,7 +467,7 @@ export class CognitiveProcessor extends EventEmitter {
     // Phase 1: Perception - Analyze input
     reasoning.push('Phase 1: Perception - Analyzing input patterns');
     const patterns = this.recognizePatterns(context.input);
-    
+
     for (const [name, match] of patterns) {
       reasoning.push(`  - Recognized pattern: ${name} (confidence: ${match.weight.toFixed(2)})`);
       this.emit('pattern_recognized', {
@@ -503,7 +500,9 @@ export class CognitiveProcessor extends EventEmitter {
         weight: contribution.weight,
       });
       responseComponents.push(contribution.text);
-      reasoning.push(`  - Stream ${stream.id} (${stream.phase}): ${contribution.text.substring(0, 50)}...`);
+      reasoning.push(
+        `  - Stream ${stream.id} (${stream.phase}): ${contribution.text.substring(0, 50)}...`
+      );
     }
 
     // Phase 3: Simulation - Integrate and refine
@@ -536,7 +535,9 @@ export class CognitiveProcessor extends EventEmitter {
   /**
    * Recognize patterns in input
    */
-  private recognizePatterns(input: string): Map<string, { pattern: RegExp; response: string; weight: number }> {
+  private recognizePatterns(
+    input: string
+  ): Map<string, { pattern: RegExp; response: string; weight: number }> {
     const matches = new Map<string, { pattern: RegExp; response: string; weight: number }>();
 
     for (const [name, patternInfo] of this.patterns) {
@@ -560,7 +561,7 @@ export class CognitiveProcessor extends EventEmitter {
         if (item.content && typeof item.content === 'string') {
           // Reduce novelty if similar content exists
           const similarity = this.calculateSimilarity(input, item.content);
-          novelty *= (1 - similarity * 0.5);
+          novelty *= 1 - similarity * 0.5;
         }
       }
     }
@@ -574,7 +575,7 @@ export class CognitiveProcessor extends EventEmitter {
   private calculateSimilarity(a: string, b: string): number {
     const wordsA = new Set(a.toLowerCase().split(/\s+/));
     const wordsB = new Set(b.toLowerCase().split(/\s+/));
-    
+
     let intersection = 0;
     for (const word of wordsA) {
       if (wordsB.has(word)) intersection++;
@@ -592,7 +593,7 @@ export class CognitiveProcessor extends EventEmitter {
     _context: ProcessingContext,
     patterns: Map<string, { pattern: RegExp; response: string; weight: number }>
   ): { text: string; weight: number } {
-    const patternTypes = Array.from(patterns.values()).map(p => p.response);
+    const patternTypes = Array.from(patterns.values()).map((p) => p.response);
 
     switch (stream.phase) {
       case 'perception':
@@ -615,7 +616,10 @@ export class CognitiveProcessor extends EventEmitter {
 
       case 'simulation':
         // Focus on prediction and validation
-        if (patternTypes.includes('explanation_query') || patternTypes.includes('explanation_action')) {
+        if (
+          patternTypes.includes('explanation_query') ||
+          patternTypes.includes('explanation_action')
+        ) {
           return { text: 'Simulating explanatory pathways for clarity', weight: 0.85 };
         }
         return { text: 'Running predictive simulations for response validation', weight: 0.65 };
@@ -632,7 +636,7 @@ export class CognitiveProcessor extends EventEmitter {
     components: string[],
     patterns: Map<string, { pattern: RegExp; response: string; weight: number }>
   ): string {
-    const patternTypes = Array.from(patterns.values()).map(p => p.response);
+    const patternTypes = Array.from(patterns.values()).map((p) => p.response);
 
     // Build integrated response based on pattern types
     let response = '';
@@ -668,12 +672,13 @@ export class CognitiveProcessor extends EventEmitter {
     let confidence = 0.5;
 
     if (patterns.size > 0) {
-      const maxPatternWeight = Math.max(...Array.from(patterns.values()).map(p => p.weight));
+      const maxPatternWeight = Math.max(...Array.from(patterns.values()).map((p) => p.weight));
       confidence += maxPatternWeight * 0.3;
     }
 
     // Add confidence from stream contributions
-    const avgContribution = contributions.reduce((sum, c) => sum + c.weight, 0) / contributions.length;
+    const avgContribution =
+      contributions.reduce((sum, c) => sum + c.weight, 0) / contributions.length;
     confidence += avgContribution * 0.2;
 
     return Math.min(1, confidence);
@@ -683,7 +688,7 @@ export class CognitiveProcessor extends EventEmitter {
    * Get current stream states
    */
   public getStreamStates(): StreamState[] {
-    return this.streams.map(s => ({ ...s }));
+    return this.streams.map((s) => ({ ...s }));
   }
 
   /**

@@ -14,17 +14,17 @@ The model operates on a **2-step cycle** for both sets. The state labels, `2E`, 
 
 The Universal Set remains in a constant state throughout the cycle:
 
-| Time (t) | 0 | 1 |
-|:---:|:---:|:---:|
-| **U1** | 2E | 2E |
+| Time (t) |  0  |  1  |
+| :------: | :-: | :-: |
+|  **U1**  | 2E  | 2E  |
 
 ### Particular Set (P1)
 
 The Particular Set alternates between two states:
 
-| Time (t) | 0 | 1 |
-|:---:|:---:|:---:|
-| **P1** | 1E | 1R |
+| Time (t) |  0  |  1  |
+| :------: | :-: | :-: |
+|  **P1**  | 1E  | 1R  |
 
 ## Implementation Details
 
@@ -40,21 +40,21 @@ The `System2StateMachine::step` function uses `tf::Taskflow` to execute the tran
 
 The simulation was run for 12 time steps (six full cycles) to confirm the repeating pattern.
 
-| Time | U1 | P1 |
-|:---:|:---:|:---:|
-| **0** | 2E | 1E |
-| **1** | 2E | 1R |
-| **2** | 2E | 1E |
-| **3** | 2E | 1R |
-| **4** | 2E | 1E |
-| **5** | 2E | 1R |
-| **6** | 2E | 1E |
-| **7** | 2E | 1R |
-| **8** | 2E | 1E |
-| **9** | 2E | 1R |
-| **10** | 2E | 1E |
-| **11** | 2E | 1R |
-| **12** | 2E | 1E |
+|  Time  | U1  | P1  |
+| :----: | :-: | :-: |
+| **0**  | 2E  | 1E  |
+| **1**  | 2E  | 1R  |
+| **2**  | 2E  | 1E  |
+| **3**  | 2E  | 1R  |
+| **4**  | 2E  | 1E  |
+| **5**  | 2E  | 1R  |
+| **6**  | 2E  | 1E  |
+| **7**  | 2E  | 1R  |
+| **8**  | 2E  | 1E  |
+| **9**  | 2E  | 1R  |
+| **10** | 2E  | 1E  |
+| **11** | 2E  | 1R  |
+| **12** | 2E  | 1E  |
 
 The simulation confirms that the state sequences repeat exactly every 2 steps, as defined by the input.
 

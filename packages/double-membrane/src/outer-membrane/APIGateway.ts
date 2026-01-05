@@ -535,32 +535,35 @@ export class APIGateway extends EventEmitter {
     }
 
     const messages: Array<{ role: string; content: string }> = [];
-    
+
     if (request.systemPrompt) {
       messages.push({ role: 'system', content: request.systemPrompt });
     }
     messages.push({ role: 'user', content: request.prompt });
 
-    const response = await fetch(`${config.baseUrl || 'https://api.openai.com/v1'}/chat/completions`, {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-        'Authorization': `Bearer ${config.apiKey}`,
-      },
-      body: JSON.stringify({
-        model: config.model,
-        messages,
-        max_tokens: request.maxTokens || config.maxTokens,
-        temperature: request.temperature ?? config.temperature,
-      }),
-    });
+    const response = await fetch(
+      `${config.baseUrl || 'https://api.openai.com/v1'}/chat/completions`,
+      {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          Authorization: `Bearer ${config.apiKey}`,
+        },
+        body: JSON.stringify({
+          model: config.model,
+          messages,
+          max_tokens: request.maxTokens || config.maxTokens,
+          temperature: request.temperature ?? config.temperature,
+        }),
+      }
+    );
 
     if (!response.ok) {
       const errorText = await response.text();
       throw new Error(`OpenAI API error: ${response.status} - ${errorText}`);
     }
 
-    const data = await response.json() as {
+    const data = (await response.json()) as {
       choices: Array<{ message: { content: string } }>;
       usage: { total_tokens: number };
     };
@@ -611,7 +614,7 @@ export class APIGateway extends EventEmitter {
       throw new Error(`Anthropic API error: ${response.status} - ${errorText}`);
     }
 
-    const data = await response.json() as {
+    const data = (await response.json()) as {
       content: Array<{ text: string }>;
       usage: { input_tokens: number; output_tokens: number };
     };
@@ -643,34 +646,37 @@ export class APIGateway extends EventEmitter {
     }
 
     const messages: Array<{ role: string; content: string }> = [];
-    
+
     if (request.systemPrompt) {
       messages.push({ role: 'system', content: request.systemPrompt });
     }
     messages.push({ role: 'user', content: request.prompt });
 
-    const response = await fetch(`${config.baseUrl || 'https://openrouter.ai/api/v1'}/chat/completions`, {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-        'Authorization': `Bearer ${config.apiKey}`,
-        'HTTP-Referer': 'https://deltecho.dev',
-        'X-Title': 'Deep Tree Echo',
-      },
-      body: JSON.stringify({
-        model: config.model,
-        messages,
-        max_tokens: request.maxTokens || config.maxTokens,
-        temperature: request.temperature ?? config.temperature,
-      }),
-    });
+    const response = await fetch(
+      `${config.baseUrl || 'https://openrouter.ai/api/v1'}/chat/completions`,
+      {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          Authorization: `Bearer ${config.apiKey}`,
+          'HTTP-Referer': 'https://deltecho.dev',
+          'X-Title': 'Deep Tree Echo',
+        },
+        body: JSON.stringify({
+          model: config.model,
+          messages,
+          max_tokens: request.maxTokens || config.maxTokens,
+          temperature: request.temperature ?? config.temperature,
+        }),
+      }
+    );
 
     if (!response.ok) {
       const errorText = await response.text();
       throw new Error(`OpenRouter API error: ${response.status} - ${errorText}`);
     }
 
-    const data = await response.json() as {
+    const data = (await response.json()) as {
       choices: Array<{ message: { content: string } }>;
       usage: { total_tokens: number };
     };
@@ -699,17 +705,20 @@ export class APIGateway extends EventEmitter {
   ): Promise<APIResponse> {
     // Local inference using pattern-based native processing
     // This provides basic functionality when no API keys are available
-    
+
     const prompt = request.prompt.toLowerCase();
     let responseText: string;
 
     // Simple pattern matching for common queries
     if (prompt.includes('hello') || prompt.includes('hi')) {
-      responseText = 'Hello! I am Deep Tree Echo operating in autonomous mode. How can I assist you?';
+      responseText =
+        'Hello! I am Deep Tree Echo operating in autonomous mode. How can I assist you?';
     } else if (prompt.includes('help')) {
-      responseText = 'I can help with cognitive processing, memory management, and reasoning tasks. What would you like to explore?';
+      responseText =
+        'I can help with cognitive processing, memory management, and reasoning tasks. What would you like to explore?';
     } else if (prompt.includes('status') || prompt.includes('health')) {
-      responseText = 'System operational. Running in local inference mode with native pattern processing.';
+      responseText =
+        'System operational. Running in local inference mode with native pattern processing.';
     } else if (prompt.includes('think') || prompt.includes('reason')) {
       responseText = `Processing your query through native inference...
 
@@ -842,7 +851,9 @@ For more sophisticated responses, please configure OpenAI, Anthropic, or OpenRou
   /**
    * Test provider connectivity
    */
-  public async testProvider(provider: LLMProvider): Promise<{ success: boolean; latencyMs: number; error?: string }> {
+  public async testProvider(
+    provider: LLMProvider
+  ): Promise<{ success: boolean; latencyMs: number; error?: string }> {
     const config = this.providers.get(provider);
     if (!config) {
       return { success: false, latencyMs: 0, error: 'Provider not configured' };

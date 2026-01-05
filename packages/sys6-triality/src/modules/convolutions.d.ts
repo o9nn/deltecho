@@ -18,20 +18,20 @@ import { Module } from './Module.js';
  * access the same computation simultaneously.
  */
 export declare class DyadicConvolution extends Module {
-    private poleATransform;
-    private poleBTransform;
-    private entanglementLayer;
-    private outputNorm;
-    readonly dim: number;
-    constructor(dim: number);
-    forward(edge: DyadicEdge): DyadicEdge;
-    /**
-     * Forward pass returning both the transformed edge and the entangled state
-     */
-    forwardWithEntanglement(edge: DyadicEdge): {
-        edge: DyadicEdge;
-        entangled: ShapedTensor;
-    };
+  private poleATransform;
+  private poleBTransform;
+  private entanglementLayer;
+  private outputNorm;
+  readonly dim: number;
+  constructor(dim: number);
+  forward(edge: DyadicEdge): DyadicEdge;
+  /**
+   * Forward pass returning both the transformed edge and the entangled state
+   */
+  forwardWithEntanglement(edge: DyadicEdge): {
+    edge: DyadicEdge;
+    entangled: ShapedTensor;
+  };
 }
 /**
  * Triadic Convolution Module
@@ -45,28 +45,28 @@ export declare class DyadicConvolution extends Module {
  * - Thread k = (edge_jk.poleB + edge_ki.poleA) / 2
  */
 export declare class TriadicConvolution extends Module {
-    private edgeConv_ij;
-    private edgeConv_jk;
-    private edgeConv_ki;
-    private integrationLayer;
-    readonly dim: number;
-    constructor(dim: number);
-    forward(face: TriadicFace): {
-        face: TriadicFace;
-        integrated: ShapedTensor;
+  private edgeConv_ij;
+  private edgeConv_jk;
+  private edgeConv_ki;
+  private integrationLayer;
+  readonly dim: number;
+  constructor(dim: number);
+  forward(face: TriadicFace): {
+    face: TriadicFace;
+    integrated: ShapedTensor;
+  };
+  /**
+   * Forward pass with full entanglement information
+   */
+  forwardWithEntanglement(face: TriadicFace): {
+    face: TriadicFace;
+    integrated: ShapedTensor;
+    entanglements: {
+      edge_ij: ShapedTensor;
+      edge_jk: ShapedTensor;
+      edge_ki: ShapedTensor;
     };
-    /**
-     * Forward pass with full entanglement information
-     */
-    forwardWithEntanglement(face: TriadicFace): {
-        face: TriadicFace;
-        integrated: ShapedTensor;
-        entanglements: {
-            edge_ij: ShapedTensor;
-            edge_jk: ShapedTensor;
-            edge_ki: ShapedTensor;
-        };
-    };
+  };
 }
 /**
  * Tetradic Convolution Module
@@ -81,30 +81,30 @@ export declare class TriadicConvolution extends Module {
  * - Vertex 4: faces 124, 134, 234
  */
 export declare class TetradicConvolution extends Module {
-    private faceConv_123;
-    private faceConv_124;
-    private faceConv_134;
-    private faceConv_234;
-    private vertexIntegration;
-    readonly dim: number;
-    constructor(dim: number);
-    forward(bundle: TetradicBundle): {
-        bundle: TetradicBundle;
-        integrated: ShapedTensor;
+  private faceConv_123;
+  private faceConv_124;
+  private faceConv_134;
+  private faceConv_234;
+  private vertexIntegration;
+  readonly dim: number;
+  constructor(dim: number);
+  forward(bundle: TetradicBundle): {
+    bundle: TetradicBundle;
+    integrated: ShapedTensor;
+  };
+  /**
+   * Forward pass with full entanglement information from all faces
+   */
+  forwardWithEntanglement(bundle: TetradicBundle): {
+    bundle: TetradicBundle;
+    integrated: ShapedTensor;
+    faceIntegrations: {
+      face_123: ShapedTensor;
+      face_124: ShapedTensor;
+      face_134: ShapedTensor;
+      face_234: ShapedTensor;
     };
-    /**
-     * Forward pass with full entanglement information from all faces
-     */
-    forwardWithEntanglement(bundle: TetradicBundle): {
-        bundle: TetradicBundle;
-        integrated: ShapedTensor;
-        faceIntegrations: {
-            face_123: ShapedTensor;
-            face_124: ShapedTensor;
-            face_134: ShapedTensor;
-            face_234: ShapedTensor;
-        };
-    };
+  };
 }
 /**
  * Nested Neural Network Factory
@@ -113,15 +113,15 @@ export declare class TetradicConvolution extends Module {
  * sequence for nested shells structure.
  */
 export declare class NestedNeuralNetwork extends Module {
-    private levels;
-    readonly dim: number;
-    readonly nestingLevels: number;
-    readonly termsPerLevel: number[];
-    constructor(dim: number, nestingLevels?: number);
-    forward(input: ShapedTensor): ShapedTensor[];
-    /**
-     * Forward pass returning outputs organized by nesting level
-     */
-    forwardByLevel(input: ShapedTensor): ShapedTensor[][];
+  private levels;
+  readonly dim: number;
+  readonly nestingLevels: number;
+  readonly termsPerLevel: number[];
+  constructor(dim: number, nestingLevels?: number);
+  forward(input: ShapedTensor): ShapedTensor[];
+  /**
+   * Forward pass returning outputs organized by nesting level
+   */
+  forwardByLevel(input: ShapedTensor): ShapedTensor[][];
 }
 //# sourceMappingURL=convolutions.d.ts.map

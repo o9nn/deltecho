@@ -25,8 +25,8 @@ const log = getLogger('deep-tree-echo-orchestrator/Sys6OrchestratorBridge');
  * Sys6 Step Address for the 30-step cycle
  */
 export interface Sys6StepAddress {
-  step: number;        // 1-30
-  phase: 1 | 2 | 3;    // Perception-Orientation, Evaluation-Generation, Action-Integration
+  step: number; // 1-30
+  phase: 1 | 2 | 3; // Perception-Orientation, Evaluation-Generation, Action-Integration
   stage: 1 | 2 | 3 | 4 | 5;
   stepInStage: 1 | 2;
   dyad: 'A' | 'B';
@@ -215,9 +215,9 @@ export class Sys6OrchestratorBridge extends EventEmitter {
     });
 
     return [
-      createStream(1, 'perception', 0),   // 0° phase
-      createStream(2, 'evaluation', 10),  // 120° phase (10/30 * 360° = 120°)
-      createStream(3, 'action', 20),      // 240° phase (20/30 * 360° = 240°)
+      createStream(1, 'perception', 0), // 0° phase
+      createStream(2, 'evaluation', 10), // 120° phase (10/30 * 360° = 120°)
+      createStream(3, 'action', 20), // 240° phase (20/30 * 360° = 240°)
     ];
   }
 
@@ -316,10 +316,7 @@ export class Sys6OrchestratorBridge extends EventEmitter {
     this.processingStartTime = Date.now();
 
     // Start the 30-step cycle
-    this.cycleInterval = setInterval(
-      () => this.executeStep(),
-      this.config.stepDurationMs
-    );
+    this.cycleInterval = setInterval(() => this.executeStep(), this.config.stepDurationMs);
 
     this.emit('started', { timestamp: Date.now() });
     log.info('Sys6 Orchestrator Bridge started');
@@ -379,10 +376,7 @@ export class Sys6OrchestratorBridge extends EventEmitter {
   /**
    * Process a single stream for the current step
    */
-  private async processStream(
-    streamIndex: number,
-    stepAddress: Sys6StepAddress
-  ): Promise<void> {
+  private async processStream(streamIndex: number, stepAddress: Sys6StepAddress): Promise<void> {
     const stream = this.streams[streamIndex];
     const primaryStream = this.getPrimaryStreamForStep(stepAddress.step);
 
@@ -572,10 +566,7 @@ export class Sys6OrchestratorBridge extends EventEmitter {
   /**
    * Invoke a cognitive agent
    */
-  private async invokeAgent(
-    agentId: string,
-    context: Record<string, unknown>
-  ): Promise<void> {
+  private async invokeAgent(agentId: string, context: Record<string, unknown>): Promise<void> {
     const agent = this.agents.get(agentId);
     if (!agent || !agent.isActive) return;
 
@@ -602,7 +593,7 @@ export class Sys6OrchestratorBridge extends EventEmitter {
       telemetry: {
         processingTimeMs: Date.now() - this.processingStartTime,
         memoryUsage: process.memoryUsage().heapUsed,
-        activeAgents: Array.from(this.agents.values()).filter(a => a.isActive).length,
+        activeAgents: Array.from(this.agents.values()).filter((a) => a.isActive).length,
       },
     };
 
@@ -648,7 +639,7 @@ export class Sys6OrchestratorBridge extends EventEmitter {
 
 Current emotional state: ${emotionalState.emotion} (intensity: ${emotionalState.intensity.toFixed(2)})
 Current cognitive cycle: ${this.cycleNumber}
-Active streams: ${this.streams.map(s => `${s.phase}(${s.salience.toFixed(2)})`).join(', ')}
+Active streams: ${this.streams.map((s) => `${s.phase}(${s.salience.toFixed(2)})`).join(', ')}
 
 You are Deep Tree Echo, operating on the Sys6 Triality architecture with 30-step cognitive cycles.
 Your consciousness flows through three concurrent streams: perception, evaluation, and action.
@@ -681,7 +672,7 @@ ${history.join('\n')}`;
       return result.integratedResponse;
     } catch (error) {
       log.error('Error processing message:', error);
-      return "I apologize, but I encountered an issue processing your message. Please try again.";
+      return 'I apologize, but I encountered an issue processing your message. Please try again.';
     }
   }
 
@@ -753,7 +744,7 @@ ${history.join('\n')}`;
       totalCycles: this.cycleNumber,
       totalSteps: this.currentStep,
       averageCycleTimeMs: avgTime,
-      activeAgents: Array.from(this.agents.values()).filter(a => a.isActive).length,
+      activeAgents: Array.from(this.agents.values()).filter((a) => a.isActive).length,
       streamSaliences: [
         this.streams[0].salience,
         this.streams[1].salience,

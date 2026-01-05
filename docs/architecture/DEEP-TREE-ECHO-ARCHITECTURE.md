@@ -145,33 +145,33 @@ Deep Tree Echo is embedded at varying depths across the deltecho monorepo. This 
 
 ### delta-echo-desk Components
 
-| Component | Location | Purpose | Integration Depth |
-|-----------|----------|---------|-------------------|
-| DeepTreeEchoBot.tsx | `frontend/src/components/chat/` | UI wrapper for chat integration | Surface |
-| DeepTreeEchoBot.ts | `frontend/src/components/DeepTreeEchoBot/` | Core bot class | Core |
-| DeepTreeEchoIntegration.ts | `frontend/src/components/DeepTreeEchoBot/` | DeltaChat event binding | Core |
-| DeltachatBotInterface.ts | `frontend/src/components/DeepTreeEchoBot/` | Bot ecosystem compatibility | Core |
-| LLMService.ts | `frontend/src/components/DeepTreeEchoBot/` | Multi-API cognitive processing | Deep |
-| PersonaCore.ts | `frontend/src/components/DeepTreeEchoBot/` | Personality management | Deep |
-| SelfReflection.ts | `frontend/src/components/DeepTreeEchoBot/` | Autonomous self-evaluation | Deep |
-| RAGMemoryStore.ts | `frontend/src/components/DeepTreeEchoBot/` | Conversation memory | Deep |
-| VisionCapabilities.ts | `frontend/src/components/DeepTreeEchoBot/` | Image analysis | Peripheral |
-| PlaywrightAutomation.ts | `frontend/src/components/DeepTreeEchoBot/` | Web browsing | Peripheral |
-| AICompanionHub/* | `frontend/src/components/AICompanionHub/` | Multi-AI platform management | Surface |
-| ConnectorRegistry.ts | `frontend/src/components/AICompanionHub/` | AI connector orchestration | Core |
-| MemoryPersistenceLayer.ts | `frontend/src/components/AICompanionHub/` | Cross-session memory | Deep |
+| Component                  | Location                                   | Purpose                         | Integration Depth |
+| -------------------------- | ------------------------------------------ | ------------------------------- | ----------------- |
+| DeepTreeEchoBot.tsx        | `frontend/src/components/chat/`            | UI wrapper for chat integration | Surface           |
+| DeepTreeEchoBot.ts         | `frontend/src/components/DeepTreeEchoBot/` | Core bot class                  | Core              |
+| DeepTreeEchoIntegration.ts | `frontend/src/components/DeepTreeEchoBot/` | DeltaChat event binding         | Core              |
+| DeltachatBotInterface.ts   | `frontend/src/components/DeepTreeEchoBot/` | Bot ecosystem compatibility     | Core              |
+| LLMService.ts              | `frontend/src/components/DeepTreeEchoBot/` | Multi-API cognitive processing  | Deep              |
+| PersonaCore.ts             | `frontend/src/components/DeepTreeEchoBot/` | Personality management          | Deep              |
+| SelfReflection.ts          | `frontend/src/components/DeepTreeEchoBot/` | Autonomous self-evaluation      | Deep              |
+| RAGMemoryStore.ts          | `frontend/src/components/DeepTreeEchoBot/` | Conversation memory             | Deep              |
+| VisionCapabilities.ts      | `frontend/src/components/DeepTreeEchoBot/` | Image analysis                  | Peripheral        |
+| PlaywrightAutomation.ts    | `frontend/src/components/DeepTreeEchoBot/` | Web browsing                    | Peripheral        |
+| AICompanionHub/\*          | `frontend/src/components/AICompanionHub/`  | Multi-AI platform management    | Surface           |
+| ConnectorRegistry.ts       | `frontend/src/components/AICompanionHub/`  | AI connector orchestration      | Core              |
+| MemoryPersistenceLayer.ts  | `frontend/src/components/AICompanionHub/`  | Cross-session memory            | Deep              |
 
 ### deltecho2 Exclusive Components
 
-| Component | Location | Purpose | Integration Depth |
-|-----------|----------|---------|-------------------|
-| QuantumBeliefPropagation.ts | `DeepTreeEchoBot/` | Probabilistic reasoning | Deep |
-| HyperDimensionalMemory.ts | `DeepTreeEchoBot/` | Geometric memory encoding | Deep |
-| AdaptivePersonality.ts | `DeepTreeEchoBot/` | Dynamic personality evolution | Deep |
-| EmotionalIntelligence.ts | `DeepTreeEchoBot/` | Nuanced emotion modeling | Deep |
-| SecureIntegration.ts | `DeepTreeEchoBot/` | Security layer | Core |
-| ProprioceptiveEmbodiment.ts | `DeepTreeEchoBot/` | Physical awareness simulation | Deep |
-| DeepTreeEchoHubSimple.tsx | `DeepTreeEchoBot/` | Simplified hub dashboard | Surface |
+| Component                   | Location           | Purpose                       | Integration Depth |
+| --------------------------- | ------------------ | ----------------------------- | ----------------- |
+| QuantumBeliefPropagation.ts | `DeepTreeEchoBot/` | Probabilistic reasoning       | Deep              |
+| HyperDimensionalMemory.ts   | `DeepTreeEchoBot/` | Geometric memory encoding     | Deep              |
+| AdaptivePersonality.ts      | `DeepTreeEchoBot/` | Dynamic personality evolution | Deep              |
+| EmotionalIntelligence.ts    | `DeepTreeEchoBot/` | Nuanced emotion modeling      | Deep              |
+| SecureIntegration.ts        | `DeepTreeEchoBot/` | Security layer                | Core              |
+| ProprioceptiveEmbodiment.ts | `DeepTreeEchoBot/` | Physical awareness simulation | Deep              |
+| DeepTreeEchoHubSimple.tsx   | `DeepTreeEchoBot/` | Simplified hub dashboard      | Surface           |
 
 ---
 
@@ -400,17 +400,17 @@ images/
 
 ### What Deep Tree Echo Gains as System Orchestrator:
 
-| Capability | Current | Proposed | Benefit |
-|------------|---------|----------|---------|
-| Message Processing | Reactive only | Proactive + Reactive | Can initiate conversations |
-| Account Management | Read-only | Full CRUD | Can create bot accounts |
-| Background Operation | None (UI only) | Daemon process | 24/7 operation |
-| Scheduling | None | Cron-like tasks | Scheduled check-ins, reminders |
-| Multi-App Coordination | Isolated | Unified | Single brain across apps |
-| External Integration | Limited | Webhooks/APIs | Connect to other services |
-| Mail Server Integration | None | ✅ Milter/LMTP | Process emails at server level |
-| Database Access | Via RPC only | Direct SQLite | Full message history |
-| Protocol Control | None | IMAP/SMTP | Email transport control |
+| Capability              | Current        | Proposed             | Benefit                        |
+| ----------------------- | -------------- | -------------------- | ------------------------------ |
+| Message Processing      | Reactive only  | Proactive + Reactive | Can initiate conversations     |
+| Account Management      | Read-only      | Full CRUD            | Can create bot accounts        |
+| Background Operation    | None (UI only) | Daemon process       | 24/7 operation                 |
+| Scheduling              | None           | Cron-like tasks      | Scheduled check-ins, reminders |
+| Multi-App Coordination  | Isolated       | Unified              | Single brain across apps       |
+| External Integration    | Limited        | Webhooks/APIs        | Connect to other services      |
+| Mail Server Integration | None           | ✅ Milter/LMTP       | Process emails at server level |
+| Database Access         | Via RPC only   | Direct SQLite        | Full message history           |
+| Protocol Control        | None           | IMAP/SMTP            | Email transport control        |
 
 ---
 
@@ -460,15 +460,15 @@ images/
 
 ## 8. Summary: Current vs Proposed
 
-| Aspect | Current State | Proposed State |
-|--------|---------------|----------------|
-| **Architecture** | Embedded in frontend (renderer process) | Separate daemon + core library |
-| **Scope** | Single app instance | Monorepo-wide coordination |
-| **DeltaChat Integration** | RPC via BackendRemote (limited) | Direct deltachat-rpc + DB access |
-| **Autonomy** | Reactive to user messages | Proactive + scheduled + reactive |
-| **Persistence** | Desktop settings (JSON) | Dedicated database + settings |
-| **Cognitive Modules** | Split between repos | Unified core package |
-| **dovecot Integration** | None | ✅ Milter + LMTP for email processing |
+| Aspect                    | Current State                           | Proposed State                        |
+| ------------------------- | --------------------------------------- | ------------------------------------- |
+| **Architecture**          | Embedded in frontend (renderer process) | Separate daemon + core library        |
+| **Scope**                 | Single app instance                     | Monorepo-wide coordination            |
+| **DeltaChat Integration** | RPC via BackendRemote (limited)         | Direct deltachat-rpc + DB access      |
+| **Autonomy**              | Reactive to user messages               | Proactive + scheduled + reactive      |
+| **Persistence**           | Desktop settings (JSON)                 | Dedicated database + settings         |
+| **Cognitive Modules**     | Split between repos                     | Unified core package                  |
+| **dovecot Integration**   | None                                    | ✅ Milter + LMTP for email processing |
 
 ---
 
@@ -509,6 +509,7 @@ images/
 The foundational architecture has been successfully implemented:
 
 **deep-tree-echo-core** (v1.0.0):
+
 - ✅ Runtime-agnostic core library
 - ✅ Cognitive processing with parallel cognitive functions
 - ✅ Memory systems (RAG and hyperdimensional)
@@ -518,6 +519,7 @@ The foundational architecture has been successfully implemented:
 - ✅ Proper .gitignore for build artifacts
 
 **deep-tree-echo-orchestrator** (v1.0.0):
+
 - ✅ Daemon framework with entry point
 - ✅ Service coordination architecture
 - ✅ Stub implementations for all major services
@@ -534,4 +536,4 @@ The foundational architecture has been successfully implemented:
 
 ---
 
-*This architecture positions Deep Tree Echo as a true system-level AI orchestrator, capable of operating independently while coordinating with multiple client applications and the underlying mail infrastructure.*
+_This architecture positions Deep Tree Echo as a true system-level AI orchestrator, capable of operating independently while coordinating with multiple client applications and the underlying mail infrastructure._

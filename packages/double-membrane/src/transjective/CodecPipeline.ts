@@ -502,7 +502,8 @@ export class CodecPipeline {
       [];
 
     // Look for "X is Y" patterns
-    const isPattern = /(\b[A-Z][a-z]+(?:\s+[A-Z][a-z]+)*)\s+is\s+(\b[A-Z][a-z]+(?:\s+[A-Z][a-z]+)*)/g;
+    const isPattern =
+      /(\b[A-Z][a-z]+(?:\s+[A-Z][a-z]+)*)\s+is\s+(\b[A-Z][a-z]+(?:\s+[A-Z][a-z]+)*)/g;
     let match;
     while ((match = isPattern.exec(text)) !== null) {
       relations.push({

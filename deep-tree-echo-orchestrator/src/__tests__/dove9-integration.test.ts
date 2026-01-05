@@ -153,7 +153,7 @@ describe('Dove9Integration', () => {
       await integration.processEmail(email);
 
       // Wait for async processing
-      await new Promise(resolve => setTimeout(resolve, 100));
+      await new Promise((resolve) => setTimeout(resolve, 100));
 
       expect(handler).toHaveBeenCalled();
     });
@@ -226,9 +226,9 @@ describe('Dove9Integration', () => {
       const state = integration.getCognitiveState();
 
       expect(state.triadic?.streams.length).toBeGreaterThan(0);
-      expect(state.triadic?.streams.some(s => s.mode === 'cognitive')).toBe(true);
-      expect(state.triadic?.streams.some(s => s.mode === 'affective')).toBe(true);
-      expect(state.triadic?.streams.some(s => s.mode === 'relevance')).toBe(true);
+      expect(state.triadic?.streams.some((s) => s.mode === 'cognitive')).toBe(true);
+      expect(state.triadic?.streams.some((s) => s.mode === 'affective')).toBe(true);
+      expect(state.triadic?.streams.some((s) => s.mode === 'relevance')).toBe(true);
     });
   });
 });

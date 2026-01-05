@@ -20,37 +20,50 @@ export type Tensor = Float32Array | number[];
  * Tensor with shape information for validation
  */
 export interface ShapedTensor {
-    data: Tensor;
-    shape: readonly number[];
-    dtype: 'float32' | 'float64' | 'int32';
+  data: Tensor;
+  shape: readonly number[];
+  dtype: 'float32' | 'float64' | 'int32';
 }
 /**
  * Create a shaped tensor with validation
  */
-export declare function createTensor(data: number[], shape: number[], dtype?: 'float32' | 'float64' | 'int32'): ShapedTensor;
+export declare function createTensor(
+  data: number[],
+  shape: number[],
+  dtype?: 'float32' | 'float64' | 'int32'
+): ShapedTensor;
 /**
  * Create a zero tensor of given shape
  */
-export declare function zeros(shape: number[], dtype?: 'float32' | 'float64' | 'int32'): ShapedTensor;
+export declare function zeros(
+  shape: number[],
+  dtype?: 'float32' | 'float64' | 'int32'
+): ShapedTensor;
 /**
  * Create a ones tensor of given shape
  */
-export declare function ones(shape: number[], dtype?: 'float32' | 'float64' | 'int32'): ShapedTensor;
+export declare function ones(
+  shape: number[],
+  dtype?: 'float32' | 'float64' | 'int32'
+): ShapedTensor;
 /**
  * Create a random tensor of given shape
  */
-export declare function randn(shape: number[], dtype?: 'float32' | 'float64' | 'int32'): ShapedTensor;
+export declare function randn(
+  shape: number[],
+  dtype?: 'float32' | 'float64' | 'int32'
+): ShapedTensor;
 /**
  * Dyadic Edge: Opponent processing between two poles
  * Represents the fundamental binary distinction (Universal/Particular)
  */
 export interface DyadicEdge {
-    /** Universal pole (pole A) */
-    poleA: ShapedTensor;
-    /** Particular pole (pole B) */
-    poleB: ShapedTensor;
-    /** Edge identifier for graph structure */
-    edgeId: DyadicEdgeId;
+  /** Universal pole (pole A) */
+  poleA: ShapedTensor;
+  /** Particular pole (pole B) */
+  poleB: ShapedTensor;
+  /** Edge identifier for graph structure */
+  edgeId: DyadicEdgeId;
 }
 /**
  * Dyadic edge identifiers for the 6 edges of a tetrahedron
@@ -63,23 +76,27 @@ export type DyadState = 'A' | 'B';
 /**
  * Create a dyadic edge from two tensors
  */
-export declare function createDyadicEdge(poleA: ShapedTensor, poleB: ShapedTensor, edgeId: DyadicEdgeId): DyadicEdge;
+export declare function createDyadicEdge(
+  poleA: ShapedTensor,
+  poleB: ShapedTensor,
+  edgeId: DyadicEdgeId
+): DyadicEdge;
 /**
  * Triadic Face: Three dyadic edges forming a triangular face
  * Represents one of the 4 faces of the tetrahedron
  * Contains 3 threads (vertices) connected by 3 edges
  */
 export interface TriadicFace {
-    /** Edge between thread i and thread j */
-    edge_ij: DyadicEdge;
-    /** Edge between thread j and thread k */
-    edge_jk: DyadicEdge;
-    /** Edge between thread k and thread i */
-    edge_ki: DyadicEdge;
-    /** Face identifier */
-    faceId: TriadicFaceId;
-    /** The three thread indices that form this face */
-    threads: readonly [ThreadId, ThreadId, ThreadId];
+  /** Edge between thread i and thread j */
+  edge_ij: DyadicEdge;
+  /** Edge between thread j and thread k */
+  edge_jk: DyadicEdge;
+  /** Edge between thread k and thread i */
+  edge_ki: DyadicEdge;
+  /** Face identifier */
+  faceId: TriadicFaceId;
+  /** The three thread indices that form this face */
+  threads: readonly [ThreadId, ThreadId, ThreadId];
 }
 /**
  * Triadic face identifiers for the 4 faces of a tetrahedron
@@ -96,29 +113,39 @@ export type ThreadId = 1 | 2 | 3 | 4;
 /**
  * Create a triadic face from three dyadic edges
  */
-export declare function createTriadicFace(edge_ij: DyadicEdge, edge_jk: DyadicEdge, edge_ki: DyadicEdge, faceId: TriadicFaceId): TriadicFace;
+export declare function createTriadicFace(
+  edge_ij: DyadicEdge,
+  edge_jk: DyadicEdge,
+  edge_ki: DyadicEdge,
+  faceId: TriadicFaceId
+): TriadicFace;
 /**
  * Tetradic Bundle: Four triadic faces sharing six dyadic edges
  * Represents the complete tetrahedral structure with 4 threads (vertices)
  */
 export interface TetradicBundle {
-    /** Face with threads 1, 2, 3 */
-    face_123: TriadicFace;
-    /** Face with threads 1, 2, 4 */
-    face_124: TriadicFace;
-    /** Face with threads 1, 3, 4 */
-    face_134: TriadicFace;
-    /** Face with threads 2, 3, 4 */
-    face_234: TriadicFace;
-    /** The six shared edges */
-    edges: Record<DyadicEdgeId, DyadicEdge>;
-    /** The four thread states */
-    threads: Record<ThreadId, ShapedTensor>;
+  /** Face with threads 1, 2, 3 */
+  face_123: TriadicFace;
+  /** Face with threads 1, 2, 4 */
+  face_124: TriadicFace;
+  /** Face with threads 1, 3, 4 */
+  face_134: TriadicFace;
+  /** Face with threads 2, 3, 4 */
+  face_234: TriadicFace;
+  /** The six shared edges */
+  edges: Record<DyadicEdgeId, DyadicEdge>;
+  /** The four thread states */
+  threads: Record<ThreadId, ShapedTensor>;
 }
 /**
  * Create a tetradic bundle from four thread tensors
  */
-export declare function createTetradicBundle(thread1: ShapedTensor, thread2: ShapedTensor, thread3: ShapedTensor, thread4: ShapedTensor): TetradicBundle;
+export declare function createTetradicBundle(
+  thread1: ShapedTensor,
+  thread2: ShapedTensor,
+  thread3: ShapedTensor,
+  thread4: ShapedTensor
+): TetradicBundle;
 /**
  * Phase in the 30-step cycle (3 phases)
  */
@@ -135,11 +162,11 @@ export type StepId = 1 | 2;
  * Complete step address in the 30-step cycle
  */
 export interface StepAddress {
-    phase: PhaseId;
-    stage: StageId;
-    step: StepId;
-    /** Absolute step number (1-30) */
-    absolute: number;
+  phase: PhaseId;
+  stage: StageId;
+  step: StepId;
+  /** Absolute step number (1-30) */
+  absolute: number;
 }
 /**
  * Convert absolute step (1-30) to step address
@@ -153,14 +180,14 @@ export declare function toAbsoluteStep(address: Omit<StepAddress, 'absolute'>): 
  * Double step delay pattern state
  */
 export interface DoubleStepDelayState {
-    /** Current state in the 4-step pattern (1, 4, 6, or 1) */
-    state: 1 | 4 | 6;
-    /** Current dyad (A or B) */
-    dyad: DyadState;
-    /** Current triad (1, 2, or 3) */
-    triad: TriadState;
-    /** Pattern step (1-4) */
-    patternStep: 1 | 2 | 3 | 4;
+  /** Current state in the 4-step pattern (1, 4, 6, or 1) */
+  state: 1 | 4 | 6;
+  /** Current dyad (A or B) */
+  dyad: DyadState;
+  /** Current triad (1, 2, or 3) */
+  triad: TriadState;
+  /** Pattern step (1-4) */
+  patternStep: 1 | 2 | 3 | 4;
 }
 /**
  * The double step delay pattern lookup table
@@ -180,39 +207,39 @@ export declare function getDoubleStepDelayState(absoluteStep: number): DoubleSte
  * Stream state for one of the 3 concurrent consciousness streams
  */
 export interface StreamState {
-    /** Stream identifier (1, 2, or 3) */
-    streamId: 1 | 2 | 3;
-    /** Current phase for this stream */
-    phase: 'perception' | 'evaluation' | 'action';
-    /** Current stage within the phase */
-    stage: StageId;
-    /** Stream's tensor state */
-    state: ShapedTensor;
-    /** What this stream perceives from other streams */
-    perceives: {
-        stream1?: ShapedTensor;
-        stream2?: ShapedTensor;
-        stream3?: ShapedTensor;
-    };
-    /** Current salience landscape */
-    salience: ShapedTensor;
-    /** Available affordances */
-    affordances: ShapedTensor[];
+  /** Stream identifier (1, 2, or 3) */
+  streamId: 1 | 2 | 3;
+  /** Current phase for this stream */
+  phase: 'perception' | 'evaluation' | 'action';
+  /** Current stage within the phase */
+  stage: StageId;
+  /** Stream's tensor state */
+  state: ShapedTensor;
+  /** What this stream perceives from other streams */
+  perceives: {
+    stream1?: ShapedTensor;
+    stream2?: ShapedTensor;
+    stream3?: ShapedTensor;
+  };
+  /** Current salience landscape */
+  salience: ShapedTensor;
+  /** Available affordances */
+  affordances: ShapedTensor[];
 }
 /**
  * Complete Sys6 state at a given step
  */
 export interface Sys6State {
-    /** Current step address */
-    step: StepAddress;
-    /** Double step delay pattern state */
-    delayState: DoubleStepDelayState;
-    /** The three concurrent streams */
-    streams: readonly [StreamState, StreamState, StreamState];
-    /** Tetradic bundle for thread multiplexing */
-    tetradic: TetradicBundle;
-    /** Global telemetry (persistent gestalt) */
-    telemetry: ShapedTensor;
+  /** Current step address */
+  step: StepAddress;
+  /** Double step delay pattern state */
+  delayState: DoubleStepDelayState;
+  /** The three concurrent streams */
+  streams: readonly [StreamState, StreamState, StreamState];
+  /** Tetradic bundle for thread multiplexing */
+  tetradic: TetradicBundle;
+  /** Global telemetry (persistent gestalt) */
+  telemetry: ShapedTensor;
 }
 /**
  * OEIS A000081 sequence: number of rooted trees with n nodes
@@ -227,19 +254,22 @@ export declare function getTermsForNestingLevel(level: number): number;
  * Nested shell structure
  */
 export interface NestedShell<T> {
-    /** Nesting level (1-4 typically) */
-    level: number;
-    /** Number of terms at this level */
-    terms: number;
-    /** Steps apart from parent shell */
-    stepsApart: number;
-    /** Content at this shell level */
-    content: T | NestedShell<T>[];
+  /** Nesting level (1-4 typically) */
+  level: number;
+  /** Number of terms at this level */
+  terms: number;
+  /** Steps apart from parent shell */
+  stepsApart: number;
+  /** Content at this shell level */
+  content: T | NestedShell<T>[];
 }
 /**
  * Create a nested shell structure following OEIS A000081
  */
-export declare function createNestedShells<T>(maxLevel: number, contentFactory: (level: number, termIndex: number) => T): NestedShell<T>;
+export declare function createNestedShells<T>(
+  maxLevel: number,
+  contentFactory: (level: number, termIndex: number) => T
+): NestedShell<T>;
 /**
  * Dyadic pair permutation for thread-level multiplexing
  */
@@ -267,8 +297,8 @@ export declare function getDyadicPairForStep(step: number): DyadicPairPermutatio
  * Get the triadic permutations for a given step
  */
 export declare function getTriadicPermutationsForStep(step: number): {
-    mp1: TriadicPermutation;
-    mp2: TriadicPermutation;
+  mp1: TriadicPermutation;
+  mp2: TriadicPermutation;
 };
 /**
  * Stream step groups (triads occurring every 4 steps)
@@ -276,9 +306,9 @@ export declare function getTriadicPermutationsForStep(step: number): {
  * Extended to 30-step: each group spans 10 steps
  */
 export declare const STREAM_STEP_GROUPS: Readonly<{
-    stream1: readonly [1, 5, 9, 13, 17, 21, 25, 29];
-    stream2: readonly [2, 6, 10, 14, 18, 22, 26, 30];
-    stream3: readonly [3, 7, 11, 15, 19, 23, 27];
+  stream1: readonly [1, 5, 9, 13, 17, 21, 25, 29];
+  stream2: readonly [2, 6, 10, 14, 18, 22, 26, 30];
+  stream3: readonly [3, 7, 11, 15, 19, 23, 27];
 }>;
 /**
  * Get the primary stream for a given absolute step
@@ -291,8 +321,8 @@ export declare function getPrimaryStreamForStep(absoluteStep: number): 1 | 2 | 3
  * Stream 3 reflects on Stream 1's perception
  */
 export declare function getStreamPerceptions(absoluteStep: number): {
-    stream1Perceives: 'stream2_action';
-    stream2Perceives: 'stream3_simulation';
-    stream3Perceives: 'stream1_perception';
+  stream1Perceives: 'stream2_action';
+  stream2Perceives: 'stream3_simulation';
+  stream3Perceives: 'stream1_perception';
 };
 //# sourceMappingURL=types.d.ts.map

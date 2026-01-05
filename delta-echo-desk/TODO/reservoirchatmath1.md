@@ -68,57 +68,111 @@ This mathematical representation provides a high-level view of how ReservoirChat
 <div style="text-align: center">⁂</div>
 
 [^1]: https://arxiv.org/pdf/2310.03184.pdf
+
 [^2]: https://arxiv.org/abs/2503.14234
+
 [^3]: https://aws.amazon.com/what-is/retrieval-augmented-generation/
+
 [^4]: https://arxiv.org/abs/2411.05844
+
 [^5]: https://arxiv.org/html/2501.00309v1
+
 [^6]: https://www.youtube.com/watch?v=T-D1OfcDW1M
+
 [^7]: https://www.youtube.com/watch?v=aFeJO7W0DIk
+
 [^8]: https://www.linkedin.com/pulse/designing-efficient-rag-powered-chat-application-advanced-oi75e
+
 [^9]: https://www.linkedin.com/pulse/lets-build-retrieval-augmented-generation-rag-chatbot-jerry-cohen-5gikc
+
 [^10]: https://www.youtube.com/watch?v=o6QHoUXXnaM
+
 [^11]: https://huggingface.co/datasets/open-source-metrics/transformers-dependents/commit/8a73c5b023659891eb4ca03728bf76e5b70f15c5.diff?file=data%2F2023%2F04%2F25.json
+
 [^12]: https://www.youtube.com/watch?v=vdLquGgg28A
+
 [^13]: https://www.youtube.com/watch?v=d-VKYF4Zow0
+
 [^14]: https://www.youtube.com/watch?v=OWkN1AxPJHI
+
 [^15]: https://arxiv.org/abs/2501.16382
+
 [^16]: https://www.semanticscholar.org/paper/9a32624140aeecf3bbf5639df42a2bab0d1f02d2
+
 [^17]: https://arxiv.org/abs/2503.06474
+
 [^18]: https://arxiv.org/abs/2503.02497
+
 [^19]: https://arxiv.org/abs/2503.21322
+
 [^20]: http://arxiv.org/pdf/2411.05844.pdf
+
 [^21]: https://arxiv.org/html/2502.07223v1
+
 [^22]: https://arxiv.org/html/2412.07189v1
+
 [^23]: https://graphrag.com/appendices/research/2501.00309/
+
 [^24]: https://microsoft.github.io/graphrag/
+
 [^25]: https://memgraph.com/docs/ai-ecosystem/graph-rag
+
 [^26]: https://github.com/microsoft/graphrag
+
 [^27]: https://aws.amazon.com/blogs/machine-learning/improving-retrieval-augmented-generation-accuracy-with-graphrag/
+
 [^28]: https://zilliz.com/tutorials/rag/langchain-and-faiss-and-mistral-ai-codestral-mamba-and-nomic-embed-text-v2
+
 [^29]: https://neo4j.com/blog/genai/what-is-graphrag/
+
 [^30]: https://arxiv.org/html/2501.00309v2
+
 [^31]: https://zilliz.com/tutorials/rag/langchain-and-milvus-and-mistral-ai-codestral-mamba-and-voyage-3-large
+
 [^32]: https://weaviate.io/blog/graph-rag
+
 [^33]: https://www.ontotext.com/knowledgehub/fundamentals/what-is-graph-rag/
+
 [^34]: https://docs.llamaindex.ai/en/stable/examples/cookbooks/codestral/
+
 [^35]: https://memgraph.com/blog/build-agentic-graphrag-ai
+
 [^36]: https://www.edenai.co/post/from-rag-to-graphrag-enhancing-retrieval-with-knowledge-graphs
+
 [^37]: https://www.reddit.com/r/LocalLLaMA/comments/1d3qnhm/codestralrag_q8_gguf/
+
 [^38]: https://arangodb.com/graphrag/
+
 [^39]: https://docs.mistral.ai/capabilities/code_generation/
+
 [^40]: https://graphrag.com/reference/graphrag/metadata-filtering/
+
 [^41]: https://hatchworks.com/blog/gen-ai/codestral-mamba-guide/
+
 [^42]: https://www.microsoft.com/en-us/research/blog/graphrag-unlocking-llm-discovery-on-narrative-private-data/
+
 [^43]: https://ir.library.oregonstate.edu/downloads/z316q237s
+
 [^44]: https://research.ibm.com/blog/retrieval-augmented-generation-RAG
+
 [^45]: https://arxiv.org/pdf/2312.10997.pdf
+
 [^46]: https://www.youtube.com/watch?v=38aMTXY2usU
+
 [^47]: https://arxiv.org/abs/2408.04187
+
 [^48]: https://www.semanticscholar.org/paper/56c891c03138de11b6cac9fdd130d399438ee62d
+
 [^49]: https://arxiv.org/abs/2504.05478
+
 [^50]: https://arxiv.org/abs/2504.09823
+
 [^51]: http://arxiv.org/pdf/2502.01113.pdf
+
 [^52]: https://arxiv.org/html/2503.14234v1
+
 [^53]: https://arxiv.org/html/2503.19314
+
 [^54]: https://arxiv.org/pdf/2503.04338.pdf
+
 [^55]: http://arxiv.org/abs/2504.05478

@@ -1,6 +1,6 @@
 /**
  * PatternMatcher - Hypergraph Pattern Matching Engine
- * 
+ *
  * The pattern matcher is a core cognitive primitive that finds patterns
  * in the AtomSpace hypergraph. This is essential for reasoning, learning,
  * and knowledge discovery.
@@ -35,9 +35,9 @@ export class PatternMatcher {
    */
   match(pattern: Pattern): MatchResult[] {
     const results: MatchResult[] = []
-    
+
     // Get candidate atoms based on pattern type
-    const candidates = pattern.type 
+    const candidates = pattern.type
       ? this.atomSpace.getAtomsByType(pattern.type)
       : this.atomSpace.getAllAtoms()
 
@@ -93,7 +93,7 @@ export class PatternMatcher {
         const subPattern = pattern.outgoing[i]
         const subAtomId = atom.outgoing[i]
         const subAtom = this.atomSpace.getAtom(subAtomId)
-        
+
         if (!subAtom || !this.matchAtom(subPattern, subAtom, bindings)) {
           return false
         }
@@ -115,7 +115,7 @@ export class PatternMatcher {
 
     for (const candidate of candidates) {
       if (candidate.id === atomId) continue
-      
+
       const similarity = this.calculateSimilarity(atom, candidate)
       if (similarity >= threshold) {
         similar.push(candidate)
@@ -140,9 +140,8 @@ export class PatternMatcher {
     }
 
     // Truth value similarity
-    const tvSim = 1 - Math.abs(
-      atom1.truthValue.strength - atom2.truthValue.strength
-    )
+    const tvSim =
+      1 - Math.abs(atom1.truthValue.strength - atom2.truthValue.strength)
     similarity += tvSim * 0.3
 
     // Structural similarity for links
@@ -160,7 +159,7 @@ export class PatternMatcher {
    */
   query(patterns: Pattern[]): MatchResult[] {
     if (patterns.length === 0) return []
-    
+
     // Start with first pattern
     let results = this.match(patterns[0])
 

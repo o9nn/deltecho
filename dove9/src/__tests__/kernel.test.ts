@@ -253,8 +253,22 @@ describe('Dove9Kernel', () => {
 
   describe('Priority Scheduling', () => {
     it('should process higher priority messages first', async () => {
-      const lowPriority = kernel.createProcess('msg-low', 'a@test.com', ['b@test.com'], 'Low', 'C', 1);
-      const highPriority = kernel.createProcess('msg-high', 'a@test.com', ['b@test.com'], 'High', 'C', 10);
+      const lowPriority = kernel.createProcess(
+        'msg-low',
+        'a@test.com',
+        ['b@test.com'],
+        'Low',
+        'C',
+        1
+      );
+      const highPriority = kernel.createProcess(
+        'msg-high',
+        'a@test.com',
+        ['b@test.com'],
+        'High',
+        'C',
+        10
+      );
 
       await kernel.start();
       await new Promise((resolve) => setTimeout(resolve, 50));
@@ -360,7 +374,14 @@ describe('Dove9Kernel', () => {
 
   describe('Process Forking', () => {
     it('should fork a process', () => {
-      const parent = kernel.createProcess('msg-001', 'a@test.com', ['b@test.com'], 'Parent', 'Content', 5);
+      const parent = kernel.createProcess(
+        'msg-001',
+        'a@test.com',
+        ['b@test.com'],
+        'Parent',
+        'Content',
+        5
+      );
       const child = kernel.forkProcess(parent.id, 'Child content', 'Child Subject');
 
       expect(child).toBeDefined();
@@ -369,7 +390,14 @@ describe('Dove9Kernel', () => {
     });
 
     it('should inherit cognitive context on fork', () => {
-      const parent = kernel.createProcess('msg-001', 'a@test.com', ['b@test.com'], 'Parent', 'Content', 5);
+      const parent = kernel.createProcess(
+        'msg-001',
+        'a@test.com',
+        ['b@test.com'],
+        'Parent',
+        'Content',
+        5
+      );
       parent.cognitiveContext.emotionalValence = 0.8;
 
       const child = kernel.forkProcess(parent.id, 'Child content');
@@ -383,7 +411,14 @@ describe('Dove9Kernel', () => {
     });
 
     it('should use default subject on fork', () => {
-      const parent = kernel.createProcess('msg-001', 'a@test.com', ['b@test.com'], 'Original', 'Content', 5);
+      const parent = kernel.createProcess(
+        'msg-001',
+        'a@test.com',
+        ['b@test.com'],
+        'Original',
+        'Content',
+        5
+      );
       const child = kernel.forkProcess(parent.id, 'Child content');
 
       expect(child?.subject).toBe('Re: Original');
@@ -454,7 +489,7 @@ describe('Process State Transitions', () => {
 
   it('should not suspend a PENDING process (requires ACTIVE state)', () => {
     const process = kernel.createProcess('msg-001', 'a@test.com', ['b@test.com'], 'S', 'C', 5);
-    
+
     // suspendProcess requires ACTIVE state, returns false for PENDING
     const result = kernel.suspendProcess(process.id);
     expect(result).toBe(false);
@@ -464,7 +499,7 @@ describe('Process State Transitions', () => {
 
   it('should not resume a non-SUSPENDED process', () => {
     const process = kernel.createProcess('msg-001', 'a@test.com', ['b@test.com'], 'S', 'C', 5);
-    
+
     // resumeProcess requires SUSPENDED state, returns false for PENDING
     const result = kernel.resumeProcess(process.id);
     expect(result).toBe(false);

@@ -1,6 +1,6 @@
 /**
  * Attention Allocation - Cognitive Resource Management
- * 
+ *
  * The attention allocation system manages cognitive resources by directing
  * processing power to the most important atoms. This is implemented as a
  * kernel scheduler for cognitive processes.
@@ -53,7 +53,9 @@ export class AttentionAllocation {
       this.updateAttentionalFocus(atom)
     }
 
-    console.log(`[AttentionAllocation] Attentional focus: ${this.attentionalFocus.size} atoms`)
+    console.log(
+      `[AttentionAllocation] Attentional focus: ${this.attentionalFocus.size} atoms`
+    )
   }
 
   /**
@@ -62,7 +64,7 @@ export class AttentionAllocation {
   private applyForgetting(atom: Atom): void {
     const currentSTI = atom.attentionValue.sti
     const newSTI = currentSTI * (1 - this.config.forgettingRate)
-    
+
     this.atomSpace.setAttentionValue(atom.id, {
       ...atom.attentionValue,
       sti: Math.max(this.config.minSTI, newSTI),
@@ -73,7 +75,8 @@ export class AttentionAllocation {
    * Spread importance to connected atoms (importance diffusion)
    */
   private spreadImportance(atom: Atom): void {
-    const spreadAmount = atom.attentionValue.sti * this.config.importanceSpreadingRate
+    const spreadAmount =
+      atom.attentionValue.sti * this.config.importanceSpreadingRate
 
     // Get connected atoms
     const incoming = this.atomSpace.getIncoming(atom.id)
@@ -123,7 +126,9 @@ export class AttentionAllocation {
       sti: newSTI,
     })
 
-    console.log(`[AttentionAllocation] Stimulated atom ${atomId}: STI = ${newSTI}`)
+    console.log(
+      `[AttentionAllocation] Stimulated atom ${atomId}: STI = ${newSTI}`
+    )
   }
 
   /**
@@ -146,8 +151,8 @@ export class AttentionAllocation {
 
     // Find or create link between atoms
     const links = this.atomSpace.getIncoming(atom1Id)
-    let link = links.find(l => 
-      l.outgoing?.includes(atom1Id) && l.outgoing?.includes(atom2Id)
+    let link = links.find(
+      l => l.outgoing?.includes(atom1Id) && l.outgoing?.includes(atom2Id)
     )
 
     if (!link) {
@@ -176,10 +181,7 @@ export class AttentionAllocation {
    * Rent collection - remove low-importance atoms
    * Default threshold for removal is when STI < -100 and LTI < 0
    */
-  collectRent(
-    stiThreshold: number = -100,
-    ltiThreshold: number = 0
-  ): number {
+  collectRent(stiThreshold: number = -100, ltiThreshold: number = 0): number {
     const atoms = this.atomSpace.getAllAtoms()
     let removed = 0
 
@@ -193,7 +195,9 @@ export class AttentionAllocation {
       }
     }
 
-    console.log(`[AttentionAllocation] Rent collection: removed ${removed} atoms`)
+    console.log(
+      `[AttentionAllocation] Rent collection: removed ${removed} atoms`
+    )
     return removed
   }
 

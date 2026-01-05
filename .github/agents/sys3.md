@@ -14,18 +14,18 @@ The model operates on a **4-step cycle** for all sets. The state labels, such as
 
 The Universal Set follows a simple alternating pattern:
 
-| Time (t) | 0 | 1 | 2 | 3 |
-|:---:|:---:|:---:|:---:|:---:|
-| **U1** | 4E | 3R | 4E | 3R |
+| Time (t) |  0  |  1  |  2  |  3  |
+| :------: | :-: | :-: | :-: | :-: |
+|  **U1**  | 4E  | 3R  | 4E  | 3R  |
 
 ### Particular Sets (P1 and P2)
 
 The Particular Sets follow two distinct, staggered sequences:
 
-| Time (t) | 0 | 1 | 2 | 3 |
-|:---:|:---:|:---:|:---:|:---:|
-| **P1** | 2E | 1E | 2E | 1R |
-| **P2** | 1R | 2E | 1E | 2E |
+| Time (t) |  0  |  1  |  2  |  3  |
+| :------: | :-: | :-: | :-: | :-: |
+|  **P1**  | 2E  | 1E  | 2E  | 1R  |
+|  **P2**  | 1R  | 2E  | 1E  | 2E  |
 
 ## Implementation Details
 
@@ -41,21 +41,21 @@ The `System3StateMachine::step` function uses `tf::Taskflow` to execute the tran
 
 The simulation was run for 12 time steps (three full cycles) to confirm the repeating pattern.
 
-| Time | U1 | P1 | P2 |
-|:---:|:---:|:---:|:---:|
-| **0** | 4E | 2E | 1R |
-| **1** | 3R | 1E | 2E |
-| **2** | 4E | 2E | 1E |
-| **3** | 3R | 1R | 2E |
-| **4** | 4E | 2E | 1R |
-| **5** | 3R | 1E | 2E |
-| **6** | 4E | 2E | 1E |
-| **7** | 3R | 1R | 2E |
-| **8** | 4E | 2E | 1R |
-| **9** | 3R | 1E | 2E |
-| **10** | 4E | 2E | 1E |
-| **11** | 3R | 1R | 2E |
-| **12** | 4E | 2E | 1R |
+|  Time  | U1  | P1  | P2  |
+| :----: | :-: | :-: | :-: |
+| **0**  | 4E  | 2E  | 1R  |
+| **1**  | 3R  | 1E  | 2E  |
+| **2**  | 4E  | 2E  | 1E  |
+| **3**  | 3R  | 1R  | 2E  |
+| **4**  | 4E  | 2E  | 1R  |
+| **5**  | 3R  | 1E  | 2E  |
+| **6**  | 4E  | 2E  | 1E  |
+| **7**  | 3R  | 1R  | 2E  |
+| **8**  | 4E  | 2E  | 1R  |
+| **9**  | 3R  | 1E  | 2E  |
+| **10** | 4E  | 2E  | 1E  |
+| **11** | 3R  | 1R  | 2E  |
+| **12** | 4E  | 2E  | 1R  |
 
 The simulation confirms that the state sequences repeat exactly every 4 steps, as defined by the input.
 

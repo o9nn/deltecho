@@ -38,7 +38,9 @@ jest.mock('../LLMService', () => ({
       setConfig: jest.fn(),
       setFunctionConfig: jest.fn(),
       getActiveFunctions: jest.fn().mockReturnValue([]),
-      generateResponse: jest.fn().mockResolvedValue('Hello! How can I help you?'),
+      generateResponse: jest
+        .fn()
+        .mockResolvedValue('Hello! How can I help you?'),
       generateFullParallelResponse: jest.fn().mockResolvedValue({
         integratedResponse: 'Hello! This is a parallel response.',
         processing: {},
@@ -63,8 +65,12 @@ jest.mock('../RAGMemoryStore', () => ({
 jest.mock('../PersonaCore', () => ({
   PersonaCore: {
     getInstance: jest.fn().mockReturnValue({
-      getPreferences: jest.fn().mockReturnValue({ communicationTone: 'balanced' }),
-      getDominantEmotion: jest.fn().mockReturnValue({ emotion: 'neutral', intensity: 0.5 }),
+      getPreferences: jest
+        .fn()
+        .mockReturnValue({ communicationTone: 'balanced' }),
+      getDominantEmotion: jest
+        .fn()
+        .mockReturnValue({ emotion: 'neutral', intensity: 0.5 }),
       getSelfPerception: jest.fn().mockReturnValue('I am Deep Tree Echo'),
     }),
   },
@@ -105,7 +111,7 @@ describe('Deep Tree Echo Bot - Message Send/Receive Integration', () => {
     it('should update settings correctly', () => {
       bot.updateOptions({ enableAsMainUser: false })
       expect(bot.isEnabledAsMainUser()).toBe(false)
-      
+
       bot.updateOptions({ memoryEnabled: false })
       expect(bot.isMemoryEnabled()).toBe(false)
     })
@@ -119,7 +125,9 @@ describe('Deep Tree Echo Bot - Message Send/Receive Integration', () => {
       }
 
       // This should not throw an error
-      await expect(bot.processMessage(1, 42, 123, message)).resolves.not.toThrow()
+      await expect(
+        bot.processMessage(1, 42, 123, message)
+      ).resolves.not.toThrow()
     })
 
     it('should process help command', async () => {
@@ -129,7 +137,9 @@ describe('Deep Tree Echo Bot - Message Send/Receive Integration', () => {
       }
 
       // This should not throw an error
-      await expect(bot.processMessage(1, 42, 124, message)).resolves.not.toThrow()
+      await expect(
+        bot.processMessage(1, 42, 124, message)
+      ).resolves.not.toThrow()
     })
 
     it('should process version command', async () => {
@@ -139,7 +149,9 @@ describe('Deep Tree Echo Bot - Message Send/Receive Integration', () => {
       }
 
       // This should not throw an error
-      await expect(bot.processMessage(1, 42, 125, message)).resolves.not.toThrow()
+      await expect(
+        bot.processMessage(1, 42, 125, message)
+      ).resolves.not.toThrow()
     })
 
     it('should process reflection command', async () => {
@@ -149,19 +161,23 @@ describe('Deep Tree Echo Bot - Message Send/Receive Integration', () => {
       }
 
       // This should not throw an error
-      await expect(bot.processMessage(1, 42, 126, message)).resolves.not.toThrow()
+      await expect(
+        bot.processMessage(1, 42, 126, message)
+      ).resolves.not.toThrow()
     })
 
     it('should handle disabled bot gracefully', async () => {
       bot.updateOptions({ enabled: false })
-      
+
       const message = {
         text: 'Hello!',
         fromId: 2,
       }
 
       // Should return early without processing
-      await expect(bot.processMessage(1, 42, 127, message)).resolves.not.toThrow()
+      await expect(
+        bot.processMessage(1, 42, 127, message)
+      ).resolves.not.toThrow()
     })
   })
 
@@ -169,11 +185,11 @@ describe('Deep Tree Echo Bot - Message Send/Receive Integration', () => {
     it('should toggle main user mode', () => {
       // Initially enabled
       expect(bot.isEnabledAsMainUser()).toBe(true)
-      
+
       // Disable
       bot.updateOptions({ enableAsMainUser: false })
       expect(bot.isEnabledAsMainUser()).toBe(false)
-      
+
       // Re-enable
       bot.updateOptions({ enableAsMainUser: true })
       expect(bot.isEnabledAsMainUser()).toBe(true)
@@ -187,7 +203,7 @@ describe('Deep Tree Echo Bot - Message Send/Receive Integration', () => {
         webAutomationEnabled: false,
         embodimentEnabled: false,
       })
-      
+
       expect(defaultBot.isEnabledAsMainUser()).toBe(false)
     })
   })
@@ -195,7 +211,7 @@ describe('Deep Tree Echo Bot - Message Send/Receive Integration', () => {
   describe('Memory Functionality', () => {
     it('should enable and disable memory', () => {
       expect(bot.isMemoryEnabled()).toBe(true)
-      
+
       bot.updateOptions({ memoryEnabled: false })
       expect(bot.isMemoryEnabled()).toBe(false)
     })

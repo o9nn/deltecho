@@ -1,6 +1,6 @@
 /**
  * PLN (Probabilistic Logic Networks) - Reasoning Engine
- * 
+ *
  * PLN is a formal inference system that combines logic and probability theory
  * for uncertain reasoning. It's a core component of OpenCog's cognitive
  * architecture, implemented here as a kernel service.
@@ -102,7 +102,7 @@ export class PLNEngine {
 
     // Create A->C with combined truth value
     const tv = this.deductionFormula(ab.truthValue, bc.truthValue)
-    
+
     const conclusion = atomSpace.addLink(
       'ImplicationLink',
       [ab.outgoing[0], bc.outgoing[1]],
@@ -118,13 +118,13 @@ export class PLNEngine {
    */
   private applyInduction(premises: Atom[], atomSpace: AtomSpace): Atom | null {
     if (premises.length < 1) return null
-    
+
     const example = premises[0]
     if (!example.outgoing || example.outgoing.length !== 2) return null
 
     // Simple induction: strengthen existing inheritance links
     const tv = this.inductionFormula(example.truthValue)
-    
+
     // Find or create generalized inheritance link
     const conclusion = atomSpace.addLink(
       'InheritanceLink',
@@ -148,10 +148,7 @@ export class PLNEngine {
     if (!implication.outgoing || implication.outgoing.length !== 2) return null
 
     // Check if effect matches consequent
-    const tv = this.abductionFormula(
-      implication.truthValue,
-      effect.truthValue
-    )
+    const tv = this.abductionFormula(implication.truthValue, effect.truthValue)
 
     const conclusion = atomSpace.addLink(
       'EvaluationLink',
@@ -243,7 +240,7 @@ export class PLNEngine {
 
       // Find applicable premises
       const premises = this.findPremises(rule)
-      
+
       for (const premiseSet of premises) {
         if (inferences >= maxInferences) break
 
@@ -272,7 +269,7 @@ export class PLNEngine {
     for (const rule of this.rules.values()) {
       // Simplified backward chaining - find premises that lead to goal
       const premises = this.findPremises(rule)
-      
+
       for (const premiseSet of premises) {
         const conclusion = rule.apply(premiseSet, this.atomSpace)
         if (conclusion && this.atomsEquivalent(conclusion, goal)) {
@@ -289,7 +286,7 @@ export class PLNEngine {
    */
   private findPremises(rule: InferenceRule): Atom[][] {
     const results: Atom[][] = []
-    
+
     // Simplified premise finding - get atoms matching premise types
     const premises: Atom[][] = []
     for (const premiseType of rule.premises) {
@@ -300,7 +297,13 @@ export class PLNEngine {
     // Generate combinations (simplified)
     if (premises.length > 0) {
       for (const atom of premises[0]) {
-        results.push([atom, ...premises.slice(1).map(p => p[0]).filter(a => a)])
+        results.push([
+          atom,
+          ...premises
+            .slice(1)
+            .map(p => p[0])
+            .filter(a => a),
+        ])
       }
     }
 

@@ -37,7 +37,7 @@ describe('PersonaCore', () => {
     it('should update personality', async () => {
       const newPersonality = 'A new personality description';
       await personaCore.updatePersonality(newPersonality);
-      
+
       const personality = personaCore.getPersonality();
       expect(personality).toBe(newPersonality);
     });
@@ -46,7 +46,7 @@ describe('PersonaCore', () => {
   describe('emotional state', () => {
     it('should get emotional state', () => {
       const emotionalState = personaCore.getEmotionalState();
-      
+
       expect(emotionalState).toBeDefined();
       expect(typeof emotionalState.joy).toBe('number');
       expect(typeof emotionalState.interest).toBe('number');
@@ -58,8 +58,8 @@ describe('PersonaCore', () => {
 
     it('should have initial values between 0 and 1', () => {
       const emotionalState = personaCore.getEmotionalState();
-      
-      Object.values(emotionalState).forEach(value => {
+
+      Object.values(emotionalState).forEach((value) => {
         expect(value).toBeGreaterThanOrEqual(0);
         expect(value).toBeLessThanOrEqual(1);
       });
@@ -87,7 +87,7 @@ describe('PersonaCore', () => {
 
     it('should get dominant emotion', () => {
       const dominant = personaCore.getDominantEmotion();
-      
+
       expect(dominant).toBeDefined();
       expect(dominant.emotion).toBeDefined();
       expect(typeof dominant.intensity).toBe('number');
@@ -99,7 +99,7 @@ describe('PersonaCore', () => {
   describe('cognitive state', () => {
     it('should get cognitive state', () => {
       const cognitiveState = personaCore.getCognitiveState();
-      
+
       expect(cognitiveState).toBeDefined();
       expect(typeof cognitiveState.certainty).toBe('number');
       expect(typeof cognitiveState.curiosity).toBe('number');
@@ -137,7 +137,7 @@ describe('PersonaCore', () => {
   describe('preferences', () => {
     it('should get preferences', () => {
       const preferences = personaCore.getPreferences();
-      
+
       expect(preferences).toBeDefined();
       expect(preferences.presentationStyle).toBeDefined();
       expect(preferences.communicationTone).toBeDefined();
@@ -156,7 +156,7 @@ describe('PersonaCore', () => {
   describe('avatar configuration', () => {
     it('should get avatar config', () => {
       const avatarConfig = personaCore.getAvatarConfig();
-      
+
       expect(avatarConfig).toBeDefined();
       expect(avatarConfig.displayName).toBe('Deep Tree Echo');
       expect(avatarConfig.primaryColor).toBeDefined();
@@ -193,7 +193,7 @@ describe('PersonaCore', () => {
       await personaCore.updateEmotionalState({ joy: 5 });
       await personaCore.updateEmotionalState({ joy: 5 });
       await personaCore.updateEmotionalState({ joy: 5 });
-      
+
       const state = personaCore.getEmotionalState();
       // Joy should be high (clamped to 1)
       expect(state.joy).toBeGreaterThan(0.5);
@@ -204,10 +204,14 @@ describe('PersonaCore', () => {
     it('should handle storage errors gracefully', () => {
       // Create persona with failing storage
       const failingStorage = {
-        async load(_key: string) { throw new Error('Storage error'); },
-        async save(_key: string, _value: string) { throw new Error('Storage error'); },
+        async load(_key: string) {
+          throw new Error('Storage error');
+        },
+        async save(_key: string, _value: string) {
+          throw new Error('Storage error');
+        },
       };
-      
+
       // Should not throw during construction
       const persona = new PersonaCore(failingStorage);
       expect(persona).toBeDefined();

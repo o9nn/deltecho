@@ -462,9 +462,15 @@ export class QNNCognitiveAdapter {
     const results = await this.qnn.runParallelInference(cognitiveConfig.modelPath, inputStreams);
 
     return {
-      cognitive: results[0]?.success ? (results[0].outputs.get('output_input') as Float32Array) : null,
-      affective: results[1]?.success ? (results[1].outputs.get('output_input') as Float32Array) : null,
-      relevance: results[2]?.success ? (results[2].outputs.get('output_input') as Float32Array) : null,
+      cognitive: results[0]?.success
+        ? (results[0].outputs.get('output_input') as Float32Array)
+        : null,
+      affective: results[1]?.success
+        ? (results[1].outputs.get('output_input') as Float32Array)
+        : null,
+      relevance: results[2]?.success
+        ? (results[2].outputs.get('output_input') as Float32Array)
+        : null,
     };
   }
 }

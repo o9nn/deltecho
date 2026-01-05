@@ -34,39 +34,60 @@ class MockCognitiveProcessor implements CognitiveProcessor {
   public callLog: Array<{ term: CognitiveTerm; mode: CognitiveMode }> = [];
 
   private createResult(context: CognitiveContext, term: CognitiveTerm): CognitiveContext {
-    this.callLog.push({ term, mode: context.emotionalValence > 0 ? CognitiveMode.EXPRESSIVE : CognitiveMode.REFLECTIVE });
+    this.callLog.push({
+      term,
+      mode: context.emotionalValence > 0 ? CognitiveMode.EXPRESSIVE : CognitiveMode.REFLECTIVE,
+    });
     return {
       ...context,
       salienceScore: context.salienceScore + 0.1,
     };
   }
 
-  async processT1Perception(context: CognitiveContext, mode: CognitiveMode): Promise<CognitiveContext> {
+  async processT1Perception(
+    context: CognitiveContext,
+    mode: CognitiveMode
+  ): Promise<CognitiveContext> {
     this.callLog.push({ term: CognitiveTerm.T1_PERCEPTION, mode });
     return { ...context, perceptionData: { processed: true, mode } };
   }
 
-  async processT2IdeaFormation(context: CognitiveContext, mode: CognitiveMode): Promise<CognitiveContext> {
+  async processT2IdeaFormation(
+    context: CognitiveContext,
+    mode: CognitiveMode
+  ): Promise<CognitiveContext> {
     this.callLog.push({ term: CognitiveTerm.T2_IDEA_FORMATION, mode });
     return { ...context, thoughtData: { ideas: ['test-idea'], mode } };
   }
 
-  async processT4SensoryInput(context: CognitiveContext, mode: CognitiveMode): Promise<CognitiveContext> {
+  async processT4SensoryInput(
+    context: CognitiveContext,
+    mode: CognitiveMode
+  ): Promise<CognitiveContext> {
     this.callLog.push({ term: CognitiveTerm.T4_SENSORY_INPUT, mode });
     return { ...context, perceptionData: { ...context.perceptionData, sensory: true, mode } };
   }
 
-  async processT5ActionSequence(context: CognitiveContext, mode: CognitiveMode): Promise<CognitiveContext> {
+  async processT5ActionSequence(
+    context: CognitiveContext,
+    mode: CognitiveMode
+  ): Promise<CognitiveContext> {
     this.callLog.push({ term: CognitiveTerm.T5_ACTION_SEQUENCE, mode });
     return { ...context, actionPlan: { sequence: ['action1'], mode } };
   }
 
-  async processT7MemoryEncoding(context: CognitiveContext, mode: CognitiveMode): Promise<CognitiveContext> {
+  async processT7MemoryEncoding(
+    context: CognitiveContext,
+    mode: CognitiveMode
+  ): Promise<CognitiveContext> {
     this.callLog.push({ term: CognitiveTerm.T7_MEMORY_ENCODING, mode });
     return { ...context, relevantMemories: [...context.relevantMemories, 'new-memory'] };
   }
 
-  async processT8BalancedResponse(context: CognitiveContext, mode: CognitiveMode): Promise<CognitiveContext> {
+  async processT8BalancedResponse(
+    context: CognitiveContext,
+    mode: CognitiveMode
+  ): Promise<CognitiveContext> {
     this.callLog.push({ term: CognitiveTerm.T8_BALANCED_RESPONSE, mode });
     return { ...context, thoughtData: { ...context.thoughtData, integrated: true, mode } };
   }
@@ -141,8 +162,12 @@ describe('TriadicCognitiveEngine', () => {
     });
 
     it('should have 7 expressive and 5 reflective mode steps', () => {
-      const expressiveCount = STEP_CONFIGS.filter((s) => s.mode === CognitiveMode.EXPRESSIVE).length;
-      const reflectiveCount = STEP_CONFIGS.filter((s) => s.mode === CognitiveMode.REFLECTIVE).length;
+      const expressiveCount = STEP_CONFIGS.filter(
+        (s) => s.mode === CognitiveMode.EXPRESSIVE
+      ).length;
+      const reflectiveCount = STEP_CONFIGS.filter(
+        (s) => s.mode === CognitiveMode.REFLECTIVE
+      ).length;
       expect(expressiveCount).toBe(7);
       expect(reflectiveCount).toBe(5);
     });
@@ -216,24 +241,24 @@ describe('TriadicCognitiveEngine', () => {
   describe('Event Emission', () => {
     it('should emit cycle_complete event after 12 steps', async () => {
       engine.start();
-      
+
       // Wait for at least one full cycle (12 steps * 10ms = 120ms + buffer)
       await new Promise((resolve) => setTimeout(resolve, 150));
-      
+
       engine.stop();
-      
+
       const cycleEvents = events.filter((e) => e.type === 'cycle_complete');
       expect(cycleEvents.length).toBeGreaterThanOrEqual(1);
     });
 
     it('should emit triad_sync events at convergence points', async () => {
       engine.start();
-      
+
       // Wait for steps to advance
       await new Promise((resolve) => setTimeout(resolve, 100));
-      
+
       engine.stop();
-      
+
       const triadEvents = events.filter((e) => e.type === 'triad_sync');
       expect(triadEvents.length).toBeGreaterThan(0);
     });
@@ -243,7 +268,7 @@ describe('TriadicCognitiveEngine', () => {
     it('should process perception term correctly', async () => {
       const context = createTestContext();
       const result = await processor.processT1Perception(context, CognitiveMode.REFLECTIVE);
-      
+
       expect(result.perceptionData).toBeDefined();
       expect(result.perceptionData.processed).toBe(true);
       expect(processor.callLog).toContainEqual({
@@ -255,7 +280,7 @@ describe('TriadicCognitiveEngine', () => {
     it('should process idea formation term correctly', async () => {
       const context = createTestContext();
       const result = await processor.processT2IdeaFormation(context, CognitiveMode.EXPRESSIVE);
-      
+
       expect(result.thoughtData).toBeDefined();
       expect(result.thoughtData.ideas).toContain('test-idea');
     });
@@ -263,7 +288,7 @@ describe('TriadicCognitiveEngine', () => {
     it('should process sensory input term correctly', async () => {
       const context = createTestContext();
       const result = await processor.processT4SensoryInput(context, CognitiveMode.EXPRESSIVE);
-      
+
       expect(result.perceptionData).toBeDefined();
       expect(result.perceptionData.sensory).toBe(true);
     });
@@ -271,7 +296,7 @@ describe('TriadicCognitiveEngine', () => {
     it('should process action sequence term correctly', async () => {
       const context = createTestContext();
       const result = await processor.processT5ActionSequence(context, CognitiveMode.EXPRESSIVE);
-      
+
       expect(result.actionPlan).toBeDefined();
       expect(result.actionPlan.sequence).toContain('action1');
     });
@@ -279,14 +304,14 @@ describe('TriadicCognitiveEngine', () => {
     it('should process memory encoding term correctly', async () => {
       const context = createTestContext();
       const result = await processor.processT7MemoryEncoding(context, CognitiveMode.REFLECTIVE);
-      
+
       expect(result.relevantMemories).toContain('new-memory');
     });
 
     it('should process balanced response term correctly', async () => {
       const context = createTestContext();
       const result = await processor.processT8BalancedResponse(context, CognitiveMode.EXPRESSIVE);
-      
+
       expect(result.thoughtData).toBeDefined();
       expect(result.thoughtData.integrated).toBe(true);
     });
@@ -372,7 +397,7 @@ describe('TriadicCognitiveEngine', () => {
       engine.start();
       await new Promise((resolve) => setTimeout(resolve, 150));
       engine.stop();
-      
+
       const metrics = engine.getMetrics();
       expect(metrics.totalCycles).toBeGreaterThanOrEqual(1);
     });
@@ -381,7 +406,7 @@ describe('TriadicCognitiveEngine', () => {
       engine.start();
       await new Promise((resolve) => setTimeout(resolve, 50));
       engine.stop();
-      
+
       const metrics = engine.getMetrics();
       // currentStep tracks the current position in the 12-step cycle
       expect(metrics.currentStep).toBeGreaterThanOrEqual(0);
@@ -393,7 +418,7 @@ describe('Cognitive Context Integration', () => {
   it('should maintain context through processing pipeline', async () => {
     const processor = new MockCognitiveProcessor();
     let context = createTestContext();
-    
+
     // Simulate a full processing pipeline
     context = await processor.processT1Perception(context, CognitiveMode.REFLECTIVE);
     context = await processor.processT2IdeaFormation(context, CognitiveMode.EXPRESSIVE);
@@ -401,10 +426,10 @@ describe('Cognitive Context Integration', () => {
     context = await processor.processT5ActionSequence(context, CognitiveMode.EXPRESSIVE);
     context = await processor.processT7MemoryEncoding(context, CognitiveMode.REFLECTIVE);
     context = await processor.processT8BalancedResponse(context, CognitiveMode.EXPRESSIVE);
-    
+
     // Verify all processing stages were executed
     expect(processor.callLog).toHaveLength(6);
-    
+
     // Verify context accumulated results
     expect(context.perceptionData).toBeDefined();
     expect(context.thoughtData).toBeDefined();
@@ -417,9 +442,9 @@ describe('Cognitive Context Integration', () => {
     const context = createTestContext();
     context.emotionalValence = 0.8;
     context.emotionalArousal = 0.6;
-    
+
     const result = await processor.processT1Perception(context, CognitiveMode.EXPRESSIVE);
-    
+
     expect(result.emotionalValence).toBe(0.8);
     expect(result.emotionalArousal).toBe(0.6);
   });

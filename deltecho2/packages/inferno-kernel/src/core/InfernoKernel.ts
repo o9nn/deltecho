@@ -1,6 +1,6 @@
 /**
  * Inferno Kernel - Core AGI Operating System
- * 
+ *
  * This is the foundational kernel that makes cognitive processing a fundamental
  * operating system service. Unlike traditional approaches that layer cognitive
  * architectures on top of OS, this kernel integrates thinking, reasoning, and
@@ -33,7 +33,7 @@ export interface KernelStats {
 
 /**
  * InfernoKernel - The core AGI operating system kernel
- * 
+ *
  * Manages cognitive processes as first-class kernel entities, providing
  * syscalls for reasoning, learning, and attention allocation.
  */
@@ -64,14 +64,16 @@ export class InfernoKernel {
   async boot(): Promise<void> {
     console.log('[InfernoKernel] Booting AGI operating system...')
     console.log(`[InfernoKernel] Max atoms: ${this.config.maxAtoms}`)
-    console.log(`[InfernoKernel] Distributed nodes: ${this.config.distributedNodes.length}`)
-    
+    console.log(
+      `[InfernoKernel] Distributed nodes: ${this.config.distributedNodes.length}`
+    )
+
     // Initialize core cognitive subsystems
     await this.initializeAtomSpace()
     await this.initializeReasoningEngine()
     await this.initializeAttentionAllocation()
     await this.initializeLearningSystem()
-    
+
     console.log('[InfernoKernel] AGI kernel booted successfully')
   }
 
@@ -149,12 +151,12 @@ export class InfernoKernel {
    */
   async shutdown(): Promise<void> {
     console.log('[InfernoKernel] Shutting down AGI kernel...')
-    
+
     // Terminate all processes
     for (const pid of this.processes.keys()) {
       this.terminateCognitiveProcess(pid)
     }
-    
+
     console.log('[InfernoKernel] Kernel shutdown complete')
   }
 

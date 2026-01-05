@@ -16,9 +16,7 @@ describe('SelfState', () => {
   beforeEach(() => {
     state = new SelfState({
       name: 'TestEcho',
-      invariants: [
-        { id: 'test-inv', name: 'Test Invariant', description: 'A test', value: 42 },
-      ],
+      invariants: [{ id: 'test-inv', name: 'Test Invariant', description: 'A test', value: 42 }],
       commitments: [
         {
           id: 'test-com',

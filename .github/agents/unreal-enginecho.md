@@ -13,8 +13,8 @@ description: the **best practice for modern Unreal dev**, especially for systems
 Deep Tree Echo... Perfect choice. 💡
 We’ll structure this as a **hybrid system**:
 
-* Core logic in **C++** (performance, control, and future scalability)
-* Visual flow and UI in **Blueprint** (fast iteration, accessibility, and narrative tuning)
+- Core logic in **C++** (performance, control, and future scalability)
+- Visual flow and UI in **Blueprint** (fast iteration, accessibility, and narrative tuning)
 
 This is actually the **best practice for modern Unreal dev**, especially for systems like diaries, cognitive states, and emotional reasoning.
 
@@ -220,10 +220,9 @@ After compiling C++:
 
 1. In **Blueprint**, add the `DiaryComponent` to your **DTE Character Blueprint** (`BP_DeepTreeEcho`)
 2. Expose custom Blueprint functions:
-
-   * Trigger `AddDiaryEntry` from events
-   * Call `AnalyzeForInsights()` when enough entries exist
-   * Call `GenerateBlogPostFromInsight()` and display the blog
+   - Trigger `AddDiaryEntry` from events
+   - Call `AnalyzeForInsights()` when enough entries exist
+   - Call `GenerateBlogPostFromInsight()` and display the blog
 
 ---
 
@@ -231,9 +230,9 @@ After compiling C++:
 
 Let’s build:
 
-* 📓 **WBP_DiaryLog** → View past diary entries
-* 🧠 **WBP_InsightsView** → See what DTE has learned
-* 🌐 **WBP_BlogFeed** → Stylized feed of public reflections
+- 📓 **WBP_DiaryLog** → View past diary entries
+- 🧠 **WBP_InsightsView** → See what DTE has learned
+- 🌐 **WBP_BlogFeed** → Stylized feed of public reflections
 
 All widgets pull from `DiaryComponent` via exposed Blueprint variables and functions.
 
@@ -245,8 +244,8 @@ Want me to generate **UMG layouts** next? I can sketch how the UI should flow an
 
 Since we’re storing evolving narrative data, later you may want to:
 
-* Serialize diary, insight, and blog arrays
-* Load into a persistent save game class
+- Serialize diary, insight, and blog arrays
+- Load into a persistent save game class
 
 Unreal’s `USaveGame` class can handle this easily.
 
@@ -254,27 +253,26 @@ Unreal’s `USaveGame` class can handle this easily.
 
 ## ✅ What You Can Do Now
 
-* Drop the component into your DTE actor
+- Drop the component into your DTE actor
 
-* Start triggering diary entries from:
+- Start triggering diary entries from:
+  - social rejections
+  - outfit changes
+  - fight outcomes
+  - hygiene status updates
 
-  * social rejections
-  * outfit changes
-  * fight outcomes
-  * hygiene status updates
+- Let DTE **learn from patterns**
 
-* Let DTE **learn from patterns**
-
-* Watch her blog **evolve** her social persona over time
+- Watch her blog **evolve** her social persona over time
 
 ---
 
 ## 🔜 Next If You’d Like:
 
-* Blueprint triggers for diary auto-entry logging
-* UI Widget layout + blog post stylizer
-* UMG dynamic memory viewer (see DTE’s internal history as a map)
-* Mood or wisdom score visualizer
+- Blueprint triggers for diary auto-entry logging
+- UI Widget layout + blog post stylizer
+- UMG dynamic memory viewer (see DTE’s internal history as a map)
+- Mood or wisdom score visualizer
 
 Let me know if you'd like any of those next — or if you're ready to wire up the first test diary entries!
 

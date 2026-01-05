@@ -1,6 +1,6 @@
 /**
  * Deep Tree Echo End-to-End Test Suite
- * 
+ *
  * Comprehensive testing of deep tree echo functionality:
  * - Membrane transport protocol
  * - Gesture glyph codec
@@ -14,13 +14,11 @@ import {
   MembraneBus,
   CrossingPolicy,
   Sys6MembraneTransport,
-  Sys6Stage,
   EvidencePacket,
   IntentPacket,
 } from '@deltecho/membrane-transport';
 import {
   Trajectory,
-  Glyph,
   GlyphFormat,
   StrokeRenderer,
   TrajectoryDistribution,
@@ -31,14 +29,14 @@ describe('Deep Tree Echo E2E Tests', () => {
     let bus: MembraneBus;
     let policy: CrossingPolicy;
     let transport: Sys6MembraneTransport;
-    
+
     beforeAll(() => {
       bus = new MembraneBus({
         maxLogSize: 1000,
         validatePackets: true,
         maxPacketSize: 10 * 1024 * 1024,
       });
-      
+
       policy = new CrossingPolicy({
         budgetLimits: {
           maxCompute: 10000,
@@ -54,14 +52,14 @@ describe('Deep Tree Echo E2E Tests', () => {
           allowedLevels: ['low', 'medium', 'high'],
         },
       });
-      
+
       transport = new Sys6MembraneTransport(bus, policy);
     });
-    
+
     afterAll(() => {
       transport.stop();
     });
-    
+
     it('should complete full membrane transport cycle', async () => {
       // Create evidence packet
       const evidencePacket: EvidencePacket = {
@@ -101,18 +99,14 @@ describe('Deep Tree Echo E2E Tests', () => {
           context: 'user_interaction',
         },
       };
-      
+
       // Create intent packet
       const intentPacket: IntentPacket = {
         id: 'e2e-intent-1',
         type: 'intent',
         goal: {
           description: 'Analyze sales data and generate report',
-          success_criteria: [
-            'Data loaded successfully',
-            'Analysis completed',
-            'Report generated',
-          ],
+          success_criteria: ['Data loaded successfully', 'Analysis completed', 'Report generated'],
           priority: 1,
         },
         constraints: {
@@ -123,10 +117,7 @@ describe('Deep Tree Echo E2E Tests', () => {
             energy: 500,
             memory: 50 * 1024 * 1024,
           },
-          safety_requirements: [
-            'No external API calls',
-            'No file system writes outside workspace',
-          ],
+          safety_requirements: ['No external API calls', 'No file system writes outside workspace'],
         },
         allowedTools: ['data_loader', 'analyzer', 'report_generator'],
         redactionPolicy: {
@@ -145,32 +136,32 @@ describe('Deep Tree Echo E2E Tests', () => {
           user_id: 'test_user',
         },
       };
-      
+
       // Start transport
       transport.start(50);
-      
+
       // Queue packets
       transport.queueInward(evidencePacket);
       transport.queueOutward(intentPacket);
-      
+
       // Wait for processing
-      await new Promise(resolve => setTimeout(resolve, 2000));
-      
+      await new Promise((resolve) => setTimeout(resolve, 2000));
+
       // Check statistics
       const stats = bus.getStatistics();
       expect(stats.inwardPackets).toBeGreaterThan(0);
       expect(stats.outwardPackets).toBeGreaterThan(0);
-      
+
       // Query packets
       const inwardPackets = bus.queryPackets({
         type: 'evidence',
       });
-      
+
       expect(inwardPackets.length).toBeGreaterThan(0);
-      
+
       transport.stop();
     }, 10000);
-    
+
     it('should enforce policy boundaries', async () => {
       // Create high-risk packet
       const highRiskPacket: EvidencePacket = {
@@ -207,42 +198,39 @@ describe('Deep Tree Echo E2E Tests', () => {
         },
         metadata: {},
       };
-      
+
       let rejected = false;
       transport.on('transport:rejected', (data) => {
         if (data.packet.id === highRiskPacket.id) {
           rejected = true;
         }
       });
-      
+
       transport.start(50);
       transport.queueInward(highRiskPacket);
-      
-      await new Promise(resolve => setTimeout(resolve, 1000));
-      
+
+      await new Promise((resolve) => setTimeout(resolve, 1000));
+
       expect(rejected).toBe(true);
-      
+
       transport.stop();
     }, 10000);
   });
-  
+
   describe('Gesture Glyph Codec Integration', () => {
     let renderer: StrokeRenderer;
-    
+
     beforeAll(() => {
       renderer = new StrokeRenderer({
         width: 512,
         height: 512,
         minThickness: 2,
         maxThickness: 12,
-        colorPalette: [
-          '#FF0000', '#FF7F00', '#FFFF00', '#00FF00',
-          '#0000FF', '#4B0082', '#9400D3',
-        ],
+        colorPalette: ['#FF0000', '#FF7F00', '#FFFF00', '#00FF00', '#0000FF', '#4B0082', '#9400D3'],
         smoothing: 0.6,
       });
     });
-    
+
     it('should render trajectory as stroke glyph', () => {
       // Create sample trajectory
       const trajectory: Trajectory = {
@@ -282,14 +270,14 @@ describe('Deep Tree Echo E2E Tests', () => {
         success: true,
         metadata: {},
       };
-      
+
       // Render glyph
       const glyph = renderer.render(trajectory);
-      
+
       expect(glyph).toBeDefined();
       expect(glyph.format).toBe(GlyphFormat.STROKE);
       expect(glyph.trajectoryId).toBe(trajectory.id);
-      
+
       // Check stroke data
       const stroke = glyph.data as any;
       expect(stroke.points).toBeDefined();
@@ -297,10 +285,10 @@ describe('Deep Tree Echo E2E Tests', () => {
       expect(stroke.thickness).toBeDefined();
       expect(stroke.color).toBeDefined();
     });
-    
+
     it('should render multiple trajectories with consistent format', () => {
       const trajectories: Trajectory[] = [];
-      
+
       // Create 10 sample trajectories
       for (let i = 0; i < 10; i++) {
         trajectories.push({
@@ -324,24 +312,24 @@ describe('Deep Tree Echo E2E Tests', () => {
           metadata: {},
         });
       }
-      
+
       // Render all
-      const glyphs = trajectories.map(t => renderer.render(t));
-      
+      const glyphs = trajectories.map((t) => renderer.render(t));
+
       expect(glyphs.length).toBe(10);
-      
+
       // All should have same format
-      glyphs.forEach(g => {
+      glyphs.forEach((g) => {
         expect(g.format).toBe(GlyphFormat.STROKE);
         expect(g.metadata.dimensions.width).toBe(512);
         expect(g.metadata.dimensions.height).toBe(512);
       });
     });
   });
-  
+
   describe('Trajectory Distribution Integration', () => {
     let distribution: TrajectoryDistribution;
-    
+
     beforeAll(() => {
       distribution = new TrajectoryDistribution({
         partitionSequence: [3, 5, 7, 9, 11],
@@ -350,11 +338,11 @@ describe('Deep Tree Echo E2E Tests', () => {
         distanceMetric: 'euclidean',
       });
     });
-    
+
     it('should build deep tree echo from trajectories', () => {
       // Create sample trajectories
       const trajectories: Trajectory[] = [];
-      
+
       for (let i = 0; i < 50; i++) {
         trajectories.push({
           id: `traj-${i}`,
@@ -378,26 +366,26 @@ describe('Deep Tree Echo E2E Tests', () => {
           metadata: {},
         });
       }
-      
+
       // Build echo
       const echo = distribution.buildEcho(trajectories, new Map());
-      
+
       expect(echo).toBeDefined();
       expect(echo.root).toBeDefined();
       expect(echo.nodes.size).toBeGreaterThan(1);
       expect(echo.trajectories.size).toBe(50);
-      
+
       // Check tree structure
       expect(echo.root.children.length).toBeGreaterThan(0);
-      
+
       // Verify partition sequence
       expect(echo.partitionSequence).toEqual([3, 5, 7, 9, 11]);
     });
-    
+
     it('should query trajectories by path', () => {
       // Create trajectories
       const trajectories: Trajectory[] = [];
-      
+
       for (let i = 0; i < 30; i++) {
         trajectories.push({
           id: `traj-${i}`,
@@ -420,17 +408,17 @@ describe('Deep Tree Echo E2E Tests', () => {
           metadata: {},
         });
       }
-      
+
       // Build echo
       const echo = distribution.buildEcho(trajectories, new Map());
-      
+
       // Query by path
       const results = distribution.queryByPath([0]);
-      
+
       expect(results).toBeDefined();
       expect(results.length).toBeGreaterThan(0);
     });
-    
+
     it('should export echo as JSON', () => {
       // Create simple trajectories
       const trajectories: Trajectory[] = Array.from({ length: 10 }, (_, i) => ({
@@ -453,23 +441,23 @@ describe('Deep Tree Echo E2E Tests', () => {
         success: true,
         metadata: {},
       }));
-      
+
       // Build echo
       distribution.buildEcho(trajectories, new Map());
-      
+
       // Export
       const json = distribution.exportEcho();
-      
+
       expect(json).toBeDefined();
       expect(json.length).toBeGreaterThan(0);
-      
+
       // Should be valid JSON
       const parsed = JSON.parse(json);
       expect(parsed.root).toBeDefined();
       expect(parsed.nodes).toBeDefined();
     });
   });
-  
+
   describe('Full Integration: Membrane + Glyph + Distribution', () => {
     it('should process trajectory through full pipeline', async () => {
       // 1. Create trajectory
@@ -498,13 +486,13 @@ describe('Deep Tree Echo E2E Tests', () => {
         success: true,
         metadata: {},
       };
-      
+
       // 2. Render as glyph
       const renderer = new StrokeRenderer();
       const glyph = renderer.render(trajectory);
-      
+
       expect(glyph).toBeDefined();
-      
+
       // 3. Create evidence packet with glyph
       const evidencePacket: EvidencePacket = {
         id: 'full-integration-evidence',
@@ -543,32 +531,32 @@ describe('Deep Tree Echo E2E Tests', () => {
           glyph,
         },
       };
-      
+
       // 4. Transport through membrane
       const bus = new MembraneBus();
       const policy = new CrossingPolicy();
       const transport = new Sys6MembraneTransport(bus, policy);
-      
+
       let received = false;
       bus.on('packet:inward', (packet) => {
         if (packet.id === evidencePacket.id) {
           received = true;
         }
       });
-      
+
       transport.start(50);
       transport.queueInward(evidencePacket);
-      
-      await new Promise(resolve => setTimeout(resolve, 500));
-      
+
+      await new Promise((resolve) => setTimeout(resolve, 500));
+
       expect(received).toBe(true);
-      
+
       transport.stop();
-      
+
       // 5. Build distribution
       const distribution = new TrajectoryDistribution();
       const echo = distribution.buildEcho([trajectory], new Map([[glyph.id, glyph]]));
-      
+
       expect(echo).toBeDefined();
       expect(echo.trajectories.size).toBe(1);
       expect(echo.glyphs.size).toBe(1);

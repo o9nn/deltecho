@@ -18,15 +18,15 @@ Based on the provided geometric patterns, mathematical frameworks, and architect
 
 ### ✅ Existing Components
 
-| Component | Location | Status | Notes |
-|-----------|----------|--------|-------|
-| Deep Tree Echo Core | `deep-tree-echo-core/` | ✅ Building | Cognitive modules, LLM services, memory (RAG + hyperdimensional), personality |
-| Dove9 OS | `dove9/` | ✅ Building | Triadic cognitive loop with 3 concurrent streams and 12-step cycle |
-| Orchestrator | `deep-tree-echo-orchestrator/` | ✅ Building | System daemon coordinating all services |
-| Double Membrane | `packages/double-membrane/` | ✅ Complete | Inner/Outer membrane with transjective buffer |
-| Sys6 Triality | `packages/sys6-triality/` | ✅ Complete | Operadic architecture with 30-step cycle |
-| Cognitive Package | `packages/@deltecho/cognitive/` | ✅ Building | Unified cognitive interface |
-| Reasoning Package | `packages/@deltecho/reasoning/` | ✅ Building | AGI kernel with AtomSpace, PLN, MOSES, OpenPsi |
+| Component           | Location                        | Status      | Notes                                                                         |
+| ------------------- | ------------------------------- | ----------- | ----------------------------------------------------------------------------- |
+| Deep Tree Echo Core | `deep-tree-echo-core/`          | ✅ Building | Cognitive modules, LLM services, memory (RAG + hyperdimensional), personality |
+| Dove9 OS            | `dove9/`                        | ✅ Building | Triadic cognitive loop with 3 concurrent streams and 12-step cycle            |
+| Orchestrator        | `deep-tree-echo-orchestrator/`  | ✅ Building | System daemon coordinating all services                                       |
+| Double Membrane     | `packages/double-membrane/`     | ✅ Complete | Inner/Outer membrane with transjective buffer                                 |
+| Sys6 Triality       | `packages/sys6-triality/`       | ✅ Complete | Operadic architecture with 30-step cycle                                      |
+| Cognitive Package   | `packages/@deltecho/cognitive/` | ✅ Building | Unified cognitive interface                                                   |
+| Reasoning Package   | `packages/@deltecho/reasoning/` | ✅ Building | AGI kernel with AtomSpace, PLN, MOSES, OpenPsi                                |
 
 ### 🔲 Missing Components for Deep Tree Echo
 
@@ -86,17 +86,17 @@ Based on the provided geometric patterns, mathematical frameworks, and architect
 interface Skill {
   // 1. Intent schema
   intent: {
-    type: string;           // "grasp", "draw_spiral", "negotiate", etc.
+    type: string; // "grasp", "draw_spiral", "negotiate", etc.
     goal: Goal;
     context: Context;
   };
-  
+
   // 2. Generator (diffusion/AR)
-  generator: TrajectoryGenerator;  // q_θ(τ | g, c)
-  
+  generator: TrajectoryGenerator; // q_θ(τ | g, c)
+
   // 3. Evaluator (free-energy / value / constraints)
-  evaluator: SkillEvaluator;       // E(τ; g, c)
-  
+  evaluator: SkillEvaluator; // E(τ; g, c)
+
   // 4. Glyph codec (visual representation)
   glyphCodec: {
     render: (τ: Trajectory) => Glyph;
@@ -117,21 +117,25 @@ interface Skill {
 The provided images show nested geometric patterns that should inform the system's structure:
 
 #### Enneagram (9-point system)
+
 - **Application**: 9-phase triadic convolution (Δ₃ from Sys6)
 - **Mapping**: 9 personality archetypes → 9 cognitive modes
 - **Integration**: Dove9 already implements triadic loop; extend to full enneagram
 
 #### Polar Number Pairs
+
 - **Application**: Dual-aspect processing (objective/subjective pairs)
 - **Mapping**: Each number has polar opposite with complementary properties
 - **Integration**: Double membrane naturally embodies this duality
 
 #### S-grams (Nested Partitions)
+
 - **Application**: Hierarchical skill decomposition
 - **Mapping**: Base-N representations → nested agency levels
 - **Integration**: Partition numbers guide skill composition strategies
 
 #### Toroidal Structure
+
 - **Application**: Continuous flow with re-entry
 - **Mapping**: Feedback loops in cognitive cycle
 - **Integration**: Dove9's 12-step cycle as toroidal flow
@@ -143,6 +147,7 @@ The provided images show nested geometric patterns that should inform the system
 **Status**: Double membrane exists, needs packet system
 
 **Tasks**:
+
 1. ✅ Define packet schemas (EvidencePacket, IntentPacket)
 2. ✅ Implement MembraneBus with append-only events
 3. ✅ Create CrossingPolicy (provenance, risk, budgets)
@@ -150,6 +155,7 @@ The provided images show nested geometric patterns that should inform the system
 5. 🔲 Enforce subjectivity barrier (no raw embeddings outward)
 
 **Files to Create/Modify**:
+
 - `packages/membrane-transport/src/packets.ts`
 - `packages/membrane-transport/src/MembraneBus.ts`
 - `packages/membrane-transport/src/CrossingPolicy.ts`
@@ -160,12 +166,14 @@ The provided images show nested geometric patterns that should inform the system
 **Purpose**: Visual representation of execution trajectories
 
 **Tasks**:
+
 1. Define Glyph format (stroke image, time-channel raster, vector field)
 2. Implement Renderer: τ → γ
 3. Implement Decoder: γ → τ
 4. Create glyph visualization tools
 
 **Files to Create**:
+
 - `packages/gesture-glyph/src/Glyph.ts`
 - `packages/gesture-glyph/src/Renderer.ts`
 - `packages/gesture-glyph/src/Decoder.ts`
@@ -176,12 +184,14 @@ The provided images show nested geometric patterns that should inform the system
 **Purpose**: Diffusion-based skill proposal system
 
 **Tasks**:
+
 1. Implement conditional diffusion model for glyphs
 2. Create trajectory sampling mechanism
 3. Integrate with world model for simulation
 4. Add guidance mechanisms (classifier-free, reward-guidance)
 
 **Files to Create**:
+
 - `packages/trajectory-diffusion/src/DiffusionModel.ts`
 - `packages/trajectory-diffusion/src/TrajectorySampler.ts`
 - `packages/trajectory-diffusion/src/WorldModel.ts`
@@ -192,12 +202,14 @@ The provided images show nested geometric patterns that should inform the system
 **Purpose**: Creative/Normative alternation for skill refinement
 
 **Tasks**:
+
 1. Implement 4-phase cycle (Propose, Decode+Simulate, Normalize, Commit)
 2. Create skill evaluator with free energy calculation
 3. Build skill library with retrieval mechanism
 4. Add composition operators for skill chaining
 
 **Files to Create**:
+
 - `packages/opponent-processing/src/OpponentCycle.ts`
 - `packages/opponent-processing/src/SkillEvaluator.ts`
 - `packages/opponent-processing/src/SkillLibrary.ts`
@@ -208,12 +220,14 @@ The provided images show nested geometric patterns that should inform the system
 **Purpose**: Integrate enneagram, polar numbers, nested partitions
 
 **Tasks**:
+
 1. Implement Enneagram-based cognitive mode switching
 2. Create polar number pair system for dual-aspect processing
 3. Build S-gram partition system for hierarchical decomposition
 4. Integrate toroidal flow patterns
 
 **Files to Create**:
+
 - `packages/geometric-harmonics/src/Enneagram.ts`
 - `packages/geometric-harmonics/src/PolarNumbers.ts`
 - `packages/geometric-harmonics/src/SGrams.ts`
@@ -224,12 +238,14 @@ The provided images show nested geometric patterns that should inform the system
 **Purpose**: Free energy minimization for skill evaluation
 
 **Tasks**:
+
 1. Implement belief state tracking (q(s_t))
 2. Create expected free energy calculator
 3. Build action selection based on G minimization
 4. Integrate with opponent processing for skill refinement
 
 **Files to Create**:
+
 - `packages/active-inference/src/BeliefState.ts`
 - `packages/active-inference/src/FreeEnergy.ts`
 - `packages/active-inference/src/ActionSelection.ts`
@@ -238,20 +254,24 @@ The provided images show nested geometric patterns that should inform the system
 ## Testing Strategy
 
 ### Unit Tests
+
 - Each module should have comprehensive unit tests
 - Test coverage target: 95%+
 
 ### Integration Tests
+
 - Test membrane transport with real packet flows
 - Test opponent processing cycles end-to-end
 - Test geometric harmonic integrations
 
 ### E2E Tests
+
 - Full deep tree echo workflow
 - Multi-agent coordination scenarios
 - Skill learning and composition
 
 ### Performance Tests
+
 - Diffusion model inference speed
 - Membrane transport throughput
 - Skill library retrieval latency

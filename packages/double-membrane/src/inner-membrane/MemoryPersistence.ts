@@ -131,7 +131,7 @@ export class MemoryPersistence extends EventEmitter {
     if (this.config.autoSaveInterval > 0) {
       this.autoSaveTimer = setInterval(() => {
         if (this.dirty) {
-          this.saveToDisk().catch(err => {
+          this.saveToDisk().catch((err) => {
             this.emit('error', { type: 'save_error', error: err });
           });
         }
@@ -293,7 +293,10 @@ export class MemoryPersistence extends EventEmitter {
       if (!entry) continue;
 
       // Filter by importance
-      if (options.minImportance !== undefined && entry.metadata.importance < options.minImportance) {
+      if (
+        options.minImportance !== undefined &&
+        entry.metadata.importance < options.minImportance
+      ) {
         continue;
       }
 
@@ -538,11 +541,7 @@ export class MemoryPersistence extends EventEmitter {
 
     const { iv, authTag, data } = JSON.parse(content);
     const key = crypto.scryptSync(this.config.encryptionKey, 'salt', 32);
-    const decipher = crypto.createDecipheriv(
-      'aes-256-gcm',
-      key,
-      Buffer.from(iv, 'hex')
-    );
+    const decipher = crypto.createDecipheriv('aes-256-gcm', key, Buffer.from(iv, 'hex'));
     decipher.setAuthTag(Buffer.from(authTag, 'hex'));
 
     let decrypted = decipher.update(data, 'hex', 'utf8');
@@ -722,7 +721,7 @@ export class MemoryPersistence extends EventEmitter {
    */
   public async clear(): Promise<void> {
     this.memories.clear();
-    
+
     // Reset indices
     for (const set of this.indices.byType.values()) {
       set.clear();

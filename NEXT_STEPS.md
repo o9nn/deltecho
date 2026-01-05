@@ -7,6 +7,7 @@
 ## Quick Start for Next Session
 
 ### 1. Verify Repository State
+
 ```bash
 cd /home/ubuntu/deltecho
 git pull origin main
@@ -15,14 +16,17 @@ pnpm build  # Should complete successfully for core packages
 ```
 
 ### 2. Review Progress Report
+
 Read `PROGRESS_REPORT_DEC_23_2025.md` for complete context on work completed.
 
 ### 3. Choose Priority Track
 
 #### Track A: Complete UI Components Refactoring (Recommended First)
+
 **Goal:** Get @deltecho/ui-components building successfully
 
 **Steps:**
+
 1. Read `docs/guides/UI_COMPONENTS_REFACTORING.md`
 2. Follow Phase 1: Add Missing Dependencies
    ```bash
@@ -39,9 +43,11 @@ Read `PROGRESS_REPORT_DEC_23_2025.md` for complete context on work completed.
 **Value:** Unblocks desktop application development
 
 #### Track B: Implement Testing Infrastructure
+
 **Goal:** Establish comprehensive test coverage for core packages
 
 **Steps:**
+
 1. Read `docs/guides/TESTING_INFRASTRUCTURE.md`
 2. Follow Phase 1: Core Module Unit Tests
 3. Set up Jest configuration (already partially configured)
@@ -57,9 +63,11 @@ Read `PROGRESS_REPORT_DEC_23_2025.md` for complete context on work completed.
 **Value:** Ensures code quality and prevents regressions
 
 #### Track C: Implement LLM Integration
+
 **Goal:** Add actual LLM service implementations
 
 **Steps:**
+
 1. Review current LLM service interface
 2. Implement OpenAI integration
 3. Implement Anthropic Claude integration
@@ -74,12 +82,14 @@ Read `PROGRESS_REPORT_DEC_23_2025.md` for complete context on work completed.
 ## Recommended Sequence
 
 ### Session 1: UI Components + Testing Foundation (4-5 hours)
+
 1. Complete ui-components refactoring (2-3 hours)
 2. Implement basic unit tests for LLMService (1-2 hours)
 3. Set up CI/CD pipeline (30 minutes)
 4. Commit and sync
 
 ### Session 2: Testing Infrastructure (4-6 hours)
+
 1. Implement unit tests for memory systems (2 hours)
 2. Implement unit tests for personality (1-2 hours)
 3. Implement integration tests (1-2 hours)
@@ -87,6 +97,7 @@ Read `PROGRESS_REPORT_DEC_23_2025.md` for complete context on work completed.
 5. Commit and sync
 
 ### Session 3: LLM Integration (3-4 hours)
+
 1. Implement OpenAI integration (1-2 hours)
 2. Implement Anthropic Claude integration (1 hour)
 3. Add local model support (1 hour)
@@ -94,12 +105,14 @@ Read `PROGRESS_REPORT_DEC_23_2025.md` for complete context on work completed.
 5. Commit and sync
 
 ### Session 4: Cognitive Loop Testing (3-4 hours)
+
 1. Implement cognitive loop tests (2 hours)
 2. Test triadic stream timing (1 hour)
 3. Test phase offset verification (1 hour)
 4. Commit and sync
 
 ### Session 5: E2E Testing and Polish (2-3 hours)
+
 1. Implement E2E tests (1-2 hours)
 2. Fix any remaining issues
 3. Update documentation
@@ -108,20 +121,24 @@ Read `PROGRESS_REPORT_DEC_23_2025.md` for complete context on work completed.
 ## Key Files to Reference
 
 ### Refactoring Guides
+
 - `docs/guides/UI_COMPONENTS_REFACTORING.md` - UI components refactoring
 - `docs/guides/TESTING_INFRASTRUCTURE.md` - Testing strategy and implementation
 
 ### Architecture Documentation
+
 - `docs/architecture/DEEP-TREE-ECHO-ARCHITECTURE.md` - Core architecture
 - `docs/architecture/A_NOTE_TO_MY_FUTURE_SELF.md` - Design philosophy
 - `docs/architecture/IMPLEMENTATION-SUMMARY.md` - Implementation details
 
 ### Technical Reports
+
 - `PROGRESS_REPORT_DEC_23_2025.md` - Complete session summary
 - `SECURITY_AUDIT.md` - Security analysis and recommendations
 - `EXECUTIVE_SUMMARY.md` - High-level overview
 
 ### User Guides
+
 - `docs/guides/QUICK_START.md` - Getting started
 - `docs/guides/DESKTOP_INTEGRATION_GUIDE.md` - Desktop app integration
 - `docs/guides/IPC_STORAGE_GUIDE.md` - IPC and storage patterns
@@ -129,6 +146,7 @@ Read `PROGRESS_REPORT_DEC_23_2025.md` for complete context on work completed.
 ## Common Commands
 
 ### Build Commands
+
 ```bash
 # Build all packages
 pnpm build
@@ -143,6 +161,7 @@ pnpm clean && pnpm build
 ```
 
 ### Test Commands
+
 ```bash
 # Run all tests (when implemented)
 pnpm test
@@ -158,6 +177,7 @@ pnpm test:coverage
 ```
 
 ### Development Commands
+
 ```bash
 # Install dependencies
 pnpm install
@@ -173,6 +193,7 @@ pnpm format
 ```
 
 ### Git Commands
+
 ```bash
 # Check status
 git status
@@ -194,23 +215,27 @@ git pull origin main
 ## Critical Considerations
 
 ### Zero-Tolerance Policy
+
 - No stubs or mock implementations in production code
 - All implementations must be production-ready
 - Tests should verify actual behavior, not mocks
 
 ### Cognitive Architecture Alignment
+
 - Maintain triadic consciousness stream structure
 - Preserve 12-step cognitive cycle
 - Respect nested shell structure (OEIS A000081)
 - Keep global telemetry shell principle
 
 ### Code Quality Standards
+
 - 80% minimum test coverage
 - 100% coverage for critical paths
 - Clear, comprehensive documentation
 - Type-safe TypeScript code
 
 ### Security Best Practices
+
 - Never commit API keys or secrets
 - Use environment variables for configuration
 - Validate all inputs
@@ -219,18 +244,21 @@ git pull origin main
 ## Troubleshooting
 
 ### Build Fails
+
 1. Check Node version: `node --version` (should be >= 20)
 2. Check pnpm version: `pnpm --version` (should be >= 9.6.0)
 3. Clean and reinstall: `rm -rf node_modules && pnpm install`
 4. Check for TypeScript errors: `pnpm check:types`
 
 ### Tests Fail
+
 1. Check Jest configuration in package.json
 2. Verify test file naming: `*.test.ts` or `*.spec.ts`
 3. Check for async issues: use `async/await` properly
 4. Review test isolation: each test should be independent
 
 ### Import Errors
+
 1. Check module resolution: imports should include `.js` extension
 2. Verify package.json exports are correct
 3. Check tsconfig.json module settings
@@ -239,6 +267,7 @@ git pull origin main
 ## Resources
 
 ### External Documentation
+
 - [pnpm Workspaces](https://pnpm.io/workspaces)
 - [TypeScript Module Resolution](https://www.typescriptlang.org/docs/handbook/module-resolution.html)
 - [Jest Testing Framework](https://jestjs.io/docs/getting-started)
@@ -246,6 +275,7 @@ git pull origin main
 - [Anthropic Claude API](https://docs.anthropic.com/en/api)
 
 ### Project Resources
+
 - [GitHub Repository](https://github.com/o9nn/deltecho)
 - [Issues Tracker](https://github.com/o9nn/deltecho/issues)
 - [Dependabot Alerts](https://github.com/o9nn/deltecho/security/dependabot)
@@ -253,6 +283,7 @@ git pull origin main
 ## Contact and Support
 
 For questions or issues:
+
 1. Review documentation in `docs/` directory
 2. Check `PROGRESS_REPORT_DEC_23_2025.md` for context
 3. Review relevant guide in `docs/guides/`
@@ -261,6 +292,7 @@ For questions or issues:
 ## Success Criteria
 
 ### UI Components Refactoring Complete
+
 - [ ] All imports use proper package references
 - [ ] No Delta Chat Desktop dependencies
 - [ ] Backend and navigation abstractions created
@@ -269,6 +301,7 @@ For questions or issues:
 - [ ] Documentation updated
 
 ### Testing Infrastructure Complete
+
 - [ ] Unit tests for all core modules
 - [ ] Integration tests for key interactions
 - [ ] Cognitive loop tests implemented
@@ -277,6 +310,7 @@ For questions or issues:
 - [ ] Coverage reporting configured
 
 ### LLM Integration Complete
+
 - [ ] OpenAI integration working
 - [ ] Anthropic Claude integration working
 - [ ] Local model support implemented
@@ -285,6 +319,7 @@ For questions or issues:
 - [ ] Tests passing
 
 ### Production Ready
+
 - [ ] All packages building
 - [ ] All tests passing
 - [ ] Documentation complete

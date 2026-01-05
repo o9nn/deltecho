@@ -81,15 +81,18 @@ deltecho/
 ## Key Features
 
 ### Storage Adapters
+
 - `ElectronStorageAdapter` - For Electron apps
 - `TauriStorageAdapter` - For Tauri apps
 
 ### LLM Service
+
 - Supports OpenAI, Anthropic, OpenRouter, Ollama
 - Streaming responses
 - Token estimation
 
 ### Memory Systems
+
 - RAG Memory Store
 - Hyperdimensional Memory
 - Personality Core
@@ -137,18 +140,21 @@ pnpm check
 ## Troubleshooting
 
 ### Installation fails
+
 ```bash
 rm -rf node_modules pnpm-lock.yaml
 pnpm install
 ```
 
 ### Build fails
+
 ```bash
 pnpm clean
 pnpm build
 ```
 
 ### Tests fail
+
 ```bash
 pnpm test -- --clearCache
 pnpm test

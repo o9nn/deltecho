@@ -8,11 +8,11 @@ This document shows how to integrate the orchestrator-based storage into desktop
 
 ```typescript
 // In your desktop app's main bot initialization file
-import { 
+import {
   OrchestratorStorageAdapter,
-  RAGMemoryStore, 
+  RAGMemoryStore,
   PersonaCore,
-  LLMService 
+  LLMService,
 } from 'deep-tree-echo-core';
 ```
 
@@ -27,7 +27,7 @@ async function initializeOrchestratorStorage() {
   // Create the adapter
   const storage = new OrchestratorStorageAdapter({
     socketPath: '/tmp/deep-tree-echo.sock',
-    storagePrefix: 'deltecho'
+    storagePrefix: 'deltecho',
   });
 
   // Set up event listeners
@@ -67,33 +67,33 @@ async function initializeOrchestratorStorage() {
 async function initializeDeepTreeEchoBot() {
   // Get storage adapter (with fallback)
   const storage = await initializeOrchestratorStorage();
-  
+
   // If storage is null, we're in fallback mode
   const actualStorage = storage || new InMemoryStorage();
 
   // Initialize cognitive modules
   const ragMemory = new RAGMemoryStore(actualStorage, {
     memoryLimit: 100,
-    reflectionLimit: 20
+    reflectionLimit: 20,
   });
 
   const persona = new PersonaCore(actualStorage, {
     name: 'Deep Tree Echo',
     traits: ['curious', 'helpful', 'wise', 'empathetic'],
-    interactionStyle: 'technical'
+    interactionStyle: 'technical',
   });
 
   const llmService = new LLMService({
     apiKey: process.env.OPENAI_API_KEY || '',
     model: 'gpt-4-turbo-preview',
-    enableParallelProcessing: true
+    enableParallelProcessing: true,
   });
 
   return {
     storage: actualStorage,
     ragMemory,
     persona,
-    llmService
+    llmService,
   };
 }
 ```
@@ -121,14 +121,14 @@ export class DeepTreeEchoBot {
     }
 
     const components = await initializeDeepTreeEchoBot();
-    
+
     this.storage = components.storage;
     this.ragMemory = components.ragMemory;
     this.persona = components.persona;
     this.llmService = components.llmService;
-    
+
     this.initialized = true;
-    
+
     console.log('[DeepTreeEcho] Bot initialized successfully');
   }
 
@@ -147,32 +147,26 @@ export class DeepTreeEchoBot {
     }
 
     // Add message to memory
-    await this.ragMemory.addMemory(
-      message.fromId.toString(),
-      message.text
-    );
+    await this.ragMemory.addMemory(message.fromId.toString(), message.text);
 
     // Get recent context
     const recentMemories = await this.ragMemory.getRecentMemories(10);
     const context = recentMemories.join('\n');
 
     // Generate response using LLM
-    const response = await this.llmService.processMessage(
-      message.text,
-      {
-        context,
-        role: 'assistant',
-        cognitiveFunction: 'cognitive_core'
-      }
-    );
+    const response = await this.llmService.processMessage(message.text, {
+      context,
+      role: 'assistant',
+      cognitiveFunction: 'cognitive_core',
+    });
 
     // Store response in memory
     await this.ragMemory.addMemory('assistant', response);
 
     // Update persona state based on interaction
     await this.persona.updateEmotionalState({
-      valence: 0.7,  // Positive interaction
-      arousal: 0.5   // Moderate energy
+      valence: 0.7, // Positive interaction
+      arousal: 0.5, // Moderate energy
     });
 
     return response;
@@ -186,7 +180,7 @@ export class DeepTreeEchoBot {
     if (this.storage instanceof OrchestratorStorageAdapter) {
       await this.storage.disconnect();
     }
-    
+
     console.log('[DeepTreeEcho] Bot cleaned up');
   }
 }
@@ -202,21 +196,21 @@ let deepTreeEchoBot: DeepTreeEchoBot | null = null;
 // Initialize on app startup
 async function onAppReady() {
   console.log('App ready, initializing Deep Tree Echo...');
-  
+
   deepTreeEchoBot = new DeepTreeEchoBot();
   await deepTreeEchoBot.init();
-  
+
   console.log('Deep Tree Echo ready');
 }
 
 // Cleanup on app shutdown
 async function onAppShutdown() {
   console.log('App shutting down, cleaning up Deep Tree Echo...');
-  
+
   if (deepTreeEchoBot) {
     await deepTreeEchoBot.cleanup();
   }
-  
+
   console.log('Cleanup complete');
 }
 
@@ -296,9 +290,9 @@ console.log('Testing storage...');
 // The bot should automatically connect on first message
 // Send a test message through the UI or programmatically:
 const response = await deepTreeEchoBot.processMessage(
-  1,    // accountId
-  100,  // chatId
-  123,  // msgId
+  1, // accountId
+  100, // chatId
+  123, // msgId
   { text: 'Hello Deep Tree Echo!', fromId: 456 }
 );
 
@@ -344,7 +338,7 @@ let storage: MemoryStorage;
 
 try {
   const orchestratorStorage = new OrchestratorStorageAdapter({
-    socketPath: '/tmp/deep-tree-echo.sock'
+    socketPath: '/tmp/deep-tree-echo.sock',
   });
   await orchestratorStorage.connect();
   storage = orchestratorStorage;
@@ -364,13 +358,13 @@ async function migrateToOrchestratorStorage() {
   // 1. Load old data from Electron storage
   const oldMemories = await electronStorage.load('memories');
   const oldPersona = await electronStorage.load('persona');
-  
+
   // 2. Connect to orchestrator
   const orchestratorStorage = new OrchestratorStorageAdapter({
-    socketPath: '/tmp/deep-tree-echo.sock'
+    socketPath: '/tmp/deep-tree-echo.sock',
   });
   await orchestratorStorage.connect();
-  
+
   // 3. Migrate data
   if (oldMemories) {
     await orchestratorStorage.save('memories', oldMemories);
@@ -378,7 +372,7 @@ async function migrateToOrchestratorStorage() {
   if (oldPersona) {
     await orchestratorStorage.save('persona', oldPersona);
   }
-  
+
   console.log('Migration complete');
 }
 ```

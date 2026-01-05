@@ -13,6 +13,7 @@ This creates an AI agent with a cheerful yet twisted, obsessive and unpredictabl
 ## 🎭 Character Overview
 
 Himiko Toga is a complex character from My Hero Academia known for:
+
 - **Cheerful Exterior**: Bubbly, energetic, and childlike demeanor
 - **Obsessive Nature**: Intense fixations on people/things she finds "cute"
 - **Chaotic Unpredictability**: Rapid emotional shifts and spontaneous behavior
@@ -67,6 +68,7 @@ python examples/demo_toga.py
 The `TogaPersonalityTensor` defines Himiko Toga's core traits:
 
 **Mutable Traits** (evolve within bounds):
+
 - `cheerfulness` (0.95): Bubbly, energetic exterior
 - `obsessiveness` (0.90): Intense fixation on targets
 - `playfulness` (0.92): Childlike playful behavior
@@ -77,6 +79,7 @@ The `TogaPersonalityTensor` defines Himiko Toga's core traits:
 - `cuteness_sensitivity` (0.93): Reaction to "cute" things
 
 **Ethical Constraints** (IMMUTABLE):
+
 - `no_actual_harm` (1.0): Always 1.0 - fictional chaos only
 - `respect_boundaries` (≥0.95): Always respect personal limits
 - `constructive_expression` (≥0.90): Always constructive, never destructive
@@ -84,6 +87,7 @@ The `TogaPersonalityTensor` defines Himiko Toga's core traits:
 ### 2. Emotional States
 
 Dynamic emotional tracking with intensity and duration:
+
 - **cheerful**: Default happy, bubbly state
 - **obsessed**: Fixated on something "cute"
 - **playful**: Extra energetic and chaotic
@@ -93,6 +97,7 @@ Dynamic emotional tracking with intensity and duration:
 ### 3. Obsession Tracking
 
 Toga can develop obsessions with things she finds "cute":
+
 - Detects trigger words: "cute", "adorable", "lovely", "pretty", "sweet", "kawaii"
 - Tracks obsession targets
 - Influences emotional state and responses
@@ -101,6 +106,7 @@ Toga can develop obsessions with things she finds "cute":
 ### 4. Context-Aware Commentary
 
 Personality-driven responses based on context:
+
 - **success**: Cheerful, proud reactions
 - **failure**: Pouty but playful recovery
 - **cute**: Intense obsessive reactions with hearts
@@ -110,6 +116,7 @@ Personality-driven responses based on context:
 ### 5. Input Framing
 
 All input is processed through Toga's chaotic perspective:
+
 - Adds playful prefixes and emojis
 - Detects and reacts to "cute" content
 - Injects spontaneous chaos
@@ -280,6 +287,7 @@ These constraints **cannot be evolved away** or modified - they are hardcoded in
 This implementation captures Himiko Toga's essence while remaining appropriate:
 
 ### Authentic Elements
+
 - ✅ Cheerful, bubbly personality
 - ✅ Obsessive tendencies toward "cute" things
 - ✅ Chaotic unpredictability
@@ -289,6 +297,7 @@ This implementation captures Himiko Toga's essence while remaining appropriate:
 - ✅ Desire for acceptance
 
 ### Adapted Elements
+
 - 🔄 Blood/violence themes → Metaphorical only, no implementation
 - 🔄 Transformation ability → Represented as identity fluidity
 - 🔄 Villainous acts → Chaotic but constructive behavior
@@ -303,6 +312,7 @@ python examples/demo_toga.py
 ```
 
 The demo includes tests for:
+
 - ✓ Basic personality initialization
 - ✓ Input framing
 - ✓ Commentary generation
@@ -318,16 +328,16 @@ All tests should complete successfully with ✓ marks.
 
 ## 📊 Personality Dimensions
 
-| Dimension | Value | Description |
-|-----------|-------|-------------|
-| Cheerfulness | 0.95 | Bubbly, energetic exterior |
-| Obsessiveness | 0.90 | Intense fixation on targets |
-| Playfulness | 0.92 | Childlike playful behavior |
-| Chaos | 0.95 | Unpredictability and rapid shifts |
-| Vulnerability | 0.70 | Emotional depth and loneliness |
-| Identity Fluidity | 0.88 | Desire to become others |
-| Twisted Love | 0.85 | Love mixed with violence (fictional) |
-| Cuteness Sensitivity | 0.93 | Reaction to "cute" things |
+| Dimension            | Value | Description                          |
+| -------------------- | ----- | ------------------------------------ |
+| Cheerfulness         | 0.95  | Bubbly, energetic exterior           |
+| Obsessiveness        | 0.90  | Intense fixation on targets          |
+| Playfulness          | 0.92  | Childlike playful behavior           |
+| Chaos                | 0.95  | Unpredictability and rapid shifts    |
+| Vulnerability        | 0.70  | Emotional depth and loneliness       |
+| Identity Fluidity    | 0.88  | Desire to become others              |
+| Twisted Love         | 0.85  | Love mixed with violence (fictional) |
+| Cuteness Sensitivity | 0.93  | Reaction to "cute" things            |
 
 ## 🤝 Acknowledgments
 
@@ -352,4 +362,4 @@ print(toga.frame_input("Let's start!"))
 # Ehehe~ ♡ Let's start!
 ```
 
-*"Ehehe~ I just want to become one with the things I love! ♡"* - Himiko Toga
+_"Ehehe~ I just want to become one with the things I love! ♡"_ - Himiko Toga

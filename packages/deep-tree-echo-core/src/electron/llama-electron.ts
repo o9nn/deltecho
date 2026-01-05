@@ -314,7 +314,21 @@ export class LlamaElectronMain extends EventEmitter {
       this.emit('generation_started', { prompt, config: genConfig });
 
       // Simulate streaming generation
-      const words = ['Hello', ',', ' ', 'I', ' ', 'am', ' ', 'a', ' ', 'simulated', ' ', 'response', '.'];
+      const words = [
+        'Hello',
+        ',',
+        ' ',
+        'I',
+        ' ',
+        'am',
+        ' ',
+        'a',
+        ' ',
+        'simulated',
+        ' ',
+        'response',
+        '.',
+      ];
 
       for (let i = 0; i < Math.min(genConfig.maxTokens, words.length); i++) {
         if (this.shouldCancel) {
@@ -446,7 +460,21 @@ export class LlamaElectronMain extends EventEmitter {
     prompt: string,
     config: ElectronGenerationConfig
   ): Promise<ElectronInferenceResult> {
-    const words = ['Hello', ',', ' ', 'I', ' ', 'am', ' ', 'a', ' ', 'simulated', ' ', 'response', '.'];
+    const words = [
+      'Hello',
+      ',',
+      ' ',
+      'I',
+      ' ',
+      'am',
+      ' ',
+      'a',
+      ' ',
+      'simulated',
+      ' ',
+      'response',
+      '.',
+    ];
     const tokens: number[] = [];
     let text = '';
 

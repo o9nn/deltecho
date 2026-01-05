@@ -176,9 +176,7 @@ export class HyperDimensionalMemory {
             associativeNetworkSize: this.associativeNetwork.size,
             temporalBuckets: this.temporalIndex.size,
             pendingDecay: this.storeCount,
-            avgEmotionalWeight: this.emotionalWeighting.size > 0
-                ? totalEmotionalWeight / this.emotionalWeighting.size
-                : 0,
+            avgEmotionalWeight: this.emotionalWeighting.size > 0 ? totalEmotionalWeight / this.emotionalWeighting.size : 0,
         };
     }
     /**

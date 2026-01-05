@@ -19,22 +19,22 @@ The Sys6 Triality architecture implements a sophisticated cognitive processing m
 
 ### Prime Factor Decomposition
 
-| Prime | Role | Manifestation |
-|-------|------|---------------|
-| **2** | Dyadic pairs | Opponent processing, binary distinctions |
-| **3** | Triadic faces | Three concurrent consciousness streams |
-| **5** | Pentadic stages | Five transformation stages per phase |
+| Prime | Role            | Manifestation                            |
+| ----- | --------------- | ---------------------------------------- |
+| **2** | Dyadic pairs    | Opponent processing, binary distinctions |
+| **3** | Triadic faces   | Three concurrent consciousness streams   |
+| **5** | Pentadic stages | Five transformation stages per phase     |
 
 ### Double Step Delay Pattern
 
 The core innovation is the alternating double step delay pattern:
 
 | Step | State | Dyad | Triad |
-|------|-------|------|-------|
-| 1 | 1 | A | 1 |
-| 2 | 4 | A | 2 |
-| 3 | 6 | B | 2 |
-| 4 | 1 | B | 3 |
+| ---- | ----- | ---- | ----- |
+| 1    | 1     | A    | 1     |
+| 2    | 4     | A    | 2     |
+| 3    | 6     | B    | 2     |
+| 4    | 1     | B    | 3     |
 
 This pattern maintains phase coherence across all three consciousness streams while implementing cubic concurrency.
 
@@ -77,18 +77,13 @@ const integration = new Sys6LLMIntegration({
 });
 
 // Process through single cognitive function
-const result = await integration.process(
-  "Analyze the implications of this decision",
-  'cognitive'
-);
+const result = await integration.process('Analyze the implications of this decision', 'cognitive');
 
 console.log('Response:', result.response);
 console.log('Cycle steps:', result.cycleResult.steps.length);
 
 // Process through all three cognitive cores (triadic)
-const triadicResult = await integration.processTriadic(
-  "Should we proceed with this strategy?"
-);
+const triadicResult = await integration.processTriadic('Should we proceed with this strategy?');
 
 console.log('Cognitive:', triadicResult.cognitive);
 console.log('Affective:', triadicResult.affective);
@@ -157,10 +152,10 @@ Each stream processes the same input with phase-shifted weighting, enabling para
 
 ```typescript
 interface Sys6CycleConfig {
-  dim: number;           // State dimension (required)
-  hiddenDim?: number;    // Hidden dimension (default: dim * 2)
+  dim: number; // State dimension (required)
+  hiddenDim?: number; // Hidden dimension (default: dim * 2)
   telemetryLayers?: number; // LSTM layers (default: 2)
-  dropout?: number;      // Dropout rate (default: 0.1)
+  dropout?: number; // Dropout rate (default: 0.1)
 }
 ```
 
@@ -171,10 +166,10 @@ interface Sys6CycleConfig {
 ```typescript
 class Sys6CycleEngine {
   constructor(config: Sys6CycleConfig);
-  
+
   // Run complete cycle(s)
   forward(inputState: ShapedTensor, numCycles?: number): CycleResult;
-  
+
   // Run single step (for incremental processing)
   step(absoluteStep: number, ...): StepResult;
 }
@@ -185,10 +180,10 @@ class Sys6CycleEngine {
 ```typescript
 class Sys6LLMIntegration {
   constructor(config: { dim: number; provider: LLMProvider });
-  
+
   // Process through single cognitive function
   process(input: string, cognitiveFunction: CognitiveFunction): Promise<ProcessResult>;
-  
+
   // Process through all three cores
   processTriadic(input: string): Promise<TriadicResult>;
 }

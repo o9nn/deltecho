@@ -1,6 +1,6 @@
 /**
  * Inferno Kernel - Pure Kernel-Based Distributed AGI Operating System
- * 
+ *
  * This module implements OpenCog as a pure Inferno kernel-based distributed
  * AGI operating system. Instead of layering cognitive architectures on top
  * of existing operating systems, this implementation makes cognitive

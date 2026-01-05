@@ -20,21 +20,24 @@ This is the browser version of Delta Chat Desktop. It runs as a web application 
 
 1. **Download and extract** the browser package
 2. **Install dependencies**:
+
    ```bash
    npm install
    ```
 
 3. **Set up authentication**:
+
    ```bash
    # Option 1: Environment variable
    WEB_PASSWORD="your_secure_password" npm start
-   
+
    # Option 2: Create .env file
    cp .env.example .env
    # Edit .env and set WEB_PASSWORD=your_secure_password
    ```
 
 4. **Start the server**:
+
    ```bash
    npm start
    ```
@@ -51,6 +54,7 @@ The browser version requires HTTPS for security. By default, it uses self-signed
 ### Development Mode
 
 For development/testing without authentication:
+
 ```bash
 NODE_ENV=test npm start
 ```
@@ -60,7 +64,7 @@ NODE_ENV=test npm start
 ### Environment Variables
 
 - \`WEB_PASSWORD\`: Required password for web access
-- \`NODE_ENV\`: Set to "test" to skip authentication  
+- \`NODE_ENV\`: Set to "test" to skip authentication
 - \`PORT\`: Server port (default: 3000)
 - \`DC_ACCOUNTS_DIR\`: Directory for Delta Chat accounts
 

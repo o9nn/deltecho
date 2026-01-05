@@ -767,8 +767,7 @@ export class SelfState extends EventEmitter {
       target,
       details,
       provenance:
-        provenance ||
-        createProvenance({ type: 'internal', name: 'SelfState' }, 'verified'),
+        provenance || createProvenance({ type: 'internal', name: 'SelfState' }, 'verified'),
       success,
       reason,
     };

@@ -49,16 +49,12 @@ ipcMain.handle('storage:delete', (_event, key: string) => {
 
 ipcMain.handle('storage:clear', (_event, prefix: string) => {
   const allKeys = Object.keys(store.store);
-  allKeys
-    .filter(key => key.startsWith(prefix))
-    .forEach(key => store.delete(key));
+  allKeys.filter((key) => key.startsWith(prefix)).forEach((key) => store.delete(key));
 });
 
 ipcMain.handle('storage:keys', (_event, prefix?: string) => {
   const allKeys = Object.keys(store.store);
-  return prefix 
-    ? allKeys.filter(key => key.startsWith(prefix))
-    : allKeys;
+  return prefix ? allKeys.filter((key) => key.startsWith(prefix)) : allKeys;
 });
 ```
 
@@ -103,19 +99,19 @@ const llmService = new EnhancedLLMService({
 async function handleUserMessage(message: string) {
   // Add to memory
   await ragMemory.addMessage('user', message);
-  
+
   // Get conversation context
   const history = await ragMemory.getConversationHistory();
-  
+
   // Generate response
   const response = await llmService.complete([
     { role: 'system', content: 'You are a helpful AI assistant.' },
-    ...history.map(h => ({ role: h.role, content: h.content })),
+    ...history.map((h) => ({ role: h.role, content: h.content })),
   ]);
-  
+
   // Store response
   await ragMemory.addMessage('assistant', response.content);
-  
+
   return response.content;
 }
 ```
@@ -172,11 +168,11 @@ export function ChatInterface() {
 
   const sendMessage = async () => {
     await ragMemory.addMessage('user', message);
-    
+
     // Your LLM integration here
     const response = await generateResponse(message);
     await ragMemory.addMessage('assistant', response);
-    
+
     // Update UI
     const newHistory = await ragMemory.getConversationHistory();
     setHistory(newHistory);
@@ -266,13 +262,11 @@ Clear old memories periodically to prevent storage bloat:
 ```typescript
 // Clear memories older than 30 days
 async function cleanOldMemories() {
-  const thirtyDaysAgo = Date.now() - (30 * 24 * 60 * 60 * 1000);
+  const thirtyDaysAgo = Date.now() - 30 * 24 * 60 * 60 * 1000;
   const history = await ragMemory.getConversationHistory();
-  
-  const recentHistory = history.filter(
-    msg => msg.timestamp > thirtyDaysAgo
-  );
-  
+
+  const recentHistory = history.filter((msg) => msg.timestamp > thirtyDaysAgo);
+
   await ragMemory.clear();
   for (const msg of recentHistory) {
     await ragMemory.addMessage(msg.role, msg.content);
@@ -290,14 +284,14 @@ let initialized = false;
 
 export async function initializeCognitive() {
   if (initialized) return;
-  
+
   // Initialize storage
   const storage = new ElectronStorageAdapter('deltecho');
-  
+
   // Initialize modules
   await ragMemory.initialize();
   await persona.initialize();
-  
+
   initialized = true;
 }
 ```
@@ -344,6 +338,7 @@ app.on('before-quit', async () => {
 ## Support
 
 For issues and questions:
+
 - GitHub Issues: https://github.com/o9nn/deltecho/issues
 - Documentation: See README files in each package
 - Examples: Check the `examples/` directory

@@ -28,7 +28,8 @@ export const sampleConversations = [
       { role: 'user' as const, content: 'Are they good pets?' },
       {
         role: 'assistant' as const,
-        content: 'Yes, cats make excellent pets. They are relatively low-maintenance and provide companionship.',
+        content:
+          'Yes, cats make excellent pets. They are relatively low-maintenance and provide companionship.',
       },
     ],
   },

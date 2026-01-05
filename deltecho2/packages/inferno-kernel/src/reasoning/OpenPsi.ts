@@ -1,6 +1,6 @@
 /**
  * OpenPsi - Motivational and Emotional System
- * 
+ *
  * OpenPsi provides goal-directed behavior and emotional modeling for AGI.
  * It manages goals, drives, and emotions as kernel-level cognitive states.
  */
@@ -25,9 +25,9 @@ export interface Drive {
 
 export interface Emotion {
   name: string
-  valence: number   // positive/negative [-1, 1]
-  arousal: number   // intensity [0, 1]
-  duration: number  // how long emotion persists
+  valence: number // positive/negative [-1, 1]
+  arousal: number // intensity [0, 1]
+  duration: number // how long emotion persists
 }
 
 /**
@@ -46,7 +46,7 @@ export class OpenPsi {
     this.drives = new Map()
     this.emotions = new Map()
     this.nextGoalId = 1
-    
+
     this.initializeDrives()
   }
 
@@ -59,7 +59,7 @@ export class OpenPsi {
     this.addDrive('competence', 0.5, 0, 1, 0.01)
     this.addDrive('affiliation', 0.5, 0, 1, 0.01)
     this.addDrive('energy', 1.0, 0, 1, 0.02)
-    
+
     console.log('[OpenPsi] Initialized drives')
   }
 
@@ -87,7 +87,7 @@ export class OpenPsi {
    */
   createGoal(name: string, priority: number): Goal {
     const goalId = `goal_${this.nextGoalId++}`
-    
+
     // Create goal atom in AtomSpace
     const goalAtom = this.atomSpace.addNode('ConceptNode', name, {
       strength: priority,
@@ -104,7 +104,7 @@ export class OpenPsi {
 
     this.goals.set(goalId, goal)
     console.log(`[OpenPsi] Created goal: ${name} (priority: ${priority})`)
-    
+
     return goal
   }
 
@@ -140,7 +140,7 @@ export class OpenPsi {
     for (const goal of this.goals.values()) {
       // Score based on priority and lack of satisfaction
       const score = goal.priority * (1 - goal.satisfaction)
-      
+
       if (score > bestScore) {
         bestScore = score
         bestGoal = goal
@@ -160,10 +160,7 @@ export class OpenPsi {
   updateDrives(): void {
     for (const drive of this.drives.values()) {
       // Decay drive value
-      drive.value = Math.max(
-        drive.min,
-        drive.value - drive.decayRate
-      )
+      drive.value = Math.max(drive.min, drive.value - drive.decayRate)
 
       // Generate goals based on low drives
       if (drive.value < 0.3) {
@@ -181,14 +178,19 @@ export class OpenPsi {
 
     drive.value = Math.min(drive.max, drive.value + amount)
     console.log(`[OpenPsi] Satisfied drive ${driveName}: ${drive.value}`)
-    
+
     return true
   }
 
   /**
    * Add emotion
    */
-  addEmotion(name: string, valence: number, arousal: number, duration: number): void {
+  addEmotion(
+    name: string,
+    valence: number,
+    arousal: number,
+    duration: number
+  ): void {
     this.emotions.set(name, {
       name,
       valence: Math.max(-1, Math.min(1, valence)),
@@ -196,7 +198,9 @@ export class OpenPsi {
       duration,
     })
 
-    console.log(`[OpenPsi] Emotion: ${name} (valence: ${valence}, arousal: ${arousal})`)
+    console.log(
+      `[OpenPsi] Emotion: ${name} (valence: ${valence}, arousal: ${arousal})`
+    )
   }
 
   /**
@@ -205,7 +209,7 @@ export class OpenPsi {
   updateEmotions(): void {
     for (const [name, emotion] of this.emotions.entries()) {
       emotion.duration -= 1
-      
+
       if (emotion.duration <= 0) {
         this.emotions.delete(name)
       } else {
@@ -240,23 +244,23 @@ export class OpenPsi {
   executeAction(): void {
     // Select goal
     const goal = this.selectGoal()
-    
+
     if (goal) {
       // Simulate working towards goal
       goal.satisfaction += 0.1
-      
+
       // Generate emotion based on progress
       if (goal.satisfaction > 0.8) {
         this.addEmotion('joy', 0.8, 0.7, 10)
       }
-      
+
       // Satisfy related drives
       this.satisfyDrive('competence', 0.1)
     }
 
     // Update drives
     this.updateDrives()
-    
+
     // Update emotions
     this.updateEmotions()
   }

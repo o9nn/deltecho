@@ -50,7 +50,7 @@ describe('AgentCoordinator', () => {
 
     it('should register default agents', () => {
       const agents = coordinator.getAllAgents();
-      const agentIds = agents.map(a => a.id);
+      const agentIds = agents.map((a) => a.id);
 
       expect(agentIds).toContain('coordinator');
       expect(agentIds).toContain('data-analyst');
@@ -72,7 +72,7 @@ describe('AgentCoordinator', () => {
 
   describe('Lifecycle Management', () => {
     it('should start the coordinator', async () => {
-      const startedPromise = new Promise<void>(resolve => {
+      const startedPromise = new Promise<void>((resolve) => {
         coordinator.once('started', () => resolve());
       });
 
@@ -94,7 +94,7 @@ describe('AgentCoordinator', () => {
     it('should stop the coordinator', async () => {
       await coordinator.start();
 
-      const stoppedPromise = new Promise<void>(resolve => {
+      const stoppedPromise = new Promise<void>((resolve) => {
         coordinator.once('stopped', () => resolve());
       });
 
@@ -113,9 +113,7 @@ describe('AgentCoordinator', () => {
         name: 'Test Agent',
         description: 'A test agent',
         specialization: 'Testing',
-        capabilities: [
-          { name: 'testing', description: 'Test capability', priority: 1 },
-        ],
+        capabilities: [{ name: 'testing', description: 'Test capability', priority: 1 }],
         tools: ['bash', 'read'],
         isActive: true,
         childIds: [],
@@ -131,7 +129,7 @@ describe('AgentCoordinator', () => {
     });
 
     it('should emit agent_registered event', () => {
-      const registeredPromise = new Promise<Agent>(resolve => {
+      const registeredPromise = new Promise<Agent>((resolve) => {
         coordinator.once('agent_registered', resolve);
       });
 
@@ -150,7 +148,7 @@ describe('AgentCoordinator', () => {
 
       coordinator.registerAgent(newAgent);
 
-      return registeredPromise.then(agent => {
+      return registeredPromise.then((agent) => {
         expect(agent.id).toBe('event-test-agent');
       });
     });
@@ -158,7 +156,7 @@ describe('AgentCoordinator', () => {
     it('should get all agents', () => {
       const agents = coordinator.getAllAgents();
       expect(agents.length).toBeGreaterThan(0);
-      expect(agents.every(a => a.id && a.name)).toBe(true);
+      expect(agents.every((a) => a.id && a.name)).toBe(true);
     });
   });
 
@@ -241,26 +239,20 @@ describe('AgentCoordinator', () => {
     });
 
     it('should emit task_created event', () => {
-      const createdPromise = new Promise<Task>(resolve => {
+      const createdPromise = new Promise<Task>((resolve) => {
         coordinator.once('task_created', resolve);
       });
 
       coordinator.createTask('test', 'Test task', {});
 
-      return createdPromise.then(task => {
+      return createdPromise.then((task) => {
         expect(task.type).toBe('test');
       });
     });
 
     it('should create subtasks with parent reference', () => {
       const parentTask = coordinator.createTask('parent', 'Parent task', {});
-      const childTask = coordinator.createTask(
-        'child',
-        'Child task',
-        {},
-        'medium',
-        parentTask.id
-      );
+      const childTask = coordinator.createTask('child', 'Child task', {}, 'medium', parentTask.id);
 
       expect(childTask.parentTaskId).toBe(parentTask.id);
 
@@ -289,7 +281,7 @@ describe('AgentCoordinator', () => {
     it('should process tasks when started', async () => {
       await coordinator.start();
 
-      const completedPromise = new Promise<unknown>(resolve => {
+      const completedPromise = new Promise<unknown>((resolve) => {
         coordinator.once('task_completed', resolve);
       });
 
@@ -297,7 +289,7 @@ describe('AgentCoordinator', () => {
 
       const result = await Promise.race([
         completedPromise,
-        new Promise(resolve => setTimeout(() => resolve(null), 1000)),
+        new Promise((resolve) => setTimeout(() => resolve(null), 1000)),
       ]);
 
       expect(result).not.toBeNull();
@@ -308,7 +300,7 @@ describe('AgentCoordinator', () => {
     it('should assign tasks to appropriate agents', async () => {
       await coordinator.start();
 
-      const assignedPromise = new Promise<{ task: Task; agent: Agent }>(resolve => {
+      const assignedPromise = new Promise<{ task: Task; agent: Agent }>((resolve) => {
         coordinator.once('task_assigned', resolve);
       });
 
@@ -316,7 +308,7 @@ describe('AgentCoordinator', () => {
 
       const result = await Promise.race([
         assignedPromise,
-        new Promise<null>(resolve => setTimeout(() => resolve(null), 1000)),
+        new Promise<null>((resolve) => setTimeout(() => resolve(null), 1000)),
       ]);
 
       expect(result).not.toBeNull();
@@ -340,12 +332,12 @@ describe('AgentCoordinator', () => {
       coordinator.createTask('high', 'High priority', {}, 'high');
 
       // Wait for processing
-      await new Promise(resolve => setTimeout(resolve, 500));
+      await new Promise((resolve) => setTimeout(resolve, 500));
 
       // Critical should be processed first
       if (completedTasks.length >= 2) {
-        const criticalIndex = completedTasks.findIndex(t => t.priority === 'critical');
-        const lowIndex = completedTasks.findIndex(t => t.priority === 'low');
+        const criticalIndex = completedTasks.findIndex((t) => t.priority === 'critical');
+        const lowIndex = completedTasks.findIndex((t) => t.priority === 'low');
         expect(criticalIndex).toBeLessThan(lowIndex);
       }
 
@@ -363,7 +355,7 @@ describe('AgentCoordinator', () => {
 
       coordinator.createTask('test', 'Test task', {});
 
-      await new Promise(resolve => setTimeout(resolve, 300));
+      await new Promise((resolve) => setTimeout(resolve, 300));
 
       expect(events).toContain('created');
       expect(events).toContain('assigned');
@@ -381,7 +373,7 @@ describe('AgentCoordinator', () => {
 
       coordinator.createTask('reasoning', 'Test reasoning task', {});
 
-      await new Promise(resolve => setTimeout(resolve, 300));
+      await new Promise((resolve) => setTimeout(resolve, 300));
 
       expect(invocations.length).toBeGreaterThan(0);
 
@@ -410,7 +402,7 @@ describe('AgentCoordinator', () => {
       expect(state.pendingTaskCount).toBe(2);
 
       await coordinator.start();
-      await new Promise(resolve => setTimeout(resolve, 300));
+      await new Promise((resolve) => setTimeout(resolve, 300));
 
       state = coordinator.getState();
       expect(state.completedTaskCount).toBeGreaterThan(0);
@@ -431,7 +423,7 @@ describe('AgentCoordinator', () => {
       coordinator.createTask('test1', 'Test 1', {});
       coordinator.createTask('test2', 'Test 2', {});
 
-      await new Promise(resolve => setTimeout(resolve, 500));
+      await new Promise((resolve) => setTimeout(resolve, 500));
 
       const metrics = coordinator.getMetrics();
 
@@ -450,7 +442,7 @@ describe('AgentCoordinator', () => {
       coordinator.createTask('analysis', 'Analysis task', {});
       coordinator.createTask('reasoning', 'Reasoning task', {});
 
-      await new Promise(resolve => setTimeout(resolve, 500));
+      await new Promise((resolve) => setTimeout(resolve, 500));
 
       const metrics = coordinator.getMetrics();
 
@@ -484,7 +476,7 @@ describe('AgentCoordinator', () => {
       coordinator.createTask('task2', 'Task 2', {});
       coordinator.createTask('task3', 'Task 3', {});
 
-      await new Promise(resolve => setTimeout(resolve, 500));
+      await new Promise((resolve) => setTimeout(resolve, 500));
 
       const metrics = coordinator.getMetrics();
       // Should have processed at least some tasks
@@ -505,7 +497,7 @@ describe('AgentCoordinator', () => {
       coordinator.createTask('child2', 'Child 2', {}, 'medium', parentTask.id);
 
       // Wait for processing
-      await new Promise(resolve => setTimeout(resolve, 500));
+      await new Promise((resolve) => setTimeout(resolve, 500));
 
       const updatedParent = coordinator.getTask(parentTask.id);
       // Parent should have subtask references

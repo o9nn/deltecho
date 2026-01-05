@@ -25,10 +25,7 @@ import { Sys6MembraneClock } from '../src/transjective/Sys6MembraneClock.js';
 describe('Packets', () => {
   describe('Provenance', () => {
     it('should create provenance with source and trust level', () => {
-      const prov = createProvenance(
-        { type: 'tool', name: 'test-tool', version: '1.0' },
-        'trusted'
-      );
+      const prov = createProvenance({ type: 'tool', name: 'test-tool', version: '1.0' }, 'trusted');
 
       expect(prov.id).toMatch(/^prov-/);
       expect(prov.source.type).toBe('tool');
@@ -66,9 +63,7 @@ describe('Packets', () => {
     });
 
     it('should validate evidence packet structure', () => {
-      const facts: Fact[] = [
-        { id: 'f1', content: 'Test', confidence: 0.8, category: 'inference' },
-      ];
+      const facts: Fact[] = [{ id: 'f1', content: 'Test', confidence: 0.8, category: 'inference' }];
       const prov = createProvenance({ type: 'internal', name: 'test' }, 'verified');
       const packet = createEvidencePacket(facts, prov);
 
@@ -280,7 +275,13 @@ describe('CodecPipeline', () => {
   describe('Tensorize', () => {
     it('should convert hypergraph to tensor representation', () => {
       const events: ArenaEvent[] = [
-        { id: 'e1', type: 'test', content: 'Test content', source: 's', timestamp: new Date().toISOString() },
+        {
+          id: 'e1',
+          type: 'test',
+          content: 'Test content',
+          source: 's',
+          timestamp: new Date().toISOString(),
+        },
       ];
       const graph = codec.graphize(events);
       const tensor = codec.tensorize(graph);

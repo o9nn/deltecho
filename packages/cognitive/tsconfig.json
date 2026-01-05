@@ -26,7 +26,5 @@
   },
   "include": ["./**/*.ts"],
   "exclude": ["node_modules", "dist", "__tests__"],
-  "references": [
-    { "path": "../../dove9" }
-  ]
+  "references": [{ "path": "../../dove9" }]
 }

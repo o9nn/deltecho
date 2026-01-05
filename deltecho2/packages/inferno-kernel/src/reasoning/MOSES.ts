@@ -1,6 +1,6 @@
 /**
  * MOSES - Meta-Optimizing Semantic Evolutionary Search
- * 
+ *
  * MOSES is an evolutionary algorithm for program learning. It evolves
  * programs represented as trees to solve problems by optimizing a fitness
  * function. This is implemented as a kernel service for AGI learning.
@@ -54,13 +54,15 @@ export class MOSES {
    */
   initializePopulation(): void {
     this.population = []
-    
+
     for (let i = 0; i < this.config.populationSize; i++) {
       const program = this.createRandomProgram()
       this.population.push(program)
     }
 
-    console.log(`[MOSES] Initialized population: ${this.population.length} programs`)
+    console.log(
+      `[MOSES] Initialized population: ${this.population.length} programs`
+    )
   }
 
   /**
@@ -68,15 +70,12 @@ export class MOSES {
    */
   private createRandomProgram(): Program {
     // Create a simple random program tree
-    const tree = this.atomSpace.addLink(
-      'ExecutionLink',
-      [
-        this.atomSpace.addNode('PredicateNode', `pred_${Math.random()}`).id,
-        this.atomSpace.addLink('ListLink', [
-          this.atomSpace.addNode('VariableNode', '$X').id,
-        ]).id,
-      ]
-    )
+    const tree = this.atomSpace.addLink('ExecutionLink', [
+      this.atomSpace.addNode('PredicateNode', `pred_${Math.random()}`).id,
+      this.atomSpace.addLink('ListLink', [
+        this.atomSpace.addNode('VariableNode', '$X').id,
+      ]).id,
+    ])
 
     return {
       id: `prog_${this.nextProgramId++}`,
@@ -147,7 +146,7 @@ export class MOSES {
       tournament.push(this.population[idx])
     }
 
-    return tournament.reduce((best, curr) => 
+    return tournament.reduce((best, curr) =>
       curr.fitness > best.fitness ? curr : best
     )
   }
@@ -159,18 +158,29 @@ export class MOSES {
     const original = this.atomSpace.getAtom(atomId)
     if (!original) {
       // If atom not found, create a placeholder
-      return this.atomSpace.addNode('ConceptNode', `placeholder_${Math.random()}`)
+      return this.atomSpace.addNode(
+        'ConceptNode',
+        `placeholder_${Math.random()}`
+      )
     }
 
     if (original.outgoing && original.outgoing.length > 0) {
       // It's a link - recursively clone children
-      const clonedOutgoing = original.outgoing.map(childId =>
-        this.cloneAtomTree(childId).id
+      const clonedOutgoing = original.outgoing.map(
+        childId => this.cloneAtomTree(childId).id
       )
-      return this.atomSpace.addLink(original.type, clonedOutgoing, original.truthValue)
+      return this.atomSpace.addLink(
+        original.type,
+        clonedOutgoing,
+        original.truthValue
+      )
     } else {
       // It's a node - create a copy
-      return this.atomSpace.addNode(original.type, original.name || '', original.truthValue)
+      return this.atomSpace.addNode(
+        original.type,
+        original.name || '',
+        original.truthValue
+      )
     }
   }
 
@@ -193,7 +203,11 @@ export class MOSES {
   /**
    * Replace a subtree in a cloned tree with another subtree
    */
-  private replaceSubtree(rootId: string, targetId: string, replacementId: string): Atom {
+  private replaceSubtree(
+    rootId: string,
+    targetId: string,
+    replacementId: string
+  ): Atom {
     const root = this.atomSpace.getAtom(rootId)
     if (!root) {
       return this.atomSpace.addNode('ConceptNode', 'error')
@@ -210,8 +224,8 @@ export class MOSES {
     }
 
     // Link node - recursively process children
-    const newOutgoing = root.outgoing.map(childId =>
-      this.replaceSubtree(childId, targetId, replacementId).id
+    const newOutgoing = root.outgoing.map(
+      childId => this.replaceSubtree(childId, targetId, replacementId).id
     )
     return this.atomSpace.addLink(root.type, newOutgoing, root.truthValue)
   }
@@ -226,12 +240,14 @@ export class MOSES {
     const subtrees2 = this.getSubtreeIds(parent2.tree.id)
 
     // Select random crossover points (skip root to ensure valid programs)
-    const crossoverPoint1 = subtrees1.length > 1
-      ? subtrees1[1 + Math.floor(Math.random() * (subtrees1.length - 1))]
-      : subtrees1[0]
-    const crossoverPoint2 = subtrees2.length > 1
-      ? subtrees2[1 + Math.floor(Math.random() * (subtrees2.length - 1))]
-      : subtrees2[0]
+    const crossoverPoint1 =
+      subtrees1.length > 1
+        ? subtrees1[1 + Math.floor(Math.random() * (subtrees1.length - 1))]
+        : subtrees1[0]
+    const crossoverPoint2 =
+      subtrees2.length > 1
+        ? subtrees2[1 + Math.floor(Math.random() * (subtrees2.length - 1))]
+        : subtrees2[0]
 
     // Clone parent1's tree and replace a subtree with one from parent2
     const childTree = this.replaceSubtree(
@@ -253,30 +269,31 @@ export class MOSES {
    */
   private mutateNode(atom: Atom): Atom {
     const mutationTypes = ['strength', 'confidence', 'name'] as const
-    const mutationType = mutationTypes[Math.floor(Math.random() * mutationTypes.length)]
+    const mutationType =
+      mutationTypes[Math.floor(Math.random() * mutationTypes.length)]
 
     switch (mutationType) {
       case 'strength': {
         // Mutate truth value strength
-        const newStrength = Math.max(0, Math.min(1,
-          atom.truthValue.strength + (Math.random() - 0.5) * 0.2
-        ))
-        return this.atomSpace.addNode(
-          atom.type,
-          atom.name || '',
-          { strength: newStrength, confidence: atom.truthValue.confidence }
+        const newStrength = Math.max(
+          0,
+          Math.min(1, atom.truthValue.strength + (Math.random() - 0.5) * 0.2)
         )
+        return this.atomSpace.addNode(atom.type, atom.name || '', {
+          strength: newStrength,
+          confidence: atom.truthValue.confidence,
+        })
       }
       case 'confidence': {
         // Mutate truth value confidence
-        const newConfidence = Math.max(0, Math.min(1,
-          atom.truthValue.confidence + (Math.random() - 0.5) * 0.2
-        ))
-        return this.atomSpace.addNode(
-          atom.type,
-          atom.name || '',
-          { strength: atom.truthValue.strength, confidence: newConfidence }
+        const newConfidence = Math.max(
+          0,
+          Math.min(1, atom.truthValue.confidence + (Math.random() - 0.5) * 0.2)
         )
+        return this.atomSpace.addNode(atom.type, atom.name || '', {
+          strength: atom.truthValue.strength,
+          confidence: newConfidence,
+        })
       }
       case 'name': {
         // Mutate the predicate name (for predicate nodes)
@@ -288,7 +305,11 @@ export class MOSES {
           )
         }
         // For other node types, just clone
-        return this.atomSpace.addNode(atom.type, atom.name || '', atom.truthValue)
+        return this.atomSpace.addNode(
+          atom.type,
+          atom.name || '',
+          atom.truthValue
+        )
       }
     }
   }
@@ -313,7 +334,10 @@ export class MOSES {
     // Decide mutation type
     const mutationChoice = Math.random()
 
-    if (mutationChoice < 0.4 && (!targetAtom.outgoing || targetAtom.outgoing.length === 0)) {
+    if (
+      mutationChoice < 0.4 &&
+      (!targetAtom.outgoing || targetAtom.outgoing.length === 0)
+    ) {
       // Point mutation: modify a leaf node's properties
       const mutatedNode = this.mutateNode(targetAtom)
       const newTree = this.replaceSubtree(
@@ -374,11 +398,12 @@ export class MOSES {
       // Create a leaf node
       const nodeTypes = ['VariableNode', 'ConceptNode', 'NumberNode'] as const
       const nodeType = nodeTypes[Math.floor(Math.random() * nodeTypes.length)]
-      const name = nodeType === 'NumberNode'
-        ? String(Math.random())
-        : nodeType === 'VariableNode'
-          ? `$${String.fromCharCode(65 + Math.floor(Math.random() * 26))}`
-          : `concept_${Math.random().toString(36).substr(2, 5)}`
+      const name =
+        nodeType === 'NumberNode'
+          ? String(Math.random())
+          : nodeType === 'VariableNode'
+            ? `$${String.fromCharCode(65 + Math.floor(Math.random() * 26))}`
+            : `concept_${Math.random().toString(36).substr(2, 5)}`
       return this.atomSpace.addNode(nodeType, name)
     }
 
@@ -400,9 +425,7 @@ export class MOSES {
    * Get best programs
    */
   getBestPrograms(count: number): Program[] {
-    return this.population
-      .sort((a, b) => b.fitness - a.fitness)
-      .slice(0, count)
+    return this.population.sort((a, b) => b.fitness - a.fitness).slice(0, count)
   }
 
   /**
@@ -413,9 +436,9 @@ export class MOSES {
 
     for (let i = 0; i < this.config.maxGenerations; i++) {
       this.evolve(fitnessFunc)
-      
+
       const best = this.population[0]
-      
+
       // Early stopping if fitness threshold reached
       if (best.fitness > 0.99) {
         console.log(`[MOSES] Converged at generation ${i}`)
@@ -438,7 +461,7 @@ export class MOSES {
     bestFitness: number
   } {
     const sum = this.population.reduce((s, p) => s + p.fitness, 0)
-    
+
     return {
       generation: this.generation,
       populationSize: this.population.length,

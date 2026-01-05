@@ -160,6 +160,7 @@ packages/inferno-kernel/
 ## Key Features
 
 ### Knowledge Representation
+
 - ✅ Hypergraph storage
 - ✅ Truth values for uncertainty
 - ✅ Attention values for importance
@@ -167,6 +168,7 @@ packages/inferno-kernel/
 - ✅ Efficient indexing
 
 ### Reasoning
+
 - ✅ Deductive inference
 - ✅ Inductive learning
 - ✅ Abductive reasoning
@@ -174,18 +176,21 @@ packages/inferno-kernel/
 - ✅ Forward/backward chaining
 
 ### Learning
+
 - ✅ Evolutionary algorithms
 - ✅ Hebbian learning
 - ✅ Fitness optimization
 - ✅ Population evolution
 
 ### Motivation
+
 - ✅ Goal management
 - ✅ Drive system
 - ✅ Emotion generation
 - ✅ Action selection
 
 ### Distribution
+
 - ✅ Multi-node coordination
 - ✅ Task distribution
 - ✅ Knowledge replication

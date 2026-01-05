@@ -1,13 +1,13 @@
 /**
  * Basic UnifiedLLMService Usage Example
- * 
+ *
  * This example demonstrates how to initialize and use the UnifiedLLMService
  * for cognitive AI processing with the triadic architecture.
- * 
+ *
  * Prerequisites:
  * - Set OPENAI_API_KEY or ANTHROPIC_API_KEY environment variable
  * - Run: pnpm build (to compile the packages)
- * 
+ *
  * Usage:
  * - npx ts-node examples/basic-llm-usage.ts
  */
@@ -43,18 +43,22 @@ async function main() {
   // Register available providers
   if (openaiKey) {
     console.log('✅ OpenAI API key detected');
-    registry.register(new OpenAIProvider({
-      apiKey: openaiKey,
-      model: 'gpt-4-turbo-preview',
-    }));
+    registry.register(
+      new OpenAIProvider({
+        apiKey: openaiKey,
+        model: 'gpt-4-turbo-preview',
+      })
+    );
   }
 
   if (anthropicKey) {
     console.log('✅ Anthropic API key detected');
-    registry.register(new AnthropicProvider({
-      apiKey: anthropicKey,
-      model: 'claude-3-sonnet-20240229',
-    }));
+    registry.register(
+      new AnthropicProvider({
+        apiKey: anthropicKey,
+        model: 'claude-3-sonnet-20240229',
+      })
+    );
   }
 
   // Determine default provider
@@ -138,7 +142,9 @@ async function main() {
   const health = await llmService.getProviderHealth();
   console.log('\nProvider Status:');
   for (const [provider, status] of Object.entries(health)) {
-    console.log(`  ${provider}: ${status.available ? '✅ Available' : '❌ Unavailable'} (${status.latency}ms)`);
+    console.log(
+      `  ${provider}: ${status.available ? '✅ Available' : '❌ Unavailable'} (${status.latency}ms)`
+    );
   }
 
   // Cleanup

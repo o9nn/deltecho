@@ -5,7 +5,7 @@ describe('LLMService', () => {
 
   beforeEach(() => {
     llmService = new LLMService();
-    
+
     // Mock fetch for all tests to avoid real API calls
     global.fetch = (() => {
       const mockFn: any = (...args: any[]) => {
@@ -17,14 +17,14 @@ describe('LLMService', () => {
         ok: true,
         json: async () => ({ choices: [{ message: { content: 'Mocked response' } }] }),
       });
-      mockFn.mockReset = function() {
+      mockFn.mockReset = function () {
         this.calls = [];
       };
-      mockFn.mockResolvedValue = function(value: any) {
+      mockFn.mockResolvedValue = function (value: any) {
         this.mockReturnValue = Promise.resolve(value);
         return this;
       };
-      mockFn.mockResolvedValueOnce = function(value: any) {
+      mockFn.mockResolvedValueOnce = function (value: any) {
         this.mockReturnValue = Promise.resolve(value);
         return this;
       };
@@ -36,16 +36,16 @@ describe('LLMService', () => {
     it('should initialize with default general function', () => {
       const functions = llmService.getAllFunctions();
       expect(functions.length).toBeGreaterThanOrEqual(1);
-      
-      const generalFunc = functions.find(f => f.id === CognitiveFunctionType.GENERAL);
+
+      const generalFunc = functions.find((f) => f.id === CognitiveFunctionType.GENERAL);
       expect(generalFunc).toBeDefined();
       expect(generalFunc?.name).toBe('General Processing');
     });
 
     it('should have default configuration values', () => {
       const functions = llmService.getAllFunctions();
-      const generalFunc = functions.find(f => f.id === CognitiveFunctionType.GENERAL);
-      
+      const generalFunc = functions.find((f) => f.id === CognitiveFunctionType.GENERAL);
+
       expect(generalFunc?.config.model).toBe('gpt-4');
       expect(generalFunc?.config.temperature).toBe(0.7);
       expect(generalFunc?.config.maxTokens).toBe(1000);
@@ -74,8 +74,8 @@ describe('LLMService', () => {
       });
 
       const functions = llmService.getAllFunctions();
-      const generalFunc = functions.find(f => f.id === CognitiveFunctionType.GENERAL);
-      
+      const generalFunc = functions.find((f) => f.id === CognitiveFunctionType.GENERAL);
+
       expect(generalFunc?.config.apiKey).toBe('updated-key');
       expect(generalFunc?.config.temperature).toBe(0.9);
     });
@@ -86,8 +86,8 @@ describe('LLMService', () => {
       });
 
       const functions = llmService.getAllFunctions();
-      const affectiveFunc = functions.find(f => f.id === CognitiveFunctionType.AFFECTIVE_CORE);
-      
+      const affectiveFunc = functions.find((f) => f.id === CognitiveFunctionType.AFFECTIVE_CORE);
+
       expect(affectiveFunc).toBeDefined();
       expect(affectiveFunc?.name).toBe('Affective Core');
     });
@@ -123,8 +123,8 @@ describe('LLMService', () => {
 
       const activeFunctions = llmService.getActiveFunctions();
       expect(activeFunctions.length).toBe(2);
-      expect(activeFunctions.some(f => f.id === CognitiveFunctionType.COGNITIVE_CORE)).toBe(true);
-      expect(activeFunctions.some(f => f.id === CognitiveFunctionType.RELEVANCE_CORE)).toBe(true);
+      expect(activeFunctions.some((f) => f.id === CognitiveFunctionType.COGNITIVE_CORE)).toBe(true);
+      expect(activeFunctions.some((f) => f.id === CognitiveFunctionType.RELEVANCE_CORE)).toBe(true);
     });
 
     it('should return empty array when no functions have API keys', () => {
@@ -165,7 +165,7 @@ describe('LLMService', () => {
     it('should generate response with configured API key', async () => {
       llmService.setConfig({ apiKey: 'test-key' });
       const response = await llmService.generateResponse('Hello');
-      
+
       // Should return the mocked response
       expect(response).toBe('Mocked response');
     });
@@ -186,7 +186,7 @@ describe('LLMService', () => {
         CognitiveFunctionType.COGNITIVE_CORE,
         'Test input'
       );
-      
+
       // Should return the mocked response
       expect(response).toBe('Mocked response');
       expect((global.fetch as any).calls.length).toBeGreaterThan(0);
@@ -197,7 +197,7 @@ describe('LLMService', () => {
         CognitiveFunctionType.AFFECTIVE_CORE,
         'Test input'
       );
-      
+
       // Should return the mocked response
       expect(response).toBe('Mocked response');
       expect((global.fetch as any).calls.length).toBeGreaterThan(0);
@@ -205,12 +205,12 @@ describe('LLMService', () => {
 
     it('should fall back to general function when specific not configured', async () => {
       llmService.setConfig({ apiKey: 'general-key' });
-      
+
       const response = await llmService.generateResponseWithFunction(
         CognitiveFunctionType.SEMANTIC_MEMORY,
         'Test input'
       );
-      
+
       // Should return the mocked response
       expect(response).toBe('Mocked response');
       expect((global.fetch as any).calls.length).toBeGreaterThan(0);
@@ -219,7 +219,7 @@ describe('LLMService', () => {
     it('should track usage statistics', async () => {
       const initialFunctions = llmService.getAllFunctions();
       const cognitiveFunc = initialFunctions.find(
-        f => f.id === CognitiveFunctionType.COGNITIVE_CORE
+        (f) => f.id === CognitiveFunctionType.COGNITIVE_CORE
       );
       const initialRequestCount = cognitiveFunc?.usage.requestCount || 0;
 
@@ -230,7 +230,7 @@ describe('LLMService', () => {
 
       const updatedFunctions = llmService.getAllFunctions();
       const updatedCognitiveFunc = updatedFunctions.find(
-        f => f.id === CognitiveFunctionType.COGNITIVE_CORE
+        (f) => f.id === CognitiveFunctionType.COGNITIVE_CORE
       );
 
       expect(updatedCognitiveFunc?.usage.requestCount).toBe(initialRequestCount + 1);

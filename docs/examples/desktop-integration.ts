@@ -12,31 +12,31 @@ import {
   CognitiveOrchestrator,
   createCognitiveOrchestrator,
   type UnifiedMessage,
-} from '@deltecho/cognitive'
+} from '@deltecho/cognitive';
 
-import { OrchestratorStorageAdapter } from 'deep-tree-echo-core/adapters'
+import { OrchestratorStorageAdapter } from 'deep-tree-echo-core/adapters';
 
 /**
  * Example: Initialize Deep Tree Echo in a desktop app
  */
 export async function initializeDeepTreeEcho(settings: {
-  apiKey?: string
-  apiEndpoint?: string
-  enabled: boolean
-  memoryEnabled: boolean
+  apiKey?: string;
+  apiEndpoint?: string;
+  enabled: boolean;
+  memoryEnabled: boolean;
 }) {
   // Create storage adapter that connects to orchestrator IPC
   const storage = new OrchestratorStorageAdapter({
     socketPath: '/tmp/deep-tree-echo.sock',
     storagePrefix: 'deltecho:desktop',
-  })
+  });
 
   // Connect to orchestrator (must be running)
   try {
-    await storage.connect()
-    console.log('Connected to Deep Tree Echo orchestrator')
+    await storage.connect();
+    console.log('Connected to Deep Tree Echo orchestrator');
   } catch (error) {
-    console.warn('Orchestrator not running, using local mode:', error)
+    console.warn('Orchestrator not running, using local mode:', error);
   }
 
   // Create cognitive orchestrator
@@ -44,29 +44,29 @@ export async function initializeDeepTreeEcho(settings: {
     enabled: settings.enabled,
     apiKey: settings.apiKey,
     apiEndpoint: settings.apiEndpoint,
-  })
+  });
 
   // Initialize cognitive subsystems
-  await cognitive.initialize()
+  await cognitive.initialize();
 
   // Configure LLM if API key is provided
   if (settings.apiKey) {
     cognitive.configureLLM({
       apiKey: settings.apiKey,
       apiEndpoint: settings.apiEndpoint,
-    })
+    });
   }
 
   // Subscribe to cognitive events
   cognitive.on('message_received', (event) => {
-    console.log('Processing message:', event.payload.content)
-  })
+    console.log('Processing message:', event.payload.content);
+  });
 
   cognitive.on('response_generated', (event) => {
-    console.log('Response ready:', event.payload.content)
-  })
+    console.log('Response ready:', event.payload.content);
+  });
 
-  return { cognitive, storage }
+  return { cognitive, storage };
 }
 
 /**
@@ -82,10 +82,10 @@ export async function processUserMessage(
     role: 'user',
     timestamp: Date.now(),
     metadata: {},
-  }
+  };
 
-  const response = await cognitive.processMessage(message)
-  return response.content
+  const response = await cognitive.processMessage(message);
+  return response.content;
 }
 
 /**
@@ -94,7 +94,6 @@ export async function processUserMessage(
 export function useDeepTreeEcho() {
   // This would be a React hook in a real implementation
   // Using pseudo-code for illustration
-
   /*
   const [cognitive, setCognitive] = useState<CognitiveOrchestrator | null>(null)
   const [loading, setLoading] = useState(true)
@@ -134,7 +133,6 @@ export function useDeepTreeEcho() {
 export function setupElectronStorageHandlers() {
   // This would be in the Electron main process
   // Using pseudo-code for illustration
-
   /*
   import { ipcMain } from 'electron'
   import Store from 'electron-store'
@@ -173,28 +171,28 @@ export function setupElectronStorageHandlers() {
  * Example: Full desktop app integration
  */
 export class DesktopDeepTreeEcho {
-  private cognitive: CognitiveOrchestrator | null = null
-  private storage: OrchestratorStorageAdapter | null = null
-  private initialized = false
+  private cognitive: CognitiveOrchestrator | null = null;
+  private storage: OrchestratorStorageAdapter | null = null;
+  private initialized = false;
 
   async initialize(settings: {
-    apiKey?: string
-    apiEndpoint?: string
-    enabled: boolean
-    memoryEnabled: boolean
-    orchestratorSocket?: string
+    apiKey?: string;
+    apiEndpoint?: string;
+    enabled: boolean;
+    memoryEnabled: boolean;
+    orchestratorSocket?: string;
   }): Promise<void> {
-    if (this.initialized) return
+    if (this.initialized) return;
 
     // Connect to orchestrator for storage
     this.storage = new OrchestratorStorageAdapter({
       socketPath: settings.orchestratorSocket || '/tmp/deep-tree-echo.sock',
-    })
+    });
 
     try {
-      await this.storage.connect()
+      await this.storage.connect();
     } catch (error) {
-      console.warn('Running without orchestrator connection')
+      console.warn('Running without orchestrator connection');
     }
 
     // Initialize cognitive orchestrator
@@ -202,23 +200,23 @@ export class DesktopDeepTreeEcho {
       enabled: settings.enabled,
       apiKey: settings.apiKey,
       apiEndpoint: settings.apiEndpoint,
-    })
+    });
 
-    await this.cognitive.initialize()
+    await this.cognitive.initialize();
 
     if (settings.apiKey) {
       this.cognitive.configureLLM({
         apiKey: settings.apiKey,
         apiEndpoint: settings.apiEndpoint,
-      })
+      });
     }
 
-    this.initialized = true
+    this.initialized = true;
   }
 
   async sendMessage(text: string): Promise<string> {
     if (!this.cognitive) {
-      throw new Error('Deep Tree Echo not initialized')
+      throw new Error('Deep Tree Echo not initialized');
     }
 
     const message: UnifiedMessage = {
@@ -227,27 +225,27 @@ export class DesktopDeepTreeEcho {
       role: 'user',
       timestamp: Date.now(),
       metadata: {},
-    }
+    };
 
-    const response = await this.cognitive.processMessage(message)
-    return response.content
+    const response = await this.cognitive.processMessage(message);
+    return response.content;
   }
 
   getState() {
-    return this.cognitive?.getState() || null
+    return this.cognitive?.getState() || null;
   }
 
   clearHistory(): void {
-    this.cognitive?.clearHistory()
+    this.cognitive?.clearHistory();
   }
 
   async cleanup(): Promise<void> {
     if (this.storage) {
-      await this.storage.disconnect()
+      await this.storage.disconnect();
     }
-    this.initialized = false
+    this.initialized = false;
   }
 }
 
 // Export singleton instance for convenience
-export const deepTreeEcho = new DesktopDeepTreeEcho()
+export const deepTreeEcho = new DesktopDeepTreeEcho();

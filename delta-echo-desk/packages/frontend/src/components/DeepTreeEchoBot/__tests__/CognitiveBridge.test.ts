@@ -90,7 +90,11 @@ describe('CognitiveBridge', () => {
 
       expect(state).not.toBeNull()
       expect(state?.persona.name).toBe('Deep Tree Echo')
-      expect(state?.persona.traits).toEqual(['helpful', 'curious', 'thoughtful'])
+      expect(state?.persona.traits).toEqual([
+        'helpful',
+        'curious',
+        'thoughtful',
+      ])
       expect(state?.memories.shortTerm).toEqual([])
       expect(state?.reasoning.confidenceLevel).toBe(0.5)
       expect(state?.cognitiveContext?.emotionalValence).toBe(0)
@@ -123,9 +127,14 @@ describe('CognitiveBridge', () => {
       }
 
       // Process the same message multiple times rapidly
-      const promises = Array(10).fill(null).map(() =>
-        orchestrator.processMessage({ ...message, id: `msg-${Date.now()}-${Math.random()}` })
-      )
+      const promises = Array(10)
+        .fill(null)
+        .map(() =>
+          orchestrator.processMessage({
+            ...message,
+            id: `msg-${Date.now()}-${Math.random()}`,
+          })
+        )
 
       const responses = await Promise.all(promises)
 
@@ -186,12 +195,14 @@ describe('CognitiveBridge', () => {
     })
 
     it('should handle rapid sequential messages without state corruption', async () => {
-      const messages = Array(50).fill(null).map((_, i) => ({
-        id: `rapid-msg-${i}`,
-        content: `Message number ${i}`,
-        role: 'user' as const,
-        timestamp: Date.now() + i,
-      }))
+      const messages = Array(50)
+        .fill(null)
+        .map((_, i) => ({
+          id: `rapid-msg-${i}`,
+          content: `Message number ${i}`,
+          role: 'user' as const,
+          timestamp: Date.now() + i,
+        }))
 
       // Process messages sequentially
       for (const msg of messages) {
@@ -277,7 +288,9 @@ describe('CognitiveBridge', () => {
       expect(state?.memories.shortTerm.length).toBe(10)
       // Should keep the most recent 10
       expect(state?.memories.shortTerm[0].content).toBe('Memory test message 5')
-      expect(state?.memories.shortTerm[9].content).toBe('Memory test message 14')
+      expect(state?.memories.shortTerm[9].content).toBe(
+        'Memory test message 14'
+      )
     })
 
     it('should correctly limit conversation history to 20 items', async () => {
@@ -600,12 +613,19 @@ describe('CognitiveBridge', () => {
     it('should handle timeout-like scenarios', async () => {
       // Simulate a very slow response
       mockFetch.mockImplementationOnce(
-        () => new Promise(resolve => setTimeout(() => resolve({
-          ok: true,
-          json: async () => ({
-            choices: [{ message: { content: 'Delayed response' } }],
-          }),
-        } as Response), 100))
+        () =>
+          new Promise(resolve =>
+            setTimeout(
+              () =>
+                resolve({
+                  ok: true,
+                  json: async () => ({
+                    choices: [{ message: { content: 'Delayed response' } }],
+                  }),
+                } as Response),
+              100
+            )
+          )
       )
 
       const startTime = Date.now()
@@ -624,7 +644,9 @@ describe('CognitiveBridge', () => {
     it('should handle JSON parse errors', async () => {
       mockFetch.mockResolvedValueOnce({
         ok: true,
-        json: async () => { throw new SyntaxError('Invalid JSON') },
+        json: async () => {
+          throw new SyntaxError('Invalid JSON')
+        },
       } as unknown as Response)
 
       const response = await orchestrator.processMessage({
@@ -804,7 +826,9 @@ describe('CognitiveBridge', () => {
       })
 
       const state = orchestrator.getState()
-      expect(Math.abs(state?.cognitiveContext?.emotionalValence || 0)).toBeLessThan(0.5)
+      expect(
+        Math.abs(state?.cognitiveContext?.emotionalValence || 0)
+      ).toBeLessThan(0.5)
     })
 
     it('should calculate high salience for urgent messages', async () => {
@@ -844,7 +868,8 @@ describe('CognitiveBridge', () => {
       })
 
       const state2 = orchestrator.getState()
-      const salienceWithoutQuestion = state2?.cognitiveContext?.salienceScore || 0
+      const salienceWithoutQuestion =
+        state2?.cognitiveContext?.salienceScore || 0
 
       expect(salienceWithQuestion).toBeGreaterThan(salienceWithoutQuestion)
     })
@@ -852,14 +877,17 @@ describe('CognitiveBridge', () => {
     it('should handle mixed sentiment messages', async () => {
       await orchestrator.processMessage({
         id: 'mixed',
-        content: 'I love this feature but hate how slow it is. Great work though!',
+        content:
+          'I love this feature but hate how slow it is. Great work though!',
         role: 'user',
         timestamp: Date.now(),
       })
 
       const state = orchestrator.getState()
       // Mixed sentiment should result in moderate valence
-      expect(Math.abs(state?.cognitiveContext?.emotionalValence || 0)).toBeLessThan(1)
+      expect(
+        Math.abs(state?.cognitiveContext?.emotionalValence || 0)
+      ).toBeLessThan(1)
     })
   })
 
@@ -979,7 +1007,9 @@ describe('CognitiveBridge', () => {
       })
 
       // Query state while processing
-      const states: (typeof orchestrator extends { getState(): infer R } ? R : never)[] = []
+      const states: (typeof orchestrator extends { getState(): infer R }
+        ? R
+        : never)[] = []
       for (let i = 0; i < 10; i++) {
         states.push(orchestrator.getState())
       }
@@ -1005,12 +1035,14 @@ describe('CognitiveBridge', () => {
     })
 
     it('should handle concurrent message processing', async () => {
-      const messages = Array(10).fill(null).map((_, i) => ({
-        id: `concurrent-${i}`,
-        content: `Concurrent message ${i}`,
-        role: 'user' as const,
-        timestamp: Date.now() + i,
-      }))
+      const messages = Array(10)
+        .fill(null)
+        .map((_, i) => ({
+          id: `concurrent-${i}`,
+          content: `Concurrent message ${i}`,
+          role: 'user' as const,
+          timestamp: Date.now() + i,
+        }))
 
       // Process all messages concurrently
       const responses = await Promise.all(

@@ -30,23 +30,29 @@ deltecho/
 ## Core Cognitive Packages
 
 ### deep-tree-echo-core/
+
 Core cognitive library providing LLM services, memory systems (RAG + hyperdimensional), and personality management.
 
 **Key Commands**:
+
 ```bash
 pnpm build:core        # Build the core package
 pnpm check:core        # Type check
 ```
 
 ### dove9/
+
 The Dove9 cognitive operating system implementing the triadic cognitive loop:
+
 - 3 concurrent cognitive streams at 120° phase offset
 - 12-step cognitive cycle
 - Self-balancing feedback loops
 - Feedforward anticipation
 
 ### deep-tree-echo-orchestrator/
+
 System daemon that coordinates all Deep Tree Echo services:
+
 - DeltaChat Interface (JSON-RPC)
 - Dovecot Interface (email processing)
 - IPC Server (desktop app communication)
@@ -55,6 +61,7 @@ System daemon that coordinates all Deep Tree Echo services:
 - Dove9 Integration (cognitive OS)
 
 **Key Commands**:
+
 ```bash
 pnpm start:orchestrator  # Start the daemon
 ```
@@ -62,13 +69,17 @@ pnpm start:orchestrator  # Start the daemon
 ## Unified Packages (`packages/`)
 
 ### @deltecho/cognitive
+
 Unified cognitive interface that integrates:
+
 - deep-tree-echo-core (LLM, memory, personality)
 - dove9 (triadic cognitive loop)
 - CognitiveOrchestrator class for unified access
 
 ### @deltecho/reasoning
+
 AGI kernel extracted from inferno-kernel, providing:
+
 - AtomSpace (hypergraph knowledge representation)
 - PatternMatcher (hypergraph pattern matching)
 - PLN Engine (Probabilistic Logic Networks)
@@ -78,14 +89,18 @@ AGI kernel extracted from inferno-kernel, providing:
 - DistributedCoordinator (multi-node AGI)
 
 ### @deltecho/shared
+
 Shared types, utilities, and constants used across all packages:
+
 - DesktopSettingsType (including Deep Tree Echo bot settings)
 - Logger utilities
 - Localization helpers
 - Common utilities
 
 ### @deltecho/ui-components
+
 React components for the cognitive interface:
+
 - DeepTreeEchoBot (main bot component)
 - AICompanionHub (multi-AI platform management)
 - Memory visualization components
@@ -95,14 +110,17 @@ React components for the cognitive interface:
 Both desktop apps share similar architecture but have unique features:
 
 ### delta-echo-desk/
+
 - Includes **AI Companion Hub** for multi-AI platform management
 - ConnectorRegistry for multiple LLM providers
 
 ### deltecho2/
+
 - Includes **Inferno Kernel** integration
 - Enhanced Deep Tree Echo settings (parallel processing)
 
 **Common Commands**:
+
 ```bash
 pnpm dev:desktop       # Start desktop app in dev mode
 pnpm dev:electron      # Start Electron dev mode
@@ -135,6 +153,7 @@ pnpm build:ui          # @deltecho/ui-components
 ## Architecture Philosophy
 
 The codebase follows the **Dove9 paradigm** where "everything is a chatbot":
+
 - Mail server acts as the CPU (cognitive processing unit)
 - Messages are process threads
 - Inference is feedforward processing

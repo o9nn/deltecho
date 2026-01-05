@@ -200,7 +200,9 @@ describe('Orchestrator E2E Tests', () => {
     it('should validate webhook signatures', () => {
       const validateSignature = (payload: string, signature: string, secret: string): boolean => {
         // Simple mock validation
-        const expectedSig = `sha256=${Buffer.from(secret + payload).toString('hex').substring(0, 64)}`;
+        const expectedSig = `sha256=${Buffer.from(secret + payload)
+          .toString('hex')
+          .substring(0, 64)}`;
         return signature.startsWith('sha256=');
       };
 

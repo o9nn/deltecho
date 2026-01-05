@@ -97,7 +97,7 @@ export class NativeInferenceEngine extends EventEmitter {
         responses: [
           'Hello! How can I assist you today?',
           'Hi there! What would you like to explore?',
-          'Greetings! I\'m here to help.',
+          "Greetings! I'm here to help.",
         ],
         confidence: 0.9,
       },
@@ -106,7 +106,7 @@ export class NativeInferenceEngine extends EventEmitter {
         pattern: /who are you|what are you|your name/i,
         responses: [
           'I am Deep Tree Echo, an autonomous cognitive agent designed for reasoning and assistance.',
-          'My name is Deep Tree Echo. I\'m a cognitive system built on the double membrane architecture.',
+          "My name is Deep Tree Echo. I'm a cognitive system built on the double membrane architecture.",
         ],
         confidence: 0.95,
       },
@@ -123,7 +123,7 @@ export class NativeInferenceEngine extends EventEmitter {
       {
         pattern: /^(ok|okay|thanks|thank you|got it|understood)/i,
         responses: [
-          'You\'re welcome! Is there anything else I can help with?',
+          "You're welcome! Is there anything else I can help with?",
           'Happy to help! Let me know if you need anything else.',
         ],
         confidence: 0.9,
@@ -132,8 +132,8 @@ export class NativeInferenceEngine extends EventEmitter {
       {
         pattern: /^(what|how|why|when|where|who)\s/i,
         responses: [
-          'That\'s an interesting question. Let me think about it...',
-          'I\'ll need to process that query. One moment...',
+          "That's an interesting question. Let me think about it...",
+          "I'll need to process that query. One moment...",
         ],
         confidence: 0.5, // Lower confidence, may need escalation
       },
@@ -142,7 +142,7 @@ export class NativeInferenceEngine extends EventEmitter {
         pattern: /^(bye|goodbye|see you|farewell)/i,
         responses: [
           'Goodbye! Feel free to return anytime.',
-          'Take care! I\'ll be here when you need me.',
+          "Take care! I'll be here when you need me.",
         ],
         confidence: 0.9,
       },
@@ -369,10 +369,10 @@ export class NativeInferenceEngine extends EventEmitter {
     }
 
     if (wordCount > 50) {
-      return 'I\'ve received your detailed input. Let me process the key points and respond appropriately.';
+      return "I've received your detailed input. Let me process the key points and respond appropriately.";
     }
 
-    return 'I\'ve processed your input. Is there a specific aspect you\'d like me to focus on?';
+    return "I've processed your input. Is there a specific aspect you'd like me to focus on?";
   }
 
   /**
@@ -465,7 +465,9 @@ export class NativeInferenceEngine extends EventEmitter {
     complexity += questionWords * 0.1;
 
     // Technical terms (simplified detection)
-    const technicalTerms = (prompt.match(/\b(algorithm|architecture|system|process|function|data|model)\b/gi) || []).length;
+    const technicalTerms = (
+      prompt.match(/\b(algorithm|architecture|system|process|function|data|model)\b/gi) || []
+    ).length;
     complexity += technicalTerms * 0.05;
 
     // Negation complexity

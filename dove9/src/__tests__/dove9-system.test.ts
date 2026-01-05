@@ -10,12 +10,7 @@
  * - Event handling and lifecycle
  */
 
-import {
-  Dove9System,
-  Dove9SystemConfig,
-  MailMessage,
-  createDove9System,
-} from '../index.js';
+import { Dove9System, Dove9SystemConfig, MailMessage, createDove9System } from '../index.js';
 import {
   LLMServiceInterface,
   MemoryStoreInterface,
@@ -437,7 +432,7 @@ describe('Multi-Message Processing', () => {
     // All messages should be processed and return process objects
     expect(processes.length).toBe(3);
     // Processes may complete quickly, so we just verify they were created
-    expect(processes.every(p => p.id !== undefined)).toBe(true);
+    expect(processes.every((p) => p.id !== undefined)).toBe(true);
   });
 
   it('should process messages in priority order', async () => {

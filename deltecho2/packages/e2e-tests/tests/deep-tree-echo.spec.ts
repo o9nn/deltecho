@@ -83,7 +83,9 @@ test.describe('Deep Tree Echo Cognitive Interface', () => {
         await switchToProfile(page, existingProfiles[0].id)
       }
 
-      const toggleSwitch = page.locator('.toggle-switch-container .toggle-switch')
+      const toggleSwitch = page.locator(
+        '.toggle-switch-container .toggle-switch'
+      )
       const isVisible = await toggleSwitch.isVisible().catch(() => false)
 
       if (isVisible) {
@@ -268,7 +270,9 @@ test.describe('Deep Tree Echo Cognitive Interface', () => {
 
       // Check for persona state indicators
       const stateIndicator = page.locator('.persona-state')
-      const indicatorExists = await stateIndicator.isVisible().catch(() => false)
+      const indicatorExists = await stateIndicator
+        .isVisible()
+        .catch(() => false)
 
       if (indicatorExists) {
         // Get current state
@@ -402,7 +406,7 @@ test.describe('Deep Tree Echo Cognitive Interface', () => {
 
         if (containerExists) {
           // Verify scrolling works
-          await messageContainer.evaluate((el) => {
+          await messageContainer.evaluate(el => {
             el.scrollTop = 0
           })
 

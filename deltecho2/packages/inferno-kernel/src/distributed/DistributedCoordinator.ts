@@ -1,6 +1,6 @@
 /**
  * Distributed Coordinator - Multi-Node AGI Coordination
- * 
+ *
  * Coordinates cognitive processing across multiple Inferno kernel instances,
  * enabling true distributed AGI where intelligence emerges from networked
  * kernel nodes working in concert.
@@ -49,7 +49,8 @@ export class DistributedCoordinator {
   ) {
     this.localAtomSpace = localAtomSpace
     this.config = {
-      nodeId: config.nodeId || `node_${Math.random().toString(36).substr(2, 9)}`,
+      nodeId:
+        config.nodeId || `node_${Math.random().toString(36).substr(2, 9)}`,
       heartbeatInterval: config.heartbeatInterval || 5000,
       taskTimeout: config.taskTimeout || 30000,
       replicationFactor: config.replicationFactor || 2,
@@ -74,8 +75,10 @@ export class DistributedCoordinator {
       lastHeartbeat: Date.now(),
     }
     this.nodes.set(this.config.nodeId, localNode)
-    
-    console.log(`[DistributedCoordinator] Node ${this.config.nodeId} initialized`)
+
+    console.log(
+      `[DistributedCoordinator] Node ${this.config.nodeId} initialized`
+    )
   }
 
   /**
@@ -87,7 +90,7 @@ export class DistributedCoordinator {
       lastHeartbeat: Date.now(),
     }
     this.nodes.set(node.nodeId, nodeInfo)
-    
+
     console.log(`[DistributedCoordinator] Registered node ${node.nodeId}`)
   }
 
@@ -111,7 +114,7 @@ export class DistributedCoordinator {
 
     for (const [nodeId, node] of this.nodes.entries()) {
       if (nodeId === this.config.nodeId) continue // Don't prune self
-      
+
       if (now - node.lastHeartbeat > timeout) {
         deadNodes.push(nodeId)
         this.nodes.delete(nodeId)
@@ -119,7 +122,9 @@ export class DistributedCoordinator {
     }
 
     if (deadNodes.length > 0) {
-      console.log(`[DistributedCoordinator] Pruned dead nodes: ${deadNodes.join(', ')}`)
+      console.log(
+        `[DistributedCoordinator] Pruned dead nodes: ${deadNodes.join(', ')}`
+      )
     }
 
     return deadNodes
@@ -128,12 +133,9 @@ export class DistributedCoordinator {
   /**
    * Create a distributed task
    */
-  createTask(
-    type: DistributedTask['type'],
-    atomSpaceSnapshot: string
-  ): string {
+  createTask(type: DistributedTask['type'], atomSpaceSnapshot: string): string {
     const taskId = `task_${this.nextTaskId++}`
-    
+
     const task: DistributedTask = {
       taskId,
       type,
@@ -142,8 +144,10 @@ export class DistributedCoordinator {
     }
 
     this.tasks.set(taskId, task)
-    console.log(`[DistributedCoordinator] Created task ${taskId} of type ${type}`)
-    
+    console.log(
+      `[DistributedCoordinator] Created task ${taskId} of type ${type}`
+    )
+
     return taskId
   }
 
@@ -166,7 +170,9 @@ export class DistributedCoordinator {
     }
 
     if (!bestNode) {
-      console.log(`[DistributedCoordinator] No suitable node for task ${taskId}`)
+      console.log(
+        `[DistributedCoordinator] No suitable node for task ${taskId}`
+      )
       return false
     }
 
@@ -174,7 +180,9 @@ export class DistributedCoordinator {
     task.status = 'running'
     bestNode.load++
 
-    console.log(`[DistributedCoordinator] Assigned task ${taskId} to node ${bestNode.nodeId}`)
+    console.log(
+      `[DistributedCoordinator] Assigned task ${taskId} to node ${bestNode.nodeId}`
+    )
     return true
   }
 
@@ -205,11 +213,13 @@ export class DistributedCoordinator {
    */
   replicateAtoms(atoms: Atom[]): Map<string, Atom[]> {
     const distribution = new Map<string, Atom[]>()
-    
+
     for (const atom of atoms) {
       // Assign to multiple nodes based on replication factor
-      const nodes = this.selectNodesForReplication(this.config.replicationFactor)
-      
+      const nodes = this.selectNodesForReplication(
+        this.config.replicationFactor
+      )
+
       for (const nodeId of nodes) {
         if (!distribution.has(nodeId)) {
           distribution.set(nodeId, [])
@@ -221,7 +231,7 @@ export class DistributedCoordinator {
     console.log(
       `[DistributedCoordinator] Replicated ${atoms.length} atoms across ${distribution.size} nodes`
     )
-    
+
     return distribution
   }
 
@@ -244,15 +254,19 @@ export class DistributedCoordinator {
    * Synchronize AtomSpace across nodes
    */
   async synchronizeAtomSpace(): Promise<void> {
-    console.log('[DistributedCoordinator] Synchronizing AtomSpace across nodes...')
-    
+    console.log(
+      '[DistributedCoordinator] Synchronizing AtomSpace across nodes...'
+    )
+
     const localAtoms = this.localAtomSpace.getAllAtoms()
     const distribution = this.replicateAtoms(localAtoms)
 
     // In a real implementation, this would send atoms to remote nodes
     // For now, we just log the distribution
     for (const [nodeId, atoms] of distribution.entries()) {
-      console.log(`[DistributedCoordinator] Node ${nodeId}: ${atoms.length} atoms`)
+      console.log(
+        `[DistributedCoordinator] Node ${nodeId}: ${atoms.length} atoms`
+      )
     }
   }
 
@@ -268,7 +282,7 @@ export class DistributedCoordinator {
     completedTasks: number
   } {
     const tasks = Array.from(this.tasks.values())
-    
+
     return {
       totalNodes: this.nodes.size,
       activeNodes: this.nodes.size,

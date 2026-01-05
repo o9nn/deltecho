@@ -38,7 +38,7 @@ Based on LCM(2,3,5) = 30
 Local "delay-line" operator that compresses the naive 6-step dyad×triad multiplex into 4 real steps by holding the dyad for two consecutive steps while the triad advances.
 
 | Step | State | Dyad | Triad |
-|------|-------|------|-------|
+| ---- | ----- | ---- | ----- |
 | 1    | 1     | A    | 1     |
 | 2    | 4     | A    | 2     |
 | 3    | 6     | B    | 2     |
@@ -71,7 +71,7 @@ Clock30 (μ) ───▶│ σ: 5 stages × 6 steps; per stage: φ + 2 sync    
                           ▲                    ▲
                           │                    │
                  C₈ bundle│            K₉ bundle│
-            (cubic conc.) │        (triadic conv) 
+            (cubic conc.) │        (triadic conv)
                Δ₂ from D  │          Δ₃ from T
 ```
 
@@ -79,7 +79,7 @@ Clock30 (μ) ───▶│ σ: 5 stages × 6 steps; per stage: φ + 2 sync    
 
 ### What "a step" means
 
-A sys6 step is like a **single transformer block time-slice**, except it runs a *bundle* of parallel sub-computations each step:
+A sys6 step is like a **single transformer block time-slice**, except it runs a _bundle_ of parallel sub-computations each step:
 
 - **8-way parallel "cubic concurrency"** (C₈) - think: 8 experts / 8 subspaces / 8 simultaneous pairwise-thread states
 - **9-phase "triadic convolution"** (K₉) - think: 9 convolutional kernels / 9 relational filters, multiplexed across the 30-step run
@@ -87,10 +87,10 @@ A sys6 step is like a **single transformer block time-slice**, except it runs a 
 
 ### Architectural Analogies
 
-- **C₈** ≈ *Mixture-of-Experts width* (parallel branches)
-- **K₉** ≈ *phase-conditioned kernel bank* (like convolution kernels chosen by phase)
-- **P (5 stages)** ≈ *macro-block scheduling* (like 5 "chapters" of a computation, each 6 steps)
-- **φ (double-step delay)** ≈ *clocked gating / dilated recurrence* that "holds" one pathway while another advances
+- **C₈** ≈ _Mixture-of-Experts width_ (parallel branches)
+- **K₉** ≈ _phase-conditioned kernel bank_ (like convolution kernels chosen by phase)
+- **P (5 stages)** ≈ _macro-block scheduling_ (like 5 "chapters" of a computation, each 6 steps)
+- **φ (double-step delay)** ≈ _clocked gating / dilated recurrence_ that "holds" one pathway while another advances
 
 **Density claim**: You get **more operations per real-time step** by shifting complexity into parallel state.
 
@@ -123,10 +123,10 @@ Sys6 explicitly trades:
 At step `t`:
 
 ```typescript
-dyadicPhase = t % 2
-triadicPhase = t % 3
-pentadicStage = Math.ceil(t / 6)
-fourStepPhase = ((t - 1) % 4) + 1
+dyadicPhase = t % 2;
+triadicPhase = t % 3;
+pentadicStage = Math.ceil(t / 6);
+fourStepPhase = ((t - 1) % 4) + 1;
 ```
 
 ### Scheduling Rules

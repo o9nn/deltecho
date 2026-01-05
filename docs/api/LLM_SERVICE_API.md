@@ -31,10 +31,10 @@ new UnifiedLLMService(config: UnifiedLLMServiceConfig)
 
 **Parameters:**
 
-| Parameter | Type | Description |
-|-----------|------|-------------|
-| `config.defaultProvider` | `string` | Default provider name ('openai' or 'anthropic') |
-| `config.registry` | `LLMProviderRegistry` | Provider registry instance |
+| Parameter                | Type                  | Description                                     |
+| ------------------------ | --------------------- | ----------------------------------------------- |
+| `config.defaultProvider` | `string`              | Default provider name ('openai' or 'anthropic') |
+| `config.registry`        | `LLMProviderRegistry` | Provider registry instance                      |
 
 ### Methods
 
@@ -47,6 +47,7 @@ async initialize(): Promise<void>
 ```
 
 **Example:**
+
 ```typescript
 const service = new UnifiedLLMService({ defaultProvider: 'openai', registry });
 await service.initialize();
@@ -66,20 +67,21 @@ async process(
 
 **Parameters:**
 
-| Parameter | Type | Description |
-|-----------|------|-------------|
-| `input` | `string` | The input text to process |
-| `cognitiveFunction` | `CognitiveFunction` | The cognitive function to use |
-| `options.provider` | `string` | Optional: Override default provider |
-| `options.temperature` | `number` | Optional: Override temperature (0-1) |
-| `options.maxTokens` | `number` | Optional: Override max tokens |
+| Parameter             | Type                | Description                          |
+| --------------------- | ------------------- | ------------------------------------ |
+| `input`               | `string`            | The input text to process            |
+| `cognitiveFunction`   | `CognitiveFunction` | The cognitive function to use        |
+| `options.provider`    | `string`            | Optional: Override default provider  |
+| `options.temperature` | `number`            | Optional: Override temperature (0-1) |
+| `options.maxTokens`   | `number`            | Optional: Override max tokens        |
 
 **Returns:** `Promise<LLMResponse>`
 
 **Example:**
+
 ```typescript
 const response = await service.process(
-  "Analyze the market trends",
+  'Analyze the market trends',
   CognitiveFunction.COGNITIVE_CORE
 );
 console.log(response.content);
@@ -95,19 +97,20 @@ async processTriadic(input: string): Promise<TriadicResponse>
 
 **Parameters:**
 
-| Parameter | Type | Description |
-|-----------|------|-------------|
-| `input` | `string` | The input text to process |
+| Parameter | Type     | Description               |
+| --------- | -------- | ------------------------- |
+| `input`   | `string` | The input text to process |
 
 **Returns:** `Promise<TriadicResponse>`
 
 **Example:**
+
 ```typescript
-const result = await service.processTriadic("Should we expand internationally?");
-console.log(result.cognitive);  // Logical analysis
-console.log(result.affective);  // Emotional considerations
-console.log(result.relevance);  // Integration
-console.log(result.synthesis);  // Unified response
+const result = await service.processTriadic('Should we expand internationally?');
+console.log(result.cognitive); // Logical analysis
+console.log(result.affective); // Emotional considerations
+console.log(result.relevance); // Integration
+console.log(result.synthesis); // Unified response
 ```
 
 #### processStream()
@@ -122,9 +125,10 @@ async processStream(
 ```
 
 **Example:**
+
 ```typescript
 const stream = await service.processStream(
-  "Explain quantum computing",
+  'Explain quantum computing',
   CognitiveFunction.COGNITIVE_CORE
 );
 
@@ -144,6 +148,7 @@ async getProviderHealth(): Promise<Record<string, ProviderHealth>>
 **Returns:** Object with provider names as keys and health status as values.
 
 **Example:**
+
 ```typescript
 const health = await service.getProviderHealth();
 // { openai: { available: true, latency: 245 }, anthropic: { available: true, latency: 312 } }
@@ -188,6 +193,7 @@ register(provider: LLMProvider): void
 ```
 
 **Example:**
+
 ```typescript
 const registry = LLMProviderRegistry.getInstance();
 registry.register(new OpenAIProvider({ apiKey: 'sk-...' }));
@@ -229,15 +235,16 @@ new OpenAIProvider(config: OpenAIProviderConfig)
 
 **Parameters:**
 
-| Parameter | Type | Default | Description |
-|-----------|------|---------|-------------|
-| `apiKey` | `string` | Required | OpenAI API key |
-| `model` | `string` | `'gpt-4-turbo-preview'` | Model to use |
-| `temperature` | `number` | `0.7` | Sampling temperature |
-| `maxTokens` | `number` | `2000` | Maximum tokens in response |
-| `baseUrl` | `string` | `'https://api.openai.com/v1'` | API base URL |
+| Parameter     | Type     | Default                       | Description                |
+| ------------- | -------- | ----------------------------- | -------------------------- |
+| `apiKey`      | `string` | Required                      | OpenAI API key             |
+| `model`       | `string` | `'gpt-4-turbo-preview'`       | Model to use               |
+| `temperature` | `number` | `0.7`                         | Sampling temperature       |
+| `maxTokens`   | `number` | `2000`                        | Maximum tokens in response |
+| `baseUrl`     | `string` | `'https://api.openai.com/v1'` | API base URL               |
 
 **Example:**
+
 ```typescript
 const provider = new OpenAIProvider({
   apiKey: process.env.OPENAI_API_KEY,
@@ -248,13 +255,13 @@ const provider = new OpenAIProvider({
 
 ### Supported Models
 
-| Model | Description |
-|-------|-------------|
+| Model                 | Description                      |
+| --------------------- | -------------------------------- |
 | `gpt-4-turbo-preview` | Latest GPT-4 Turbo (recommended) |
-| `gpt-4` | GPT-4 base model |
-| `gpt-4-32k` | GPT-4 with 32k context |
-| `gpt-3.5-turbo` | Fast and cost-effective |
-| `gpt-3.5-turbo-16k` | GPT-3.5 with 16k context |
+| `gpt-4`               | GPT-4 base model                 |
+| `gpt-4-32k`           | GPT-4 with 32k context           |
+| `gpt-3.5-turbo`       | Fast and cost-effective          |
+| `gpt-3.5-turbo-16k`   | GPT-3.5 with 16k context         |
 
 ---
 
@@ -276,14 +283,15 @@ new AnthropicProvider(config: AnthropicProviderConfig)
 
 **Parameters:**
 
-| Parameter | Type | Default | Description |
-|-----------|------|---------|-------------|
-| `apiKey` | `string` | Required | Anthropic API key |
-| `model` | `string` | `'claude-3-sonnet-20240229'` | Model to use |
-| `temperature` | `number` | `0.7` | Sampling temperature |
-| `maxTokens` | `number` | `2000` | Maximum tokens in response |
+| Parameter     | Type     | Default                      | Description                |
+| ------------- | -------- | ---------------------------- | -------------------------- |
+| `apiKey`      | `string` | Required                     | Anthropic API key          |
+| `model`       | `string` | `'claude-3-sonnet-20240229'` | Model to use               |
+| `temperature` | `number` | `0.7`                        | Sampling temperature       |
+| `maxTokens`   | `number` | `2000`                       | Maximum tokens in response |
 
 **Example:**
+
 ```typescript
 const provider = new AnthropicProvider({
   apiKey: process.env.ANTHROPIC_API_KEY,
@@ -293,11 +301,11 @@ const provider = new AnthropicProvider({
 
 ### Supported Models
 
-| Model | Description |
-|-------|-------------|
-| `claude-3-opus-20240229` | Most capable Claude model |
+| Model                      | Description                        |
+| -------------------------- | ---------------------------------- |
+| `claude-3-opus-20240229`   | Most capable Claude model          |
 | `claude-3-sonnet-20240229` | Balanced performance (recommended) |
-| `claude-3-haiku-20240307` | Fastest Claude model |
+| `claude-3-haiku-20240307`  | Fastest Claude model               |
 
 ---
 
@@ -459,11 +467,11 @@ try {
 
 ### Common Error Codes
 
-| Code | Description | Solution |
-|------|-------------|----------|
-| 401 | Unauthorized | Check API key |
-| 429 | Rate limited | Wait and retry |
-| 500 | Server error | Retry later |
+| Code      | Description   | Solution         |
+| --------- | ------------- | ---------------- |
+| 401       | Unauthorized  | Check API key    |
+| 429       | Rate limited  | Wait and retry   |
+| 500       | Server error  | Retry later      |
 | ENOTFOUND | Network error | Check connection |
 
 ---
@@ -478,4 +486,4 @@ try {
 
 ---
 
-*For more examples, see the `examples/` directory.*
+_For more examples, see the `examples/` directory._

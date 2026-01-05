@@ -93,7 +93,7 @@ export class PlaywrightAutomation {
       `)
 
       if (!runtime.runCommand) {
-        return "Web search is not available on this platform."
+        return 'Web search is not available on this platform.'
       }
 
       const output = await runtime.runCommand(`node "${scriptPath}"`)

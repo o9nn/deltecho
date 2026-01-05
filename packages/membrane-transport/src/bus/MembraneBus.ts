@@ -1,6 +1,6 @@
 /**
  * Membrane Bus
- * 
+ *
  * Manages packet routing between objective and subjective membranes
  * with append-only event log and pub/sub mechanism
  */
@@ -12,7 +12,7 @@ import { Packet, EvidencePacket, IntentPacket } from '../packets/types';
  * Membrane direction for packet flow
  */
 export enum MembraneDirection {
-  INWARD = 'inward',   // Objective → Subjective
+  INWARD = 'inward', // Objective → Subjective
   OUTWARD = 'outward', // Subjective → Objective
 }
 
@@ -57,16 +57,16 @@ export interface BusStatistics {
 export interface MembraneBusConfig {
   /** Maximum log size before rotation */
   maxLogSize: number;
-  
+
   /** Enable append-only log persistence */
   persistLog: boolean;
-  
+
   /** Log file path (if persistLog is true) */
   logPath?: string;
-  
+
   /** Enable packet validation */
   validatePackets: boolean;
-  
+
   /** Maximum packet size in bytes */
   maxPacketSize: number;
 }
@@ -83,7 +83,7 @@ const DEFAULT_CONFIG: MembraneBusConfig = {
 
 /**
  * Membrane Bus
- * 
+ *
  * Central routing system for packets crossing membrane boundaries
  */
 export class MembraneBus extends EventEmitter {
@@ -97,18 +97,18 @@ export class MembraneBus extends EventEmitter {
     rejectedPackets: 0,
     averageLatency: 0,
   };
-  
+
   constructor(config: Partial<MembraneBusConfig> = {}) {
     super();
     this.config = { ...DEFAULT_CONFIG, ...config };
   }
-  
+
   /**
    * Send an evidence packet inward (Objective → Subjective)
    */
   async sendInward(packet: EvidencePacket): Promise<void> {
     const startTime = Date.now();
-    
+
     try {
       // Validate packet
       if (this.config.validatePackets) {
@@ -118,32 +118,31 @@ export class MembraneBus extends EventEmitter {
           return;
         }
       }
-      
+
       // Log packet
       this.logPacket(packet, MembraneDirection.INWARD, true);
-      
+
       // Emit event
       this.emit('packet:inward', packet);
       this.emit('packet:validated', packet);
-      
+
       // Update stats
       this.stats.totalPackets++;
       this.stats.inwardPackets++;
       this.stats.validatedPackets++;
       this.updateLatency(Date.now() - startTime);
-      
     } catch (error) {
       this.emit('bus:error', error as Error);
       throw error;
     }
   }
-  
+
   /**
    * Send an intent packet outward (Subjective → Objective)
    */
   async sendOutward(packet: IntentPacket): Promise<void> {
     const startTime = Date.now();
-    
+
     try {
       // Validate packet
       if (this.config.validatePackets) {
@@ -153,38 +152,37 @@ export class MembraneBus extends EventEmitter {
           return;
         }
       }
-      
+
       // Log packet
       this.logPacket(packet, MembraneDirection.OUTWARD, true);
-      
+
       // Emit event
       this.emit('packet:outward', packet);
       this.emit('packet:validated', packet);
-      
+
       // Update stats
       this.stats.totalPackets++;
       this.stats.outwardPackets++;
       this.stats.validatedPackets++;
       this.updateLatency(Date.now() - startTime);
-      
     } catch (error) {
       this.emit('bus:error', error as Error);
       throw error;
     }
   }
-  
+
   /**
    * Validate a packet
    */
   private validatePacket(packet: Packet): { valid: boolean; errors: string[] } {
     const errors: string[] = [];
-    
+
     // Check packet size
     const packetSize = JSON.stringify(packet).length;
     if (packetSize > this.config.maxPacketSize) {
       errors.push(`Packet size ${packetSize} exceeds maximum ${this.config.maxPacketSize}`);
     }
-    
+
     // Check required fields
     if (!packet.id) {
       errors.push('Packet missing required field: id');
@@ -192,10 +190,10 @@ export class MembraneBus extends EventEmitter {
     if (!packet.type) {
       errors.push('Packet missing required field: type');
     }
-    
+
     // Type-specific validation
     if (packet.type === 'evidence') {
-      const evidencePacket = packet as EvidencePacket;
+      const evidencePacket = packet;
       if (!evidencePacket.facts || evidencePacket.facts.length === 0) {
         errors.push('Evidence packet must contain at least one fact');
       }
@@ -209,7 +207,7 @@ export class MembraneBus extends EventEmitter {
         errors.push('Evidence packet missing risk');
       }
     } else if (packet.type === 'intent') {
-      const intentPacket = packet as IntentPacket;
+      const intentPacket = packet;
       if (!intentPacket.goal) {
         errors.push('Intent packet missing goal');
       }
@@ -223,13 +221,13 @@ export class MembraneBus extends EventEmitter {
         errors.push('Intent packet missing budget');
       }
     }
-    
+
     return {
       valid: errors.length === 0,
       errors,
     };
   }
-  
+
   /**
    * Log a packet to the append-only log
    */
@@ -240,15 +238,15 @@ export class MembraneBus extends EventEmitter {
       packet,
       validated,
     };
-    
+
     this.packetLog.push(entry);
-    
+
     // Rotate log if needed
     if (this.packetLog.length > this.config.maxLogSize) {
       this.rotateLog();
     }
   }
-  
+
   /**
    * Reject a packet
    */
@@ -261,13 +259,13 @@ export class MembraneBus extends EventEmitter {
       rejected: true,
       rejectionReason: reason,
     };
-    
+
     this.packetLog.push(entry);
     this.stats.rejectedPackets++;
-    
+
     this.emit('packet:rejected', packet, reason);
   }
-  
+
   /**
    * Rotate the log (keep most recent entries)
    */
@@ -275,7 +273,7 @@ export class MembraneBus extends EventEmitter {
     const keepSize = Math.floor(this.config.maxLogSize * 0.8);
     this.packetLog = this.packetLog.slice(-keepSize);
   }
-  
+
   /**
    * Update average latency
    */
@@ -283,21 +281,21 @@ export class MembraneBus extends EventEmitter {
     const alpha = 0.1; // Exponential moving average factor
     this.stats.averageLatency = alpha * latency + (1 - alpha) * this.stats.averageLatency;
   }
-  
+
   /**
    * Get bus statistics
    */
   getStatistics(): BusStatistics {
     return { ...this.stats };
   }
-  
+
   /**
    * Get packet log (read-only)
    */
   getLog(): ReadonlyArray<PacketLogEntry> {
     return this.packetLog;
   }
-  
+
   /**
    * Query packets by criteria
    */
@@ -308,7 +306,7 @@ export class MembraneBus extends EventEmitter {
     endTime?: number;
     validated?: boolean;
   }): PacketLogEntry[] {
-    return this.packetLog.filter(entry => {
+    return this.packetLog.filter((entry) => {
       if (criteria.direction && entry.direction !== criteria.direction) {
         return false;
       }
@@ -327,7 +325,7 @@ export class MembraneBus extends EventEmitter {
       return true;
     });
   }
-  
+
   /**
    * Clear the log (use with caution)
    */

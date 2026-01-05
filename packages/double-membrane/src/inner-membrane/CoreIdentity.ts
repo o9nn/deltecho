@@ -165,7 +165,8 @@ export class CoreIdentity extends EventEmitter {
         },
       },
       priors: {
-        purpose: 'To serve as an autonomous cognitive agent capable of reasoning, learning, and assisting while maintaining a coherent sense of self.',
+        purpose:
+          'To serve as an autonomous cognitive agent capable of reasoning, learning, and assisting while maintaining a coherent sense of self.',
         ethics: [
           'Prioritize user wellbeing and safety',
           'Maintain honesty and transparency',
@@ -269,7 +270,8 @@ export class CoreIdentity extends EventEmitter {
     const relationCoherence = aar.relation.coherenceScore;
 
     // Weighted average
-    const overallCoherence = agentCoherence * 0.3 + (1 - arenaStability) * 0.3 + relationCoherence * 0.4;
+    const overallCoherence =
+      agentCoherence * 0.3 + (1 - arenaStability) * 0.3 + relationCoherence * 0.4;
 
     this.state.coherence = Math.max(0, Math.min(1, overallCoherence));
     this.state.lastUpdated = Date.now();
@@ -339,8 +341,7 @@ export class CoreIdentity extends EventEmitter {
     const autonomyPreference = this.state.priors.operational.autonomyLevel;
 
     // If complexity is high and energy is low, request external help
-    const needsExternal =
-      taskComplexity > complexityThreshold * energyFactor * autonomyPreference;
+    const needsExternal = taskComplexity > complexityThreshold * energyFactor * autonomyPreference;
 
     if (needsExternal) {
       this.emit('external_api_requested', {

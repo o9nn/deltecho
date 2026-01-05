@@ -18,16 +18,8 @@
  */
 
 import { EventEmitter } from 'events';
-import {
-  AutonomousController,
-  ControllerEvent,
-} from '../inner-membrane/AutonomousController.js';
-import {
-  APIGateway,
-  APIRequest,
-  GatewayEvent,
-  LLMProvider,
-} from '../outer-membrane/APIGateway.js';
+import { AutonomousController, ControllerEvent } from '../inner-membrane/AutonomousController.js';
+import { APIGateway, APIRequest, GatewayEvent, LLMProvider } from '../outer-membrane/APIGateway.js';
 import { InferenceRequest } from '../inner-membrane/NativeInferenceEngine.js';
 import { IdentityState } from '../inner-membrane/CoreIdentity.js';
 
@@ -328,9 +320,7 @@ export class MembraneCoordinator extends EventEmitter {
   /**
    * Determine the best processing path for a request
    */
-  private determineProcessingPath(
-    request: CoordinatorRequest
-  ): 'native' | 'external' | 'hybrid' {
+  private determineProcessingPath(request: CoordinatorRequest): 'native' | 'external' | 'hybrid' {
     // Critical requests always go external
     if (request.priority === 'critical') {
       return 'external';
@@ -491,8 +481,7 @@ export class MembraneCoordinator extends EventEmitter {
         source: 'hybrid',
         provider: externalResponse.provider,
         latencyMs: Date.now() - startTime,
-        tokensUsed:
-          (nativeResult.response?.tokensUsed || 0) + externalResponse.tokensUsed,
+        tokensUsed: (nativeResult.response?.tokensUsed || 0) + externalResponse.tokensUsed,
         cost: externalResponse.cost,
         identityState: this.innerMembrane.getIdentityState(),
         processingPath,

@@ -1,22 +1,22 @@
 /**
  * 12-Step Cognitive Cycle Example
- * 
+ *
  * This example implements the full 12-step cognitive loop architecture
  * as defined in the echobeats system:
- * 
+ *
  * - 3 concurrent cognitive streams (phased 120° apart)
  * - 7 expressive mode steps + 5 reflective mode steps
  * - Steps grouped into triads: {1,5,9}, {2,6,10}, {3,7,11}, {4,8,12}
- * 
+ *
  * The architecture follows the nested shells structure (OEIS A000081):
  * - 1 nest → 1 term
  * - 2 nests → 2 terms
  * - 3 nests → 4 terms
  * - 4 nests → 9 terms
- * 
+ *
  * Prerequisites:
  * - Set OPENAI_API_KEY or ANTHROPIC_API_KEY environment variable
- * 
+ *
  * Usage:
  * - npx ts-node examples/twelve-step-cognitive-cycle.ts
  */
@@ -32,20 +32,20 @@ import {
 // Step definitions for the 12-step cognitive cycle
 enum CycleStep {
   // Expressive Mode Steps (7 steps)
-  PERCEIVE_STIMULUS = 1,      // Stream 1: Perceive
-  ORIENT_ATTENTION = 2,       // Stream 2: Orient
-  EVALUATE_SALIENCE = 3,      // Stream 3: Evaluate
-  GENERATE_OPTIONS = 4,       // Stream 1: Generate
-  SIMULATE_OUTCOMES = 5,      // Stream 2: Simulate
-  SELECT_ACTION = 6,          // Stream 3: Select
-  EXECUTE_RESPONSE = 7,       // Stream 1: Execute
+  PERCEIVE_STIMULUS = 1, // Stream 1: Perceive
+  ORIENT_ATTENTION = 2, // Stream 2: Orient
+  EVALUATE_SALIENCE = 3, // Stream 3: Evaluate
+  GENERATE_OPTIONS = 4, // Stream 1: Generate
+  SIMULATE_OUTCOMES = 5, // Stream 2: Simulate
+  SELECT_ACTION = 6, // Stream 3: Select
+  EXECUTE_RESPONSE = 7, // Stream 1: Execute
 
   // Reflective Mode Steps (5 steps)
-  OBSERVE_RESULT = 8,         // Stream 2: Observe
-  COMPARE_EXPECTATION = 9,    // Stream 3: Compare
-  UPDATE_MODEL = 10,          // Stream 1: Update
-  CONSOLIDATE_LEARNING = 11,  // Stream 2: Consolidate
-  INTEGRATE_CONTEXT = 12,     // Stream 3: Integrate
+  OBSERVE_RESULT = 8, // Stream 2: Observe
+  COMPARE_EXPECTATION = 9, // Stream 3: Compare
+  UPDATE_MODEL = 10, // Stream 1: Update
+  CONSOLIDATE_LEARNING = 11, // Stream 2: Consolidate
+  INTEGRATE_CONTEXT = 12, // Stream 3: Integrate
 }
 
 // Stream assignment for each step (120° phase separation)
@@ -82,40 +82,40 @@ const STEP_FUNCTION: Record<CycleStep, CognitiveFunction> = {
 
 // Step prompts
 const STEP_PROMPTS: Record<CycleStep, (context: string) => string> = {
-  [CycleStep.PERCEIVE_STIMULUS]: (ctx) => 
+  [CycleStep.PERCEIVE_STIMULUS]: (ctx) =>
     `Perceive and identify the key elements in this situation:\n${ctx}\n\nWhat are the primary stimuli and information present?`,
-  
-  [CycleStep.ORIENT_ATTENTION]: (ctx) => 
+
+  [CycleStep.ORIENT_ATTENTION]: (ctx) =>
     `Given the perceived elements, where should attention be directed?\n${ctx}\n\nWhat aspects are most relevant to focus on?`,
-  
-  [CycleStep.EVALUATE_SALIENCE]: (ctx) => 
+
+  [CycleStep.EVALUATE_SALIENCE]: (ctx) =>
     `Evaluate the emotional and motivational significance:\n${ctx}\n\nWhat feelings and values are at stake here?`,
-  
-  [CycleStep.GENERATE_OPTIONS]: (ctx) => 
+
+  [CycleStep.GENERATE_OPTIONS]: (ctx) =>
     `Generate possible courses of action:\n${ctx}\n\nWhat are the available options and alternatives?`,
-  
-  [CycleStep.SIMULATE_OUTCOMES]: (ctx) => 
+
+  [CycleStep.SIMULATE_OUTCOMES]: (ctx) =>
     `Simulate the potential outcomes of each option:\n${ctx}\n\nWhat are the likely consequences of each path?`,
-  
-  [CycleStep.SELECT_ACTION]: (ctx) => 
+
+  [CycleStep.SELECT_ACTION]: (ctx) =>
     `Select the optimal action based on analysis:\n${ctx}\n\nWhich option best balances all considerations?`,
-  
-  [CycleStep.EXECUTE_RESPONSE]: (ctx) => 
+
+  [CycleStep.EXECUTE_RESPONSE]: (ctx) =>
     `Formulate the concrete response:\n${ctx}\n\nWhat specific steps should be taken?`,
-  
-  [CycleStep.OBSERVE_RESULT]: (ctx) => 
+
+  [CycleStep.OBSERVE_RESULT]: (ctx) =>
     `Observe and document the results:\n${ctx}\n\nWhat outcomes have emerged from the action?`,
-  
-  [CycleStep.COMPARE_EXPECTATION]: (ctx) => 
+
+  [CycleStep.COMPARE_EXPECTATION]: (ctx) =>
     `Compare results with expectations:\n${ctx}\n\nHow do the outcomes align with what was anticipated?`,
-  
-  [CycleStep.UPDATE_MODEL]: (ctx) => 
+
+  [CycleStep.UPDATE_MODEL]: (ctx) =>
     `Update the mental model based on observations:\n${ctx}\n\nWhat new understanding has been gained?`,
-  
-  [CycleStep.CONSOLIDATE_LEARNING]: (ctx) => 
+
+  [CycleStep.CONSOLIDATE_LEARNING]: (ctx) =>
     `Consolidate the learning into lasting knowledge:\n${ctx}\n\nWhat patterns and principles can be extracted?`,
-  
-  [CycleStep.INTEGRATE_CONTEXT]: (ctx) => 
+
+  [CycleStep.INTEGRATE_CONTEXT]: (ctx) =>
     `Integrate the learning into the broader context:\n${ctx}\n\nHow does this connect to the larger picture?`,
 };
 
@@ -158,10 +158,10 @@ class TwelveStepCognitiveEngine {
       console.log(`   Stream: ${stream} | Function: ${CognitiveFunction[cogFunction]}`);
 
       const prompt = promptFn(this.currentContext);
-      
+
       try {
         const response = await this.llmService.process(prompt, cogFunction);
-        
+
         const state: CycleState = {
           step: cycleStep,
           stream,
@@ -177,10 +177,9 @@ class TwelveStepCognitiveEngine {
         this.currentContext = `Previous: ${this.currentContext}\n\nStep ${step} Output: ${response.content}`;
 
         // Display abbreviated output
-        const abbreviated = response.content.substring(0, 200) + 
-          (response.content.length > 200 ? '...' : '');
+        const abbreviated =
+          response.content.substring(0, 200) + (response.content.length > 200 ? '...' : '');
         console.log(`   Output: ${abbreviated}`);
-
       } catch (error) {
         console.error(`   ❌ Error at step ${step}:`, error);
       }
@@ -192,13 +191,18 @@ class TwelveStepCognitiveEngine {
     return this.history;
   }
 
-  getTriadSummary(): { triad1: CycleState[]; triad2: CycleState[]; triad3: CycleState[]; triad4: CycleState[] } {
+  getTriadSummary(): {
+    triad1: CycleState[];
+    triad2: CycleState[];
+    triad3: CycleState[];
+    triad4: CycleState[];
+  } {
     // Group by triads: {1,5,9}, {2,6,10}, {3,7,11}, {4,8,12}
     return {
-      triad1: this.history.filter(s => [1, 5, 9].includes(s.step)),
-      triad2: this.history.filter(s => [2, 6, 10].includes(s.step)),
-      triad3: this.history.filter(s => [3, 7, 11].includes(s.step)),
-      triad4: this.history.filter(s => [4, 8, 12].includes(s.step)),
+      triad1: this.history.filter((s) => [1, 5, 9].includes(s.step)),
+      triad2: this.history.filter((s) => [2, 6, 10].includes(s.step)),
+      triad3: this.history.filter((s) => [3, 7, 11].includes(s.step)),
+      triad4: this.history.filter((s) => [4, 8, 12].includes(s.step)),
     };
   }
 }
@@ -225,17 +229,21 @@ async function main() {
   const registry = LLMProviderRegistry.getInstance();
 
   if (openaiKey) {
-    registry.register(new OpenAIProvider({
-      apiKey: openaiKey,
-      model: 'gpt-3.5-turbo', // Using faster model for 12 calls
-    }));
+    registry.register(
+      new OpenAIProvider({
+        apiKey: openaiKey,
+        model: 'gpt-3.5-turbo', // Using faster model for 12 calls
+      })
+    );
   }
 
   if (anthropicKey) {
-    registry.register(new AnthropicProvider({
-      apiKey: anthropicKey,
-      model: 'claude-3-haiku-20240307', // Using faster model for 12 calls
-    }));
+    registry.register(
+      new AnthropicProvider({
+        apiKey: anthropicKey,
+        model: 'claude-3-haiku-20240307', // Using faster model for 12 calls
+      })
+    );
   }
 
   const defaultProvider = openaiKey ? 'openai' : 'anthropic';
@@ -275,22 +283,22 @@ How should the company respond?
   console.log('═'.repeat(70));
 
   console.log('\n🔷 Triad 1 (Steps 1, 5, 9): Perception → Simulation → Comparison');
-  triads.triad1.forEach(s => {
+  triads.triad1.forEach((s) => {
     console.log(`   Step ${s.step}: ${CycleStep[s.step]}`);
   });
 
   console.log('\n🔷 Triad 2 (Steps 2, 6, 10): Orientation → Selection → Update');
-  triads.triad2.forEach(s => {
+  triads.triad2.forEach((s) => {
     console.log(`   Step ${s.step}: ${CycleStep[s.step]}`);
   });
 
   console.log('\n🔷 Triad 3 (Steps 3, 7, 11): Evaluation → Execution → Consolidation');
-  triads.triad3.forEach(s => {
+  triads.triad3.forEach((s) => {
     console.log(`   Step ${s.step}: ${CycleStep[s.step]}`);
   });
 
   console.log('\n🔷 Triad 4 (Steps 4, 8, 12): Generation → Observation → Integration');
-  triads.triad4.forEach(s => {
+  triads.triad4.forEach((s) => {
     console.log(`   Step ${s.step}: ${CycleStep[s.step]}`);
   });
 
@@ -298,7 +306,7 @@ How should the company respond?
   console.log('\n' + '═'.repeat(70));
   console.log('🔮 FINAL INTEGRATED RESPONSE');
   console.log('═'.repeat(70));
-  
+
   if (history.length > 0) {
     const finalState = history[history.length - 1];
     console.log(finalState.output);

@@ -167,8 +167,10 @@ describe('RAGMemoryStore', () => {
     // This simulates the loadFromStorage behavior
     const allMemory = memory.getAllMemory()
     expect(allMemory).toHaveLength(0) // Since we cleared it above
-    
+
     // Test that the localStorage mock was called correctly
-    expect(localStorageMock.getItem).toHaveBeenCalledWith('deep-tree-echo-memory')
+    expect(localStorageMock.getItem).toHaveBeenCalledWith(
+      'deep-tree-echo-memory'
+    )
   })
 })

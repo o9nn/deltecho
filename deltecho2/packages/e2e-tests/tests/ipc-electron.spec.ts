@@ -2,7 +2,7 @@ import { test, expect, Page } from '@playwright/test'
 
 /**
  * IPC and Electron Integration E2E Test Suite
- * 
+ *
  * Tests the IPC communication and Electron integration including:
  * - IPC channel communication
  * - Main/renderer process communication
@@ -18,15 +18,17 @@ const IPC_TIMEOUT = 15_000
 
 // Helper to wait for IPC system initialization
 async function waitForIPC(page: Page, timeout = IPC_TIMEOUT) {
-  await page.waitForFunction(
-    () => {
-      const win = window as unknown as { __ipcReady?: boolean }
-      return win.__ipcReady === true
-    },
-    { timeout }
-  ).catch(() => {
-    console.log('IPC system not detected - continuing with basic tests')
-  })
+  await page
+    .waitForFunction(
+      () => {
+        const win = window as unknown as { __ipcReady?: boolean }
+        return win.__ipcReady === true
+      },
+      { timeout }
+    )
+    .catch(() => {
+      console.log('IPC system not detected - continuing with basic tests')
+    })
 }
 
 test.describe('IPC Communication - Channel Operations', () => {
@@ -59,7 +61,10 @@ test.describe('IPC Communication - Channel Operations', () => {
     const sendResult = await page.evaluate(() => {
       const win = window as unknown as {
         __ipc?: {
-          send: (channel: string, data: unknown) => Promise<{
+          send: (
+            channel: string,
+            data: unknown
+          ) => Promise<{
             success: boolean
             messageId: string
           }>
@@ -98,7 +103,10 @@ test.describe('IPC Communication - Channel Operations', () => {
     const invokeResult = await page.evaluate(() => {
       const win = window as unknown as {
         __ipc?: {
-          invoke: (channel: string, data: unknown) => Promise<{
+          invoke: (
+            channel: string,
+            data: unknown
+          ) => Promise<{
             success: boolean
             response: unknown
           }>
@@ -223,7 +231,10 @@ test.describe('IPC Communication - Cognitive System Bridge', () => {
     const commandResult = await page.evaluate(() => {
       const win = window as unknown as {
         __cognitiveBridge?: {
-          sendCommand: (command: string, params: unknown) => Promise<{
+          sendCommand: (
+            command: string,
+            params: unknown
+          ) => Promise<{
             success: boolean
             result: unknown
           }>
@@ -347,7 +358,7 @@ test.describe('IPC Communication - System Integration', () => {
       return {
         platform: navigator.platform,
         arch: 'unknown',
-        version: '1.0.0'
+        version: '1.0.0',
       }
     })
 

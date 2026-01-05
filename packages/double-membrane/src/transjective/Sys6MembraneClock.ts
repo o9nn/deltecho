@@ -65,7 +65,15 @@ export interface Sys6Address {
 export interface Delta2Lane {
   id: number; // 0-7
   name: string;
-  type: 'tool_call' | 'retrieval' | 'message_parse' | 'candidate_gen' | 'search' | 'api' | 'plan' | 'validate';
+  type:
+    | 'tool_call'
+    | 'retrieval'
+    | 'message_parse'
+    | 'candidate_gen'
+    | 'search'
+    | 'api'
+    | 'plan'
+    | 'validate';
   active: boolean;
   currentLoad: number;
   maxLoad: number;
@@ -77,7 +85,16 @@ export interface Delta2Lane {
 export interface Delta3Phase {
   id: number; // 0-8
   name: string;
-  type: 'sanitize' | 'summarize' | 'tensorize' | 'validate' | 'transform' | 'batch' | 'commit' | 'notify' | 'archive';
+  type:
+    | 'sanitize'
+    | 'summarize'
+    | 'tensorize'
+    | 'validate'
+    | 'transform'
+    | 'batch'
+    | 'commit'
+    | 'notify'
+    | 'archive';
   active: boolean;
 }
 
@@ -403,9 +420,7 @@ export class Sys6MembraneClock extends EventEmitter {
   /**
    * Get optimal Delta-2 lane for a task type
    */
-  public getOptimalDelta2Lane(
-    taskType: Delta2Lane['type']
-  ): Delta2Lane | undefined {
+  public getOptimalDelta2Lane(taskType: Delta2Lane['type']): Delta2Lane | undefined {
     const lane = this.delta2Lanes.find(
       (l) => l.type === taskType && l.active && l.currentLoad < l.maxLoad
     );
@@ -507,11 +522,7 @@ export class Sys6MembraneClock extends EventEmitter {
     }
   }
 
-  private processInwardCrossing(
-    entry: LogEntry,
-    context: PolicyContext,
-    tick: ClockTick
-  ): void {
+  private processInwardCrossing(entry: LogEntry, context: PolicyContext, tick: ClockTick): void {
     if (!this.bus || !this.policy) return;
 
     const packet = entry.packet as EvidencePacket;
@@ -541,11 +552,7 @@ export class Sys6MembraneClock extends EventEmitter {
     // defer and quarantine leave entry in pending state
   }
 
-  private processOutwardCrossing(
-    entry: LogEntry,
-    context: PolicyContext,
-    tick: ClockTick
-  ): void {
+  private processOutwardCrossing(entry: LogEntry, context: PolicyContext, tick: ClockTick): void {
     if (!this.bus || !this.policy) return;
 
     const packet = entry.packet as IntentPacket;

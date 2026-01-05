@@ -167,9 +167,7 @@ describe('LlamaElectronMain', () => {
     it('should throw if generation in progress', async () => {
       const promise1 = main.generate('Hello');
 
-      await expect(main.generate('World')).rejects.toThrow(
-        'Generation already in progress'
-      );
+      await expect(main.generate('World')).rejects.toThrow('Generation already in progress');
 
       await promise1;
     });
@@ -461,10 +459,7 @@ describe('LlamaElectronRenderer', () => {
 
       const text = await renderer.detokenize([1000, 1001]);
 
-      expect(mockIpcRenderer.invoke).toHaveBeenCalledWith(IPCMessageType.DETOKENIZE, [
-        1000,
-        1001,
-      ]);
+      expect(mockIpcRenderer.invoke).toHaveBeenCalledWith(IPCMessageType.DETOKENIZE, [1000, 1001]);
       expect(text).toBe('Hello');
     });
   });

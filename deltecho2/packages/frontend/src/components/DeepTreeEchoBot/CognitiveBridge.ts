@@ -202,7 +202,8 @@ interface LLMProviderConfig {
 export class CognitiveOrchestrator {
   private config: DeepTreeEchoBotConfig
   private state: UnifiedCognitiveState | null = null
-  private eventListeners: Map<string, Array<(event: CognitiveEvent) => void>> = new Map()
+  private eventListeners: Map<string, Array<(event: CognitiveEvent) => void>> =
+    new Map()
   private conversationHistory: Array<{ role: string; content: string }> = []
   private llmConfig: LLMProviderConfig | null = null
 
@@ -211,7 +212,8 @@ export class CognitiveOrchestrator {
     if (config.apiKey) {
       this.llmConfig = {
         apiKey: config.apiKey,
-        apiEndpoint: config.apiEndpoint || 'https://api.openai.com/v1/chat/completions',
+        apiEndpoint:
+          config.apiEndpoint || 'https://api.openai.com/v1/chat/completions',
         model: config.model || 'gpt-4',
         temperature: config.temperature ?? 0.7,
         maxTokens: config.maxTokens ?? 1000,
@@ -222,7 +224,10 @@ export class CognitiveOrchestrator {
   configureLLM(config: Partial<LLMProviderConfig>): void {
     this.llmConfig = {
       apiKey: config.apiKey || this.llmConfig?.apiKey || '',
-      apiEndpoint: config.apiEndpoint || this.llmConfig?.apiEndpoint || 'https://api.openai.com/v1/chat/completions',
+      apiEndpoint:
+        config.apiEndpoint ||
+        this.llmConfig?.apiEndpoint ||
+        'https://api.openai.com/v1/chat/completions',
       model: config.model || this.llmConfig?.model || 'gpt-4',
       temperature: config.temperature ?? this.llmConfig?.temperature ?? 0.7,
       maxTokens: config.maxTokens ?? this.llmConfig?.maxTokens ?? 1000,
@@ -291,7 +296,10 @@ export class CognitiveOrchestrator {
       }
     }
 
-    return { ...message, metadata: { ...message.metadata, cognitivePhase: 'sense' } }
+    return {
+      ...message,
+      metadata: { ...message.metadata, cognitivePhase: 'sense' },
+    }
   }
 
   private async process(message: UnifiedMessage): Promise<UnifiedMessage> {
@@ -300,10 +308,15 @@ export class CognitiveOrchestrator {
     if (this.state?.cognitiveContext) {
       this.state.cognitiveContext.emotionalValence = sentiment.valence
       this.state.cognitiveContext.emotionalArousal = sentiment.arousal
-      this.state.cognitiveContext.salienceScore = this.calculateSalience(message.content)
+      this.state.cognitiveContext.salienceScore = this.calculateSalience(
+        message.content
+      )
     }
 
-    return { ...message, metadata: { ...message.metadata, cognitivePhase: 'process', sentiment } }
+    return {
+      ...message,
+      metadata: { ...message.metadata, cognitivePhase: 'process', sentiment },
+    }
   }
 
   private async act(message: UnifiedMessage): Promise<UnifiedMessage> {
@@ -319,7 +332,10 @@ export class CognitiveOrchestrator {
       responseContent = this.generateContextualResponse(message.content)
     }
 
-    this.conversationHistory.push({ role: 'assistant', content: responseContent })
+    this.conversationHistory.push({
+      role: 'assistant',
+      content: responseContent,
+    })
 
     return {
       id: `response-${Date.now()}`,
@@ -356,11 +372,18 @@ export class CognitiveOrchestrator {
     })
 
     if (!response.ok) {
-      throw new Error(`LLM API error: ${response.status} ${response.statusText}`)
+      throw new Error(
+        `LLM API error: ${response.status} ${response.statusText}`
+      )
     }
 
-    const data = (await response.json()) as { choices: Array<{ message: { content: string } }> }
-    return data.choices[0]?.message?.content || 'I apologize, but I was unable to generate a response.'
+    const data = (await response.json()) as {
+      choices: Array<{ message: { content: string } }>
+    }
+    return (
+      data.choices[0]?.message?.content ||
+      'I apologize, but I was unable to generate a response.'
+    )
   }
 
   private buildSystemPrompt(): string {
@@ -402,22 +425,56 @@ Respond in a way that reflects these characteristics while being helpful and inf
   }
 
   private analyzeSentiment(text: string): { valence: number; arousal: number } {
-    const positiveWords = ['happy', 'good', 'great', 'excellent', 'love', 'wonderful', 'amazing']
-    const negativeWords = ['sad', 'bad', 'terrible', 'hate', 'awful', 'horrible', 'angry']
-    const highArousalWords = ['excited', 'urgent', 'emergency', 'important', 'amazing', 'terrible']
+    const positiveWords = [
+      'happy',
+      'good',
+      'great',
+      'excellent',
+      'love',
+      'wonderful',
+      'amazing',
+    ]
+    const negativeWords = [
+      'sad',
+      'bad',
+      'terrible',
+      'hate',
+      'awful',
+      'horrible',
+      'angry',
+    ]
+    const highArousalWords = [
+      'excited',
+      'urgent',
+      'emergency',
+      'important',
+      'amazing',
+      'terrible',
+    ]
 
     const words = text.toLowerCase().split(/\s+/)
-    let positiveCount = 0, negativeCount = 0, arousalCount = 0
+    let positiveCount = 0,
+      negativeCount = 0,
+      arousalCount = 0
 
-    words.forEach((word) => {
-      if (positiveWords.some((pw) => word.includes(pw))) positiveCount++
-      if (negativeWords.some((nw) => word.includes(nw))) negativeCount++
-      if (highArousalWords.some((hw) => word.includes(hw))) arousalCount++
+    words.forEach(word => {
+      if (positiveWords.some(pw => word.includes(pw))) positiveCount++
+      if (negativeWords.some(nw => word.includes(nw))) negativeCount++
+      if (highArousalWords.some(hw => word.includes(hw))) arousalCount++
     })
 
     return {
-      valence: Math.max(-1, Math.min(1, (positiveCount - negativeCount) / Math.max(words.length, 1) * 5)),
-      arousal: Math.max(0, Math.min(1, arousalCount / Math.max(words.length, 1) * 10)),
+      valence: Math.max(
+        -1,
+        Math.min(
+          1,
+          ((positiveCount - negativeCount) / Math.max(words.length, 1)) * 5
+        )
+      ),
+      arousal: Math.max(
+        0,
+        Math.min(1, (arousalCount / Math.max(words.length, 1)) * 10)
+      ),
     }
   }
 
@@ -428,7 +485,10 @@ Respond in a way that reflects these characteristics while being helpful and inf
       length: Math.min(text.length / 500, 0.3),
       urgentWords: /urgent|important|help|please|asap/i.test(text) ? 0.3 : 0,
     }
-    return Math.min(1, Object.values(factors).reduce((sum, v) => sum + v, 0.1))
+    return Math.min(
+      1,
+      Object.values(factors).reduce((sum, v) => sum + v, 0.1)
+    )
   }
 
   getState(): UnifiedCognitiveState | null {
@@ -442,7 +502,10 @@ Respond in a way that reflects these characteristics while being helpful and inf
     }
   }
 
-  on(type: CognitiveEvent['type'], listener: (event: CognitiveEvent) => void): void {
+  on(
+    type: CognitiveEvent['type'],
+    listener: (event: CognitiveEvent) => void
+  ): void {
     const listeners = this.eventListeners.get(type) || []
     listeners.push(listener)
     this.eventListeners.set(type, listeners)
@@ -450,7 +513,7 @@ Respond in a way that reflects these characteristics while being helpful and inf
 
   private emit(event: CognitiveEvent): void {
     const listeners = this.eventListeners.get(event.type) || []
-    listeners.forEach((listener) => {
+    listeners.forEach(listener => {
       try {
         listener(event)
       } catch (error) {

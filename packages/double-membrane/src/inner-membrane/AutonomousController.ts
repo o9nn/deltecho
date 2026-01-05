@@ -169,10 +169,7 @@ export class AutonomousController extends EventEmitter {
     // Check rate limit in degraded mode
     if (this.currentMode === 'degraded') {
       if (this.requestsThisMinute >= this.config.degradedModeRateLimit) {
-        return this.createEscalationResult(
-          'Rate limit exceeded in degraded mode',
-          1.0
-        );
+        return this.createEscalationResult('Rate limit exceeded in degraded mode', 1.0);
       }
     }
 
@@ -208,10 +205,7 @@ export class AutonomousController extends EventEmitter {
       return result;
     } catch (error) {
       // On error, escalate to external API
-      return this.createEscalationResult(
-        `Native inference failed: ${error}`,
-        complexity
-      );
+      return this.createEscalationResult(`Native inference failed: ${error}`, complexity);
     }
   }
 
@@ -302,9 +296,7 @@ export class AutonomousController extends EventEmitter {
    */
   public rechargeEnergy(amount: number): void {
     const currentState = this.coreIdentity.getState();
-    this.coreIdentity.setEnergyLevel(
-      Math.min(1.0, currentState.energyLevel + amount)
-    );
+    this.coreIdentity.setEnergyLevel(Math.min(1.0, currentState.energyLevel + amount));
     this.checkModeTransition();
   }
 

@@ -7,7 +7,13 @@ import { AIMemory, MemorySystem, MemoryType } from '../MemoryPersistenceLayer'
 export interface AIConnectorConfig {
   id: string
   name: string
-  type?: 'claude' | 'chatgpt' | 'character-ai' | 'copilot' | 'deep-tree-echo' | 'custom'
+  type?:
+    | 'claude'
+    | 'chatgpt'
+    | 'character-ai'
+    | 'copilot'
+    | 'deep-tree-echo'
+    | 'custom'
   avatar?: string
   apiKey?: string
   apiEndpoint?: string

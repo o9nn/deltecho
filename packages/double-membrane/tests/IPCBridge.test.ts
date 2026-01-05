@@ -34,7 +34,9 @@ describe('IPCBridge', () => {
       const newBridge = new IPCBridge({ processId: 'event-test' });
       let initialized = false;
       // Use addListener instead of on since on is overridden for IPC channels
-      newBridge.addListener('initialized', () => { initialized = true; });
+      newBridge.addListener('initialized', () => {
+        initialized = true;
+      });
       await newBridge.initialize();
       expect(initialized).toBe(true);
       await newBridge.shutdown();
@@ -61,7 +63,9 @@ describe('IPCBridge', () => {
       await testBridge.initialize();
       let shutdownEmitted = false;
       // Use addListener instead of on since on is overridden for IPC channels
-      testBridge.addListener('shutdown', () => { shutdownEmitted = true; });
+      testBridge.addListener('shutdown', () => {
+        shutdownEmitted = true;
+      });
       await testBridge.shutdown();
       expect(shutdownEmitted).toBe(true);
     });
@@ -69,12 +73,12 @@ describe('IPCBridge', () => {
     it('should cancel pending requests on shutdown', async () => {
       // Register a handler that never responds
       bridge.on('cognitive:process', async () => {
-        await new Promise(resolve => setTimeout(resolve, 10000));
+        await new Promise((resolve) => setTimeout(resolve, 10000));
       });
 
       // Start a request but don't await it
       const requestPromise = bridge.request('cognitive:process', { test: true });
-      
+
       // Shutdown immediately
       await bridge.shutdown();
 
@@ -86,7 +90,7 @@ describe('IPCBridge', () => {
   describe('channels', () => {
     it('should have all expected channels', () => {
       const channels = bridge.getChannels();
-      
+
       expect(channels).toContain('cognitive:process');
       expect(channels).toContain('cognitive:status');
       expect(channels).toContain('memory:store');
@@ -125,7 +129,7 @@ describe('IPCBridge', () => {
       });
 
       const result = await bridge.request('cognitive:process', { data: 'test' });
-      
+
       expect(result).toBeDefined();
       expect(result.processed).toBe(true);
     });
@@ -133,12 +137,12 @@ describe('IPCBridge', () => {
     it('should handle multiple handlers', async () => {
       const handler1 = vi.fn().mockResolvedValue({ handler: 1 });
       const handler2 = vi.fn().mockResolvedValue({ handler: 2 });
-      
+
       bridge.on('cognitive:process', handler1);
       bridge.on('cognitive:process', handler2);
 
       await bridge.request('cognitive:process', { test: true });
-      
+
       expect(handler1).toHaveBeenCalled();
       expect(handler2).toHaveBeenCalled();
     });
@@ -152,28 +156,30 @@ describe('IPCBridge', () => {
 
       // Don't register any handler - request should timeout
       // But in our fallback mode, it will just return undefined
-      
+
       await slowBridge.shutdown();
     });
 
     it('should throw when bridge is not running', async () => {
       await bridge.shutdown();
-      
-      await expect(bridge.request('cognitive:process', {})).rejects.toThrow('IPC bridge not running');
+
+      await expect(bridge.request('cognitive:process', {})).rejects.toThrow(
+        'IPC bridge not running'
+      );
     });
   });
 
   describe('send', () => {
     it('should send one-way events', () => {
       bridge.on('system:status', vi.fn());
-      
+
       // Should not throw
       bridge.send('system:status', { status: 'ok' });
     });
 
     it('should throw when bridge is not running', async () => {
       await bridge.shutdown();
-      
+
       expect(() => bridge.send('system:status', {})).toThrow('IPC bridge not running');
     });
   });
@@ -193,7 +199,7 @@ describe('IPCBridge', () => {
 
       // Register a slow handler
       limitedBridge.on('cognitive:process', async () => {
-        await new Promise(resolve => setTimeout(resolve, 5000));
+        await new Promise((resolve) => setTimeout(resolve, 5000));
         return { ok: true };
       });
 
@@ -202,8 +208,9 @@ describe('IPCBridge', () => {
       limitedBridge.request('cognitive:process', { id: 2 }).catch(() => {});
 
       // Third request should fail
-      await expect(limitedBridge.request('cognitive:process', { id: 3 }))
-        .rejects.toThrow('Too many pending requests');
+      await expect(limitedBridge.request('cognitive:process', { id: 3 })).rejects.toThrow(
+        'Too many pending requests'
+      );
 
       await limitedBridge.shutdown();
     });
@@ -212,7 +219,7 @@ describe('IPCBridge', () => {
   describe('preload script', () => {
     it('should generate preload script', () => {
       const script = createPreloadScript();
-      
+
       expect(script).toContain('contextBridge');
       expect(script).toContain('ipcRenderer');
       expect(script).toContain('exposeInMainWorld');

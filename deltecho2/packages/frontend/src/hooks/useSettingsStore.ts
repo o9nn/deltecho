@@ -7,7 +7,9 @@ export interface SettingsStore {
 }
 
 export function useSettingsStore(): [SettingsStore] {
-  const [desktopSettings, setDesktopSettings] = useState<DesktopSettingsType>({} as DesktopSettingsType)
+  const [desktopSettings, setDesktopSettings] = useState<DesktopSettingsType>(
+    {} as DesktopSettingsType
+  )
 
   useEffect(() => {
     // Load settings from runtime
@@ -19,7 +21,7 @@ export function useSettingsStore(): [SettingsStore] {
         console.error('Failed to load desktop settings:', error)
       }
     }
-    
+
     loadSettings()
   }, [])
 

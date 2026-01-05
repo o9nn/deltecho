@@ -37,6 +37,7 @@ The Deltecho monorepo is organized into several key areas:
 ### Unified Packages
 
 Located in `packages/`:
+
 - **@deltecho/cognitive**: Unified cognitive interface
 - **@deltecho/reasoning**: AGI kernel with AtomSpace and PLN
 - **@deltecho/shared**: Shared types and utilities
@@ -116,6 +117,7 @@ footer
 ```
 
 Types:
+
 - **feat**: New feature
 - **fix**: Bug fix
 - **docs**: Documentation changes
@@ -125,6 +127,7 @@ Types:
 - **chore**: Maintenance tasks
 
 Example:
+
 ```
 feat(core): add streaming LLM response support
 
@@ -190,15 +193,16 @@ Keep modules focused and single-purpose. Use clear interfaces for communication 
 - Use descriptive test names
 
 Example:
+
 ```typescript
 describe('LLMService', () => {
   it('should process cognitive core requests correctly', async () => {
     // Arrange
     const service = new LLMService(mockConfig);
-    
+
     // Act
     const result = await service.processCognitiveCore('test input');
-    
+
     // Assert
     expect(result).toBeDefined();
   });
@@ -222,6 +226,7 @@ describe('LLMService', () => {
 ### README Files
 
 Each package should have a README.md with:
+
 - Purpose and overview
 - Installation instructions
 - Usage examples

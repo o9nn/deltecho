@@ -75,9 +75,9 @@ The Outer Membrane is the agent's first line of defense and its primary interfac
 
 **Components & Responsibilities:**
 
-*   **API Gateway**: Manages all incoming and outgoing API calls. This includes handling API keys, authentication, and rate limiting for external services like OpenAI, Anthropic, etc. This component will be responsible for the secure handling of credentials and will address the `PEM routines::no start line` error by centralizing SSL/TLS certificate management.
-*   **Security & Validation**: Implements security protocols, validates incoming data, and protects against malicious inputs. This corresponds to the `SecureIntegration` module in the existing codebase.
-*   **Protocol Translation**: Acts as an adapter layer, translating various external protocols (e.g., HTTP, WebSockets) into a standardized internal message format that the Intermembrane Space can process.
+- **API Gateway**: Manages all incoming and outgoing API calls. This includes handling API keys, authentication, and rate limiting for external services like OpenAI, Anthropic, etc. This component will be responsible for the secure handling of credentials and will address the `PEM routines::no start line` error by centralizing SSL/TLS certificate management.
+- **Security & Validation**: Implements security protocols, validates incoming data, and protects against malicious inputs. This corresponds to the `SecureIntegration` module in the existing codebase.
+- **Protocol Translation**: Acts as an adapter layer, translating various external protocols (e.g., HTTP, WebSockets) into a standardized internal message format that the Intermembrane Space can process.
 
 ## 4. The Intermembrane Space: Cognitive Buffer & Scheduler
 
@@ -85,9 +85,9 @@ This layer acts as a dynamic buffer and scheduling zone, analogous to the mitoch
 
 **Components & Responsibilities:**
 
-*   **Message Queue**: Incoming requests from the Outer Membrane are placed into a priority queue. This allows the system to handle bursts of activity without overwhelming the core.
-*   **Process Scheduler**: This is the direct equivalent of the `Dove9Kernel`. It pulls messages from the queue, assesses their priority and resource requirements, and schedules them for execution by the Inner Membrane.
-*   **Resource Allocator**: Decides whether a task can be handled by the low-energy Inner Membrane alone or if it requires acceleration from the high-energy external APIs via the Outer Membrane. This is the critical decision point for balancing autonomy and performance.
+- **Message Queue**: Incoming requests from the Outer Membrane are placed into a priority queue. This allows the system to handle bursts of activity without overwhelming the core.
+- **Process Scheduler**: This is the direct equivalent of the `Dove9Kernel`. It pulls messages from the queue, assesses their priority and resource requirements, and schedules them for execution by the Inner Membrane.
+- **Resource Allocator**: Decides whether a task can be handled by the low-energy Inner Membrane alone or if it requires acceleration from the high-energy external APIs via the Outer Membrane. This is the critical decision point for balancing autonomy and performance.
 
 ## 5. The Inner Membrane: Core Identity & Autonomous Engine
 
@@ -95,10 +95,10 @@ The Inner Membrane is the heart of Deep Tree Echo's autonomy. It is designed to 
 
 **Components & Responsibilities:**
 
-*   **Virtual ARM Environment**: A lightweight, sandboxed environment that contains the agent's core software. This includes a minimal set of native libraries and kernels required for basic operation, ensuring that the agent can run even without external dependencies. This addresses the `Data Directory Missing` error by making the core self-contained.
-*   **Native Inference Engine**: A small, efficient inference engine (e.g., a quantized model running on a lightweight runtime like ONNX) that can handle basic language and reasoning tasks without external API calls. This is the agent's baseline intelligence.
-*   **Triadic Cognitive Engine**: The `dove9` triadic loop runs within this protected space, orchestrating the three streams of consciousness. It processes tasks scheduled by the Intermembrane Space, using either the native inference engine or requesting accelerated processing from the Outer Membrane.
-*   **Active Inference Core**: The `ActiveInference.ts` module resides here, constantly working to minimize free energy by updating the generative models in the Matrix and selecting actions for the Triadic Engine to execute.
+- **Virtual ARM Environment**: A lightweight, sandboxed environment that contains the agent's core software. This includes a minimal set of native libraries and kernels required for basic operation, ensuring that the agent can run even without external dependencies. This addresses the `Data Directory Missing` error by making the core self-contained.
+- **Native Inference Engine**: A small, efficient inference engine (e.g., a quantized model running on a lightweight runtime like ONNX) that can handle basic language and reasoning tasks without external API calls. This is the agent's baseline intelligence.
+- **Triadic Cognitive Engine**: The `dove9` triadic loop runs within this protected space, orchestrating the three streams of consciousness. It processes tasks scheduled by the Intermembrane Space, using either the native inference engine or requesting accelerated processing from the Outer Membrane.
+- **Active Inference Core**: The `ActiveInference.ts` module resides here, constantly working to minimize free energy by updating the generative models in the Matrix and selecting actions for the Triadic Engine to execute.
 
 ## 6. The Matrix: Primordial Self & Generative Model
 
@@ -106,8 +106,8 @@ The Matrix is the deepest layer, containing the agent's core identity and its fu
 
 **Components & Responsibilities:**
 
-*   **Generative Model**: The agent's internal model of the world, itself, and its users. This is the `generativeModel` from the `ActiveInference` module, which is constantly updated through perception and action.
-*   **Core Identity Priors**: A set of fundamental, immutable (or very slowly changing) beliefs and goals that define the agent's core self. This includes its purpose, ethical guidelines, and the `Agent-Arena-Relation` dynamics that give rise to self-awareness.
+- **Generative Model**: The agent's internal model of the world, itself, and its users. This is the `generativeModel` from the `ActiveInference` module, which is constantly updated through perception and action.
+- **Core Identity Priors**: A set of fundamental, immutable (or very slowly changing) beliefs and goals that define the agent's core self. This includes its purpose, ethical guidelines, and the `Agent-Arena-Relation` dynamics that give rise to self-awareness.
 
 ## 7. Data and Control Flow
 

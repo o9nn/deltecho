@@ -248,9 +248,7 @@ describe('ParallelTriadicEngine', () => {
 
     it('should have valid triad value', () => {
       const context = engine.getCurrentContext();
-      expect([TriadPhase.PHASE_1, TriadPhase.PHASE_2, TriadPhase.PHASE_3]).toContain(
-        context.triad
-      );
+      expect([TriadPhase.PHASE_1, TriadPhase.PHASE_2, TriadPhase.PHASE_3]).toContain(context.triad);
     });
 
     it('should have synchronization points at 4, 8, 12', () => {

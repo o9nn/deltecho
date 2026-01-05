@@ -100,7 +100,7 @@ export class AGIKernelService {
     // Add message to knowledge base
     const msgAtom = this.atomSpace.addNode('ConceptNode', message.text)
     const senderAtom = this.atomSpace.addNode('ConceptNode', message.sender)
-    
+
     // Create relationship
     this.atomSpace.addLink('EvaluationLink', [msgAtom.id, senderAtom.id])
 
@@ -109,7 +109,7 @@ export class AGIKernelService {
 
     // Run inference
     const insights = this.plnEngine.forwardChain(5)
-    
+
     return insights
   }
 
@@ -123,7 +123,7 @@ export class AGIKernelService {
 
     const matcher = new PatternMatcher(this.atomSpace)
     const results = matcher.match(pattern)
-    
+
     return results
   }
 
@@ -162,7 +162,7 @@ export async function handleIncomingMessage(message: Message) {
   // - Message prioritization
   // - Context suggestions
   // - Automated responses (if enabled)
-  
+
   return insights
 }
 ```
@@ -239,7 +239,7 @@ for (const atom of important) {
 // Use MOSES to learn user behavior patterns
 const moses = new MOSES(atomSpace)
 
-const fitnessFunc = (program) => {
+const fitnessFunc = program => {
   // Evaluate how well program predicts user actions
   return evaluateUserSatisfaction(program)
 }
@@ -333,7 +333,7 @@ describe('AGI Kernel', () => {
 
     // Run inference
     const results = plnEngine.forwardChain(5)
-    
+
     expect(results.length).toBeGreaterThan(0)
   })
 })

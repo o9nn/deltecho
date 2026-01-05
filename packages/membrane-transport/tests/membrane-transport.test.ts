@@ -15,7 +15,7 @@ import {
 
 describe('MembraneBus', () => {
   let bus: MembraneBus;
-  
+
   beforeEach(() => {
     bus = new MembraneBus({
       maxLogSize: 100,
@@ -23,11 +23,11 @@ describe('MembraneBus', () => {
       maxPacketSize: 1024 * 1024,
     });
   });
-  
+
   it('should create a membrane bus', () => {
     expect(bus).toBeDefined();
   });
-  
+
   it('should send evidence packet inward', async () => {
     const packet: EvidencePacket = {
       id: 'test-evidence-1',
@@ -60,20 +60,20 @@ describe('MembraneBus', () => {
       },
       metadata: {},
     };
-    
+
     let received = false;
     bus.on('packet:inward', (p) => {
       expect(p.id).toBe(packet.id);
       received = true;
     });
-    
+
     await bus.sendInward(packet);
     expect(received).toBe(true);
-    
+
     const stats = bus.getStatistics();
     expect(stats.inwardPackets).toBe(1);
   });
-  
+
   it('should send intent packet outward', async () => {
     const packet: IntentPacket = {
       id: 'test-intent-1',
@@ -108,38 +108,38 @@ describe('MembraneBus', () => {
       expectedReturnType: 'result',
       metadata: {},
     };
-    
+
     let received = false;
     bus.on('packet:outward', (p) => {
       expect(p.id).toBe(packet.id);
       received = true;
     });
-    
+
     await bus.sendOutward(packet);
     expect(received).toBe(true);
-    
+
     const stats = bus.getStatistics();
     expect(stats.outwardPackets).toBe(1);
   });
-  
+
   it('should reject invalid packets', async () => {
     const invalidPacket: any = {
       id: 'invalid',
       type: 'evidence',
       // Missing required fields
     };
-    
+
     let rejected = false;
     bus.on('packet:rejected', (p, reason) => {
       expect(p.id).toBe(invalidPacket.id);
       expect(reason).toBeDefined();
       rejected = true;
     });
-    
+
     await bus.sendInward(invalidPacket);
     expect(rejected).toBe(true);
   });
-  
+
   it('should query packets by criteria', async () => {
     const packet: EvidencePacket = {
       id: 'test-query-1',
@@ -161,14 +161,14 @@ describe('MembraneBus', () => {
       },
       metadata: {},
     };
-    
+
     await bus.sendInward(packet);
-    
+
     const results = bus.queryPackets({
       direction: MembraneDirection.INWARD,
       type: 'evidence',
     });
-    
+
     expect(results.length).toBeGreaterThan(0);
     expect(results[0].packet.id).toBe(packet.id);
   });
@@ -176,7 +176,7 @@ describe('MembraneBus', () => {
 
 describe('CrossingPolicy', () => {
   let policy: CrossingPolicy;
-  
+
   beforeEach(() => {
     policy = new CrossingPolicy({
       budgetLimits: {
@@ -194,7 +194,7 @@ describe('CrossingPolicy', () => {
       },
     });
   });
-  
+
   it('should allow valid evidence packet', () => {
     const packet: EvidencePacket = {
       id: 'test-1',
@@ -216,11 +216,11 @@ describe('CrossingPolicy', () => {
       },
       metadata: {},
     };
-    
+
     const decision = policy.evaluateInward(packet);
     expect(decision.allowed).toBe(true);
   });
-  
+
   it('should reject evidence packet with high risk', () => {
     const packet: EvidencePacket = {
       id: 'test-2',
@@ -242,12 +242,12 @@ describe('CrossingPolicy', () => {
       },
       metadata: {},
     };
-    
+
     const decision = policy.evaluateInward(packet);
     expect(decision.allowed).toBe(false);
     expect(decision.reason).toContain('risk');
   });
-  
+
   it('should reject evidence packet exceeding budget', () => {
     const packet: EvidencePacket = {
       id: 'test-3',
@@ -269,12 +269,12 @@ describe('CrossingPolicy', () => {
       },
       metadata: {},
     };
-    
+
     const decision = policy.evaluateInward(packet);
     expect(decision.allowed).toBe(false);
     expect(decision.reason).toContain('cost');
   });
-  
+
   it('should allow valid intent packet', () => {
     const packet: IntentPacket = {
       id: 'test-4',
@@ -297,7 +297,7 @@ describe('CrossingPolicy', () => {
       expectedReturnType: 'result',
       metadata: {},
     };
-    
+
     const decision = policy.evaluateOutward(packet);
     expect(decision.allowed).toBe(true);
   });
@@ -307,48 +307,48 @@ describe('Sys6MembraneTransport', () => {
   let bus: MembraneBus;
   let policy: CrossingPolicy;
   let transport: Sys6MembraneTransport;
-  
+
   beforeEach(() => {
     bus = new MembraneBus();
     policy = new CrossingPolicy();
     transport = new Sys6MembraneTransport(bus, policy);
   });
-  
+
   afterEach(() => {
     transport.stop();
   });
-  
+
   it('should create Sys6 transport', () => {
     expect(transport).toBeDefined();
   });
-  
+
   it('should start and stop transport cycle', () => {
     let started = false;
     let stopped = false;
-    
+
     transport.on('transport:started', () => {
       started = true;
     });
-    
+
     transport.on('transport:stopped', () => {
       stopped = true;
     });
-    
+
     transport.start(10);
     expect(started).toBe(true);
-    
+
     transport.stop();
     expect(stopped).toBe(true);
   });
-  
+
   it('should advance through Sys6 stages', (done) => {
     let tickCount = 0;
     const stages = new Set<Sys6Stage>();
-    
+
     transport.on('transport:tick', (data) => {
       tickCount++;
       stages.add(data.stage);
-      
+
       if (tickCount >= 30) {
         // Should have seen all stages in 30 steps
         expect(stages.size).toBeGreaterThan(1);
@@ -356,10 +356,10 @@ describe('Sys6MembraneTransport', () => {
         done();
       }
     });
-    
+
     transport.start(10);
   }, 10000);
-  
+
   it('should queue and process packets', async () => {
     const evidencePacket: EvidencePacket = {
       id: 'test-evidence',
@@ -381,13 +381,13 @@ describe('Sys6MembraneTransport', () => {
       },
       metadata: {},
     };
-    
+
     transport.queueInward(evidencePacket);
-    
+
     const state = transport.getCycleState();
     expect(state.pendingInward.length).toBe(1);
   });
-  
+
   it('should emit synchronization events', (done) => {
     transport.on('transport:sync', (data) => {
       expect(data.step).toBeDefined();
@@ -395,7 +395,7 @@ describe('Sys6MembraneTransport', () => {
       transport.stop();
       done();
     });
-    
+
     transport.start(10);
   }, 10000);
 });

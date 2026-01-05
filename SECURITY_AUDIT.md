@@ -14,24 +14,27 @@ GitHub Dependabot has identified 36 vulnerabilities in the repository dependenci
 
 The following development dependencies are outdated but do not pose immediate security risks:
 
-| Package | Current | Latest | Impact |
-|---------|---------|--------|--------|
-| prettier | 3.1.0 | 3.7.4 | Code formatting only |
-| @types/jest | 29.5.14 | 30.0.0 | Type definitions only |
-| @types/node | 20.19.27 | 25.0.3 | Type definitions only |
-| @typescript-eslint/eslint-plugin | 7.18.0 | 8.50.1 | Linting only |
-| @typescript-eslint/parser | 7.18.0 | 8.50.1 | Linting only |
-| eslint | 8.57.1 | 9.39.2 | Linting only |
-| eslint-config-prettier | 9.1.2 | 10.1.8 | Linting configuration |
-| jest | 29.7.0 | 30.2.0 | Testing framework |
+| Package                          | Current  | Latest | Impact                |
+| -------------------------------- | -------- | ------ | --------------------- |
+| prettier                         | 3.1.0    | 3.7.4  | Code formatting only  |
+| @types/jest                      | 29.5.14  | 30.0.0 | Type definitions only |
+| @types/node                      | 20.19.27 | 25.0.3 | Type definitions only |
+| @typescript-eslint/eslint-plugin | 7.18.0   | 8.50.1 | Linting only          |
+| @typescript-eslint/parser        | 7.18.0   | 8.50.1 | Linting only          |
+| eslint                           | 8.57.1   | 9.39.2 | Linting only          |
+| eslint-config-prettier           | 9.1.2    | 10.1.8 | Linting configuration |
+| jest                             | 29.7.0   | 30.2.0 | Testing framework     |
 
 ## Security Assessment
 
 ### Low Risk (Development Dependencies)
+
 The outdated packages identified are all development dependencies used for code quality, testing, and type checking. These do not affect production runtime and pose minimal security risk.
 
 ### Moderate Risk (Transitive Dependencies)
+
 The 36 vulnerabilities reported by GitHub are likely in transitive dependencies from:
+
 - **delta-echo-desk** - Delta Chat Desktop application with Electron
 - **deltecho2** - Delta Chat Desktop with additional integrations
 - **dovecot-core** - Mail server components
@@ -39,6 +42,7 @@ The 36 vulnerabilities reported by GitHub are likely in transitive dependencies 
 These desktop applications bundle their own dependencies and may include older versions of libraries for compatibility.
 
 ### Access Limitation
+
 Direct access to Dependabot alerts requires repository admin permissions. The GitHub CLI and browser access both require authentication that is not available in the current context.
 
 ## Recommended Actions
@@ -94,18 +98,21 @@ Optimize the monorepo dependency structure:
 ## Implementation Plan
 
 ### Phase 1: Safe Updates (This Session)
+
 - ✅ Update development dependencies
 - ✅ Verify builds pass
 - ✅ Run tests to ensure compatibility
 - ✅ Commit and push updates
 
 ### Phase 2: Desktop App Security (Future)
+
 - 🔲 Audit delta-echo-desk dependencies
 - 🔲 Audit deltecho2 dependencies
 - 🔲 Check upstream Delta Chat for security patches
 - 🔲 Selectively update security-critical packages
 
 ### Phase 3: Automation (Future)
+
 - 🔲 Configure Dependabot
 - 🔲 Set up security scanning
 - 🔲 Implement CI/CD security checks
@@ -113,17 +120,21 @@ Optimize the monorepo dependency structure:
 ## Dependency Update Strategy
 
 ### Conservative Approach (Recommended)
+
 Update development dependencies to latest versions while maintaining production dependency stability. This minimizes risk while improving developer experience.
 
 ### Aggressive Approach (Not Recommended)
+
 Update all dependencies to latest versions. This could introduce breaking changes and requires extensive testing across all packages.
 
 ### Selective Approach (For Desktop Apps)
+
 Only update dependencies with known security vulnerabilities. This balances security with stability.
 
 ## Risk Mitigation
 
 ### Testing Strategy
+
 After any dependency updates:
 
 1. **Build Verification**: Ensure all packages build successfully
@@ -132,6 +143,7 @@ After any dependency updates:
 4. **Regression Testing**: Verify core functionality unchanged
 
 ### Rollback Plan
+
 If updates cause issues:
 
 1. **Git Revert**: Revert the dependency update commit
@@ -139,6 +151,7 @@ If updates cause issues:
 3. **Lock File**: Restore previous pnpm-lock.yaml
 
 ### Monitoring
+
 After deployment:
 
 1. **Error Tracking**: Monitor for new runtime errors

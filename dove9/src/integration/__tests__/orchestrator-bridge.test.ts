@@ -34,12 +34,16 @@ const createMockLLMService = (): LLMServiceInterface => ({
 const createMockMemoryStore = (): MemoryStoreInterface => ({
   storeMemory: jest.fn<() => Promise<void>>().mockResolvedValue(undefined),
   retrieveRecentMemories: jest.fn<() => string[]>().mockReturnValue(['Memory 1', 'Memory 2']),
-  retrieveRelevantMemories: jest.fn<() => Promise<string[]>>().mockResolvedValue(['Relevant 1', 'Relevant 2']),
+  retrieveRelevantMemories: jest
+    .fn<() => Promise<string[]>>()
+    .mockResolvedValue(['Relevant 1', 'Relevant 2']),
 });
 
 const createMockPersonaCore = (): PersonaCoreInterface => ({
   getPersonality: jest.fn<() => string>().mockReturnValue('Friendly AI assistant'),
-  getDominantEmotion: jest.fn<() => { emotion: string; intensity: number }>().mockReturnValue({ emotion: 'interest', intensity: 0.6 }),
+  getDominantEmotion: jest
+    .fn<() => { emotion: string; intensity: number }>()
+    .mockReturnValue({ emotion: 'interest', intensity: 0.6 }),
   updateEmotionalState: jest.fn<() => Promise<void>>().mockResolvedValue(undefined),
 });
 

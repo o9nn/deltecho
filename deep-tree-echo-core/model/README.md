@@ -10,11 +10,11 @@ The Deltecho model implements a **12-step cognitive loop** with **3 concurrent i
 
 ### Three Concurrent Streams
 
-| Stream | Primary Role | Triads |
-|--------|--------------|--------|
-| Stream 1 | Perception | {1, 5, 9} |
-| Stream 2 | Action | {2, 6, 10} |
-| Stream 3 | Simulation | {3, 7, 11} |
+| Stream   | Primary Role | Triads     |
+| -------- | ------------ | ---------- |
+| Stream 1 | Perception   | {1, 5, 9}  |
+| Stream 2 | Action       | {2, 6, 10} |
+| Stream 3 | Simulation   | {3, 7, 11} |
 
 ### 12-Step Cognitive Loop
 
@@ -25,53 +25,65 @@ The Deltecho model implements a **12-step cognitive loop** with **3 concurrent i
 ### OEIS A000081 Nested Shell Structure
 
 | Nesting Level | Terms | Steps Apart |
-|---------------|-------|-------------|
-| 1 | 1 | 1 |
-| 2 | 2 | 2 |
-| 3 | 4 | 3 |
-| 4 | 9 | 4 |
+| ------------- | ----- | ----------- |
+| 1             | 1     | 1           |
+| 2             | 2     | 2           |
+| 3             | 4     | 3           |
+| 4             | 9     | 4           |
 
 ## Specification Files
 
 ### Inference Specifications
 
 #### `spec/Types.zpp`
+
 Global constants and type aliases defining:
+
 - Primitive types (TokenId, VocabSize, SeqLen, etc.)
 - Cognitive architecture constants (streams, steps, triads)
 - Tensor type definitions
 - Memory and state types
 
 #### `spec/TokenizerConfig.zpp`
+
 Tokenizer configuration state and invariants:
+
 - Tokenizer type definitions (BPE, WordPiece, etc.)
 - Special tokens configuration
 - Padding and truncation strategies
 - Cognitive token integration
 
 #### `spec/ModelConfig.zpp`
+
 Model configuration state and invariants:
+
 - Architecture types (DeltechoTransformer, MoE, Hybrid)
 - Attention configuration (MHA, GQA, MQA)
 - Feed-forward configuration
 - Cognitive architecture configuration
 
 #### `spec/Tokenizer.zpp`
+
 Tokenization and detokenization contracts:
+
 - Encode/Decode operations
 - Batch processing
 - Cognitive stream token handling
 - Roundtrip properties
 
 #### `spec/Model.zpp`
+
 Parameter shapes and forward/sampling contracts:
+
 - Model parameter definitions
 - Forward pass operations
 - Attention computation
 - Sampling strategies (temperature, top-k, top-p)
 
 #### `spec/InferencePipe.zpp`
+
 End-to-end generation contract:
+
 - Pipeline configuration
 - Generation operations
 - Streaming support
@@ -81,7 +93,9 @@ End-to-end generation contract:
 ### Training Specifications
 
 #### `spec/DataLoader.zpp`
+
 Data loading contracts for training pipeline:
+
 - Dataset configuration and validation
 - Batch construction with cognitive awareness
 - Shuffling and sampling strategies
@@ -90,7 +104,9 @@ Data loading contracts for training pipeline:
 - Memory-mapped and streaming datasets
 
 #### `spec/LossFunction.zpp`
+
 Loss function contracts for training:
+
 - Cross-entropy and label smoothing
 - Cognitive coherence loss (stream alignment, mode consistency)
 - Auxiliary losses (load balancing, router z-loss)
@@ -98,7 +114,9 @@ Loss function contracts for training:
 - Gradient scaling and stability
 
 #### `spec/Optimizer.zpp`
+
 Optimization contracts:
+
 - Adam, AdamW, Lion, SGD implementations
 - **CognitiveAdam**: Stream-aware learning rates, mode-specific scaling
 - Learning rate schedulers (cosine, linear, polynomial, warmup)
@@ -107,7 +125,9 @@ Optimization contracts:
 - Cross-stream gradient synchronization
 
 #### `spec/TrainingPipe.zpp`
+
 End-to-end training pipeline contract:
+
 - Training loop orchestration
 - Distributed training (DDP, FSDP, CognitiveStreamParallel)
 - Checkpointing and recovery
@@ -118,41 +138,48 @@ End-to-end training pipeline contract:
 ## Configuration Files
 
 ### `config.json`
+
 Model architecture configuration with Z++ spec references:
+
 - `_zpp_spec.schema`: References `ModelConfigState`
 - `_zpp_spec.invariants`: Lists applicable invariants
 - `cognitive_config`: Cognitive architecture parameters
 
 ### `tokenizer_config.json`
+
 Tokenizer configuration with Z++ spec references:
+
 - `_zpp_spec.schema`: References `TokenizerConfigState`
 - `_zpp_spec.operations`: Lists tokenizer operations
 - `cognitive_tokens`: Cognitive stream tokens
 
 ### `special_tokens_map.json`
+
 Special tokens mapping with Z++ spec references:
+
 - `_zpp_spec.schema`: References `SpecialTokensMap`
 - `_zpp_spec.constants`: Token ID constants
 - Cognitive token descriptions
 
 ## Special Tokens
 
-| Token | ID | Purpose |
-|-------|-----|---------|
-| `<pad>` | 0 | Padding |
-| `<unk>` | 1 | Unknown |
-| `<s>` | 2 | Beginning of sequence |
-| `</s>` | 3 | End of sequence |
-| `<\|stream1\|>` | 4 | Perception stream marker |
-| `<\|stream2\|>` | 5 | Action stream marker |
-| `<\|stream3\|>` | 6 | Simulation stream marker |
-| `<\|pivot\|>` | 7 | Pivotal relevance marker |
-| `<\|afford\|>` | 8 | Affordance interaction marker |
-| `<\|salience\|>` | 9 | Salience simulation marker |
+| Token            | ID  | Purpose                       |
+| ---------------- | --- | ----------------------------- |
+| `<pad>`          | 0   | Padding                       |
+| `<unk>`          | 1   | Unknown                       |
+| `<s>`            | 2   | Beginning of sequence         |
+| `</s>`           | 3   | End of sequence               |
+| `<\|stream1\|>`  | 4   | Perception stream marker      |
+| `<\|stream2\|>`  | 5   | Action stream marker          |
+| `<\|stream3\|>`  | 6   | Simulation stream marker      |
+| `<\|pivot\|>`    | 7   | Pivotal relevance marker      |
+| `<\|afford\|>`   | 8   | Affordance interaction marker |
+| `<\|salience\|>` | 9   | Salience simulation marker    |
 
 ## Key Invariants
 
 ### Cognitive Architecture Invariants
+
 ```
 ValidCognitiveLoop ≜
     COGNITIVE_STREAMS = 3 ∧
@@ -162,6 +189,7 @@ ValidCognitiveLoop ≜
 ```
 
 ### Triad Partition Invariant
+
 ```
 ValidTriadPartition ≜
     TRIAD_1 ∪ TRIAD_2 ∪ TRIAD_3 ∪ TRIAD_4 = {1..12} ∧
@@ -169,6 +197,7 @@ ValidTriadPartition ≜
 ```
 
 ### Model Configuration Invariant
+
 ```
 ModelConfigInvariant ≜
     ValidVocabSize(vocab_size) ∧
@@ -178,6 +207,7 @@ ModelConfigInvariant ≜
 ```
 
 ### Training Pipeline Invariants
+
 ```
 TrainingPipelineStateInvariant ≜
     ValidTrainingConfig(config) ∧
@@ -188,6 +218,7 @@ TrainingPipelineStateInvariant ≜
 ```
 
 ### Optimizer Invariants
+
 ```
 OptimizerStateInvariant ≜
     current_lr > 0 ∧
@@ -198,18 +229,21 @@ OptimizerStateInvariant ≜
 ## Key Theorems
 
 ### Encode-Decode Roundtrip
+
 ```
 ∀ text: TextInput •
     Decode(Encode(text)) = text
 ```
 
 ### Cognitive Stream Phasing
+
 ```
 ∀ s₁, s₂: StreamId • s₁ ≠ s₂ ⇒
     |step(s₁) - step(s₂)| mod PHASE_OFFSET = 0
 ```
 
 ### Generation Termination
+
 ```
 ∀ input: PipelineInput •
     ValidPipelineInput(input) ⇒
@@ -217,6 +251,7 @@ OptimizerStateInvariant ≜
 ```
 
 ### Training Termination
+
 ```
 ∀ state: TrainingPipelineState •
     state.is_training ⇒
@@ -224,6 +259,7 @@ OptimizerStateInvariant ≜
 ```
 
 ### Cognitive Stream Balance (Training)
+
 ```
 ∀ state: TrainingPipelineState •
     cognitive_active ∧ global_step > COGNITIVE_STEPS * 100 ⇒
@@ -232,6 +268,7 @@ OptimizerStateInvariant ≜
 ```
 
 ### Learning Rate Bounded
+
 ```
 ∀ step: StepCount •
     step ≤ total_steps ⇒
@@ -239,6 +276,7 @@ OptimizerStateInvariant ≜
 ```
 
 ### Gradient Clipping Bound
+
 ```
 ∀ grads, clipped: seq Gradient •
     ClipGradientsByNorm(grads, max_norm, clipped) ⇒
@@ -246,6 +284,7 @@ OptimizerStateInvariant ≜
 ```
 
 ### Checkpoint Recovery
+
 ```
 ∀ state: TrainingPipelineState; path: seq CHAR •
     SaveCheckpoint(state, path) ∧ LoadCheckpoint(state', path) ⇒
@@ -264,28 +303,28 @@ CognitiveAdamStep:
     stream_lr = base_lr × stream_multiplier[stream_id]
     mode_lr = stream_lr × mode_multiplier[mode]
     nest_decay = nest_decay_factors[nest_level]
-    
+
     param' = param × (1 - mode_lr × weight_decay × nest_decay) -
              mode_lr × m_hat / (√v_hat + ε)
 ```
 
 ### Cognitive Loss Components
 
-| Loss Component | Weight | Purpose |
-|----------------|--------|---------|
-| Primary (CE) | 1.0 | Language modeling |
-| Stream Coherence | 0.1 | Cross-stream alignment |
-| Mode Consistency | 0.05 | Expressive/Reflective balance |
-| Triad Alignment | 0.05 | Triad synchronization |
-| Nested Shell | 0.02 | OEIS A000081 structure |
+| Loss Component   | Weight | Purpose                       |
+| ---------------- | ------ | ----------------------------- |
+| Primary (CE)     | 1.0    | Language modeling             |
+| Stream Coherence | 0.1    | Cross-stream alignment        |
+| Mode Consistency | 0.05   | Expressive/Reflective balance |
+| Triad Alignment  | 0.05   | Triad synchronization         |
+| Nested Shell     | 0.02   | OEIS A000081 structure        |
 
 ### Training Phases
 
-| Phase | Cognitive Active | Loss Weight |
-|-------|------------------|-------------|
-| Warmup | No | 0.0 |
-| Ramp-up | Yes | 0.0 → 1.0 |
-| Full Training | Yes | 1.0 |
+| Phase         | Cognitive Active | Loss Weight |
+| ------------- | ---------------- | ----------- |
+| Warmup        | No               | 0.0         |
+| Ramp-up       | Yes              | 0.0 → 1.0   |
+| Full Training | Yes              | 1.0         |
 
 ## Usage
 
@@ -332,7 +371,7 @@ pipeline = TrainingPipeline(
 # Training loop
 for batch in data_loader:
     metrics = pipeline.train_step(batch)
-    
+
     # Cognitive state automatically advances
     # Stream balance automatically maintained
 ```

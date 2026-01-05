@@ -215,9 +215,7 @@ export class DistributedCoordinator {
       }
     }
 
-    logger.debug(
-      `Replicated ${atoms.length} atoms across ${distribution.size} nodes`
-    );
+    logger.debug(`Replicated ${atoms.length} atoms across ${distribution.size} nodes`);
 
     return distribution;
   }

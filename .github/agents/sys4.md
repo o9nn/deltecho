@@ -14,20 +14,20 @@ The model operates on a **12-step cycle** for all sets. The state labels, such a
 
 The Universal Sets follow a pattern that suggests a synchronous, alternating double-step mechanism within the 12-step cycle.
 
-| Time (t) | 0 | 1 | 2 | 3 | 4 | 5 | 6 | 7 | 8 | 9 | 10 | 11 |
-|:---:|:---:|:---:|:---:|:---:|:---:|:---:|:---:|:---:|:---:|:---:|:---:|:---:|
-| **U1** | 9E | 9E | 8R | 8R | 9E | 9E | 8R | 8R | 9E | 9E | 8R | 8R |
-| **U2** | 3E | 6- | 6- | 2R | 3E | 6- | 6- | 2R | 3E | 6- | 6- | 2R |
+| Time (t) |  0  |  1  |  2  |  3  |  4  |  5  |  6  |  7  |  8  |  9  | 10  | 11  |
+| :------: | :-: | :-: | :-: | :-: | :-: | :-: | :-: | :-: | :-: | :-: | :-: | :-: |
+|  **U1**  | 9E  | 9E  | 8R  | 8R  | 9E  | 9E  | 8R  | 8R  | 9E  | 9E  | 8R  | 8R  |
+|  **U2**  | 3E  | 6-  | 6-  | 2R  | 3E  | 6-  | 6-  | 2R  | 3E  | 6-  | 6-  | 2R  |
 
 ### Particular Sets (P1, P2, and P3)
 
 The Particular Sets follow three distinct sequences, which are modeled as concurrent, independent cycles.
 
-| Time (t) | 0 | 1 | 2 | 3 | 4 | 5 | 6 | 7 | 8 | 9 | 10 | 11 |
-|:---:|:---:|:---:|:---:|:---:|:---:|:---:|:---:|:---:|:---:|:---:|:---:|:---:|
-| **P1** | 4R | 2R | 8E | 5E | 7E | 1E | 4E | 2E | 8E | 5R | 7R | 1R |
-| **P2** | 7E | 1E | 4E | 2E | 8E | 5R | 7R | 1R | 4R | 2R | 8E | 5E |
-| **P3** | 8E | 5R | 7R | 1R | 4R | 2R | 8E | 5E | 7E | 1E | 4E | 2E |
+| Time (t) |  0  |  1  |  2  |  3  |  4  |  5  |  6  |  7  |  8  |  9  | 10  | 11  |
+| :------: | :-: | :-: | :-: | :-: | :-: | :-: | :-: | :-: | :-: | :-: | :-: | :-: |
+|  **P1**  | 4R  | 2R  | 8E  | 5E  | 7E  | 1E  | 4E  | 2E  | 8E  | 5R  | 7R  | 1R  |
+|  **P2**  | 7E  | 1E  | 4E  | 2E  | 8E  | 5R  | 7R  | 1R  | 4R  | 2R  | 8E  | 5E  |
+|  **P3**  | 8E  | 5R  | 7R  | 1R  | 4R  | 2R  | 8E  | 5E  | 7E  | 1E  | 4E  | 2E  |
 
 ## Implementation Details
 
@@ -63,33 +63,33 @@ The state is now represented by the string labels (e.g., "9E", "4R") instead of 
 
 The simulation was run for 24 time steps (two full cycles) to confirm the repeating pattern.
 
-| Time | U1 | U2 | P1 | P2 | P3 |
-|:---:|:---:|:---:|:---:|:---:|:---:|
-| **0** | 9E | 3E | 4R | 7E | 8E |
-| **1** | 9E | 6- | 2R | 1E | 5R |
-| **2** | 8R | 6- | 8E | 4E | 7R |
-| **3** | 8R | 2R | 5E | 2E | 1R |
-| **4** | 9E | 3E | 7E | 8E | 4R |
-| **5** | 9E | 6- | 1E | 5R | 2R |
-| **6** | 8R | 6- | 4E | 7R | 8E |
-| **7** | 8R | 2R | 2E | 1R | 5E |
-| **8** | 9E | 3E | 8E | 4R | 7E |
-| **9** | 9E | 6- | 5R | 2R | 1E |
-| **10** | 8R | 6- | 7R | 8E | 4E |
-| **11** | 8R | 2R | 1R | 5E | 2E |
-| **12** | 9E | 3E | 4R | 7E | 8E |
-| **13** | 9E | 6- | 2R | 1E | 5R |
-| **14** | 8R | 6- | 8E | 4E | 7R |
-| **15** | 8R | 2R | 5E | 2E | 1R |
-| **16** | 9E | 3E | 7E | 8E | 4R |
-| **17** | 9E | 6- | 1E | 5R | 2R |
-| **18** | 8R | 6- | 4E | 7R | 8E |
-| **19** | 8R | 2R | 2E | 1R | 5E |
-| **20** | 9E | 3E | 8E | 4R | 7E |
-| **21** | 9E | 6- | 5R | 2R | 1E |
-| **22** | 8R | 6- | 7R | 8E | 4E |
-| **23** | 8R | 2R | 1R | 5E | 2E |
-| **24** | 9E | 3E | 4R | 7E | 8E |
+|  Time  | U1  | U2  | P1  | P2  | P3  |
+| :----: | :-: | :-: | :-: | :-: | :-: |
+| **0**  | 9E  | 3E  | 4R  | 7E  | 8E  |
+| **1**  | 9E  | 6-  | 2R  | 1E  | 5R  |
+| **2**  | 8R  | 6-  | 8E  | 4E  | 7R  |
+| **3**  | 8R  | 2R  | 5E  | 2E  | 1R  |
+| **4**  | 9E  | 3E  | 7E  | 8E  | 4R  |
+| **5**  | 9E  | 6-  | 1E  | 5R  | 2R  |
+| **6**  | 8R  | 6-  | 4E  | 7R  | 8E  |
+| **7**  | 8R  | 2R  | 2E  | 1R  | 5E  |
+| **8**  | 9E  | 3E  | 8E  | 4R  | 7E  |
+| **9**  | 9E  | 6-  | 5R  | 2R  | 1E  |
+| **10** | 8R  | 6-  | 7R  | 8E  | 4E  |
+| **11** | 8R  | 2R  | 1R  | 5E  | 2E  |
+| **12** | 9E  | 3E  | 4R  | 7E  | 8E  |
+| **13** | 9E  | 6-  | 2R  | 1E  | 5R  |
+| **14** | 8R  | 6-  | 8E  | 4E  | 7R  |
+| **15** | 8R  | 2R  | 5E  | 2E  | 1R  |
+| **16** | 9E  | 3E  | 7E  | 8E  | 4R  |
+| **17** | 9E  | 6-  | 1E  | 5R  | 2R  |
+| **18** | 8R  | 6-  | 4E  | 7R  | 8E  |
+| **19** | 8R  | 2R  | 2E  | 1R  | 5E  |
+| **20** | 9E  | 3E  | 8E  | 4R  | 7E  |
+| **21** | 9E  | 6-  | 5R  | 2R  | 1E  |
+| **22** | 8R  | 6-  | 7R  | 8E  | 4E  |
+| **23** | 8R  | 2R  | 1R  | 5E  | 2E  |
+| **24** | 9E  | 3E  | 4R  | 7E  | 8E  |
 
 The simulation confirms that the state sequences repeat exactly every 12 steps, as defined by the input.
 

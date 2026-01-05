@@ -103,9 +103,9 @@ describe('LlamaReactNativeBridge', () => {
     it('should throw if native module not set', async () => {
       const newBridge = new LlamaReactNativeBridge();
 
-      await expect(
-        newBridge.loadModel({ modelPath: '/path/to/model.gguf' })
-      ).rejects.toThrow('Native module not set');
+      await expect(newBridge.loadModel({ modelPath: '/path/to/model.gguf' })).rejects.toThrow(
+        'Native module not set'
+      );
     });
 
     it('should use default config values', async () => {

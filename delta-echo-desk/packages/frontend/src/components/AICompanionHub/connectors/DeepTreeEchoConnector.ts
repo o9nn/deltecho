@@ -93,7 +93,8 @@ export class DeepTreeEchoConnector extends BaseConnector {
     if (!lastUserMessage) {
       return {
         messageId: `echo_${Date.now()}`,
-        content: 'I am listening... awaiting your thoughts to echo through the depths.',
+        content:
+          'I am listening... awaiting your thoughts to echo through the depths.',
         finishReason: 'stop',
       }
     }

@@ -98,7 +98,9 @@ test.describe('Orchestrator Integration', () => {
       await switchToProfile(page, existingProfiles[0].id)
 
       // Account info should be loaded
-      const accountItem = page.getByTestId(`account-item-${existingProfiles[0].id}`)
+      const accountItem = page.getByTestId(
+        `account-item-${existingProfiles[0].id}`
+      )
       const accountExists = await accountItem.isVisible().catch(() => false)
 
       expect(accountExists).toBeTruthy()

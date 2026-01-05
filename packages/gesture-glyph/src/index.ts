@@ -1,6 +1,6 @@
 /**
  * @deltecho/gesture-glyph
- * 
+ *
  * Gesture glyph codec for trajectory visualization and deep tree echo distribution
  */
 

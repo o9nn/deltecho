@@ -39,6 +39,7 @@ This module provides integration between Deep Tree Echo and Dovecot mail server,
 ## Components
 
 ### MilterServer
+
 Implements the Sendmail Milter protocol for intercepting emails in transit.
 
 - **Purpose**: Filter and inspect emails before delivery
@@ -46,6 +47,7 @@ Implements the Sendmail Milter protocol for intercepting emails in transit.
 - **Capabilities**: Accept, reject, quarantine, modify headers
 
 ### LMTPServer
+
 Implements the Local Mail Transfer Protocol for final delivery processing.
 
 - **Purpose**: Process emails at delivery time
@@ -53,6 +55,7 @@ Implements the Local Mail Transfer Protocol for final delivery processing.
 - **Capabilities**: Receive and store messages, trigger responses
 
 ### EmailProcessor
+
 Converts emails into Deep Tree Echo's cognitive processing format.
 
 - **Features**:
@@ -93,7 +96,7 @@ milter_default_action = accept
 ### Orchestrator Configuration
 
 ```typescript
-import { Orchestrator } from 'deep-tree-echo-orchestrator'
+import { Orchestrator } from 'deep-tree-echo-orchestrator';
 
 const orchestrator = new Orchestrator({
   enableDovecot: true,
@@ -104,9 +107,9 @@ const orchestrator = new Orchestrator({
     allowedDomains: ['example.com', 'mail.example.com'],
     botEmailAddress: 'echo@example.com',
   },
-})
+});
 
-await orchestrator.start()
+await orchestrator.start();
 ```
 
 ## Avatar Configuration
@@ -114,20 +117,20 @@ await orchestrator.start()
 Deep Tree Echo includes a custom avatar for email and chat representation:
 
 ```typescript
-import { PersonaCore } from 'deep-tree-echo-core'
+import { PersonaCore } from 'deep-tree-echo-core';
 
-const persona = new PersonaCore()
+const persona = new PersonaCore();
 
 // Get current avatar config
-const avatar = persona.getAvatarConfig()
-console.log(avatar.imagePath) // 'assets/deep-tree-echo-avatar.svg'
-console.log(avatar.displayName) // 'Deep Tree Echo'
+const avatar = persona.getAvatarConfig();
+console.log(avatar.imagePath); // 'assets/deep-tree-echo-avatar.svg'
+console.log(avatar.displayName); // 'Deep Tree Echo'
 
 // Update avatar aesthetic
 await persona.updateAvatarConfig({
   aesthetic: 'cosmic',
   primaryColor: '#8b5cf6',
-})
+});
 ```
 
 ## Security Considerations

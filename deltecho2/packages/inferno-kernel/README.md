@@ -7,56 +7,72 @@ A revolutionary approach to artificial general intelligence that implements Open
 ### Core Components
 
 #### 1. Inferno Kernel
+
 The foundational kernel that manages cognitive processes as first-class operating system entities:
+
 - **Cognitive Process Management**: Create, schedule, and terminate reasoning processes
 - **Kernel Syscalls**: Direct interfaces for cognitive operations
 - **Resource Management**: Allocate attention and processing resources
 - **Distributed Coordination**: Coordinate across multiple kernel instances
 
 #### 2. AtomSpace - Hypergraph Knowledge Store
+
 Kernel-level hypergraph knowledge representation:
+
 - **Weighted Labeled Hypergraph**: Nodes represent concepts, links represent relationships
 - **Truth Values**: Probabilistic strength and confidence for uncertain knowledge
 - **Attention Values**: Short-term and long-term importance metrics
 - **Indexing**: Fast lookup by name, type, and connectivity
 
 #### 3. Pattern Matcher
+
 Kernel-level pattern matching for cognitive operations:
+
 - **Hypergraph Pattern Matching**: Find complex patterns in knowledge
 - **Variable Binding**: Unify patterns with concrete atoms
 - **Similarity Search**: Find structurally and semantically similar atoms
 - **Complex Queries**: Multi-pattern constraint satisfaction
 
 #### 4. PLN (Probabilistic Logic Networks)
+
 Formal inference system combining logic and probability:
+
 - **Deduction**: A→B, B→C ⇒ A→C
 - **Induction**: Generalize from specific examples
 - **Abduction**: Infer causes from effects
 - **Forward/Backward Chaining**: Goal-directed and exploratory reasoning
 
 #### 5. Attention Allocation
+
 Cognitive resource management as kernel scheduler:
+
 - **Importance Spreading**: Diffuse attention to connected concepts
 - **Forgetting**: Decay less important knowledge over time
 - **Hebbian Learning**: Strengthen co-active connections
 - **Attentional Focus**: Maintain working memory of important atoms
 
 #### 6. MOSES (Meta-Optimizing Semantic Evolutionary Search)
+
 Evolutionary program learning at kernel level:
+
 - **Genetic Programming**: Evolve programs as tree structures
 - **Fitness Optimization**: Learn programs that maximize objectives
 - **Population Management**: Maintain diverse solution space
 - **Crossover & Mutation**: Genetic operators for exploration
 
 #### 7. OpenPsi - Motivational System
+
 Goal-directed behavior and emotional modeling:
+
 - **Drive Management**: Certainty, competence, affiliation, energy
 - **Goal Selection**: Prioritize goals based on drives and satisfaction
 - **Emotion Generation**: Valence and arousal based on goal progress
 - **Action Selection**: Choose actions to satisfy drives and goals
 
 #### 8. Distributed Coordinator
+
 Multi-node AGI coordination:
+
 - **Node Registration**: Discover and register distributed kernel nodes
 - **Task Distribution**: Assign cognitive tasks to optimal nodes
 - **AtomSpace Replication**: Distribute knowledge for redundancy
@@ -67,13 +83,18 @@ Multi-node AGI coordination:
 ### Basic Example
 
 ```typescript
-import { createAGIKernel, AtomSpace, PLNEngine, OpenPsi } from '@deltachat-desktop/inferno-kernel'
+import {
+  createAGIKernel,
+  AtomSpace,
+  PLNEngine,
+  OpenPsi,
+} from '@deltachat-desktop/inferno-kernel'
 
 // Create and boot the AGI kernel
 const kernel = await createAGIKernel({
   maxAtoms: 1000000,
   distributedNodes: ['node1:8080', 'node2:8080'],
-  reasoningDepth: 10
+  reasoningDepth: 10,
 })
 
 // Create AtomSpace for knowledge representation
@@ -84,7 +105,7 @@ const cat = atomSpace.addNode('ConceptNode', 'cat')
 const animal = atomSpace.addNode('ConceptNode', 'animal')
 const inheritance = atomSpace.addLink('InheritanceLink', [cat.id, animal.id], {
   strength: 0.9,
-  confidence: 0.95
+  confidence: 0.95,
 })
 
 // Reasoning with PLN
@@ -112,7 +133,7 @@ import {
   createAGIKernel,
   AtomSpace,
   DistributedCoordinator,
-  PLNEngine
+  PLNEngine,
 } from '@deltachat-desktop/inferno-kernel'
 
 // Create kernel
@@ -122,7 +143,7 @@ const atomSpace = new AtomSpace()
 // Setup distributed coordinator
 const coordinator = new DistributedCoordinator(atomSpace, {
   nodeId: 'master-node',
-  replicationFactor: 3
+  replicationFactor: 3,
 })
 
 // Register additional nodes
@@ -131,7 +152,7 @@ coordinator.registerNode({
   address: 'worker1.example.com',
   port: 8080,
   capabilities: ['reasoning', 'learning'],
-  load: 0
+  load: 0,
 })
 
 // Create and distribute task
@@ -155,8 +176,8 @@ const pattern = {
   type: 'InheritanceLink',
   outgoing: [
     { type: 'ConceptNode', variable: true, name: '$X' },
-    { type: 'ConceptNode', name: 'animal' }
-  ]
+    { type: 'ConceptNode', name: 'animal' },
+  ],
 }
 
 // Match pattern
@@ -175,11 +196,11 @@ const atomSpace = new AtomSpace()
 const moses = new MOSES(atomSpace, {
   populationSize: 100,
   maxGenerations: 50,
-  mutationRate: 0.1
+  mutationRate: 0.1,
 })
 
 // Define fitness function
-const fitnessFunc = (program) => {
+const fitnessFunc = program => {
   // Evaluate program performance
   return Math.random() // Placeholder
 }
@@ -257,6 +278,7 @@ GPL-3.0-or-later
 ## Credits
 
 Inspired by:
+
 - OpenCog AGI framework
 - Inferno operating system
 - Plan 9 distributed computing

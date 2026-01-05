@@ -15,6 +15,7 @@ December 2024
 A runtime-agnostic TypeScript library that consolidates core Deep Tree Echo functionality:
 
 #### Cognitive Modules
+
 - **LLMService**: Multi-API cognitive processing with parallel function execution
   - Cognitive Core (logical reasoning)
   - Affective Core (emotional processing)
@@ -24,6 +25,7 @@ A runtime-agnostic TypeScript library that consolidates core Deep Tree Echo func
   - General processing fallback
 
 #### Memory Systems
+
 - **RAGMemoryStore**: Retrieval Augmented Generation memory store
   - Conversation history management
   - Reflection memory storage
@@ -37,6 +39,7 @@ A runtime-agnostic TypeScript library that consolidates core Deep Tree Echo func
   - Memory decay simulation
 
 #### Personality Management
+
 - **PersonaCore**: Autonomous personality system
   - Differential emotion framework (10 emotions)
   - Cognitive state management (5 parameters)
@@ -45,11 +48,13 @@ A runtime-agnostic TypeScript library that consolidates core Deep Tree Echo func
   - Opponent process emotional dynamics
 
 #### Infrastructure
+
 - **Storage Abstraction**: `MemoryStorage` interface for runtime-agnostic persistence
 - **InMemoryStorage**: Default in-memory storage implementation
 - **Logger**: Simple console-based logging utility
 
 #### Placeholders for Future Implementation
+
 - **SecureIntegration**: API key validation, encryption/decryption
 - **ProprioceptiveEmbodiment**: Digital presence simulation
 
@@ -58,10 +63,12 @@ A runtime-agnostic TypeScript library that consolidates core Deep Tree Echo func
 A Node.js daemon framework for system-level coordination:
 
 #### Core Components
+
 - **Daemon Entry Point**: Main process with SIGINT/SIGTERM handling
 - **Orchestrator**: Central coordination class managing all services
 
 #### Service Stubs (Framework Only)
+
 - **DeltaChatInterface**: JSON-RPC connection to DeltaChat core
 - **IPCServer**: Inter-process communication for desktop apps
 - **TaskScheduler**: Cron-like background task scheduling
@@ -78,39 +85,45 @@ All stubs have proper lifecycle management (start/stop) and logging.
 ## Key Architectural Decisions
 
 ### Runtime Agnostic Design
+
 The core library uses dependency injection for storage, making it compatible with:
+
 - Electron desktop applications
 - Tauri desktop applications
 - Node.js daemons
 - Browser environments (with appropriate storage adapter)
 
 ### Storage Abstraction Pattern
+
 ```typescript
 interface MemoryStorage {
-  load(key: string): Promise<string | undefined>
-  save(key: string, value: string): Promise<void>
+  load(key: string): Promise<string | undefined>;
+  save(key: string, value: string): Promise<void>;
 }
 ```
 
 Desktop applications can provide runtime-specific adapters:
+
 ```typescript
 class ElectronStorageAdapter implements MemoryStorage {
   async load(key: string) {
-    const settings = await runtime.getDesktopSettings()
-    return settings[key]
+    const settings = await runtime.getDesktopSettings();
+    return settings[key];
   }
   async save(key: string, value: string) {
-    await runtime.setDesktopSetting(key, value)
+    await runtime.setDesktopSetting(key, value);
   }
 }
 ```
 
 ### TypeScript First
+
 - Full type safety across all modules
 - Strict compiler options
 - Declaration files generated for all exports
 
 ### Modular Organization
+
 ```
 deep-tree-echo-core/
 ├── src/
@@ -142,12 +155,14 @@ Following code review feedback:
 ## Testing Status
 
 ⚠️ Unit tests not included in Phase 1
+
 - Core library is ready for testing
 - Test infrastructure should be added in Phase 2
 
 ## Next Steps (Phase 2: Desktop Integration)
 
 ### Required Tasks
+
 1. **Create Runtime Storage Adapters**
    - Implement `MemoryStorage` for Electron runtime
    - Implement `MemoryStorage` for Tauri runtime
@@ -167,6 +182,7 @@ Following code review feedback:
    - Test personality state management
 
 ### Future Enhancements (Phase 3)
+
 1. **Orchestrator Services**
    - Implement actual JSON-RPC client for DeltaChat
    - Implement Unix socket IPC server

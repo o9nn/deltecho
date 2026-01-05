@@ -19,7 +19,9 @@ jest.mock('../RAGMemoryStore', () => {
         getLatestChatMemories: jest.fn().mockReturnValue([]),
         searchMemories: jest.fn().mockReturnValue([]),
         deleteChatMemories: jest.fn().mockResolvedValue(undefined),
-        getStats: jest.fn().mockReturnValue({ totalMemories: 10, chatCount: 2 }),
+        getStats: jest
+          .fn()
+          .mockReturnValue({ totalMemories: 10, chatCount: 2 }),
         setEnabled: jest.fn(),
         storeMemory: jest.fn(),
         getConversationContext: jest.fn().mockReturnValue([]),
@@ -42,7 +44,9 @@ jest.mock('../LLMService', () => {
           integratedResponse: 'Test parallel response',
           processing: {},
         }),
-        getCompletion: jest.fn().mockResolvedValue({ content: 'Test response' }),
+        getCompletion: jest
+          .fn()
+          .mockResolvedValue({ content: 'Test response' }),
         generateResponseFromMemories: jest
           .fn()
           .mockResolvedValue({ content: 'Test response from memories' }),

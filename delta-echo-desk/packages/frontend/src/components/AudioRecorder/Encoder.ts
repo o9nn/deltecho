@@ -53,7 +53,13 @@ class Encoder {
   appendToBuffer(buffer: ArrayBuffer | Int8Array | Uint8Array): void {
     // Create a copy with its own ArrayBuffer to avoid SharedArrayBuffer issues
     const copy = new Uint8Array(buffer.byteLength)
-    copy.set(new Uint8Array(buffer instanceof ArrayBuffer ? buffer : buffer.buffer, buffer instanceof ArrayBuffer ? 0 : buffer.byteOffset, buffer.byteLength))
+    copy.set(
+      new Uint8Array(
+        buffer instanceof ArrayBuffer ? buffer : buffer.buffer,
+        buffer instanceof ArrayBuffer ? 0 : buffer.byteOffset,
+        buffer.byteLength
+      )
+    )
     this.dataBuffer.push(copy)
   }
 

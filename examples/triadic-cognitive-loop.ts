@@ -1,18 +1,18 @@
 /**
  * Triadic Cognitive Loop Example
- * 
+ *
  * This example demonstrates the full triadic cognitive architecture
  * with parallel processing across all three cognitive cores:
  * - Cognitive Core: Logical reasoning and analysis
  * - Affective Core: Emotional understanding and empathy
  * - Relevance Core: Integration, salience, and prioritization
- * 
+ *
  * The three cores process in parallel (120° phase separation)
  * following the 12-step cognitive loop architecture.
- * 
+ *
  * Prerequisites:
  * - Set OPENAI_API_KEY or ANTHROPIC_API_KEY environment variable
- * 
+ *
  * Usage:
  * - npx ts-node examples/triadic-cognitive-loop.ts
  */
@@ -99,17 +99,21 @@ async function main() {
   const registry = LLMProviderRegistry.getInstance();
 
   if (openaiKey) {
-    registry.register(new OpenAIProvider({
-      apiKey: openaiKey,
-      model: 'gpt-4-turbo-preview',
-    }));
+    registry.register(
+      new OpenAIProvider({
+        apiKey: openaiKey,
+        model: 'gpt-4-turbo-preview',
+      })
+    );
   }
 
   if (anthropicKey) {
-    registry.register(new AnthropicProvider({
-      apiKey: anthropicKey,
-      model: 'claude-3-sonnet-20240229',
-    }));
+    registry.register(
+      new AnthropicProvider({
+        apiKey: anthropicKey,
+        model: 'claude-3-sonnet-20240229',
+      })
+    );
   }
 
   const defaultProvider = openaiKey ? 'openai' : 'anthropic';

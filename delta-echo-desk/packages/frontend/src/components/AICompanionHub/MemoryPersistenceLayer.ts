@@ -330,7 +330,10 @@ export class MemoryPersistenceLayer extends EventEmitter {
       const memoriesArray = Array.from(this.memories.values())
 
       // Save to runtime storage as JSON string
-      await runtime.setDesktopSetting('aiMemories', JSON.stringify(memoriesArray))
+      await runtime.setDesktopSetting(
+        'aiMemories',
+        JSON.stringify(memoriesArray)
+      )
 
       this.emit('memoriesPersisted', { count: memoriesArray.length })
     } catch (error) {

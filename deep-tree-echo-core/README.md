@@ -20,22 +20,24 @@ The package is organized into the following modules:
 ## Usage
 
 ```typescript
-import { LLMService, CognitiveFunctionType } from 'deep-tree-echo-core/cognitive'
+import { LLMService, CognitiveFunctionType } from 'deep-tree-echo-core/cognitive';
 
-const llmService = new LLMService()
-llmService.setConfig({ apiKey: 'your-key', apiEndpoint: 'https://...' })
+const llmService = new LLMService();
+llmService.setConfig({ apiKey: 'your-key', apiEndpoint: 'https://...' });
 
-const response = await llmService.generateResponse('Hello', [])
+const response = await llmService.generateResponse('Hello', []);
 ```
 
 ## Development
 
 Build the package:
+
 ```bash
 pnpm build
 ```
 
 Type-check:
+
 ```bash
 pnpm check:types
 ```

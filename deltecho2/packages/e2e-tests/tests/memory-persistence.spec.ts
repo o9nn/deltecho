@@ -2,7 +2,7 @@ import { test, expect, Page } from '@playwright/test'
 
 /**
  * Memory Persistence E2E Test Suite
- * 
+ *
  * Tests the RAG memory system including:
  * - Memory storage and retrieval
  * - Persistence across sessions
@@ -18,15 +18,17 @@ const MEMORY_LOAD_TIMEOUT = 15_000
 
 // Helper to wait for memory system initialization
 async function waitForMemorySystem(page: Page, timeout = MEMORY_LOAD_TIMEOUT) {
-  await page.waitForFunction(
-    () => {
-      const win = window as unknown as { __memorySystemReady?: boolean }
-      return win.__memorySystemReady === true
-    },
-    { timeout }
-  ).catch(() => {
-    console.log('Memory system not detected - continuing with basic tests')
-  })
+  await page
+    .waitForFunction(
+      () => {
+        const win = window as unknown as { __memorySystemReady?: boolean }
+        return win.__memorySystemReady === true
+      },
+      { timeout }
+    )
+    .catch(() => {
+      console.log('Memory system not detected - continuing with basic tests')
+    })
 }
 
 // Helper to get memory system state
@@ -47,7 +49,7 @@ async function getMemorySystemState(page: Page) {
     return {
       initialized: false,
       memoryCount: 0,
-      storageType: 'indexeddb'
+      storageType: 'indexeddb',
     }
   })
 }
@@ -75,7 +77,7 @@ test.describe('Memory Persistence - Storage Operations', () => {
         return win.__memorySystem.store({
           content: 'Test memory entry',
           type: 'conversation',
-          metadata: { source: 'e2e-test' }
+          metadata: { source: 'e2e-test' },
         })
       }
       return { success: true, id: 'test-id', timestamp: Date.now() }
@@ -112,7 +114,10 @@ test.describe('Memory Persistence - Storage Operations', () => {
     const updateResult = await page.evaluate(() => {
       const win = window as unknown as {
         __memorySystem?: {
-          update: (id: string, updates: object) => Promise<{
+          update: (
+            id: string,
+            updates: object
+          ) => Promise<{
             success: boolean
             updatedAt: number
           }>
@@ -120,7 +125,7 @@ test.describe('Memory Persistence - Storage Operations', () => {
       }
       if (win.__memorySystem?.update) {
         return win.__memorySystem.update('test-id', {
-          content: 'Updated memory entry'
+          content: 'Updated memory entry',
         })
       }
       return { success: true, updatedAt: Date.now() }
@@ -162,7 +167,7 @@ test.describe('Memory Persistence - Session Persistence', () => {
 
     // Store a unique memory
     const uniqueId = `test-${Date.now()}`
-    await page.evaluate((id) => {
+    await page.evaluate(id => {
       const win = window as unknown as {
         __memorySystem?: {
           store: (entry: object) => Promise<void>
@@ -172,7 +177,7 @@ test.describe('Memory Persistence - Session Persistence', () => {
         return win.__memorySystem.store({
           id,
           content: 'Persistence test memory',
-          type: 'test'
+          type: 'test',
         })
       }
     }, uniqueId)
@@ -182,7 +187,7 @@ test.describe('Memory Persistence - Session Persistence', () => {
     await waitForMemorySystem(page)
 
     // Verify memory persists
-    const persistenceCheck = await page.evaluate((id) => {
+    const persistenceCheck = await page.evaluate(id => {
       const win = window as unknown as {
         __memorySystem?: {
           exists: (id: string) => Promise<boolean>
@@ -265,13 +270,16 @@ test.describe('Memory Persistence - Search and Retrieval', () => {
         return win.__memorySystem.searchWithRanking('test query')
       }
       return {
-        results: [{ id: '1', score: 0.9 }, { id: '2', score: 0.7 }],
-        sortedByRelevance: true
+        results: [
+          { id: '1', score: 0.9 },
+          { id: '2', score: 0.7 },
+        ],
+        sortedByRelevance: true,
       }
     })
 
     expect(rankedResults.sortedByRelevance).toBe(true)
-    
+
     // Verify descending order
     if (rankedResults.results.length > 1) {
       for (let i = 1; i < rankedResults.results.length; i++) {
@@ -288,7 +296,10 @@ test.describe('Memory Persistence - Search and Retrieval', () => {
     const semanticSearch = await page.evaluate(() => {
       const win = window as unknown as {
         __memorySystem?: {
-          semanticSearch: (query: string, options: object) => Promise<{
+          semanticSearch: (
+            query: string,
+            options: object
+          ) => Promise<{
             results: object[]
             embeddingsUsed: boolean
           }>
@@ -297,7 +308,7 @@ test.describe('Memory Persistence - Search and Retrieval', () => {
       if (win.__memorySystem?.semanticSearch) {
         return win.__memorySystem.semanticSearch('similar concepts', {
           threshold: 0.7,
-          limit: 10
+          limit: 10,
         })
       }
       return { results: [], embeddingsUsed: true }
@@ -333,7 +344,10 @@ test.describe('Memory Persistence - Search and Retrieval', () => {
     const dateFilteredResults = await page.evaluate(() => {
       const win = window as unknown as {
         __memorySystem?: {
-          filterByDateRange: (start: number, end: number) => Promise<{
+          filterByDateRange: (
+            start: number,
+            end: number
+          ) => Promise<{
             results: object[]
             count: number
           }>
@@ -380,7 +394,7 @@ test.describe('Memory Persistence - Statistics and Management', () => {
         memoriesByType: {},
         storageUsedBytes: 0,
         oldestMemory: 0,
-        newestMemory: 0
+        newestMemory: 0,
       }
     })
 
@@ -403,7 +417,7 @@ test.describe('Memory Persistence - Statistics and Management', () => {
       if (win.__memorySystem?.cleanup) {
         return win.__memorySystem.cleanup({
           olderThan: Date.now() - 30 * 24 * 60 * 60 * 1000, // 30 days
-          type: 'temporary'
+          type: 'temporary',
         })
       }
       return { removed: 0, remaining: 0 }
@@ -442,7 +456,10 @@ test.describe('Memory Persistence - Statistics and Management', () => {
     const importResult = await page.evaluate(() => {
       const win = window as unknown as {
         __memorySystem?: {
-          import: (data: string, format: string) => Promise<{
+          import: (
+            data: string,
+            format: string
+          ) => Promise<{
             success: boolean
             imported: number
             skipped: number
@@ -471,7 +488,10 @@ test.describe('Memory Persistence - Chat Context Integration', () => {
     const chatMemoryResult = await page.evaluate(() => {
       const win = window as unknown as {
         __memorySystem?: {
-          storeChatMemory: (chatId: number, message: object) => Promise<{
+          storeChatMemory: (
+            chatId: number,
+            message: object
+          ) => Promise<{
             success: boolean
             memoryId: string
           }>
@@ -481,7 +501,7 @@ test.describe('Memory Persistence - Chat Context Integration', () => {
         return win.__memorySystem.storeChatMemory(1, {
           role: 'user',
           content: 'Test message',
-          timestamp: Date.now()
+          timestamp: Date.now(),
         })
       }
       return { success: true, memoryId: 'chat-memory-1' }
@@ -496,7 +516,10 @@ test.describe('Memory Persistence - Chat Context Integration', () => {
     const chatHistory = await page.evaluate(() => {
       const win = window as unknown as {
         __memorySystem?: {
-          getChatHistory: (chatId: number, limit: number) => Promise<{
+          getChatHistory: (
+            chatId: number,
+            limit: number
+          ) => Promise<{
             messages: object[]
             hasMore: boolean
           }>
@@ -518,7 +541,10 @@ test.describe('Memory Persistence - Chat Context Integration', () => {
     const contextResult = await page.evaluate(() => {
       const win = window as unknown as {
         __memorySystem?: {
-          buildContext: (query: string, maxTokens: number) => Promise<{
+          buildContext: (
+            query: string,
+            maxTokens: number
+          ) => Promise<{
             context: string
             memoriesUsed: number
             tokenCount: number
@@ -561,7 +587,7 @@ test.describe('Memory Persistence - Performance', () => {
       return {
         storeLatencyMs: 10,
         retrieveLatencyMs: 5,
-        searchLatencyMs: 50
+        searchLatencyMs: 50,
       }
     })
 
@@ -590,7 +616,7 @@ test.describe('Memory Persistence - Performance', () => {
       return {
         insertTime: 100,
         queryTime: 50,
-        memoryUsage: 1024
+        memoryUsage: 1024,
       }
     })
 
@@ -624,7 +650,7 @@ test.describe('Memory Persistence - Error Handling', () => {
       return {
         quotaCheckEnabled: true,
         autoCleanupEnabled: true,
-        warningThreshold: 0.9
+        warningThreshold: 0.9,
       }
     })
 
@@ -650,7 +676,7 @@ test.describe('Memory Persistence - Error Handling', () => {
       return {
         autoRecoveryEnabled: true,
         backupEnabled: true,
-        validationOnLoad: true
+        validationOnLoad: true,
       }
     })
 

@@ -317,11 +317,7 @@ export class TelemetryMonitor extends EventEmitter {
   /**
    * Record a metric value
    */
-  public recordMetric(
-    name: string,
-    value: number,
-    labels?: Record<string, string>
-  ): void {
+  public recordMetric(name: string, value: number, labels?: Record<string, string>): void {
     const metric = this.metrics.get(name);
     if (!metric) {
       log.warn(`Unknown metric: ${name}`);
@@ -350,9 +346,8 @@ export class TelemetryMonitor extends EventEmitter {
       return;
     }
 
-    const lastValue = metric.dataPoints.length > 0
-      ? metric.dataPoints[metric.dataPoints.length - 1].value
-      : 0;
+    const lastValue =
+      metric.dataPoints.length > 0 ? metric.dataPoints[metric.dataPoints.length - 1].value : 0;
 
     this.recordMetric(name, lastValue + amount);
   }
@@ -427,27 +422,20 @@ export class TelemetryMonitor extends EventEmitter {
     const memoryUsage = process.memoryUsage();
     const memoryPercent = (memoryUsage.heapUsed / memoryUsage.heapTotal) * 100;
     if (memoryPercent > alertThresholds.memoryUsagePercent) {
-      this.createAlert(
-        'warning',
-        `High memory usage: ${memoryPercent.toFixed(1)}%`,
-        'system'
-      );
+      this.createAlert('warning', `High memory usage: ${memoryPercent.toFixed(1)}%`, 'system');
     }
 
     // Check error rate
     const errorRate = this.messageCount > 0 ? (this.errorCount / this.messageCount) * 100 : 0;
     if (errorRate > alertThresholds.errorRatePercent) {
-      this.createAlert(
-        'warning',
-        `High error rate: ${errorRate.toFixed(1)}%`,
-        'system'
-      );
+      this.createAlert('warning', `High error rate: ${errorRate.toFixed(1)}%`, 'system');
     }
 
     // Check cycle latency
     const cycleDurationMetric = this.metrics.get('cognitive_cycle_duration_ms');
     if (cycleDurationMetric && cycleDurationMetric.dataPoints.length > 0) {
-      const lastDuration = cycleDurationMetric.dataPoints[cycleDurationMetric.dataPoints.length - 1].value;
+      const lastDuration =
+        cycleDurationMetric.dataPoints[cycleDurationMetric.dataPoints.length - 1].value;
       if (lastDuration > alertThresholds.cycleLatencyMs) {
         this.createAlert(
           'warning',
@@ -461,11 +449,7 @@ export class TelemetryMonitor extends EventEmitter {
   /**
    * Create an alert
    */
-  public createAlert(
-    severity: Alert['severity'],
-    message: string,
-    source: string
-  ): Alert {
+  public createAlert(severity: Alert['severity'], message: string, source: string): Alert {
     const alertId = `alert-${Date.now()}-${Math.random().toString(36).slice(2)}`;
     const alert: Alert = {
       id: alertId,
@@ -516,7 +500,7 @@ export class TelemetryMonitor extends EventEmitter {
     const cutoff = Date.now() - this.config.retentionPeriodMs;
 
     for (const metric of this.metrics.values()) {
-      metric.dataPoints = metric.dataPoints.filter(dp => dp.timestamp >= cutoff);
+      metric.dataPoints = metric.dataPoints.filter((dp) => dp.timestamp >= cutoff);
     }
   }
 
@@ -551,8 +535,8 @@ export class TelemetryMonitor extends EventEmitter {
     });
 
     // Determine overall status
-    const hasUnhealthy = components.some(c => c.status === 'unhealthy');
-    const hasDegraded = components.some(c => c.status === 'degraded');
+    const hasUnhealthy = components.some((c) => c.status === 'unhealthy');
+    const hasDegraded = components.some((c) => c.status === 'degraded');
 
     return {
       status: hasUnhealthy ? 'unhealthy' : hasDegraded ? 'degraded' : 'healthy',
@@ -577,7 +561,7 @@ export class TelemetryMonitor extends EventEmitter {
       timestamp: Date.now(),
       metrics,
       health: this.getHealthStatus(),
-      activeAlerts: Array.from(this.alerts.values()).filter(a => !a.resolvedAt),
+      activeAlerts: Array.from(this.alerts.values()).filter((a) => !a.resolvedAt),
       systemInfo: {
         uptime: Date.now() - this.startTime,
         memoryUsage: process.memoryUsage().heapUsed,
@@ -613,7 +597,7 @@ export class TelemetryMonitor extends EventEmitter {
    * Get active alerts
    */
   public getActiveAlerts(): Alert[] {
-    return Array.from(this.alerts.values()).filter(a => !a.resolvedAt);
+    return Array.from(this.alerts.values()).filter((a) => !a.resolvedAt);
   }
 
   /**
@@ -629,7 +613,9 @@ export class TelemetryMonitor extends EventEmitter {
       if (metric.dataPoints.length > 0) {
         const lastPoint = metric.dataPoints[metric.dataPoints.length - 1];
         const labels = lastPoint.labels
-          ? `{${Object.entries(lastPoint.labels).map(([k, v]) => `${k}="${v}"`).join(',')}}`
+          ? `{${Object.entries(lastPoint.labels)
+              .map(([k, v]) => `${k}="${v}"`)
+              .join(',')}}`
           : '';
         lines.push(`${metric.name}${labels} ${lastPoint.value}`);
       }

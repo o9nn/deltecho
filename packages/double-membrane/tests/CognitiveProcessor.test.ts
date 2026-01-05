@@ -81,7 +81,7 @@ describe('CognitiveProcessor', () => {
 
     it('should increment cycle number when running', async () => {
       processor.start();
-      await new Promise(resolve => setTimeout(resolve, 50));
+      await new Promise((resolve) => setTimeout(resolve, 50));
       expect(processor.getCycleNumber()).toBeGreaterThan(0);
     });
   });
@@ -121,31 +121,43 @@ describe('CognitiveProcessor', () => {
     it('should recognize question patterns', async () => {
       const result = await processor.process('What is TypeScript?');
       // Check for pattern recognition in reasoning
-      expect(result.reasoning.some(r => r.toLowerCase().includes('pattern') || r.toLowerCase().includes('query'))).toBe(true);
+      expect(
+        result.reasoning.some(
+          (r) => r.toLowerCase().includes('pattern') || r.toLowerCase().includes('query')
+        )
+      ).toBe(true);
     });
 
     it('should recognize process query patterns', async () => {
       const result = await processor.process('How do I install npm packages?');
       // Check for process-related content in reasoning
-      expect(result.reasoning.some(r => r.toLowerCase().includes('process') || r.toLowerCase().includes('pattern'))).toBe(true);
+      expect(
+        result.reasoning.some(
+          (r) => r.toLowerCase().includes('process') || r.toLowerCase().includes('pattern')
+        )
+      ).toBe(true);
     });
 
     it('should recognize explanation query patterns', async () => {
       const result = await processor.process('Why is the sky blue?');
       // Check for explanation-related content in reasoning
-      expect(result.reasoning.some(r => r.toLowerCase().includes('explain') || r.toLowerCase().includes('pattern'))).toBe(true);
+      expect(
+        result.reasoning.some(
+          (r) => r.toLowerCase().includes('explain') || r.toLowerCase().includes('pattern')
+        )
+      ).toBe(true);
     });
 
     it('should recognize creation command patterns', async () => {
       const result = await processor.process('Create a new file');
       // Check for creation-related content in reasoning
-      expect(result.reasoning.some(r => r.toLowerCase().includes('creat'))).toBe(true);
+      expect(result.reasoning.some((r) => r.toLowerCase().includes('creat'))).toBe(true);
     });
 
     it('should recognize analysis command patterns', async () => {
       const result = await processor.process('Analyze this code');
       // Check for either analysis_action or the word 'analysis' in reasoning
-      expect(result.reasoning.some(r => r.toLowerCase().includes('analy'))).toBe(true);
+      expect(result.reasoning.some((r) => r.toLowerCase().includes('analy'))).toBe(true);
     });
   });
 
@@ -184,7 +196,7 @@ describe('CognitiveProcessor', () => {
       const handler = vi.fn();
       processor.on('cycle_started', handler);
       processor.start();
-      await new Promise(resolve => setTimeout(resolve, 50));
+      await new Promise((resolve) => setTimeout(resolve, 50));
       expect(handler).toHaveBeenCalled();
     });
 
@@ -192,7 +204,7 @@ describe('CognitiveProcessor', () => {
       const handler = vi.fn();
       processor.on('step_executed', handler);
       processor.start();
-      await new Promise(resolve => setTimeout(resolve, 50));
+      await new Promise((resolve) => setTimeout(resolve, 50));
       expect(handler).toHaveBeenCalled();
     });
 
@@ -209,7 +221,7 @@ describe('CognitiveProcessor', () => {
       // Process to execute a full cycle
       await processor.process('Test');
       const streams = processor.getStreamStates();
-      
+
       // Each stream should have advanced through steps
       for (const stream of streams) {
         expect(stream.currentStep).toBeGreaterThanOrEqual(1);
@@ -220,7 +232,7 @@ describe('CognitiveProcessor', () => {
     it('should have expressive and reflective modes', async () => {
       await processor.process('Test');
       const streams = processor.getStreamStates();
-      
+
       // Modes should be either expressive or reflective
       for (const stream of streams) {
         expect(['expressive', 'reflective']).toContain(stream.mode);
@@ -230,7 +242,7 @@ describe('CognitiveProcessor', () => {
     it('should have correct step types', async () => {
       await processor.process('Test');
       const streams = processor.getStreamStates();
-      
+
       // Step types should be valid
       const validTypes = ['relevance_realization', 'affordance_interaction', 'salience_simulation'];
       for (const stream of streams) {
@@ -249,7 +261,7 @@ describe('CognitiveProcessor', () => {
     it('should have higher confidence for recognized patterns', async () => {
       const result1 = await processor.process('What is TypeScript?');
       const result2 = await processor.process('xyzabc123');
-      
+
       // Recognized pattern should have higher confidence
       expect(result1.confidence).toBeGreaterThan(result2.confidence);
     });

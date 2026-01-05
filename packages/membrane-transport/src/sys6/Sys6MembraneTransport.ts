@@ -1,6 +1,6 @@
 /**
  * Sys6 Membrane Transport
- * 
+ *
  * Integrates Sys6 operadic scheduling with membrane transport
  * Uses Sys6 as the formal transport discipline:
  * - Δ₂ (8-way cubic concurrency) = objective fan-out lanes
@@ -21,13 +21,13 @@ import { CrossingPolicy } from '../policy/CrossingPolicy';
 export enum Sys6Stage {
   /** Objective fan-out (Δ₂: 8-way cubic concurrency) */
   OBJECTIVE_FANOUT = 'objective_fanout',
-  
+
   /** Transjective batching (Δ₃: 9-phase triadic convolution) */
   TRANSJECTIVE_BATCH = 'transjective_batch',
-  
+
   /** Subjective fold (φ: compression) */
   SUBJECTIVE_FOLD = 'subjective_fold',
-  
+
   /** Synchronization (μ: LCM clock) */
   SYNCHRONIZATION = 'synchronization',
 }
@@ -38,14 +38,14 @@ export enum Sys6Stage {
 interface Sys6CycleState {
   /** Current step in 30-step cycle */
   step: number;
-  
+
   /** Current stage */
   stage: Sys6Stage;
-  
+
   /** Packets waiting for processing */
   pendingInward: EvidencePacket[];
   pendingOutward: IntentPacket[];
-  
+
   /** Packets processed in current cycle */
   processedInward: number;
   processedOutward: number;
@@ -53,7 +53,7 @@ interface Sys6CycleState {
 
 /**
  * Sys6 Membrane Transport
- * 
+ *
  * Coordinates membrane transport with Sys6 operadic scheduling
  */
 export class Sys6MembraneTransport extends EventEmitter {
@@ -62,12 +62,12 @@ export class Sys6MembraneTransport extends EventEmitter {
   private cycleState: Sys6CycleState;
   private cycleInterval: NodeJS.Timeout | null = null;
   private running: boolean = false;
-  
+
   constructor(bus: MembraneBus, policy: CrossingPolicy) {
     super();
     this.bus = bus;
     this.policy = policy;
-    
+
     this.cycleState = {
       step: 0,
       stage: Sys6Stage.OBJECTIVE_FANOUT,
@@ -77,7 +77,7 @@ export class Sys6MembraneTransport extends EventEmitter {
       processedOutward: 0,
     };
   }
-  
+
   /**
    * Start the Sys6 transport cycle
    */
@@ -85,15 +85,15 @@ export class Sys6MembraneTransport extends EventEmitter {
     if (this.running) {
       return;
     }
-    
+
     this.running = true;
     this.cycleInterval = setInterval(() => {
       this.tick();
     }, cycleTimeMs);
-    
+
     this.emit('transport:started');
   }
-  
+
   /**
    * Stop the Sys6 transport cycle
    */
@@ -101,40 +101,40 @@ export class Sys6MembraneTransport extends EventEmitter {
     if (!this.running) {
       return;
     }
-    
+
     this.running = false;
     if (this.cycleInterval) {
       clearInterval(this.cycleInterval);
       this.cycleInterval = null;
     }
-    
+
     this.emit('transport:stopped');
   }
-  
+
   /**
    * Queue an evidence packet for inward transport
    */
   queueInward(packet: EvidencePacket): void {
     this.cycleState.pendingInward.push(packet);
   }
-  
+
   /**
    * Queue an intent packet for outward transport
    */
   queueOutward(packet: IntentPacket): void {
     this.cycleState.pendingOutward.push(packet);
   }
-  
+
   /**
    * Tick the Sys6 cycle
    */
   private tick(): void {
     // Advance step
     this.cycleState.step = (this.cycleState.step + 1) % 30;
-    
+
     // Determine stage based on step
     this.cycleState.stage = this.determineStage(this.cycleState.step);
-    
+
     // Process packets based on stage
     switch (this.cycleState.stage) {
       case Sys6Stage.OBJECTIVE_FANOUT:
@@ -150,16 +150,16 @@ export class Sys6MembraneTransport extends EventEmitter {
         this.processSynchronization();
         break;
     }
-    
+
     this.emit('transport:tick', {
       step: this.cycleState.step,
       stage: this.cycleState.stage,
     });
   }
-  
+
   /**
    * Determine stage based on step in 30-step cycle
-   * 
+   *
    * Mapping:
    * - Steps 0-7: Objective fanout (Δ₂: 8 steps)
    * - Steps 8-16: Transjective batch (Δ₃: 9 steps)
@@ -177,20 +177,20 @@ export class Sys6MembraneTransport extends EventEmitter {
       return Sys6Stage.SYNCHRONIZATION;
     }
   }
-  
+
   /**
    * Process objective fanout stage (Δ₂: 8-way cubic concurrency)
-   * 
+   *
    * In this stage, outward intent packets are fanned out to objective world
    */
   private async processObjectiveFanout(): Promise<void> {
     const batchSize = 8; // 8-way concurrency
     const batch = this.cycleState.pendingOutward.splice(0, batchSize);
-    
+
     for (const packet of batch) {
       // Evaluate policy
       const decision = this.policy.evaluateOutward(packet);
-      
+
       if (decision.allowed) {
         await this.bus.sendOutward(packet);
         this.cycleState.processedOutward++;
@@ -203,24 +203,24 @@ export class Sys6MembraneTransport extends EventEmitter {
       }
     }
   }
-  
+
   /**
    * Process transjective batch stage (Δ₃: 9-phase triadic convolution)
-   * 
+   *
    * In this stage, evidence packets are batched and sanitized
    */
   private async processTransjectiveBatch(): Promise<void> {
     const batchSize = 9; // 9-phase convolution
     const batch = this.cycleState.pendingInward.splice(0, batchSize);
-    
+
     // Sanitize and summarize evidence
     const sanitized = this.sanitizeEvidence(batch);
-    
+
     // Process sanitized packets
     for (const packet of sanitized) {
       // Evaluate policy
       const decision = this.policy.evaluateInward(packet);
-      
+
       if (decision.allowed) {
         await this.bus.sendInward(packet);
         this.cycleState.processedInward++;
@@ -233,10 +233,10 @@ export class Sys6MembraneTransport extends EventEmitter {
       }
     }
   }
-  
+
   /**
    * Process subjective fold stage (φ: compression)
-   * 
+   *
    * In this stage, evidence is compressed into stable belief updates
    */
   private processSubjectiveFold(): void {
@@ -246,10 +246,10 @@ export class Sys6MembraneTransport extends EventEmitter {
       processedInward: this.cycleState.processedInward,
     });
   }
-  
+
   /**
    * Process synchronization stage (μ: LCM clock)
-   * 
+   *
    * In this stage, global synchronization occurs
    */
   private processSynchronization(): void {
@@ -260,28 +260,28 @@ export class Sys6MembraneTransport extends EventEmitter {
       pendingInward: this.cycleState.pendingInward.length,
       pendingOutward: this.cycleState.pendingOutward.length,
     };
-    
+
     this.cycleState.processedInward = 0;
     this.cycleState.processedOutward = 0;
-    
+
     // Emit synchronization event
     this.emit('transport:sync', {
       step: this.cycleState.step,
       stats,
     });
   }
-  
+
   /**
    * Sanitize evidence packets
-   * 
+   *
    * Removes sensitive data and summarizes content
    */
   private sanitizeEvidence(packets: EvidencePacket[]): EvidencePacket[] {
-    return packets.map(packet => {
+    return packets.map((packet) => {
       // Create sanitized copy
       const sanitized: EvidencePacket = {
         ...packet,
-        facts: packet.facts.map(fact => ({
+        facts: packet.facts.map((fact) => ({
           ...fact,
           // Redact sensitive evidence
           evidence: this.redactSensitiveData(fact.evidence),
@@ -289,11 +289,11 @@ export class Sys6MembraneTransport extends EventEmitter {
         // Remove proposed updates (enforcing subjectivity barrier)
         proposedUpdates: undefined,
       };
-      
+
       return sanitized;
     });
   }
-  
+
   /**
    * Redact sensitive data from evidence
    */
@@ -306,24 +306,24 @@ export class Sys6MembraneTransport extends EventEmitter {
         .replace(/\b\d{3}-\d{2}-\d{4}\b/g, '[SSN]')
         .replace(/\b\d{16}\b/g, '[CARD]');
     }
-    
+
     return data;
   }
-  
+
   /**
    * Get current cycle state
    */
   getCycleState(): Readonly<Sys6CycleState> {
     return { ...this.cycleState };
   }
-  
+
   /**
    * Get current stage
    */
   getCurrentStage(): Sys6Stage {
     return this.cycleState.stage;
   }
-  
+
   /**
    * Get current step
    */

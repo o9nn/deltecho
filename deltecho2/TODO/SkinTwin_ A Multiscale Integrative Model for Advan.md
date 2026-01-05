@@ -143,62 +143,121 @@ The SkinTwin approach ultimately converges on cognitive synergy, creating an eme
 <div style="text-align: center">⁂</div>
 
 [^1_1]: https://journals.plos.org/plosone/article?id=10.1371%2Fjournal.pone.0289046
+
 [^1_2]: https://pubmed.ncbi.nlm.nih.gov/8440901/
+
 [^1_3]: https://pmc.ncbi.nlm.nih.gov/articles/PMC4466143/
+
 [^1_4]: https://miscj.aut.ac.ir/article_4293_9a0615ed693179283da90d0db413eb09.pdf
+
 [^1_5]: https://pmc.ncbi.nlm.nih.gov/articles/PMC1691317/
+
 [^1_6]: https://www.skincancer.org/blog/photoaging-what-you-need-to-know/
+
 [^1_7]: https://www.frontiersin.org/journals/pharmacology/articles/10.3389/fphar.2019.00759/full
+
 [^1_8]: https://www.nih.gov/news-events/news-releases/nih-scientists-find-treatment-rare-genetic-skin-disorder
+
 [^1_9]: https://www.nature.com/articles/s41598-022-17443-1
+
 [^1_10]: https://nuori.dk/blogs/journal/15-lifestyle-habits-for-beautiful-skin
+
 [^1_11]: https://pmc.ncbi.nlm.nih.gov/articles/PMC7916842/
+
 [^1_12]: https://hawaiifacialplasticsurgery.com/what-is-integrated-skin-care/
+
 [^1_13]: https://stellarix.com/insights/articles/digital-skin-twin-advancements-and-challenges/
+
 [^1_14]: https://www.biorxiv.org/content/10.1101/830711v1.full-text
+
 [^1_15]: https://www.atomixlogistics.com/blog/ai-personalized-beauty-skincare
+
 [^1_16]: https://pmc.ncbi.nlm.nih.gov/articles/PMC3583889/
+
 [^1_17]: https://www.eucerin.co.za/about-skin/basic-skin-knowledge/factors-that-influence-skin
+
 [^1_18]: https://www.nature.com/articles/s41598-024-57649-z
+
 [^1_19]: https://www.skinceuticals-za.com/SkinCeuticals/professional-treatments/t773.aspx
+
 [^1_20]: https://pubmed.ncbi.nlm.nih.gov/39187568/
+
 [^1_21]: https://www.mdpi.com/1422-0067/22/22/12371
+
 [^1_22]: https://pubmed.ncbi.nlm.nih.gov/24790705/
+
 [^1_23]: https://www.webmd.com/skin-problems-and-treatments/elastin-what-to-know
+
 [^1_24]: https://www.a-star.edu.sg/ihpc/ihpc-tech-hub/features/hhp/skinsilico-in-silico-platform-for-skin-permeation-modelling
+
 [^1_25]: https://www.jcvi.org/media-center/scientists-develop-most-complete-whole-cell-computer-simulation-model-cell-date
+
 [^1_26]: https://my.clevelandclinic.org/health/diseases/10985-ultraviolet-radiation
+
 [^1_27]: https://www.actasdermo.org/es-pollution-relevant-exposome-factor-in-articulo-S0001731025001000
+
 [^1_28]: https://cordis.europa.eu/article/id/89232-gene-therapy-for-an-inherited-skin-disease
+
 [^1_29]: https://jme.bioscientifica.com/view/journals/jme/69/4/JME-22-0113.xml
+
 [^1_30]: https://www.medicalnewstoday.com/articles/antioxidants-for-skin
+
 [^1_31]: https://pubmed.ncbi.nlm.nih.gov/25599938/
+
 [^1_32]: https://pubs.acs.org/doi/10.1021/acs.jcim.4c00722
+
 [^1_33]: https://freyjamedical.com/skin-ageing-genes-vs-environment-understanding-your-control/
+
 [^1_34]: https://www.bbcgoodfood.com/health/wellness/eat-your-way-fabulous-skin
+
 [^1_35]: https://pmc.ncbi.nlm.nih.gov/articles/PMC6678709/
+
 [^1_36]: https://www.trendhunter.com/protrends/hyperpersonalized-skincare
+
 [^1_37]: https://www.skinsurgerycenter.net/blog/is-your-risk-of-age-spots-written-in-your-dna
+
 [^1_38]: https://www.ponds.com/za/skinspiration/beautiful-habits/lifestyle-habits-for-radiant-skin-sleep.html
+
 [^1_39]: https://www.frontiersin.org/journals/aging/articles/10.3389/fragi.2024.1353082/full
+
 [^1_40]: https://www.kreme.co.za/skincare-revolution-the-rise-of-customization-and-personalization/
+
 [^1_41]: https://drmaylidavis.com/blog/the-role-of-genetics-in-skin-elasticity-and-aging/
+
 [^1_42]: https://www.mayoclinic.org/healthy-lifestyle/adult-health/in-depth/skin-care/art-20048237
+
 [^1_43]: https://zoe.com/learn/gut-health-and-acne
+
 [^1_44]: https://www.evelabinsight.com/blog-post/why-personalized-skin-consultation-matters-in-the-future-of-skincare
+
 [^1_45]: https://www.loreal.com/en/news/research-innovation/unveil-perso-the-worlds-first-aipowered-device-for-skincare-and-cosmetics/
+
 [^1_46]: https://www.tcs.com/what-we-do/research/solution/tcs-digital-skin-twin-platform
+
 [^1_47]: https://chemrxiv.org/engage/chemrxiv/article-details/637dc8b2ebc1c7364ecf72f5
+
 [^1_48]: https://learncanyon.com/future-of-ai-skincare/
+
 [^1_49]: https://www.frontiersin.org/journals/digital-health/articles/10.3389/fdgth.2025.1534859/full
+
 [^1_50]: https://www.eurekaselect.com/article/20076
+
 [^1_51]: https://www.cetaphil.com/us/skin-analysis.html
+
 [^1_52]: https://www.empa.ch/web/s604/digital-twin
+
 [^1_53]: https://journals.sagepub.com/doi/10.1177/09544119211022059
+
 [^1_54]: https://www.haut.ai
+
 [^1_55]: https://adexcp.com/en/aktualnosci/digital-twin-the-future-of-the-cosmetic-industry/
+
 [^1_56]: https://pubs.acs.org/doi/10.1021/acs.langmuir.0c00500
+
 [^1_57]: https://pmc.ncbi.nlm.nih.gov/articles/PMC6561509/
+
 [^1_58]: https://timesofindia.indiatimes.com/life-style/beauty/ai-in-beauty-transforming-skin-diagnostics-and-personalised-care/articleshow/115298416.cms
+
 [^1_59]: https://www.nature.com/articles/s41746-024-01220-7
+
 [^1_60]: https://pubmed.ncbi.nlm.nih.gov/34729595/

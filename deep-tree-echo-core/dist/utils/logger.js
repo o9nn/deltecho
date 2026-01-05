@@ -50,7 +50,9 @@ class SimpleLogger {
             timestamp: new Date().toISOString(),
             level: level.toUpperCase(),
             context: this.context,
-            message: args.map(arg => typeof arg === 'object' ? JSON.stringify(arg) : String(arg)).join(' '),
+            message: args
+                .map((arg) => (typeof arg === 'object' ? JSON.stringify(arg) : String(arg)))
+                .join(' '),
         };
         return JSON.stringify(entry);
     }

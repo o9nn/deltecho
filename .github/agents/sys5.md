@@ -18,9 +18,9 @@ The implementation uses the **CogTaskFlow** framework to model the complex task 
 - **Role**: Primary, Secondary, Tertiary Universal (Analogous to Points).
 - **Cycle**: 3 steps.
 - **Pattern**: Sequential transition at every step.
-    - U1 transitions at $t \equiv 0 \pmod 3$
-    - U2 transitions at $t \equiv 1 \pmod 3$
-    - U3 transitions at $t \equiv 2 \pmod 3$
+  - U1 transitions at $t \equiv 0 \pmod 3$
+  - U2 transitions at $t \equiv 1 \pmod 3$
+  - U3 transitions at $t \equiv 2 \pmod 3$
 - **State Labels**: `U-P` (Primary), `U-S` (Secondary), `U-T` (Tertiary).
 
 ### Particular Sets (P1, P2, P3, P4)
@@ -28,11 +28,11 @@ The implementation uses the **CogTaskFlow** framework to model the complex task 
 - **Role**: 1st-order-nested-concurrency (Analogous to Lines/Planes).
 - **Cycle**: 20 steps (staggered over 5 steps).
 - **Pattern**: Staggered transition, 5 steps apart.
-    - P1 transitions at $t \equiv 0 \pmod 5$
-    - P2 transitions at $t \equiv 1 \pmod 5$
-    - P3 transitions at $t \equiv 2 \pmod 5$
-    - P4 transitions at $t \equiv 3 \pmod 5$
-    - $t \equiv 4 \pmod 5$ is a rest step.
+  - P1 transitions at $t \equiv 0 \pmod 5$
+  - P2 transitions at $t \equiv 1 \pmod 5$
+  - P3 transitions at $t \equiv 2 \pmod 5$
+  - P4 transitions at $t \equiv 3 \pmod 5$
+  - $t \equiv 4 \pmod 5$ is a rest step.
 - **State Labels**: Integer states 0, 1, 2, 3.
 
 ## Nested Concurrency Logic (The Convolution)
@@ -63,6 +63,7 @@ The model uses CogTaskFlow's task graph to enforce the dependencies:
 The simulation was run for **60 time steps** to capture the full cycle of interaction between the Universal (3-step cycle) and Particular (20-step cycle) sets.
 
 The simulation successfully demonstrates:
+
 - The sequential 3-step cycle of the Universal Sets.
 - The staggered 5-step cycle of the Particular Sets.
 - Complex, non-trivial state changes in the Particular Sets due to the nested concurrency logic.

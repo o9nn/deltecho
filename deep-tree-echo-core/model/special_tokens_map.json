@@ -6,11 +6,7 @@
       "tokenizer_config": "spec/TokenizerConfig.zpp"
     },
     "schema": "SpecialTokensMap",
-    "predicates": [
-      "ValidSpecialToken",
-      "ValidSpecialTokensMap",
-      "ValidCognitiveTokens"
-    ],
+    "predicates": ["ValidSpecialToken", "ValidSpecialTokensMap", "ValidCognitiveTokens"],
     "constants": {
       "PAD_TOKEN_ID": 0,
       "UNK_TOKEN_ID": 1,

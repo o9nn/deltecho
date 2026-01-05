@@ -189,7 +189,11 @@ export class ParallelTriadicEngine extends EventEmitter {
    * Initialize stream states
    */
   private initializeStreams(): void {
-    const streams = [CognitiveStream.COGNITIVE, CognitiveStream.AFFECTIVE, CognitiveStream.RELEVANCE];
+    const streams = [
+      CognitiveStream.COGNITIVE,
+      CognitiveStream.AFFECTIVE,
+      CognitiveStream.RELEVANCE,
+    ];
 
     for (const stream of streams) {
       this.streamStates.set(stream, {
@@ -209,10 +213,7 @@ export class ParallelTriadicEngine extends EventEmitter {
   /**
    * Register inference processor for a stream
    */
-  registerProcessor(
-    stream: CognitiveStream,
-    processor: (input: any) => Promise<any>
-  ): void {
+  registerProcessor(stream: CognitiveStream, processor: (input: any) => Promise<any>): void {
     this.inferenceProcessors.set(stream, processor);
   }
 
@@ -503,8 +504,7 @@ export class ParallelTriadicEngine extends EventEmitter {
     relevance: StreamInferenceResult
   ): any {
     // Weighted integration based on confidence
-    const totalConfidence =
-      cognitive.confidence + affective.confidence + relevance.confidence;
+    const totalConfidence = cognitive.confidence + affective.confidence + relevance.confidence;
 
     return {
       cognitiveWeight: cognitive.confidence / totalConfidence,

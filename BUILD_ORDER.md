@@ -22,6 +22,7 @@ pnpm run build:all
 The packages must be built in the following order due to dependencies:
 
 ### 1. Independent Packages (No Dependencies)
+
 ```bash
 # Build @deltecho/shared first - no dependencies
 pnpm --filter @deltecho/shared build
@@ -31,26 +32,31 @@ pnpm --filter deep-tree-echo-core build
 ```
 
 ### 2. Dove9 (Depends on deep-tree-echo-core)
+
 ```bash
 pnpm --filter dove9 build
 ```
 
 ### 3. Cognitive Package (Depends on core & dove9)
+
 ```bash
 pnpm --filter @deltecho/cognitive build
 ```
 
 ### 4. Reasoning Package (Depends on cognitive)
+
 ```bash
 pnpm --filter @deltecho/reasoning build
 ```
 
 ### 5. Orchestrator (Depends on core & dove9)
+
 ```bash
 pnpm --filter deep-tree-echo-orchestrator build
 ```
 
 ### 6. UI Components (Optional - has legacy dependencies)
+
 ```bash
 pnpm --filter @deltecho/ui-components build
 ```
@@ -76,6 +82,7 @@ deep-tree-echo-core (independent)
 ## Individual Package Commands
 
 ### Core Packages
+
 ```bash
 # Deep Tree Echo Core
 cd deep-tree-echo-core
@@ -95,6 +102,7 @@ pnpm build
 ```
 
 ### Unified Packages
+
 ```bash
 # @deltecho/shared
 cd packages/shared
@@ -163,7 +171,9 @@ pnpm clean
 ### Known Issues
 
 #### @deltecho/ui-components
+
 The UI components package has relaxed TypeScript strict mode due to:
+
 - Legacy code from delta-echo-desk
 - Cross-package dependencies on @deltachat-desktop packages
 - Unused variables in experimental features
@@ -173,20 +183,25 @@ This is acceptable for Phase 1-3 and will be refactored in Phase 4.
 ## Troubleshooting
 
 ### Error: "pnpm: command not found"
+
 ```bash
 npm install -g pnpm
 ```
 
 ### Error: "Cannot find module 'deep-tree-echo-core'"
+
 This means packages were built out of order. Follow the build order above.
 
 ### Error: "Property X does not exist on type Y"
+
 This is a TypeScript error. Check:
+
 1. Are you using the correct version of dependencies?
 2. Did you build dependent packages first?
 3. Run `pnpm install` to ensure all dependencies are installed
 
 ### Error: TypeScript compilation fails
+
 ```bash
 # Clean and rebuild
 cd <package-directory>
@@ -195,6 +210,7 @@ pnpm build
 ```
 
 ### Tests failing with "jest is not defined"
+
 Some tests use jest.useFakeTimers() which has issues with the current jest configuration. These are non-critical and will be fixed in a future update. Most tests (95.5%) pass successfully.
 
 ## Verification
@@ -211,10 +227,12 @@ ls -la deep-tree-echo-orchestrator/dist
 ## Test Results
 
 ### deep-tree-echo-core
+
 - ✅ 189/198 tests passing (95.5% pass rate)
 - ⚠️ 9 tests failing due to jest timer mocking (non-critical)
 
 Test suites:
+
 - ✅ LLMService: 15 tests
 - ✅ EnhancedLLMService: 12 tests
 - ✅ PersonaCore: 18 tests
@@ -245,35 +263,40 @@ Both will use IPC to communicate with the orchestrator daemon.
 Each package exports specific modules:
 
 ### deep-tree-echo-core
+
 ```typescript
-import { LLMService, EnhancedLLMService } from 'deep-tree-echo-core/cognitive'
-import { RAGMemoryStore, HyperDimensionalMemory } from 'deep-tree-echo-core/memory'
-import { PersonaCore } from 'deep-tree-echo-core/personality'
-import { SecureIntegration } from 'deep-tree-echo-core/security'
+import { LLMService, EnhancedLLMService } from 'deep-tree-echo-core/cognitive';
+import { RAGMemoryStore, HyperDimensionalMemory } from 'deep-tree-echo-core/memory';
+import { PersonaCore } from 'deep-tree-echo-core/personality';
+import { SecureIntegration } from 'deep-tree-echo-core/security';
 ```
 
 ### dove9
+
 ```typescript
-import { Dove9System, TriadicEngine } from 'dove9'
-import { MessageProcess, CognitiveContext } from 'dove9/types'
+import { Dove9System, TriadicEngine } from 'dove9';
+import { MessageProcess, CognitiveContext } from 'dove9/types';
 ```
 
 ### @deltecho/cognitive
+
 ```typescript
-import { CognitiveOrchestrator } from '@deltecho/cognitive'
-import { UnifiedMessage, UnifiedCognitiveState } from '@deltecho/cognitive/types'
+import { CognitiveOrchestrator } from '@deltecho/cognitive';
+import { UnifiedMessage, UnifiedCognitiveState } from '@deltecho/cognitive/types';
 ```
 
 ### @deltecho/reasoning
+
 ```typescript
-import { InfernoKernel } from '@deltecho/reasoning'
-import { AtomSpace, PatternMatcher } from '@deltecho/reasoning/atomspace'
-import { PLNEngine } from '@deltecho/reasoning/reasoning'
+import { InfernoKernel } from '@deltecho/reasoning';
+import { AtomSpace, PatternMatcher } from '@deltecho/reasoning/atomspace';
+import { PLNEngine } from '@deltecho/reasoning/reasoning';
 ```
 
 ## Contributing
 
 When adding new packages or modifying build order:
+
 1. Update this document
 2. Test the build order from a clean state
 3. Update root package.json scripts if needed

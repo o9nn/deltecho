@@ -155,97 +155,191 @@ The project builds on established technologies while introducing novel combinati
 <div style="text-align: center">⁂</div>
 
 [^1]: https://reservoirpy.readthedocs.io/en/latest/user_guide/node.html
+
 [^2]: https://reservoirpy.readthedocs.io/en/latest/user_guide/model.html
+
 [^3]: https://github.com/OpenQuantumComputing/quantumreservoirpy/blob/main/paper.md
+
 [^4]: https://www.reddit.com/r/Rag/comments/1i6z2q6/where_to_start_implementing_graphrag/
+
 [^5]: https://www.youtube.com/watch?v=3FiviM7PkjA
+
 [^6]: https://www.semanticscholar.org/paper/3a3b7a6206174c0bec77c17b61e1f08eb559b9be
+
 [^7]: https://microsoft.github.io/graphrag/
+
 [^8]: https://www.semanticscholar.org/paper/37be80b7cc408324001ea86206a83c5bca597ee3
+
 [^9]: https://www.youtube.com/watch?v=xYDx5qT6Po8
+
 [^10]: https://www.semanticscholar.org/paper/42079386ef5e717ab3b4cd7b47592572186fd3f9
+
 [^11]: https://memgraph.com/docs/ai-ecosystem/graph-rag
+
 [^12]: https://arxiv.org/pdf/1703.04496.pdf
+
 [^13]: https://www.youtube.com/watch?v=UmP0pFFsMsE
+
 [^14]: https://www.youtube.com/watch?v=0LJuGTsgTgw
+
 [^15]: https://www.youtube.com/watch?v=Rtjez8Mi2zA
+
 [^16]: https://www.youtube.com/watch?v=zEQDjp6_Ecc
+
 [^17]: https://www.youtube.com/watch?v=f6pUqDeMiG0
+
 [^18]: https://www.youtube.com/watch?v=fpiBMoPL10k
+
 [^19]: https://github.com/reservoirpy/reservoirpy
+
 [^20]: https://www.youtube.com/watch?v=Ma4KYIDKBtA
+
 [^21]: https://www.semanticscholar.org/paper/898d0c9cae464e0e91e43cb1b739d36cfe5159b3
+
 [^22]: https://www.semanticscholar.org/paper/98e2110eb6a3f6de6860fdcf9ca3e6159cd49e31
+
 [^23]: https://www.semanticscholar.org/paper/e891c9f7ce3b62c9bda1c1c45ebbcbbc9fca35d2
+
 [^24]: https://www.semanticscholar.org/paper/2c9ae720fb02eea149d442e7431d66b59d3173ab
+
 [^25]: https://arxiv.org/pdf/2102.06258.pdf
+
 [^26]: https://arxiv.org/abs/2012.02974
+
 [^27]: http://arxiv.org/pdf/1808.00523.pdf
+
 [^28]: https://arxiv.org/pdf/2203.16891.pdf
+
 [^29]: https://www.ai.rug.nl/~mwiering/Thesis_Adrian_Millea.pdf
+
 [^30]: https://www.sciencedirect.com/science/article/pii/S2468227624002436
+
 [^31]: https://ietresearch.onlinelibrary.wiley.com/doi/10.1049/cth2.12591
+
 [^32]: https://www.frontiersin.org/journals/artificial-intelligence/articles/10.3389/frai.2024.1397915/full
+
 [^33]: https://pmc.ncbi.nlm.nih.gov/articles/PMC10968746/
+
 [^34]: https://arxiv.org/abs/2312.15141
+
 [^35]: https://www.linkedin.com/pulse/from-concept-creation-six-essential-design-principles-harsha-srivatsa-c16xc
+
 [^36]: https://www.linkedin.com/pulse/advanced-techniques-natural-language-processing-nishadhana-b-l7kxc
+
 [^37]: https://www.ai.rug.nl/minds/uploads/PracticalESN.pdf
+
 [^38]: https://botpenguin.com/glossary/echo-state-networks
+
 [^39]: https://www.mantech.com/blog/best-practices-for-architecting-ai-systems-part-one-design-principles/
+
 [^40]: https://lumenalta.com/insights/8-advanced-natural-language-processing-techniques
+
 [^41]: https://www.mdpi.com/2076-3417/12/13/6396
+
 [^42]: https://www.sunvalleyprimary.co.za/2025/05/07/nlp-chatbots-1-2/
+
 [^43]: https://www.solarwinds.com/blog/introducing-ai-by-design-principles-for-responsible-ai
+
 [^44]: https://www.simform.com/blog/nlp-techniques/
+
 [^45]: https://www.sciencedirect.com/science/article/abs/pii/S1568494623004817
+
 [^46]: https://www.larksuite.com/en_us/topics/ai-glossary/echo-state-network
+
 [^47]: http://standards.ieee.org/wp-content/uploads/import/documents/other/ead_v2.pdf
+
 [^48]: https://aurai.com/advanced-natural-language-processing-techniques/
+
 [^49]: https://www.semanticscholar.org/paper/924a4dd2866faa94c4a5df81a09b22af4a48fe01
+
 [^50]: https://www.semanticscholar.org/paper/b1209340eccbb329784cb24d837ce965ad1543b0
+
 [^51]: https://www.semanticscholar.org/paper/ff5d7835e9443859d1c820057defec46b855897d
+
 [^52]: https://arxiv.org/abs/2407.09512
+
 [^53]: https://arxiv.org/pdf/1902.04245.pdf
+
 [^54]: https://arxiv.org/pdf/2303.02920.pdf
+
 [^55]: https://arxiv.org/pdf/2203.00905.pdf
+
 [^56]: https://bit.ai/document-templates/technical
+
 [^57]: https://www.reddit.com/r/technicalwriting/comments/113mh5p/technical_documentation_templatessamplesexamples/
+
 [^58]: https://bit.ai/templates/software-design-document-template
+
 [^59]: https://www.altexsoft.com/blog/technical-documentation-in-software-development-types-best-practices-and-tools/
+
 [^60]: https://www.ihearttechnicalwriting.com/templates/system-design-document-template/
+
 [^61]: https://sciencepod.net/technical-design-document/
+
 [^62]: https://clickup.com/templates/project-proposal/ai
+
 [^63]: https://clickup.com/features/ai/technical-specifications-doc-generator
+
 [^64]: https://paceai.co/technical-documentation-template/
+
 [^65]: https://m.mage.ai/how-to-write-technical-design-docs-1bfc12a9fca8
+
 [^66]: https://bit.ai/templates/project-proposal-template
+
 [^67]: https://clickup.com/ai/prompts-for-technical-specifications
+
 [^68]: https://scribehow.com/tools/technical-design-document-generator
+
 [^69]: https://help.incontact.com/Content/AIAssistantsAndBots/CustomAIIntegrations/VAH/TDD.htm
+
 [^70]: https://piktochart.com/ai-proposal-generator/
+
 [^71]: https://docsbot.ai/prompts/writing/technical-spec-document-creator
+
 [^72]: https://learn.microsoft.com/en-us/dynamics365/guidance/patterns/create-functional-technical-design-document
+
 [^73]: https://www.linkedin.com/pulse/solution-design-template-ai-initiatives-sreekanth-iyer-xd6nc
+
 [^74]: https://www.storydoc.com/proposal-maker
+
 [^75]: https://www.errequadro.ai/en/data-extraction-from-technical-specifications-with-ai/
+
 [^76]: https://www.semanticscholar.org/paper/7a0e78e506c06ee83efd923190831b7b2e04ae39
+
 [^77]: https://www.semanticscholar.org/paper/bbcf494921b02164c3d545d16e1218106e8aa466
+
 [^78]: https://www.semanticscholar.org/paper/ee037adb837ea7560afbe63bb2a462c818051a0a
+
 [^79]: http://arxiv.org/pdf/2303.04953.pdf
+
 [^80]: https://arxiv.org/abs/1804.06705
+
 [^81]: https://arxiv.org/abs/1802.07369v1
+
 [^82]: https://arxiv.org/abs/2102.05245
+
 [^83]: https://arxiv.org/pdf/1902.02383.pdf
+
 [^84]: https://www.semanticscholar.org/paper/27df7e49a226a2751e09bfa8466167fa0e7cf906
+
 [^85]: https://arxiv.org/abs/2407.17374
+
 [^86]: https://www.ncbi.nlm.nih.gov/pmc/articles/PMC11945294/
+
 [^87]: https://arxiv.org/abs/2401.06195
+
 [^88]: https://www.semanticscholar.org/paper/ace661fc5452aaef032d0ef93d63149eef36fbc1
+
 [^89]: https://www.semanticscholar.org/paper/2671c2dce9b16bddd780751a87bdbe4de072e199
+
 [^90]: http://arxiv.org/pdf/2407.18584.pdf
+
 [^91]: http://arxiv.org/pdf/2303.10854.pdf
+
 [^92]: http://arxiv.org/pdf/2407.03183.pdf
+
 [^93]: http://arxiv.org/pdf/2303.13173v1.pdf
+
 [^94]: http://arxiv.org/pdf/2001.11956.pdf
+
 [^95]: https://arxiv.org/pdf/2212.10693.pdf

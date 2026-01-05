@@ -1,4 +1,3 @@
-import { RAGMemoryStore, Memory as _Memory } from '../RAGMemoryStore.js';
 
 // Mock logger
 jest.mock('@deltachat-desktop/shared/logger', () => ({
@@ -15,7 +14,7 @@ describe('RAGMemoryStore', () => {
 
   beforeEach(() => {
     memoryStore = RAGMemoryStore.getInstance();
-    memoryStore.setEnabled(true);
+    void memoryStore.setEnabled(true);
     memoryStore.clearAllMemories();
   });
 

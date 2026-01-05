@@ -96,9 +96,7 @@ export class MOSES {
     // Sort by fitness
     this.population.sort((a, b) => b.fitness - a.fitness);
 
-    logger.debug(
-      `Generation ${this.generation}: Best fitness = ${this.population[0].fitness}`
-    );
+    logger.debug(`Generation ${this.generation}: Best fitness = ${this.population[0].fitness}`);
 
     // Create next generation
     const nextGen: Program[] = [];
