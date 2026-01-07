@@ -1,5 +1,5 @@
 import { getLogger } from '@deltachat-desktop/shared/logger'
-import { BackendRemote, onDCEvent, Type as T } from '../../backend-com'
+import { BackendRemote, Type as T } from '../../backend-com'
 import { runtime } from '@deltachat-desktop/runtime-interface'
 import { DeepTreeEchoBot, DeepTreeEchoBotOptions } from './DeepTreeEchoBot'
 
@@ -90,8 +90,8 @@ async function performStartupReflection(): Promise<void> {
 function registerMessageHandlers(): void {
   if (!botInstance) return
 
-  // Listen for new messages
-  onDCEvent('DcEventNewMsg', (accountId, chatId, msgId) => {
+  // Listen for new messages from all accounts
+  BackendRemote.on('IncomingMsg', (accountId: number, { chatId, msgId }: { chatId: number; msgId: number }) => {
     handleNewMessage(accountId, chatId, msgId)
   })
 
@@ -166,7 +166,7 @@ export async function saveBotSettings(settings: any): Promise<void> {
       const settingKey = `deepTreeEchoBot${
         key.charAt(0).toUpperCase() + key.slice(1)
       }` as any
-      await runtime.setDesktopSetting(settingKey, value)
+      await runtime.setDesktopSetting(settingKey, value as string | number | boolean | undefined)
     }
 
     // Update bot instance if it exists

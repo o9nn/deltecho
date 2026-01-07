@@ -116,7 +116,7 @@ export class AdaptivePersonality {
       this.corePersonality = {
         ...this.corePersonality,
         ...initialPersonality,
-      }
+      } as PersonalityVector
       this.currentPersonality = { ...this.corePersonality }
     }
 
