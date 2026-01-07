@@ -1,6 +1,6 @@
 import { getLogger } from '../../../../shared/logger'
 import { RAGMemoryStore, Memory } from './RAGMemoryStore'
-import { LLMService, LLMServiceOptions } from './LLMService'
+import { LLMService, LLMServiceOptions, CognitiveFunctionType } from './LLMService'
 import {
   VisionCapabilities,
   VisionCapabilitiesOptions,
@@ -59,15 +59,16 @@ export class DeepTreeEchoBot {
   constructor(options: DeepTreeEchoBotOptions) {
     this.options = options
 
-    // Initialize all components
-    this.memoryStore = new RAGMemoryStore({
-      persistToDisk: true,
-    })
+    // Initialize all components using singleton pattern
+    this.memoryStore = RAGMemoryStore.getInstance()
 
-    this.llmService = new LLMService({
-      apiKey: options.apiKey,
-      apiEndpoint: options.apiEndpoint,
-    })
+    this.llmService = LLMService.getInstance()
+    if (options.apiKey) {
+      this.llmService.setFunctionConfig(CognitiveFunctionType.GENERAL, {
+        apiKey: options.apiKey,
+        apiEndpoint: options.apiEndpoint,
+      })
+    }
 
     this.visionCapabilities = new VisionCapabilities({
       enabled: options.visionEnabled,
@@ -128,26 +129,24 @@ export class DeepTreeEchoBot {
       }
 
       // Generate response based on the message and conversation history
-      const systemPrompt = this.getSystemPrompt()
       const userMessage = text || '(No text content)'
 
       const llmResponse = await this.llmService.generateResponseFromMemories(
         userMessage,
-        memories,
-        systemPrompt
+        memories
       )
 
       // Store the bot's response in memory if memory is enabled
       if (this.options.memoryEnabled) {
         await this.memoryStore.addMemory({
-          text: llmResponse.content,
+          text: llmResponse,
           sender: 'bot',
           chatId,
-          messageId: null,
+          messageId: 0,
         })
       }
 
-      return llmResponse.content
+      return llmResponse
     } catch (error) {
       log.error('Error processing message:', error)
       return 'Sorry, I encountered an error while processing your message. Please try again.'
@@ -189,14 +188,14 @@ export class DeepTreeEchoBot {
           text: `Command: ${text}`,
           sender: 'user',
           chatId,
-          messageId: null,
+          messageId: 0,
         })
 
         await this.memoryStore.addMemory({
           text: result.response,
           sender: 'bot',
           chatId,
-          messageId: null,
+          messageId: 0,
         })
       }
 
@@ -484,7 +483,7 @@ export class DeepTreeEchoBot {
           const stats = this.memoryStore.getStats()
           return {
             success: true,
-            response: `📚 Memory Status:\n\nTotal memories: ${stats.totalMemories}\nChat count: ${stats.chatCount}`,
+            response: `📚 Memory Status:\n\nTotal memories: ${stats.totalMemories}\nChat count: ${Object.keys(stats.memoriesByChat).length}`,
             data: stats,
           }
 

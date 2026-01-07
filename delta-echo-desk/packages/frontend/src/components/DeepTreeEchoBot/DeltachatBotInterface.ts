@@ -60,10 +60,11 @@ export class DeltachatBotInterface {
 
       // Look for an account named "Deep Tree Echo Bot"
       for (const account of accounts) {
-        const accountInfo = await BackendRemote.rpc.getAccountInfo(account)
-        if (accountInfo.name === 'Deep Tree Echo Bot') {
-          this.botAccountId = account
-          log.info(`Found existing bot account: ${account}`)
+        const accountInfo = await BackendRemote.rpc.getAccountInfo(account.id)
+        // Only check configured accounts (they have displayName)
+        if (accountInfo.kind === 'Configured' && accountInfo.displayName === 'Deep Tree Echo Bot') {
+          this.botAccountId = account.id
+          log.info(`Found existing bot account: ${account.id}`)
           return
         }
       }
@@ -103,7 +104,7 @@ export class DeltachatBotInterface {
         // Otherwise use the main account
         const accounts = await BackendRemote.rpc.getAllAccounts()
         if (accounts.length > 0) {
-          await BackendRemote.rpc.miscSendTextMessage(accounts[0], chatId, text)
+          await BackendRemote.rpc.miscSendTextMessage(accounts[0].id, chatId, text)
         }
       }
     } catch (error) {
@@ -145,11 +146,11 @@ export class DeltachatBotInterface {
       if (!this.botAccountId) {
         const accounts = await BackendRemote.rpc.getAllAccounts()
         if (accounts.length > 0) {
-          // Create group chat with specified name and type 0 (normal group)
+          // Create group chat with specified name (not protected)
           const chatId = await BackendRemote.rpc.createGroupChat(
-            accounts[0],
+            accounts[0].id,
             name,
-            0
+            false
           )
 
           // Add members
@@ -157,15 +158,15 @@ export class DeltachatBotInterface {
             try {
               // Look up or create contact
               const contactId = await BackendRemote.rpc.createContact(
-                accounts[0],
+                accounts[0].id,
                 address,
                 address
               )
               // Add contact to chat
               await BackendRemote.rpc.addContactToChat(
-                Number(accounts[0]),
-                Number(chatId),
-                Number(contactId)
+                accounts[0].id,
+                chatId,
+                contactId
               )
             } catch (error) {
               log.error(`Failed to add ${address} to group:`, error)
@@ -182,11 +183,11 @@ export class DeltachatBotInterface {
         }
       } else {
         // Use dedicated bot account
-        // Create group chat with specified name and type 0 (normal group)
+        // Create group chat with specified name (not protected)
         const chatId = await BackendRemote.rpc.createGroupChat(
-          Number(this.botAccountId),
+          this.botAccountId,
           name,
-          0
+          false
         )
 
         // Add members

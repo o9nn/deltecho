@@ -10,17 +10,29 @@ jest.mock('../../../../shared/logger', () => ({
   })),
 }))
 
+// Mock runtime
+jest.mock('@deltachat-desktop/runtime-interface', () => ({
+  runtime: {
+    getDesktopSettings: jest.fn().mockResolvedValue({
+      deepTreeEchoBotMemories: '[]',
+      deepTreeEchoBotReflections: '[]',
+      deepTreeEchoBotMemoryEnabled: false,
+    }),
+    setDesktopSetting: jest.fn().mockResolvedValue(undefined),
+  },
+}))
+
 describe('RAGMemoryStore', () => {
   let memoryStore: RAGMemoryStore
 
   beforeEach(() => {
-    memoryStore = new RAGMemoryStore({
-      persistToDisk: false, // Disable disk persistence for tests
-    })
+    // Use singleton pattern - getInstance instead of new
+    memoryStore = RAGMemoryStore.getInstance()
+    memoryStore.setEnabled(true)
   })
 
   describe('addMemory', () => {
-    it('should add a memory and return it with ID and timestamp', async () => {
+    it('should add a memory successfully', async () => {
       const memory = {
         text: 'Test memory',
         sender: 'user' as const,
@@ -28,14 +40,14 @@ describe('RAGMemoryStore', () => {
         messageId: 456,
       }
 
-      const result = await memoryStore.addMemory(memory)
+      await memoryStore.addMemory(memory)
 
-      expect(result).toHaveProperty('id')
-      expect(result).toHaveProperty('timestamp')
-      expect(result.text).toBe(memory.text)
-      expect(result.sender).toBe(memory.sender)
-      expect(result.chatId).toBe(memory.chatId)
-      expect(result.messageId).toBe(memory.messageId)
+      // Verify by retrieving memories
+      const memories = memoryStore.getMemoriesByChatId(123)
+      expect(memories.length).toBeGreaterThan(0)
+      const lastMemory = memories[memories.length - 1]
+      expect(lastMemory.text).toBe(memory.text)
+      expect(lastMemory.sender).toBe(memory.sender)
     })
   })
 

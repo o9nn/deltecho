@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react'
 import { getLogger } from '../../../../shared/logger'
 import { runtime } from '@deltachat-desktop/runtime-interface'
 import { CognitiveFunctionType, LLMService } from './LLMService'
+import { DesktopSettingsType } from '../../../../shared/shared-types'
 
 const log = getLogger('render/components/DeepTreeEchoBot/BotSettings')
 
@@ -179,8 +180,8 @@ const BotSettings: React.FC<BotSettingsProps> = ({
       // Force direct update to desktop settings for immediate effect
       const settingKey = `deepTreeEchoBot${
         key.charAt(0).toUpperCase() + key.slice(1)
-      }` as string
-      await runtime.setDesktopSetting(settingKey, value)
+      }` as keyof DesktopSettingsType
+      await runtime.setDesktopSetting(settingKey, value as any)
 
       // If this is a feature toggle, ensure immediate activation/deactivation
       if (
