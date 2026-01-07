@@ -6,7 +6,11 @@
  */
 
 // Core Orchestrator
-export { Orchestrator, type OrchestratorConfig } from './orchestrator.js';
+export {
+  Orchestrator,
+  type OrchestratorConfig,
+  type CognitiveTierMode,
+} from './orchestrator.js';
 
 // DeltaChat Interface
 export {
