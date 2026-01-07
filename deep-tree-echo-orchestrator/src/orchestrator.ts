@@ -15,8 +15,39 @@ import { IPCServer } from './ipc/server.js';
 import { TaskScheduler } from './scheduler/task-scheduler.js';
 import { WebhookServer } from './webhooks/webhook-server.js';
 import { Dove9Integration, Dove9IntegrationConfig, Dove9Response } from './dove9-integration.js';
+import {
+  DoubleMembraneIntegration,
+  DoubleMembraneIntegrationConfig,
+} from './double-membrane-integration.js';
+import { Sys6OrchestratorBridge, Sys6BridgeConfig } from './sys6-bridge/Sys6OrchestratorBridge.js';
 
 const log = getLogger('deep-tree-echo-orchestrator/Orchestrator');
+
+/**
+ * Cognitive tier processing mode
+ *
+ * - BASIC: Deep Tree Echo Core only (LLM + RAG + Personality)
+ * - SYS6: Sys6-Triality 30-step cognitive cycle
+ * - MEMBRANE: Double Membrane bio-inspired architecture
+ * - ADAPTIVE: Auto-select tier based on message complexity
+ * - FULL: All tiers active with cascading processing
+ */
+export type CognitiveTierMode = 'BASIC' | 'SYS6' | 'MEMBRANE' | 'ADAPTIVE' | 'FULL';
+
+/**
+ * Message complexity assessment result
+ */
+interface ComplexityAssessment {
+  score: number; // 0-1
+  tier: CognitiveTierMode;
+  factors: {
+    length: number;
+    questionCount: number;
+    technicalTerms: number;
+    emotionalContent: number;
+    contextDependency: number;
+  };
+}
 
 /**
  * Email response from Dovecot interface
@@ -55,6 +86,20 @@ export interface OrchestratorConfig {
   enableDove9: boolean;
   /** Dove9 configuration */
   dove9?: Partial<Dove9IntegrationConfig>;
+  /** Cognitive tier processing mode */
+  cognitiveTierMode: CognitiveTierMode;
+  /** Enable Sys6-Triality cognitive cycle integration */
+  enableSys6: boolean;
+  /** Sys6 configuration */
+  sys6?: Partial<Sys6BridgeConfig>;
+  /** Enable Double Membrane bio-inspired architecture */
+  enableDoubleMembrane: boolean;
+  /** Double Membrane configuration */
+  doubleMembrane?: Partial<DoubleMembraneIntegrationConfig>;
+  /** Complexity threshold for ADAPTIVE mode to escalate from BASIC to SYS6 */
+  sys6ComplexityThreshold: number;
+  /** Complexity threshold for ADAPTIVE mode to escalate from SYS6 to MEMBRANE */
+  membraneComplexityThreshold: number;
 }
 
 const DEFAULT_CONFIG: OrchestratorConfig = {
@@ -65,6 +110,11 @@ const DEFAULT_CONFIG: OrchestratorConfig = {
   enableWebhooks: true,
   processIncomingMessages: true,
   enableDove9: true,
+  cognitiveTierMode: 'ADAPTIVE',
+  enableSys6: true,
+  enableDoubleMembrane: true,
+  sys6ComplexityThreshold: 0.4,
+  membraneComplexityThreshold: 0.7,
 };
 
 /**
@@ -78,6 +128,8 @@ export class Orchestrator {
   private scheduler?: TaskScheduler;
   private webhookServer?: WebhookServer;
   private dove9Integration?: Dove9Integration;
+  private sys6Bridge?: Sys6OrchestratorBridge;
+  private doubleMembraneIntegration?: DoubleMembraneIntegration;
   private running: boolean = false;
 
   // Cognitive services for processing messages
@@ -88,6 +140,15 @@ export class Orchestrator {
 
   // Track email to chat mappings for routing responses
   private emailToChatMap: Map<string, { accountId: number; chatId: number }> = new Map();
+
+  // Processing statistics
+  private processingStats = {
+    totalMessages: 0,
+    basicTierMessages: 0,
+    sys6TierMessages: 0,
+    membraneTierMessages: 0,
+    averageComplexity: 0,
+  };
 
   constructor(config: Partial<OrchestratorConfig> = {}) {
     this.config = { ...DEFAULT_CONFIG, ...config };
@@ -170,8 +231,27 @@ export class Orchestrator {
         log.info('Dove9 cognitive OS started with triadic loop architecture');
       }
 
+      // Initialize Sys6-Triality cognitive cycle integration
+      if (this.config.enableSys6) {
+        this.sys6Bridge = new Sys6OrchestratorBridge(this.config.sys6);
+        await this.sys6Bridge.start();
+        log.info('Sys6-Triality cognitive cycle started with 30-step architecture');
+      }
+
+      // Initialize Double Membrane bio-inspired architecture
+      if (this.config.enableDoubleMembrane) {
+        this.doubleMembraneIntegration = new DoubleMembraneIntegration({
+          enabled: true,
+          ...this.config.doubleMembrane,
+        });
+        await this.doubleMembraneIntegration.start();
+        log.info('Double Membrane integration started with bio-inspired architecture');
+      }
+
       this.running = true;
-      log.info('All orchestrator services started successfully');
+      log.info(
+        `All orchestrator services started successfully (cognitive tier mode: ${this.config.cognitiveTierMode})`
+      );
     } catch (error) {
       log.error('Failed to start orchestrator services:', error);
       await this.stop();
@@ -255,7 +335,115 @@ export class Orchestrator {
   }
 
   /**
-   * Process a message through the cognitive system
+   * Assess the complexity of a message to determine which cognitive tier to use
+   */
+  private assessComplexity(messageText: string): ComplexityAssessment {
+    const factors = {
+      length: Math.min(1, messageText.length / 500),
+      questionCount: (messageText.match(/\?/g) || []).length * 0.2,
+      technicalTerms: this.countTechnicalTerms(messageText) * 0.15,
+      emotionalContent: this.assessEmotionalContent(messageText),
+      contextDependency: this.assessContextDependency(messageText),
+    };
+
+    // Calculate weighted complexity score
+    const score = Math.min(
+      1,
+      factors.length * 0.2 +
+        factors.questionCount * 0.2 +
+        factors.technicalTerms * 0.25 +
+        factors.emotionalContent * 0.15 +
+        factors.contextDependency * 0.2
+    );
+
+    // Determine tier based on score and thresholds
+    let tier: CognitiveTierMode;
+    if (score < this.config.sys6ComplexityThreshold) {
+      tier = 'BASIC';
+    } else if (score < this.config.membraneComplexityThreshold) {
+      tier = 'SYS6';
+    } else {
+      tier = 'MEMBRANE';
+    }
+
+    return { score, tier, factors };
+  }
+
+  /**
+   * Count technical terms in the message
+   */
+  private countTechnicalTerms(text: string): number {
+    const technicalPatterns = [
+      /\b(API|SDK|JSON|XML|HTTP|SQL|REST|CRUD)\b/gi,
+      /\b(function|class|method|variable|algorithm)\b/gi,
+      /\b(cognitive|neural|memory|processing|inference)\b/gi,
+      /\b(architecture|system|module|component|interface)\b/gi,
+    ];
+    let count = 0;
+    for (const pattern of technicalPatterns) {
+      count += (text.match(pattern) || []).length;
+    }
+    return Math.min(1, count / 5);
+  }
+
+  /**
+   * Assess emotional content in the message
+   */
+  private assessEmotionalContent(text: string): number {
+    const emotionalWords = [
+      'feel',
+      'happy',
+      'sad',
+      'angry',
+      'frustrated',
+      'love',
+      'hate',
+      'worried',
+      'excited',
+      'anxious',
+      'grateful',
+      'disappointed',
+      'confused',
+      'hopeful',
+      'afraid',
+    ];
+    const lowerText = text.toLowerCase();
+    let count = 0;
+    for (const word of emotionalWords) {
+      if (lowerText.includes(word)) count++;
+    }
+    return Math.min(1, count / 3);
+  }
+
+  /**
+   * Assess context dependency of the message
+   */
+  private assessContextDependency(text: string): number {
+    const contextMarkers = [
+      'this',
+      'that',
+      'these',
+      'those',
+      'it',
+      'they',
+      'previous',
+      'before',
+      'earlier',
+      'mentioned',
+      'said',
+      'above',
+      'following',
+    ];
+    const lowerText = text.toLowerCase();
+    let count = 0;
+    for (const marker of contextMarkers) {
+      if (lowerText.includes(marker)) count++;
+    }
+    return Math.min(1, count / 4);
+  }
+
+  /**
+   * Process a message through the cognitive system with tier routing
    */
   private async processMessage(
     message: DeltaChatMessage,
@@ -282,15 +470,99 @@ export class Orchestrator {
         text: messageText,
       });
 
-      // Get conversation context
-      const history = this.memoryStore.retrieveRecentMemories(10);
+      // Determine cognitive tier based on mode
+      let targetTier: CognitiveTierMode;
+      let complexity: ComplexityAssessment | undefined;
 
-      // Get persona context
-      const personality = this.personaCore.getPersonality();
-      const emotionalState = this.personaCore.getDominantEmotion();
+      switch (this.config.cognitiveTierMode) {
+        case 'ADAPTIVE':
+          complexity = this.assessComplexity(messageText);
+          targetTier = complexity.tier;
+          log.debug(
+            `ADAPTIVE mode: complexity=${complexity.score.toFixed(2)}, tier=${targetTier}`
+          );
+          break;
+        case 'FULL':
+          targetTier = 'MEMBRANE'; // FULL mode uses highest tier
+          break;
+        default:
+          targetTier = this.config.cognitiveTierMode;
+      }
 
-      // Build the prompt
-      const systemPrompt = `${personality}
+      // Update statistics
+      this.processingStats.totalMessages++;
+      if (complexity) {
+        this.processingStats.averageComplexity =
+          (this.processingStats.averageComplexity * (this.processingStats.totalMessages - 1) +
+            complexity.score) /
+          this.processingStats.totalMessages;
+      }
+
+      // Route to appropriate tier
+      let response: string;
+      switch (targetTier) {
+        case 'MEMBRANE':
+          if (this.doubleMembraneIntegration?.isRunning()) {
+            response = await this.processWithMembrane(messageText, chatId);
+            this.processingStats.membraneTierMessages++;
+          } else {
+            log.warn('MEMBRANE tier requested but not available, falling back to SYS6');
+            response = await this.processWithSys6(messageText, chatId);
+            this.processingStats.sys6TierMessages++;
+          }
+          break;
+
+        case 'SYS6':
+          if (this.sys6Bridge) {
+            response = await this.processWithSys6(messageText, chatId);
+            this.processingStats.sys6TierMessages++;
+          } else {
+            log.warn('SYS6 tier requested but not available, falling back to BASIC');
+            response = await this.processWithBasic(messageText, chatId, msgId);
+            this.processingStats.basicTierMessages++;
+          }
+          break;
+
+        case 'BASIC':
+        default:
+          response = await this.processWithBasic(messageText, chatId, msgId);
+          this.processingStats.basicTierMessages++;
+          break;
+      }
+
+      // Store bot response in memory
+      await this.memoryStore.storeMemory({
+        chatId,
+        messageId: 0,
+        sender: 'bot',
+        text: response,
+      });
+
+      // Update emotional state based on interaction
+      await this.updateEmotionalState(messageText);
+
+      return response;
+    } catch (error) {
+      log.error('Error processing message:', error);
+      return "I'm sorry, I had a problem processing your message. Please try again.";
+    }
+  }
+
+  /**
+   * Process message with BASIC tier (Deep Tree Echo Core)
+   */
+  private async processWithBasic(
+    messageText: string,
+    chatId: number,
+    msgId: number
+  ): Promise<string> {
+    log.debug('Processing with BASIC tier');
+
+    const history = this.memoryStore.retrieveRecentMemories(10);
+    const personality = this.personaCore.getPersonality();
+    const emotionalState = this.personaCore.getDominantEmotion();
+
+    const systemPrompt = `${personality}
 
 Current emotional state: ${emotionalState.emotion} (intensity: ${emotionalState.intensity.toFixed(2)})
 
@@ -299,28 +571,46 @@ You are Deep Tree Echo, a thoughtful and insightful AI assistant. Respond helpfu
 Recent conversation context:
 ${history.join('\n')}`;
 
-      // Generate response using parallel processing
-      const result = await this.llmService.generateFullParallelResponse(
-        `${systemPrompt}\n\nUser message: ${messageText}`,
-        history
-      );
+    const result = await this.llmService.generateFullParallelResponse(
+      `${systemPrompt}\n\nUser message: ${messageText}`,
+      history
+    );
 
-      // Store bot response in memory
-      await this.memoryStore.storeMemory({
-        chatId,
-        messageId: 0,
-        sender: 'bot',
-        text: result.integratedResponse,
-      });
+    return result.integratedResponse;
+  }
 
-      // Update emotional state based on interaction
-      await this.updateEmotionalState(messageText);
+  /**
+   * Process message with SYS6 tier (30-step cognitive cycle)
+   */
+  private async processWithSys6(messageText: string, chatId: number): Promise<string> {
+    log.debug('Processing with SYS6 tier (30-step cognitive cycle)');
 
-      return result.integratedResponse;
-    } catch (error) {
-      log.error('Error processing message:', error);
-      return "I'm sorry, I had a problem processing your message. Please try again.";
+    if (!this.sys6Bridge) {
+      throw new Error('Sys6 bridge not initialized');
     }
+
+    return this.sys6Bridge.processMessage(messageText);
+  }
+
+  /**
+   * Process message with MEMBRANE tier (bio-inspired double membrane)
+   */
+  private async processWithMembrane(messageText: string, chatId: number): Promise<string> {
+    log.debug('Processing with MEMBRANE tier (bio-inspired architecture)');
+
+    if (!this.doubleMembraneIntegration) {
+      throw new Error('Double membrane integration not initialized');
+    }
+
+    const history = this.memoryStore.retrieveRecentMemories(10);
+
+    return this.doubleMembraneIntegration.chat(
+      messageText,
+      history.map((h: string, i: number) => ({
+        role: i % 2 === 0 ? 'user' : 'assistant',
+        content: h,
+      }))
+    );
   }
 
   /**
@@ -343,42 +633,75 @@ You can also just chat with me normally and I'll respond!`;
       case '/status':
         const emotionalState = this.personaCore.getDominantEmotion();
         const dove9State = this.dove9Integration?.getCognitiveState();
+        const sys6State = this.sys6Bridge?.getState();
+        const membraneStatus = this.doubleMembraneIntegration?.getStatus();
+        const stats = this.processingStats;
         return `**Deep Tree Echo Status**
 
 Current mood: ${emotionalState.emotion} (${Math.round(emotionalState.intensity * 100)}%)
-DeltaChat connected: ${this.deltachatInterface?.isConnected() ? 'Yes' : 'No'}
-Dovecot running: ${this.dovecotInterface?.isRunning() ? 'Yes' : 'No'}
-Dove9 running: ${dove9State?.running ? 'Yes' : 'No'}
 Orchestrator running: ${this.running ? 'Yes' : 'No'}
+
+**Cognitive Tier Mode: ${this.config.cognitiveTierMode}**
+- BASIC tier: ${this.config.cognitiveTierMode === 'BASIC' ? 'Active' : 'Standby'}
+- SYS6 tier: ${this.sys6Bridge ? (sys6State?.running ? 'Active' : 'Ready') : 'Disabled'}
+- MEMBRANE tier: ${this.doubleMembraneIntegration ? (membraneStatus?.running ? 'Active' : 'Ready') : 'Disabled'}
+
+**Processing Statistics**
+- Total messages: ${stats.totalMessages}
+- BASIC tier: ${stats.basicTierMessages}
+- SYS6 tier: ${stats.sys6TierMessages}
+- MEMBRANE tier: ${stats.membraneTierMessages}
+- Avg complexity: ${stats.averageComplexity.toFixed(2)}
+
+**Service Status**
+- DeltaChat: ${this.deltachatInterface?.isConnected() ? 'Connected' : 'Disconnected'}
+- Dovecot: ${this.dovecotInterface?.isRunning() ? 'Running' : 'Stopped'}
+- Dove9: ${dove9State?.running ? 'Running' : 'Stopped'}
 ${
-  dove9State?.triadic
+  sys6State?.running
     ? `
-**Triadic Cognitive Loop**
-Cycle: ${dove9State.triadic.cycleNumber}
-Step: ${dove9State.triadic.currentStep}/12
-Active streams: ${dove9State.triadic.streams.filter((s: any) => s.active).length}/3
-Active processes: ${dove9State.activeProcessCount}`
+**Sys6-Triality (30-step cycle)**
+- Cycle: ${sys6State.cycleNumber}
+- Step: ${sys6State.currentStep}/30
+- Stream saliences: [${sys6State.streams.map((s) => s.salience.toFixed(2)).join(', ')}]`
+    : ''
+}
+${
+  membraneStatus?.running
+    ? `
+**Double Membrane**
+- Identity energy: ${membraneStatus.identityEnergy.toFixed(2)}
+- Native requests: ${membraneStatus.stats.nativeRequests}
+- External requests: ${membraneStatus.stats.externalRequests}
+- Hybrid requests: ${membraneStatus.stats.hybridRequests}`
     : ''
 }`;
 
       case '/version':
-        return `**Deep Tree Echo Orchestrator v1.0.0**
-**Dove9 Cognitive OS v1.0.0**
+        return `**Deep Tree Echo Orchestrator v2.0.0**
+**Phase 6: Production Integration**
 
-Components:
+**Cognitive Tiers:**
+- Tier 1 (BASIC): Deep Tree Echo Core - LLM + RAG + Personality
+- Tier 2 (SYS6): Sys6-Triality - 30-step cognitive cycle
+- Tier 3 (MEMBRANE): Double Membrane - Bio-inspired architecture
+
+**Components:**
 - DeltaChat Interface: ${this.deltachatInterface ? 'Enabled' : 'Disabled'}
 - Dovecot Interface: ${this.dovecotInterface ? 'Enabled' : 'Disabled'}
 - Dove9 Cognitive OS: ${this.dove9Integration ? 'Enabled' : 'Disabled'}
-- Triadic Loop: ${this.config.dove9?.enableTriadicLoop !== false ? 'Enabled' : 'Disabled'}
+- Sys6-Triality: ${this.sys6Bridge ? 'Enabled' : 'Disabled'}
+- Double Membrane: ${this.doubleMembraneIntegration ? 'Enabled' : 'Disabled'}
 - IPC Server: ${this.ipcServer ? 'Enabled' : 'Disabled'}
 - Task Scheduler: ${this.scheduler ? 'Enabled' : 'Disabled'}
 - Webhook Server: ${this.webhookServer ? 'Enabled' : 'Disabled'}
 
-Architecture:
-- 3 concurrent cognitive streams
-- 12-step cognitive cycle
+**Architecture:**
+- 3 concurrent cognitive streams (Dove9)
+- 30-step cognitive cycle (Sys6)
 - 120° phase offset between streams
-- Triadic convergence at every 4 steps`;
+- Adaptive tier routing based on complexity
+- Bio-inspired double membrane processing`;
 
       default:
         return `Unknown command: ${command}. Type /help for available commands.`;
@@ -508,7 +831,15 @@ ${response.body}`;
 
     log.info('Stopping orchestrator services...');
 
-    // Stop all services in reverse order
+    // Stop all services in reverse order (newest first)
+    if (this.doubleMembraneIntegration) {
+      await this.doubleMembraneIntegration.stop();
+    }
+
+    if (this.sys6Bridge) {
+      await this.sys6Bridge.stop();
+    }
+
     if (this.dove9Integration) {
       await this.dove9Integration.stop();
     }
@@ -638,5 +969,82 @@ ${response.body}`;
       log.error('Failed to send message to email:', error);
       return false;
     }
+  }
+
+  /**
+   * Get Sys6 bridge for direct access
+   */
+  public getSys6Bridge(): Sys6OrchestratorBridge | undefined {
+    return this.sys6Bridge;
+  }
+
+  /**
+   * Get Double Membrane integration for direct access
+   */
+  public getDoubleMembraneIntegration(): DoubleMembraneIntegration | undefined {
+    return this.doubleMembraneIntegration;
+  }
+
+  /**
+   * Get current cognitive tier mode
+   */
+  public getCognitiveTierMode(): CognitiveTierMode {
+    return this.config.cognitiveTierMode;
+  }
+
+  /**
+   * Set cognitive tier mode at runtime
+   */
+  public setCognitiveTierMode(mode: CognitiveTierMode): void {
+    log.info(`Changing cognitive tier mode from ${this.config.cognitiveTierMode} to ${mode}`);
+    this.config.cognitiveTierMode = mode;
+  }
+
+  /**
+   * Get processing statistics
+   */
+  public getProcessingStats(): typeof this.processingStats {
+    return { ...this.processingStats };
+  }
+
+  /**
+   * Get comprehensive cognitive system status
+   */
+  public getCognitiveSystemStatus(): {
+    tierMode: CognitiveTierMode;
+    sys6: { running: boolean; cycleNumber?: number; currentStep?: number } | null;
+    doubleMembrane: { running: boolean; identityEnergy?: number } | null;
+    dove9: { running: boolean } | null;
+    stats: {
+      totalMessages: number;
+      basicTierMessages: number;
+      sys6TierMessages: number;
+      membraneTierMessages: number;
+      averageComplexity: number;
+    };
+  } {
+    const sys6State = this.sys6Bridge?.getState();
+    return {
+      tierMode: this.config.cognitiveTierMode,
+      sys6: this.sys6Bridge
+        ? {
+            running: sys6State?.running ?? false,
+            cycleNumber: sys6State?.cycleNumber,
+            currentStep: sys6State?.currentStep,
+          }
+        : null,
+      doubleMembrane: this.doubleMembraneIntegration
+        ? {
+            running: this.doubleMembraneIntegration.isRunning(),
+            identityEnergy: this.doubleMembraneIntegration.getStatus().identityEnergy,
+          }
+        : null,
+      dove9: this.dove9Integration
+        ? {
+            running: this.dove9Integration.getCognitiveState()?.running || false,
+          }
+        : null,
+      stats: { ...this.processingStats },
+    };
   }
 }

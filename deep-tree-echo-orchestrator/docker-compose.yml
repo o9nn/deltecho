@@ -1,0 +1,67 @@
+# Deep Tree Echo Orchestrator Docker Compose Configuration
+# Phase 6: Production Integration
+#
+# Usage:
+#   docker-compose up -d          # Start orchestrator
+#   docker-compose logs -f        # View logs
+#   docker-compose down           # Stop orchestrator
+
+version: '3.8'
+
+services:
+  orchestrator:
+    build:
+      context: ..
+      dockerfile: deep-tree-echo-orchestrator/Dockerfile
+    container_name: deep-tree-echo-orchestrator
+    restart: unless-stopped
+    ports:
+      - "9001:9001"  # IPC Server
+      - "9002:9002"  # Webhook Server
+      - "9090:9090"  # Prometheus Metrics
+    environment:
+      # Cognitive Tier Configuration
+      - COGNITIVE_TIER_MODE=ADAPTIVE
+      - ENABLE_SYS6=true
+      - ENABLE_DOUBLE_MEMBRANE=true
+
+      # Service Configuration
+      - ENABLE_DELTACHAT=false
+      - ENABLE_DOVECOT=false
+      - ENABLE_IPC=true
+      - ENABLE_SCHEDULER=true
+      - ENABLE_WEBHOOKS=true
+      - ENABLE_DOVE9=true
+
+      # Complexity Thresholds (for ADAPTIVE mode)
+      - SYS6_COMPLEXITY_THRESHOLD=0.4
+      - MEMBRANE_COMPLEXITY_THRESHOLD=0.7
+
+      # LLM Provider Configuration (uncomment and fill in as needed)
+      # - OPENAI_API_KEY=your-key-here
+      # - ANTHROPIC_API_KEY=your-key-here
+      # - OPENROUTER_API_KEY=your-key-here
+
+      # Persistence
+      - ORCHESTRATOR_PERSISTENCE_PATH=/app/data/persistence
+      - ORCHESTRATOR_LOG_PATH=/app/data/logs
+
+      # Node Environment
+      - NODE_ENV=production
+    volumes:
+      - orchestrator-data:/app/data
+    healthcheck:
+      test: ["CMD", "node", "-e", "require('http').get('http://localhost:9002/health', (r) => process.exit(r.statusCode === 200 ? 0 : 1))"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 10s
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "10m"
+        max-file: "3"
+
+volumes:
+  orchestrator-data:
+    name: deep-tree-echo-data
