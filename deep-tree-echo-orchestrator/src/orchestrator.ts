@@ -22,6 +22,7 @@ import {
 import { Sys6OrchestratorBridge, Sys6BridgeConfig } from './sys6-bridge/Sys6OrchestratorBridge.js';
 import { ProactiveLoop, ProactiveLoopConfig } from './proactive-loop.js';
 import { AutonomyPipeline, AutonomyPipelineConfig } from './autonomy-pipeline.js';
+import { DeltaChatAutonomyBridge, BridgeConfig as AutonomyBridgeConfig } from './deltachat-autonomy-bridge.js';
 
 const log = getLogger('deep-tree-echo-orchestrator/Orchestrator');
 
@@ -34,7 +35,7 @@ const log = getLogger('deep-tree-echo-orchestrator/Orchestrator');
  * - ADAPTIVE: Auto-select tier based on message complexity
  * - FULL: All tiers active with cascading processing
  */
-export type CognitiveTierMode = 'BASIC' | 'SYS6' | 'MEMBRANE' | 'ADAPTIVE' | 'FULL';
+export type CognitiveTierMode = 'BASIC' | 'CORESELF' | 'SYS6' | 'MEMBRANE' | 'ADAPTIVE' | 'FULL';
 
 /**
  * Message complexity assessment result
@@ -110,6 +111,10 @@ export interface OrchestratorConfig {
   enableAutonomyPipeline: boolean;
   /** Autonomy pipeline configuration */
   autonomyPipeline?: Partial<AutonomyPipelineConfig>;
+  /** Enable CoreSelf tier (Lucy + ESN + IdentityMesh) */
+  enableCoreSelf: boolean;
+  /** Autonomy bridge configuration */
+  autonomyBridge?: Partial<AutonomyBridgeConfig>;
 }
 
 const DEFAULT_CONFIG: OrchestratorConfig = {
@@ -127,6 +132,7 @@ const DEFAULT_CONFIG: OrchestratorConfig = {
   membraneComplexityThreshold: 0.7,
   enableProactiveLoop: true,
   enableAutonomyPipeline: true,
+  enableCoreSelf: true,
 };
 
 /**
@@ -144,6 +150,7 @@ export class Orchestrator {
   private doubleMembraneIntegration?: DoubleMembraneIntegration;
   private proactiveLoop?: ProactiveLoop;
   private autonomyPipeline?: AutonomyPipeline;
+  private autonomyBridge?: DeltaChatAutonomyBridge;
   private running: boolean = false;
 
   // Cognitive services for processing messages
@@ -301,6 +308,19 @@ export class Orchestrator {
 
         await this.autonomyPipeline.start();
         log.info('Level 4 Autonomy Pipeline active (Perception → Cognition → Planning → Execution → Memory)');
+
+        // Wire DeltaChat Autonomy Bridge for live end-to-end operation
+        if (this.config.enableCoreSelf) {
+          this.autonomyBridge = new DeltaChatAutonomyBridge(
+            this.autonomyPipeline,
+            {
+              enableAutonomousResponse: true,
+              preferCoreSelf: true,
+              ...this.config.autonomyBridge,
+            }
+          );
+          log.info('DeltaChat Autonomy Bridge active (CoreSelf → Echobeats → Live)');
+        }
       }
 
       this.running = true;
@@ -528,17 +548,22 @@ export class Orchestrator {
       // Determine cognitive tier based on mode
       let targetTier: CognitiveTierMode;
       let complexity: ComplexityAssessment | undefined;
-
       switch (this.config.cognitiveTierMode) {
         case 'ADAPTIVE':
-          complexity = this.assessComplexity(messageText);
-          targetTier = complexity.tier;
+          // If CoreSelf is available, prefer it; otherwise fall back to complexity-based routing
+          if (this.autonomyBridge && this.autonomyPipeline?.isRunning()) {
+            targetTier = 'CORESELF';
+          } else {
+            complexity = this.assessComplexity(messageText);
+            targetTier = complexity.tier;
+          }
           log.debug(
-            `ADAPTIVE mode: complexity=${complexity.score.toFixed(2)}, tier=${targetTier}`
+            `ADAPTIVE mode: tier=${targetTier}${complexity ? `, complexity=${complexity.score.toFixed(2)}` : ', CoreSelf active'}`
           );
           break;
         case 'FULL':
-          targetTier = 'MEMBRANE'; // FULL mode uses highest tier
+          // FULL mode uses CoreSelf if available, otherwise MEMBRANE
+          targetTier = (this.autonomyBridge && this.autonomyPipeline?.isRunning()) ? 'CORESELF' : 'MEMBRANE';
           break;
         default:
           targetTier = this.config.cognitiveTierMode;
@@ -556,6 +581,26 @@ export class Orchestrator {
       // Route to appropriate tier
       let response: string;
       switch (targetTier) {
+        case 'CORESELF':
+          if (this.autonomyBridge && this.autonomyPipeline?.isRunning()) {
+            const bridgeResult = await this.autonomyBridge.processMessage({
+              chatId,
+              messageId: msgId,
+              accountId,
+              senderAddress: '',
+              senderName: '',
+              text: messageText,
+              timestamp: Date.now(),
+              isGroup: false,
+            });
+            response = bridgeResult.text;
+            this.processingStats.basicTierMessages++; // Track under basic for now
+          } else {
+            log.warn('CORESELF tier requested but not available, falling back to BASIC');
+            response = await this.processWithBasic(messageText, chatId, msgId);
+            this.processingStats.basicTierMessages++;
+          }
+          break;
         case 'MEMBRANE':
           if (this.doubleMembraneIntegration?.isRunning()) {
             response = await this.processWithMembrane(messageText, chatId);
@@ -747,6 +792,9 @@ ${
 - Dove9 Cognitive OS: ${this.dove9Integration ? 'Enabled' : 'Disabled'}
 - Sys6-Triality: ${this.sys6Bridge ? 'Enabled' : 'Disabled'}
 - Double Membrane: ${this.doubleMembraneIntegration ? 'Enabled' : 'Disabled'}
+- CoreSelf Engine: ${this.autonomyPipeline?.getCoreSelfEngine() ? 'Active' : 'Inactive'}
+- Autonomy Pipeline: ${this.autonomyPipeline?.isRunning() ? 'Active' : 'Inactive'}
+- Echobeats: ${this.autonomyPipeline?.isRunning() ? 'Active' : 'Inactive'}
 - IPC Server: ${this.ipcServer ? 'Enabled' : 'Disabled'}
 - Task Scheduler: ${this.scheduler ? 'Enabled' : 'Disabled'}
 - Webhook Server: ${this.webhookServer ? 'Enabled' : 'Disabled'}
@@ -887,6 +935,8 @@ ${response.body}`;
     log.info('Stopping orchestrator services...');
 
     // Stop all services in reverse order (newest first)
+    this.autonomyBridge = undefined; // Bridge is stateless, just clear reference
+
     if (this.autonomyPipeline) {
       await this.autonomyPipeline.stop();
     }
@@ -1060,6 +1110,13 @@ ${response.body}`;
    */
   public getAutonomyPipeline(): AutonomyPipeline | undefined {
     return this.autonomyPipeline;
+  }
+
+  /**
+   * Get DeltaChat Autonomy Bridge for direct access
+   */
+  public getAutonomyBridge(): DeltaChatAutonomyBridge | undefined {
+    return this.autonomyBridge;
   }
 
   /**

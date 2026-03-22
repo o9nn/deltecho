@@ -43,3 +43,11 @@ export {
   type ReadoutResult,
   type AARState,
 } from './ReservoirBridge.js';
+
+export {
+  OnlineReservoirLearner,
+  type OnlineLearnerConfig,
+  type FeedbackSignal,
+  type LearningUpdate,
+  type LearnerState,
+} from './OnlineReservoirLearner.js';

@@ -218,6 +218,25 @@ export {
   type BridgeStats,
 } from './deltachat-autonomy-bridge.js';
 
+// Self-Modification Engine - ENACTION phase self-tuning with safety constraints
+export {
+  SelfModificationEngine,
+  type SelfModificationConfig,
+  type ModifiableParameter,
+  type ModificationRequest,
+  type ModificationResult,
+} from './self-modification.js';
+
+// Training Data Generator - NanEcho conversation-to-training pipeline
+export {
+  ConversationTrainingGenerator,
+  type TrainingConfig,
+  type TrainingExample,
+  type ConversationTurn,
+  type ConceptNode,
+  type TrainingStats,
+} from './training/index.js';
+
 // Entelechy Integration - Deep cognitive loop
 export {
   EntelechyIntegration,

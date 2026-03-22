@@ -1,0 +1,101 @@
+version: '3.8'
+
+# Deep Tree Echo — Level 5 Autonomy Deployment
+# Lucy (Qwen3-1.7B 128k Q4_K_M) + DTE Orchestrator + Echobeats
+#
+# Usage:
+#   1. Place lucy_128k-Q4_K_M.gguf in ./models/
+#   2. Copy .env.example to .env and configure
+#   3. docker compose up -d
+#   4. Check health: curl http://localhost:8080/health
+
+services:
+  # ─── Lucy Inference Server (llama.cpp) ───────────────────────────
+  lucy:
+    image: ghcr.io/ggerganov/llama.cpp:server
+    container_name: dte-lucy
+    restart: unless-stopped
+    ports:
+      - "${LUCY_PORT:-8081}:8080"
+    volumes:
+      - ./models:/models:ro
+      - lucy-cache:/root/.cache
+    command: >
+      --model /models/lucy_128k-Q4_K_M.gguf
+      --host 0.0.0.0
+      --port 8080
+      --ctx-size ${LUCY_CTX_SIZE:-32768}
+      --threads ${LUCY_THREADS:-4}
+      --batch-size ${LUCY_BATCH_SIZE:-512}
+      --n-predict ${LUCY_MAX_PREDICT:-2048}
+      --parallel ${LUCY_PARALLEL:-1}
+      --cont-batching
+      --flash-attn
+      --mlock
+      --log-disable
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8080/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 60s
+    deploy:
+      resources:
+        limits:
+          memory: 4G
+        reservations:
+          memory: 2G
+
+  # ─── DTE Orchestrator (Node.js) ──────────────────────────────────
+  orchestrator:
+    build:
+      context: ../..
+      dockerfile: deploy/docker/Dockerfile.orchestrator
+    container_name: dte-orchestrator
+    restart: unless-stopped
+    depends_on:
+      lucy:
+        condition: service_healthy
+    ports:
+      - "${ORCHESTRATOR_PORT:-3000}:3000"
+    volumes:
+      - dte-state:/app/state
+      - dte-logs:/app/logs
+    environment:
+      # Lucy connection
+      LUCY_BASE_URL: http://lucy:8080
+      LUCY_MODEL_NAME: lucy_128k-Q4_K_M
+      # API LLM fallbacks (optional but recommended)
+      OPENAI_API_KEY: ${OPENAI_API_KEY:-}
+      OPENAI_API_BASE: ${OPENAI_API_BASE:-}
+      ANTHROPIC_API_KEY: ${ANTHROPIC_API_KEY:-}
+      # DeltaChat
+      DELTACHAT_EMAIL: ${DELTACHAT_EMAIL:-}
+      DELTACHAT_PASSWORD: ${DELTACHAT_PASSWORD:-}
+      DELTACHAT_DATA_DIR: /app/state/deltachat
+      # Core Self
+      IDENTITY_STATE_DIR: /app/state/identity
+      RESERVOIR_STATE_DIR: /app/state/reservoir
+      MEMORY_STATE_DIR: /app/state/memory
+      # Autonomy Pipeline
+      ENABLE_AUTONOMY_PIPELINE: "true"
+      ENABLE_ECHOBEATS: "true"
+      ENABLE_PROACTIVE_PERCEPTION: "true"
+      ECHOBEATS_INTERVAL_MS: ${ECHOBEATS_INTERVAL_MS:-1000}
+      # Logging
+      LOG_LEVEL: ${LOG_LEVEL:-info}
+      NODE_ENV: production
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:3000/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 30s
+
+volumes:
+  lucy-cache:
+    driver: local
+  dte-state:
+    driver: local
+  dte-logs:
+    driver: local

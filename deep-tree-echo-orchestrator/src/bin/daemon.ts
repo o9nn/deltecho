@@ -59,13 +59,21 @@ function buildConfig(): Partial<OrchestratorConfig> {
       enableTriadicLoop: envBool('DEEP_TREE_ECHO_ENABLE_TRIADIC', true),
     },
     enableAutonomyPipeline: envBool('DEEP_TREE_ECHO_ENABLE_AUTONOMY', true),
+    enableCoreSelf: envBool('DEEP_TREE_ECHO_ENABLE_CORESELF', true),
     autonomyPipeline: {
       enablePerception: envBool('DEEP_TREE_ECHO_ENABLE_PERCEPTION', true),
       enablePlanning: envBool('DEEP_TREE_ECHO_ENABLE_PLANNING', true),
       enableExecution: envBool('DEEP_TREE_ECHO_ENABLE_EXECUTION', true),
       enableVectorMemory: envBool('DEEP_TREE_ECHO_ENABLE_VECTOR_MEMORY', true),
       enableConsolidation: envBool('DEEP_TREE_ECHO_ENABLE_CONSOLIDATION', true),
-      enableEchobeats: envBool('DEEP_TREE_ECHO_ENABLE_ECHOBEATS', false),
+      enableEchobeats: envBool('DEEP_TREE_ECHO_ENABLE_ECHOBEATS', true),
+      enableCoreSelf: envBool('DEEP_TREE_ECHO_ENABLE_CORESELF', true),
+      coreSelf: {
+        lucy: {
+          baseUrl: process.env.DEEP_TREE_ECHO_LUCY_ENDPOINT || 'http://localhost:8080',
+          modelName: process.env.DEEP_TREE_ECHO_LUCY_MODEL || 'lucy-dte',
+        },
+      },
       storagePath: process.env.DEEP_TREE_ECHO_STORAGE_PATH || '/tmp/deep-tree-echo/memory',
       planner: {
         apiKey: process.env.DEEP_TREE_ECHO_LLM_API_KEY || process.env.OPENAI_API_KEY || '',
@@ -120,6 +128,16 @@ class Daemon {
     );
     log.info(
       `  - Autonomy Pipeline: ${this.orchestrator.getAutonomyPipeline()?.isRunning() ? 'Active' : 'Inactive'}`
+    );
+    const coreSelf = this.orchestrator.getAutonomyPipeline()?.getCoreSelfEngine();
+    log.info(
+      `  - CoreSelf Engine: ${coreSelf ? `Active (Stage: ${coreSelf.getIdentity().getStage()}, Lucy: ${coreSelf.getLucy().isHealthy() ? 'ONLINE' : 'OFFLINE'})` : 'Inactive'}`
+    );
+    log.info(
+      `  - Echobeats: ${this.orchestrator.getAutonomyPipeline()?.isRunning() ? 'Active' : 'Inactive'}`
+    );
+    log.info(
+      `  - Autonomy Bridge: ${this.orchestrator.getAutonomyBridge() ? 'Active (CoreSelf → Live)' : 'Inactive'}`
     );
     log.info('');
   }

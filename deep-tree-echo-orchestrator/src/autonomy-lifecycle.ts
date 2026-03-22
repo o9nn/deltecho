@@ -28,6 +28,7 @@ import type {
   SelfImageSnapshot,
 } from './cognitive-tick-processor.js';
 import type { Echobeats } from './echobeats.js';
+import type { SelfModificationEngine, ModificationResult } from './self-modification.js';
 
 const log = getLogger('deep-tree-echo-orchestrator/AutonomyLifecycle');
 
@@ -135,6 +136,9 @@ export class AutonomyLifecycleCoordinator extends EventEmitter {
 
   // Echobeats integration (for inverted mirror energy feedback)
   private echobeats?: Echobeats;
+
+  // Self-modification engine (for ENACTION phase)
+  private selfModEngine?: SelfModificationEngine;
 
   constructor(
     config: Partial<AutonomyLifecycleConfig> = {},
@@ -451,7 +455,9 @@ export class AutonomyLifecycleCoordinator extends EventEmitter {
 
   /**
    * ENACTION: Vo → Ao
-   * World-view guides action in actual world
+   * World-view guides action in actual world.
+   * This is where self-modification happens — the system adjusts its own
+   * parameters based on the reflection and mirroring results.
    */
   private async executeEnaction(cycleId: number): Promise<DevelopmentalCycleResult> {
     // The agent's world-view influences what goals get generated
@@ -463,11 +469,43 @@ export class AutonomyLifecycleCoordinator extends EventEmitter {
       .slice(0, 5)
       .map(g => g.description);
 
+    // Self-modification: propose and apply parameter changes
+    const modifications: ModificationResult[] = [];
+    if (this.selfModEngine) {
+      const coherence = this.computeCoherence();
+      const cogState = this.cognitiveProcessor?.getState();
+      const memRatio = cogState && cogState.episodicMemories > 0
+        ? cogState.consolidatedMemories / cogState.episodicMemories
+        : 1;
+
+      const proposals = this.selfModEngine.proposeModifications(
+        coherence,
+        0, // avgPredictionError — will be wired to reservoir learner
+        activeGoals.length,
+        memRatio,
+      );
+
+      for (const proposal of proposals) {
+        const result = this.selfModEngine.modify(proposal);
+        modifications.push(result);
+      }
+    }
+
+    const appliedMods = modifications.filter(m => m.applied);
+    if (appliedMods.length > 0) {
+      log.info(`ENACTION: Applied ${appliedMods.length} self-modifications`);
+    }
+
     return {
       cycleNumber: cycleId,
       phase: 'enaction',
       coherenceAfter: this.computeCoherence(),
-      stateChanges: { activeGoals: activeGoals.length },
+      stateChanges: {
+        activeGoals: activeGoals.length,
+        selfModifications: modifications.length,
+        appliedModifications: appliedMods.length,
+        modificationDetails: appliedMods.map(m => `${m.key}: ${m.previousValue.toFixed(4)} → ${m.newValue.toFixed(4)}`),
+      },
       timestamp: Date.now(),
     };
   }
@@ -576,6 +614,21 @@ export class AutonomyLifecycleCoordinator extends EventEmitter {
   public wireEchobeats(echobeats: Echobeats): void {
     this.echobeats = echobeats;
     log.info('Echobeats wired to autonomy lifecycle (inverted mirror feedback active)');
+  }
+
+  /**
+   * Wire a SelfModificationEngine for ENACTION phase self-tuning.
+   */
+  public wireSelfModification(engine: SelfModificationEngine): void {
+    this.selfModEngine = engine;
+    log.info('SelfModificationEngine wired to autonomy lifecycle (ENACTION self-tuning active)');
+  }
+
+  /**
+   * Get the self-modification engine.
+   */
+  public getSelfModificationEngine(): SelfModificationEngine | undefined {
+    return this.selfModEngine;
   }
 
   /**

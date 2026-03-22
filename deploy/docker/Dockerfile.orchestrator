@@ -1,0 +1,40 @@
+# Deep Tree Echo Orchestrator — Production Image
+FROM node:22-slim AS builder
+
+WORKDIR /build
+COPY package.json pnpm-lock.yaml pnpm-workspace.yaml ./
+COPY packages/ packages/
+COPY deep-tree-echo-core/ deep-tree-echo-core/
+COPY deep-tree-echo-orchestrator/ deep-tree-echo-orchestrator/
+COPY dove9/ dove9/
+
+RUN corepack enable && corepack prepare pnpm@latest --activate
+RUN pnpm install --frozen-lockfile --prod=false
+RUN pnpm build:shared && \
+    pnpm --filter deep-tree-echo-core run build && \
+    pnpm build:dove9 && \
+    pnpm build:orchestrator
+RUN pnpm prune --prod
+
+# ─── Production Image ──────────────────────────────────────────────
+FROM node:22-slim
+
+RUN apt-get update && apt-get install -y --no-install-recommends \
+    curl ca-certificates && \
+    rm -rf /var/lib/apt/lists/*
+
+WORKDIR /app
+COPY --from=builder /build/node_modules ./node_modules
+COPY --from=builder /build/packages ./packages
+COPY --from=builder /build/deep-tree-echo-core ./deep-tree-echo-core
+COPY --from=builder /build/deep-tree-echo-orchestrator ./deep-tree-echo-orchestrator
+COPY --from=builder /build/dove9 ./dove9
+COPY --from=builder /build/package.json ./
+
+# Create state directories
+RUN mkdir -p /app/state/identity /app/state/reservoir /app/state/memory /app/state/deltachat /app/logs
+
+# Health check endpoint
+EXPOSE 3000
+
+CMD ["node", "deep-tree-echo-orchestrator/dist/bin/daemon.js"]
