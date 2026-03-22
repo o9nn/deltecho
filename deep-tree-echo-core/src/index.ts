@@ -22,6 +22,18 @@ export * from './embodiment';
 // Export active inference modules
 export * from './active-inference';
 
+// Export consciousness modules
+export * from './consciousness';
+
+// Export multimodal modules
+export * from './multimodal';
+
+// Export scientific genius modules
+export * from './scientific-genius';
+
+// Export tree-polytope kernel — structural self-awareness
+export * from './tree-polytope-kernel';
+
 // Export utility modules
 export * from './utils/logger';
 

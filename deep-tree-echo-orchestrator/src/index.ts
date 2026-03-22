@@ -134,3 +134,12 @@ export {
   type CosmicOrderSnapshot,
   type SystemLevelState,
 } from './cosmic-order-bridge.js';
+
+// AAR (Agent-Arena-Relation) System - Core identity architecture
+export * from './aar/index.js';
+
+// Entelechy Integration - Deep cognitive loop
+export {
+  EntelechyIntegration,
+  type EntelechyIntegrationConfig,
+} from './entelechy-integration.js';

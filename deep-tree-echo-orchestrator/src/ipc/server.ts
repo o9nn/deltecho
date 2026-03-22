@@ -81,7 +81,7 @@ export class IPCServer extends EventEmitter {
   private config: IPCServerConfig;
   private server: net.Server | null = null;
   private clients: Map<string, net.Socket> = new Map();
-  private handlers: Map<IPCMessageType, IPCRequestHandler> = new Map();
+  private handlers: Map<IPCMessageType | string, IPCRequestHandler> = new Map();
   private subscriptions: Map<string, Set<string>> = new Map(); // eventType -> clientIds
   private running: boolean = false;
   private clientIdCounter: number = 0;
@@ -164,7 +164,7 @@ export class IPCServer extends EventEmitter {
   /**
    * Register a request handler
    */
-  public registerHandler(type: IPCMessageType, handler: IPCRequestHandler): void {
+  public registerHandler(type: IPCMessageType | string, handler: IPCRequestHandler): void {
     this.handlers.set(type, handler);
     log.info(`Registered handler for ${type}`);
   }

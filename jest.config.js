@@ -4,6 +4,8 @@ export default {
   extensionsToTreatAsEsm: ['.ts'],
   moduleNameMapper: {
     '^(\\.{1,2}/.*)\\.js$': '$1',
+    '^deep-tree-echo-core$': '<rootDir>/deep-tree-echo-core/src/index.ts',
+    '^deep-tree-echo-core/(.*)$': '<rootDir>/deep-tree-echo-core/src/$1',
   },
   transform: {
     '^.+\\.tsx?$': [
@@ -13,9 +15,18 @@ export default {
       },
     ],
   },
+  transformIgnorePatterns: [
+    'node_modules/(?!deep-tree-echo-core)',
+  ],
   testMatch: [
     '**/__tests__/**/*.test.ts',
     '**/?(*.)+(spec|test).ts',
+  ],
+  testPathIgnorePatterns: [
+    '/node_modules/',
+    '/dist/',
+    '/delta-echo-desk/',
+    '/deltecho2/',
   ],
   collectCoverageFrom: [
     'packages/*/src/**/*.ts',

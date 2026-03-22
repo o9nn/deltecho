@@ -75,6 +75,12 @@ jobs:
       - name: Run tests - @deltecho/sys6-triality
         run: pnpm --filter @deltecho/sys6-triality test -- --coverage || echo "::warning::sys6-triality tests pending"
 
+      - name: Run tests - @deltecho/double-membrane
+        run: pnpm --filter @deltecho/double-membrane test -- --coverage || echo "::warning::double-membrane tests pending"
+
+      - name: Run tests - tree-polytope-kernel
+        run: npx jest --config jest.config.js --no-coverage --forceExit --testPathPattern="deep-tree-echo-core/src/__tests__/tree-polytope-kernel"
+
       - name: Build all packages
         run: pnpm run build
 

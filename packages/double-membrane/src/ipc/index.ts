@@ -13,3 +13,6 @@ export {
   type IPCHandler,
   type IPCBridgeConfig,
 } from './IPCBridge.js';
+
+export { DovecotIPCTransport } from './DovecotIPCTransport.js';
+export { MembraneMailBridge } from './MembraneMailBridge.js';

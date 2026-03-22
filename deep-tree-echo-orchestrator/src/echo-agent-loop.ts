@@ -22,7 +22,12 @@
  * MP2: P[1,3,4]→P[2,3,4]→P[1,2,3]→P[1,2,4]
  */
 import { EventEmitter } from 'events';
-import { getLogger } from 'deep-tree-echo-core';
+import {
+  getLogger,
+  TreePolytopeKernel,
+  createTreePolytopeKernel,
+  type TreePolytopeKernelState,
+} from 'deep-tree-echo-core';
 import {
   ProactiveLoop,
   ProactivePhase,
@@ -163,6 +168,7 @@ export class EchoAgentLoop extends EventEmitter {
   private config: EchoAgentLoopConfig;
   private proactiveLoop: ProactiveLoop;
   private cosmicOrderBridge: CosmicOrderBridge;
+  private treePolytopeKernel: TreePolytopeKernel;
   private running: boolean = false;
   private grandCycleTimer?: ReturnType<typeof setInterval>;
 
@@ -220,6 +226,15 @@ export class EchoAgentLoop extends EventEmitter {
 
     // Initialize cosmic order bridge
     this.cosmicOrderBridge = new CosmicOrderBridge(this.config.cosmicOrderConfig);
+
+    // Initialize tree-polytope kernel for structural self-awareness
+    this.treePolytopeKernel = createTreePolytopeKernel();
+    this.treePolytopeKernel.on('tick', (snapshot: any) => {
+      this.emit('tree_polytope_tick', snapshot);
+    });
+    this.treePolytopeKernel.on('rebuild', (model: any) => {
+      this.emit('structural_rebuild', model);
+    });
 
     // Wire proactive loop events
     this.proactiveLoop.on('telemetry', (event: any) => {
@@ -349,6 +364,9 @@ export class EchoAgentLoop extends EventEmitter {
       this.grandCycleState.cosmicOrder = cosmicSnapshot;
     }
 
+    // Advance tree-polytope s-gram rhythms (structural temporal awareness)
+    this.treePolytopeKernel.advanceSGrams();
+
     // Determine feed-forward vs feed-back
     const isFeedForward = this.grandCycleState.step % 2 === 0;
     if (isFeedForward) {
@@ -461,11 +479,15 @@ export class EchoAgentLoop extends EventEmitter {
       ? Math.min(1, this.metrics.threadSwitches / (this.metrics.grandCycles * 6 + 1))
       : 0;
 
+    // Tree-polytope structural integrity adds a 5th dimension
+    const structuralIntegrity = this.treePolytopeKernel.computeIntegrity();
+
     this.metrics.autonomyScore =
-      cycleMaturity * 0.3 +
-      goalCompletion * 0.3 +
-      feedbackBalance * 0.2 +
-      threadUtilization * 0.2;
+      cycleMaturity * 0.25 +
+      goalCompletion * 0.25 +
+      feedbackBalance * 0.15 +
+      threadUtilization * 0.15 +
+      structuralIntegrity * 0.20;
   }
 
   /**
@@ -508,6 +530,13 @@ export class EchoAgentLoop extends EventEmitter {
    */
   public getCosmicOrderBridge(): CosmicOrderBridge {
     return this.cosmicOrderBridge;
+  }
+
+  /**
+   * Get tree-polytope kernel
+   */
+  public getTreePolytopeKernel(): TreePolytopeKernel {
+    return this.treePolytopeKernel;
   }
 
   /**
