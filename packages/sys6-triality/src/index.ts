@@ -39,3 +39,6 @@ export * from './integration/index.js';
 
 // Operadic architecture (Sys6 morphisms and wiring diagrams)
 export * from './operadic/index.js';
+
+// Cosmic Order — Campbell's System hierarchy (sys1-6 composition)
+export * from './cosmic-order/index.js';

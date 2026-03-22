@@ -125,3 +125,12 @@ export {
   type ThreadPermutation,
   type TriadConfig,
 } from './echo-agent-loop.js';
+
+// Cosmic Order Bridge - Campbell's System hierarchy (sys1-6 composition)
+export {
+  CosmicOrderBridge,
+  createCosmicOrderBridge,
+  type CosmicOrderBridgeConfig,
+  type CosmicOrderSnapshot,
+  type SystemLevelState,
+} from './cosmic-order-bridge.js';

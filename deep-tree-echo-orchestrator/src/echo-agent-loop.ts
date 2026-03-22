@@ -30,6 +30,12 @@ import {
   type ProactiveLoopConfig,
   type EnvironmentStimulus,
 } from './proactive-loop.js';
+import {
+  CosmicOrderBridge,
+  type CosmicOrderBridgeConfig,
+  type CosmicOrderSnapshot,
+  type SystemLevelState,
+} from './cosmic-order-bridge.js';
 
 const log = getLogger('deep-tree-echo-orchestrator/EchoAgentLoop');
 
@@ -62,6 +68,8 @@ export interface GrandCycleState {
   activeTriad: 'MP1' | 'MP2';
   threadPermutation: ThreadPermutation;
   timestamp: number;
+  /** Cosmic order snapshot — all 6 system levels */
+  cosmicOrder?: CosmicOrderSnapshot;
 }
 
 /**
@@ -90,10 +98,14 @@ export interface EchoAgentLoopConfig {
   enableThreadMultiplexing: boolean;
   /** Enable triad cycling */
   enableTriadCycling: boolean;
+  /** Enable cosmic order sys1-6 composition */
+  enableCosmicOrder: boolean;
   /** Enable telemetry */
   enableTelemetry: boolean;
   /** Proactive loop configuration */
   proactiveConfig?: Partial<ProactiveLoopConfig>;
+  /** Cosmic order bridge configuration */
+  cosmicOrderConfig?: Partial<CosmicOrderBridgeConfig>;
   /** Maximum concurrent threads */
   maxConcurrentThreads: number;
 }
@@ -102,6 +114,7 @@ const DEFAULT_CONFIG: EchoAgentLoopConfig = {
   stepDurationMs: 100,
   enableThreadMultiplexing: true,
   enableTriadCycling: true,
+  enableCosmicOrder: true,
   enableTelemetry: true,
   maxConcurrentThreads: 4,
 };
@@ -149,6 +162,7 @@ const GRAND_CYCLE_LENGTH = 60; // LCM(12, 30)
 export class EchoAgentLoop extends EventEmitter {
   private config: EchoAgentLoopConfig;
   private proactiveLoop: ProactiveLoop;
+  private cosmicOrderBridge: CosmicOrderBridge;
   private running: boolean = false;
   private grandCycleTimer?: ReturnType<typeof setInterval>;
 
@@ -204,9 +218,23 @@ export class EchoAgentLoop extends EventEmitter {
     this.triadMP1 = { ...TRIAD_MP1, currentIndex: 0 };
     this.triadMP2 = { ...TRIAD_MP2, currentIndex: 0 };
 
+    // Initialize cosmic order bridge
+    this.cosmicOrderBridge = new CosmicOrderBridge(this.config.cosmicOrderConfig);
+
     // Wire proactive loop events
     this.proactiveLoop.on('telemetry', (event: any) => {
       this.emit('proactive_event', event);
+    });
+
+    // Wire cosmic order events
+    this.cosmicOrderBridge.on('triadic_resonance', (event: any) => {
+      this.emit('cosmic_resonance', event);
+    });
+    this.cosmicOrderBridge.on('term_transition', (event: any) => {
+      this.emit('cosmic_term_transition', event);
+    });
+    this.cosmicOrderBridge.on('mode_flip', (event: any) => {
+      this.emit('cosmic_mode_flip', event);
     });
   }
 
@@ -223,8 +251,14 @@ export class EchoAgentLoop extends EventEmitter {
     log.info(`Grand cycle: ${GRAND_CYCLE_LENGTH} steps ` +
       `(Dove9: ${DOVE9_CYCLE_LENGTH}, Sys6: ${SYS6_CYCLE_LENGTH})`);
     log.info(`Step duration: ${this.config.stepDurationMs}ms`);
+    log.info(`Cosmic Order: ${this.config.enableCosmicOrder ? 'enabled (sys1-6)' : 'disabled'}`);
 
     this.running = true;
+
+    // Start cosmic order bridge
+    if (this.config.enableCosmicOrder) {
+      this.cosmicOrderBridge.start();
+    }
 
     // Start proactive loop
     await this.proactiveLoop.start();
@@ -250,6 +284,11 @@ export class EchoAgentLoop extends EventEmitter {
     if (this.grandCycleTimer) {
       clearInterval(this.grandCycleTimer);
       this.grandCycleTimer = undefined;
+    }
+
+    // Stop cosmic order bridge
+    if (this.config.enableCosmicOrder) {
+      this.cosmicOrderBridge.stop();
     }
 
     await this.proactiveLoop.stop();
@@ -302,6 +341,12 @@ export class EchoAgentLoop extends EventEmitter {
         step: this.grandCycleState.sys6Step,
         phase: Math.floor(this.grandCycleState.sys6Step / 10) + 1,
       });
+    }
+
+    // Tick cosmic order bridge (advances all 6 system levels)
+    if (this.config.enableCosmicOrder) {
+      const cosmicSnapshot = this.cosmicOrderBridge.tick();
+      this.grandCycleState.cosmicOrder = cosmicSnapshot;
     }
 
     // Determine feed-forward vs feed-back
@@ -456,6 +501,13 @@ export class EchoAgentLoop extends EventEmitter {
    */
   public getProactiveLoop(): ProactiveLoop {
     return this.proactiveLoop;
+  }
+
+  /**
+   * Get cosmic order bridge
+   */
+  public getCosmicOrderBridge(): CosmicOrderBridge {
+    return this.cosmicOrderBridge;
   }
 
   /**
