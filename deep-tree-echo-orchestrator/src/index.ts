@@ -209,6 +209,15 @@ export {
   type StreamTickHandler,
 } from './echobeats.js';
 
+// DeltaChat Autonomy Bridge - Live autonomous operation
+export {
+  DeltaChatAutonomyBridge,
+  type BridgeConfig as DeltaChatBridgeConfig,
+  type IncomingMessage,
+  type BridgeResponse,
+  type BridgeStats,
+} from './deltachat-autonomy-bridge.js';
+
 // Entelechy Integration - Deep cognitive loop
 export {
   EntelechyIntegration,

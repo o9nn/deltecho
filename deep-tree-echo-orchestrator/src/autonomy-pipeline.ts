@@ -29,6 +29,8 @@ import {
   EmbeddingServiceConfig,
   FileSystemStorage,
   FileSystemStorageConfig,
+  CoreSelfEngine,
+  CoreSelfConfig,
 } from 'deep-tree-echo-core';
 import { ProactiveLoop, EnvironmentStimulus, ProactivePhase } from './proactive-loop.js';
 import { CognitiveTickProcessor, CognitivePercept, CognitiveGoal, EpisodicMemory } from './cognitive-tick-processor.js';
@@ -73,6 +75,10 @@ export interface AutonomyPipelineConfig {
   enableEchobeats: boolean;
   /** Echobeats cycle interval (ms) */
   echobeatsCycleInterval: number;
+  /** Core Self Engine configuration */
+  coreSelf?: Partial<CoreSelfConfig>;
+  /** Enable Core Self Engine as fallback inference */
+  enableCoreSelf: boolean;
 }
 
 const DEFAULT_CONFIG: AutonomyPipelineConfig = {
@@ -87,6 +93,7 @@ const DEFAULT_CONFIG: AutonomyPipelineConfig = {
   storagePath: '/tmp/deep-tree-echo/memory',
   enableEchobeats: false,
   echobeatsCycleInterval: 2000,
+  enableCoreSelf: false,
 };
 
 // ─── Echobeats Stream ──────────────────────────────────────────
@@ -138,6 +145,9 @@ export class AutonomyPipeline extends EventEmitter {
   // External dependencies
   private llmService: LLMService | null = null;
   private proactiveLoop: ProactiveLoop | null = null;
+
+  // Core Self Engine (persistent local intelligence)
+  private coreSelfEngine: CoreSelfEngine | null = null;
 
   // Echobeats state
   private echobeatStreams: EchobeatStream[] = [];
@@ -261,7 +271,14 @@ export class AutonomyPipeline extends EventEmitter {
         log.info('✓ Wired into proactive loop (PERCEIVE → REFLECT → PLAN → ACT → INTEGRATE)');
       }
 
-      // 7. Initialize Echobeats concurrent streams
+      // 7. Initialize Core Self Engine (persistent local intelligence)
+      if (this.config.enableCoreSelf) {
+        this.coreSelfEngine = new CoreSelfEngine(this.config.coreSelf);
+        await this.coreSelfEngine.start();
+        log.info(`✓ Core Self Engine initialized (Lucy: ${this.coreSelfEngine.getLucy().isHealthy() ? 'ONLINE' : 'OFFLINE'}, Stage: ${this.coreSelfEngine.getIdentity().getStage()})`);
+      }
+
+      // 8. Initialize Echobeats concurrent streams
       if (this.config.enableEchobeats) {
         this.initializeEchobeats();
         log.info('✓ Echobeats 3-stream concurrent processing initialized');
@@ -276,6 +293,7 @@ export class AutonomyPipeline extends EventEmitter {
       log.info(`  Planning:   ${this.goalPlanner ? 'ON' : 'OFF'}`);
       log.info(`  Execution:  ${this.toolEngine ? 'ON' : 'OFF'}`);
       log.info(`  Memory:     ${this.vectorMemory ? 'ON' : 'OFF'}`);
+      log.info(`  Core Self:  ${this.coreSelfEngine ? 'ON (' + this.coreSelfEngine.getIdentity().getStage() + ')' : 'OFF'}`);
       log.info(`  Echobeats:  ${this.config.enableEchobeats ? 'ON' : 'OFF'}`);
       log.info('═══════════════════════════════════════════════');
 
@@ -299,6 +317,11 @@ export class AutonomyPipeline extends EventEmitter {
     if (this.echobeatTimer) {
       clearInterval(this.echobeatTimer);
       this.echobeatTimer = null;
+    }
+
+    // Stop Core Self Engine
+    if (this.coreSelfEngine) {
+      await this.coreSelfEngine.stop();
     }
 
     // Stop perception handlers
@@ -749,6 +772,49 @@ Produce a concise consolidated memory (2-3 sentences) that preserves the essenti
 
   getVectorMemory(): VectorMemoryStore | null {
     return this.vectorMemory;
+  }
+
+  getCoreSelfEngine(): CoreSelfEngine | null {
+    return this.coreSelfEngine;
+  }
+
+  /**
+   * Process a message through the Core Self Engine (if available).
+   * Falls back to LLMService if Core Self is not enabled.
+   */
+  async processWithCoreSelf(message: string, context?: string): Promise<{
+    content: string;
+    source: string;
+    coherence: number;
+    stage: string;
+  }> {
+    if (this.coreSelfEngine && this.coreSelfEngine.isRunning()) {
+      const response = await this.coreSelfEngine.processMessage(message, context);
+      return {
+        content: response.content,
+        source: response.source,
+        coherence: response.aarState.coherence,
+        stage: response.identity.stage,
+      };
+    }
+
+    // Fallback to LLMService
+    if (this.llmService) {
+      const content = await this.llmService.generateResponse(message, []);
+      return {
+        content,
+        source: 'llm-service',
+        coherence: 0.5,
+        stage: 'unknown',
+      };
+    }
+
+    return {
+      content: '[No inference engine available]',
+      source: 'none',
+      coherence: 0,
+      stage: 'offline',
+    };
   }
 
   // ─── Event Emission ────────────────────────────────────────────

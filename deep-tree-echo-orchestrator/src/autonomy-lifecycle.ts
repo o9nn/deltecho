@@ -27,6 +27,7 @@ import type {
   CognitivePercept,
   SelfImageSnapshot,
 } from './cognitive-tick-processor.js';
+import type { Echobeats } from './echobeats.js';
 
 const log = getLogger('deep-tree-echo-orchestrator/AutonomyLifecycle');
 
@@ -131,6 +132,9 @@ export class AutonomyLifecycleCoordinator extends EventEmitter {
   // Virtual models (the inverted mirror)
   private virtualAgent: VirtualAgentModel;
   private coherenceHistory: number[] = [];
+
+  // Echobeats integration (for inverted mirror energy feedback)
+  private echobeats?: Echobeats;
 
   constructor(
     config: Partial<AutonomyLifecycleConfig> = {},
@@ -371,6 +375,10 @@ export class AutonomyLifecycleCoordinator extends EventEmitter {
    *
    * This is where the magic happens - the agent's self-model
    * influences its perception of the world, and vice versa.
+   *
+   * When Echobeats is connected, the mirror also feeds coherence
+   * back into the energy flow — high coherence amplifies energy,
+   * low coherence dampens it, creating a self-regulating loop.
    */
   private async executeMirroring(cycleId: number): Promise<DevelopmentalCycleResult> {
     const coherence = this.computeCoherence();
@@ -384,6 +392,49 @@ export class AutonomyLifecycleCoordinator extends EventEmitter {
       knownMisalignments: this.identifyMisalignments(),
     };
 
+    // === INVERTED MIRROR → ECHOBEATS ENERGY FEEDBACK ===
+    // The mirror's coherence score modulates the Echobeats energy flow.
+    // High coherence (> 0.7) → amplify energy (streams run hotter)
+    // Low coherence (< 0.4) → dampen energy (streams conserve)
+    // This creates a self-regulating feedback loop:
+    //   coherent self-model → more energy → more action → more percepts
+    //   → richer self-model → higher coherence → ...
+    let energyModulation = 0;
+    if (this.echobeats && this.echobeats.isRunning()) {
+      const telemetry = this.echobeats.getTelemetry();
+      const currentEnergy = telemetry.averageEnergy;
+
+      // Compute energy modulation from coherence
+      if (coherence > 0.7) {
+        // High coherence: amplify by up to 20%
+        energyModulation = (coherence - 0.7) * 0.667; // 0 to 0.2
+      } else if (coherence < 0.4) {
+        // Low coherence: dampen by up to 30%
+        energyModulation = -(0.4 - coherence) * 0.75; // -0.3 to 0
+      }
+
+      // Feed back into Echobeats streams via event
+      this.echobeats.emit('mirror_feedback', {
+        coherence,
+        energyModulation,
+        currentEnergy,
+        targetEnergy: Math.max(0.1, Math.min(1.0, currentEnergy + energyModulation)),
+        drift: 1 - coherence,
+        misalignments: this.virtualAgent.worldView.divergenceMetrics.knownMisalignments,
+      });
+
+      // If System 5 is active, also feed into the tetradic structure
+      if (this.echobeats.isSystem5Active()) {
+        const bundle = this.echobeats.getCurrentBundle();
+        this.emit('mirror:system5_feedback', {
+          cycleId,
+          coherence,
+          activeBundle: bundle?.symmetry ?? 'none',
+          energyModulation,
+        });
+      }
+    }
+
     return {
       cycleNumber: cycleId,
       phase: 'mirroring',
@@ -391,6 +442,8 @@ export class AutonomyLifecycleCoordinator extends EventEmitter {
       stateChanges: {
         estimatedDrift: 1 - coherence,
         misalignments: this.virtualAgent.worldView.divergenceMetrics.knownMisalignments.length,
+        energyModulation,
+        echobeatsFeedback: this.echobeats?.isRunning() ?? false,
       },
       timestamp: Date.now(),
     };
@@ -514,6 +567,35 @@ export class AutonomyLifecycleCoordinator extends EventEmitter {
 
   public isRunning(): boolean {
     return this.running;
+  }
+
+  /**
+   * Wire an Echobeats instance for inverted mirror energy feedback.
+   * The MIRRORING phase will modulate Echobeats energy based on coherence.
+   */
+  public wireEchobeats(echobeats: Echobeats): void {
+    this.echobeats = echobeats;
+    log.info('Echobeats wired to autonomy lifecycle (inverted mirror feedback active)');
+  }
+
+  /**
+   * Get the current inverted mirror state for external monitoring.
+   */
+  public getInvertedMirrorState(): {
+    virtualAgent: VirtualAgentModel;
+    coherence: number;
+    drift: number;
+    echobeatsFeedback: boolean;
+    system5Active: boolean;
+  } {
+    const coherence = this.computeCoherence();
+    return {
+      virtualAgent: { ...this.virtualAgent },
+      coherence,
+      drift: 1 - coherence,
+      echobeatsFeedback: this.echobeats?.isRunning() ?? false,
+      system5Active: this.echobeats?.isSystem5Active() ?? false,
+    };
   }
 
   public getConfig(): AutonomyLifecycleConfig {

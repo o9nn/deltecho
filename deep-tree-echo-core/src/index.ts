@@ -34,6 +34,9 @@ export * from './scientific-genius';
 // Export tree-polytope kernel — structural self-awareness
 export * from './tree-polytope-kernel';
 
+// Export core-self modules — persistent local intelligence
+export * from './core-self';
+
 // Export utility modules
 export * from './utils/logger';
 

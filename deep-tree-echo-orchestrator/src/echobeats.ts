@@ -136,6 +136,15 @@ export class Echobeats extends EventEmitter {
   private cycleNumber = 0;
   private tickHandler: StreamTickHandler | null = null;
 
+  // System 5 tetradic state
+  private system5Active = false;
+  private currentTriad: 'MP1' | 'MP2' = 'MP1';
+  private triadStep = 0;
+  private dyadicEdge = 0;
+  private threadBundles: Array<{ threads: number[]; edges: Array<[number, number]>; symmetry: string }> = [];
+  private telemetryBuffer: Array<{ timestamp: number; step: number; phase: string; energy: number; coherence: number }> = [];
+  private maxTelemetryBuffer = 1000;
+
   // The 12-step phase map (3 streams × 4 phases)
   private readonly PHASE_MAP: StreamPhase[] = [
     'perceive', 'perceive', 'perceive',
@@ -335,6 +344,26 @@ export class Echobeats extends EventEmitter {
     this.emit(`stream_${stream.name}`, tickEvent);
     this.emit(`phase_${phase}`, tickEvent);
 
+    // System 5: advance triad rotation
+    if (this.system5Active) {
+      // Rotate through 6 dyadic edges
+      this.dyadicEdge = (this.globalStep - 1) % 6;
+
+      // Rotate through 4 triadic faces every 3 steps
+      if (cycleStep % 3 === 0) {
+        this.triadStep = (this.triadStep + 1) % 4;
+      }
+
+      // Alternate MP1/MP2 every full cycle
+      if (cycleStep === this.config.stepsPerCycle) {
+        this.currentTriad = this.currentTriad === 'MP1' ? 'MP2' : 'MP1';
+      }
+    }
+
+    // Record telemetry
+    const coherence = stream.energy * (1 - Math.abs(energyFlow - 0.5));
+    this.recordTelemetry(this.globalStep, phase, stream.energy, coherence);
+
     // Execute tick handler
     if (this.tickHandler) {
       try {
@@ -376,6 +405,167 @@ export class Echobeats extends EventEmitter {
     }
 
     return this.shells[0]; // Fallback to global
+  }
+
+  // ─── Accessors ─────────────────────────────────────────────────
+
+  // ─── System 5 Tetradic Extension ──────────────────────────────
+
+  /**
+   * Evolve to System 5 tetradic structure.
+   * Extends from 3 streams to 4 threads with full complementarity:
+   *   - 4 monadic vertices (threads)
+   *   - 6 dyadic edges (pairwise connections)
+   *   - 4 triadic faces (each containing 3 of 4 threads)
+   *   - 1 tetradic cell (the whole)
+   *
+   * Each tensor bundle contains 3 dyadic edges with mutually orthogonal symmetries.
+   */
+  evolveToSystem5(): void {
+    if (this.system5Active) return;
+
+    log.info('Evolving to System 5 tetradic structure...');
+
+    // Add 4th stream (integration/meta-cognition)
+    if (this.streams.length < 4) {
+      this.streams.push({
+        id: 3,
+        name: 'integration',
+        currentPhase: 'act',
+        tickCount: 0,
+        lastTickTime: 0,
+        particularSet: [1, 2, 3, 4],
+        energy: 1.0,
+        state: {},
+      });
+    }
+
+    // Build the 4 tensor bundles (triadic faces)
+    // Each bundle = 3 threads with 3 dyadic edges
+    this.threadBundles = [
+      {
+        threads: [0, 1, 2],  // perception-action-simulation
+        edges: [[0, 1], [0, 2], [1, 2]],
+        symmetry: 'operational',
+      },
+      {
+        threads: [0, 1, 3],  // perception-action-integration
+        edges: [[0, 1], [0, 3], [1, 3]],
+        symmetry: 'executive',
+      },
+      {
+        threads: [0, 2, 3],  // perception-simulation-integration
+        edges: [[0, 2], [0, 3], [2, 3]],
+        symmetry: 'reflective',
+      },
+      {
+        threads: [1, 2, 3],  // action-simulation-integration
+        edges: [[1, 2], [1, 3], [2, 3]],
+        symmetry: 'generative',
+      },
+    ];
+
+    // Add System 5 shell
+    this.shells.push({
+      level: 3,
+      name: 'system5-tetrad',
+      termCount: 9, // OEIS A000081 for N=4
+      parent: 'process',
+      activeStreams: [0, 1, 2, 3],
+    });
+
+    this.system5Active = true;
+    this.config.streamCount = 4;
+
+    log.info('System 5 tetradic structure active:');
+    log.info(`  4 threads: perception, action, simulation, integration`);
+    log.info(`  6 dyadic edges: ${this.PERMUTATIONS.map(p => `(${p[0]},${p[1]})`).join(' ')}`);
+    log.info(`  4 tensor bundles: ${this.threadBundles.map(b => b.symmetry).join(', ')}`);
+
+    this.emit('system5_evolved', {
+      threads: this.streams.map(s => s.name),
+      bundles: this.threadBundles.map(b => b.symmetry),
+    });
+  }
+
+  /**
+   * Get the current active tensor bundle based on the triad rotation.
+   * MP1 and MP2 alternate, each cycling through 4 triadic faces.
+   */
+  getCurrentBundle(): { threads: number[]; edges: Array<[number, number]>; symmetry: string } | null {
+    if (!this.system5Active || this.threadBundles.length === 0) return null;
+    return this.threadBundles[this.triadStep % this.threadBundles.length];
+  }
+
+  isSystem5Active(): boolean {
+    return this.system5Active;
+  }
+
+  getThreadBundles() {
+    return this.threadBundles.map(b => ({ ...b }));
+  }
+
+  // ─── Telemetry ─────────────────────────────────────────────────
+
+  /**
+   * Record a telemetry point for monitoring.
+   * Called automatically on each tick.
+   */
+  private recordTelemetry(step: number, phase: string, energy: number, coherence: number): void {
+    this.telemetryBuffer.push({
+      timestamp: Date.now(),
+      step,
+      phase,
+      energy,
+      coherence,
+    });
+
+    if (this.telemetryBuffer.length > this.maxTelemetryBuffer) {
+      this.telemetryBuffer = this.telemetryBuffer.slice(-this.maxTelemetryBuffer);
+    }
+  }
+
+  /**
+   * Get telemetry data for the TelemetryMonitor.
+   * Returns recent metrics for dashboard display.
+   */
+  getTelemetry(): {
+    recentTicks: Array<{ timestamp: number; step: number; phase: string; energy: number; coherence: number }>;
+    averageEnergy: number;
+    averageCoherence: number;
+    ticksPerSecond: number;
+    system5Active: boolean;
+    currentTriad: string;
+    currentBundle: string | null;
+  } {
+    const recent = this.telemetryBuffer.slice(-100);
+    const avgEnergy = recent.length > 0
+      ? recent.reduce((sum, t) => sum + t.energy, 0) / recent.length
+      : 0;
+    const avgCoherence = recent.length > 0
+      ? recent.reduce((sum, t) => sum + t.coherence, 0) / recent.length
+      : 0;
+
+    // Calculate ticks per second
+    let ticksPerSecond = 0;
+    if (recent.length >= 2) {
+      const timeSpan = recent[recent.length - 1].timestamp - recent[0].timestamp;
+      if (timeSpan > 0) {
+        ticksPerSecond = (recent.length / timeSpan) * 1000;
+      }
+    }
+
+    const bundle = this.getCurrentBundle();
+
+    return {
+      recentTicks: recent,
+      averageEnergy: avgEnergy,
+      averageCoherence: avgCoherence,
+      ticksPerSecond,
+      system5Active: this.system5Active,
+      currentTriad: this.currentTriad,
+      currentBundle: bundle?.symmetry ?? null,
+    };
   }
 
   // ─── Accessors ─────────────────────────────────────────────────
