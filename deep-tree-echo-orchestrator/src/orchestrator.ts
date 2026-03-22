@@ -21,6 +21,7 @@ import {
 } from './double-membrane-integration.js';
 import { Sys6OrchestratorBridge, Sys6BridgeConfig } from './sys6-bridge/Sys6OrchestratorBridge.js';
 import { ProactiveLoop, ProactiveLoopConfig } from './proactive-loop.js';
+import { AutonomyPipeline, AutonomyPipelineConfig } from './autonomy-pipeline.js';
 
 const log = getLogger('deep-tree-echo-orchestrator/Orchestrator');
 
@@ -105,6 +106,10 @@ export interface OrchestratorConfig {
   enableProactiveLoop: boolean;
   /** Proactive loop configuration */
   proactiveLoop?: Partial<ProactiveLoopConfig>;
+  /** Enable Level 4 autonomy pipeline (Perception → Cognition → Planning → Execution → Memory) */
+  enableAutonomyPipeline: boolean;
+  /** Autonomy pipeline configuration */
+  autonomyPipeline?: Partial<AutonomyPipelineConfig>;
 }
 
 const DEFAULT_CONFIG: OrchestratorConfig = {
@@ -121,6 +126,7 @@ const DEFAULT_CONFIG: OrchestratorConfig = {
   sys6ComplexityThreshold: 0.4,
   membraneComplexityThreshold: 0.7,
   enableProactiveLoop: true,
+  enableAutonomyPipeline: true,
 };
 
 /**
@@ -137,6 +143,7 @@ export class Orchestrator {
   private sys6Bridge?: Sys6OrchestratorBridge;
   private doubleMembraneIntegration?: DoubleMembraneIntegration;
   private proactiveLoop?: ProactiveLoop;
+  private autonomyPipeline?: AutonomyPipeline;
   private running: boolean = false;
 
   // Cognitive services for processing messages
@@ -280,6 +287,20 @@ export class Orchestrator {
 
         await this.proactiveLoop.start();
         log.info('Proactive autonomous loop started with self-initiated cognitive cycles');
+      }
+
+      // Initialize Level 4 Autonomy Pipeline (Perception → Cognition → Planning → Execution → Memory)
+      if (this.config.enableAutonomyPipeline) {
+        this.autonomyPipeline = new AutonomyPipeline(this.config.autonomyPipeline);
+
+        // Inject shared dependencies
+        this.autonomyPipeline.setLLMService(this.llmService);
+        if (this.proactiveLoop) {
+          this.autonomyPipeline.setProactiveLoop(this.proactiveLoop);
+        }
+
+        await this.autonomyPipeline.start();
+        log.info('Level 4 Autonomy Pipeline active (Perception → Cognition → Planning → Execution → Memory)');
       }
 
       this.running = true;
@@ -866,6 +887,10 @@ ${response.body}`;
     log.info('Stopping orchestrator services...');
 
     // Stop all services in reverse order (newest first)
+    if (this.autonomyPipeline) {
+      await this.autonomyPipeline.stop();
+    }
+
     if (this.proactiveLoop) {
       await this.proactiveLoop.stop();
     }
@@ -1028,6 +1053,13 @@ ${response.body}`;
    */
   public getProactiveLoop(): ProactiveLoop | undefined {
     return this.proactiveLoop;
+  }
+
+  /**
+   * Get Autonomy Pipeline for direct access
+   */
+  public getAutonomyPipeline(): AutonomyPipeline | undefined {
+    return this.autonomyPipeline;
   }
 
   /**

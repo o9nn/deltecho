@@ -58,6 +58,26 @@ function buildConfig(): Partial<OrchestratorConfig> {
       enabled: envBool('DEEP_TREE_ECHO_ENABLE_DOVE9', true),
       enableTriadicLoop: envBool('DEEP_TREE_ECHO_ENABLE_TRIADIC', true),
     },
+    enableAutonomyPipeline: envBool('DEEP_TREE_ECHO_ENABLE_AUTONOMY', true),
+    autonomyPipeline: {
+      enablePerception: envBool('DEEP_TREE_ECHO_ENABLE_PERCEPTION', true),
+      enablePlanning: envBool('DEEP_TREE_ECHO_ENABLE_PLANNING', true),
+      enableExecution: envBool('DEEP_TREE_ECHO_ENABLE_EXECUTION', true),
+      enableVectorMemory: envBool('DEEP_TREE_ECHO_ENABLE_VECTOR_MEMORY', true),
+      enableConsolidation: envBool('DEEP_TREE_ECHO_ENABLE_CONSOLIDATION', true),
+      enableEchobeats: envBool('DEEP_TREE_ECHO_ENABLE_ECHOBEATS', false),
+      storagePath: process.env.DEEP_TREE_ECHO_STORAGE_PATH || '/tmp/deep-tree-echo/memory',
+      planner: {
+        apiKey: process.env.DEEP_TREE_ECHO_LLM_API_KEY || process.env.OPENAI_API_KEY || '',
+        apiEndpoint: process.env.DEEP_TREE_ECHO_LLM_ENDPOINT || 'https://api.openai.com/v1/chat/completions',
+        model: process.env.DEEP_TREE_ECHO_LLM_MODEL || 'gpt-4o-mini',
+        provider: (process.env.DEEP_TREE_ECHO_LLM_PROVIDER as 'openai' | 'anthropic') || 'openai',
+      },
+      embedding: {
+        provider: (process.env.DEEP_TREE_ECHO_EMBEDDING_PROVIDER as 'openai' | 'ollama' | 'local') || 'local',
+        apiKey: process.env.DEEP_TREE_ECHO_EMBEDDING_API_KEY || process.env.OPENAI_API_KEY || '',
+      },
+    },
   };
 }
 
@@ -97,6 +117,9 @@ class Daemon {
     );
     log.info(
       `  - Dove9 Cognitive OS: ${this.orchestrator.getDove9Integration() ? 'Active' : 'Inactive'}`
+    );
+    log.info(
+      `  - Autonomy Pipeline: ${this.orchestrator.getAutonomyPipeline()?.isRunning() ? 'Active' : 'Inactive'}`
     );
     log.info('');
   }

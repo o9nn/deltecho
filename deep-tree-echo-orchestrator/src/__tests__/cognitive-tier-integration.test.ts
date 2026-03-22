@@ -140,6 +140,21 @@ jest.unstable_mockModule('../proactive-loop.js', () => ({
   })),
 }));
 
+jest.unstable_mockModule('../autonomy-pipeline.js', () => ({
+  AutonomyPipeline: jest.fn().mockImplementation(() => ({
+    start: jest.fn<() => Promise<void>>().mockResolvedValue(undefined),
+    stop: jest.fn<() => Promise<void>>().mockResolvedValue(undefined),
+    isRunning: jest.fn().mockReturnValue(false),
+    setLLMService: jest.fn(),
+    setProactiveLoop: jest.fn(),
+    getStats: jest.fn().mockReturnValue({
+      perceptsReceived: 0, planningCycles: 0, toolsExecuted: 0,
+      memoriesConsolidated: 0, echobeatTicks: 0, errors: 0,
+    }),
+    on: jest.fn(),
+  })),
+}));
+
 type Orchestrator = import('../orchestrator.js').Orchestrator;
 type CognitiveTierMode = import('../orchestrator.js').CognitiveTierMode;
 

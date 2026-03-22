@@ -397,6 +397,19 @@ export class VectorMemoryStore {
   /**
    * Force immediate save (call before shutdown)
    */
+  async destroy(): Promise<void> {
+    if (this.saveTimer) {
+      clearTimeout(this.saveTimer);
+      this.saveTimer = null;
+    }
+    await this.flush();
+    this.memories = [];
+    this.reflections = [];
+    this.vectorIndex.clear();
+    this.enabled = false;
+    log.info('VectorMemoryStore destroyed');
+  }
+
   async flush(): Promise<void> {
     if (this.saveTimer) {
       clearTimeout(this.saveTimer);
@@ -407,13 +420,5 @@ export class VectorMemoryStore {
     }
   }
 
-  /**
-   * Clean up timers
-   */
-  destroy(): void {
-    if (this.saveTimer) {
-      clearTimeout(this.saveTimer);
-      this.saveTimer = null;
-    }
-  }
+  // destroy() is defined above flush()
 }

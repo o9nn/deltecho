@@ -191,6 +191,24 @@ export {
   type PerceptCallback,
 } from './perception/index.js';
 
+// Autonomy Pipeline - End-to-end Level 4 wiring (Perception → Cognition → Planning → Execution → Memory)
+export {
+  AutonomyPipeline,
+  type AutonomyPipelineConfig,
+  type AutonomyPipelineEvent,
+} from './autonomy-pipeline.js';
+
+// Echobeats - 3-stream concurrent cognitive loop (System 4/5 architecture)
+export {
+  Echobeats,
+  type EchobeatsConfig,
+  type CognitiveStream,
+  type NestedShell,
+  type EchobeatsTick,
+  type StreamPhase,
+  type StreamTickHandler,
+} from './echobeats.js';
+
 // Entelechy Integration - Deep cognitive loop
 export {
   EntelechyIntegration,
