@@ -169,6 +169,28 @@ export {
   type DevelopmentalCycleResult,
 } from './autonomy-lifecycle.js';
 
+// Tool Execution Engine - Real action execution (autonomy enablement)
+export {
+  ToolExecutionEngine,
+  type ToolExecutionEngineConfig,
+  type ToolDefinition,
+  type ToolParameter,
+  type ToolCall,
+  type ToolResult as ToolExecutionResult,
+  type ToolType,
+  LLMGoalPlanner,
+  type LLMGoalPlannerConfig,
+  type PlanningContext,
+  type PlanningResult,
+} from './tools/index.js';
+
+// Perception Handlers - Real proactive environmental scanning (autonomy enablement)
+export {
+  PerceptionHandlers,
+  type PerceptionHandlerConfig,
+  type PerceptCallback,
+} from './perception/index.js';
+
 // Entelechy Integration - Deep cognitive loop
 export {
   EntelechyIntegration,
