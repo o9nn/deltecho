@@ -13,6 +13,7 @@
 
 import { EventEmitter } from 'events';
 import { getLogger } from 'deep-tree-echo-core';
+import { ToolExecutionEngine } from '../tools/ToolExecutionEngine.js';
 
 const log = getLogger('deep-tree-echo-orchestrator/AgentCoordinator');
 
@@ -509,8 +510,20 @@ export class AgentCoordinator extends EventEmitter {
     return bestAgent;
   }
 
+  /** Optional tool execution engine for real task delegation */
+  private toolEngine?: ToolExecutionEngine;
+
   /**
-   * Delegate task to agent
+   * Set the tool execution engine for real task delegation
+   */
+  public setToolEngine(engine: ToolExecutionEngine): void {
+    this.toolEngine = engine;
+    log.info('ToolExecutionEngine connected — agent delegation is now real');
+  }
+
+  /**
+   * Delegate task to agent using ToolExecutionEngine when available,
+   * falling back to structural delegation when no engine is set.
    */
   private async delegateToAgent(agent: Agent, task: Task): Promise<TaskResult> {
     const startTime = Date.now();
@@ -523,16 +536,39 @@ export class AgentCoordinator extends EventEmitter {
       timestamp: startTime,
     });
 
-    // Simulate processing based on task type
-    await new Promise((resolve) => setTimeout(resolve, 100));
+    let output: Record<string, unknown>;
 
-    // Generate result based on task type
-    const output: Record<string, unknown> = {
-      agentId: agent.id,
-      taskType: task.type,
-      processedAt: Date.now(),
-      result: `Processed by ${agent.name}`,
-    };
+    if (this.toolEngine) {
+      // Real delegation via ToolExecutionEngine
+      try {
+        const toolName = this.mapTaskTypeToTool(task.type);
+        const toolResult = await this.toolEngine.execute({
+          id: `${task.id}-${Date.now()}`,
+          toolName,
+          arguments: {
+            taskId: task.id,
+            agentId: agent.id,
+            ...task.input,
+            description: task.description,
+          },
+          timestamp: Date.now(),
+        });
+        output = {
+          agentId: agent.id,
+          taskType: task.type,
+          processedAt: Date.now(),
+          result: toolResult.output,
+          toolUsed: toolName,
+          executionReal: true,
+        };
+      } catch (error) {
+        log.warn(`Tool execution failed for task ${task.id}, using structural fallback:`, error);
+        output = this.structuralDelegation(agent, task);
+      }
+    } else {
+      // Structural delegation (no tool engine available)
+      output = this.structuralDelegation(agent, task);
+    }
 
     return {
       taskId: task.id,
@@ -541,6 +577,37 @@ export class AgentCoordinator extends EventEmitter {
       output,
       duration: Date.now() - startTime,
     };
+  }
+
+  /**
+   * Structural delegation fallback — processes task based on agent capabilities
+   * without external tool execution.
+   */
+  private structuralDelegation(agent: Agent, task: Task): Record<string, unknown> {
+    const capabilities = agent.capabilities.map(c => c.name);
+    return {
+      agentId: agent.id,
+      taskType: task.type,
+      processedAt: Date.now(),
+      result: `Processed by ${agent.name} (structural)`,
+      capabilities,
+      executionReal: false,
+    };
+  }
+
+  /**
+   * Map task type to appropriate tool name
+   */
+  private mapTaskTypeToTool(taskType: string): string {
+    const toolMap: Record<string, string> = {
+      analysis: 'shell',
+      research: 'http',
+      code: 'shell',
+      file: 'filesystem',
+      communication: 'http',
+      planning: 'shell',
+    };
+    return toolMap[taskType] || 'shell';
   }
 
   /**

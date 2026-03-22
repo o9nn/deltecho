@@ -86,6 +86,11 @@ jobs:
           echo "Verifying cognitive-tick-processor, autonomy-lifecycle, and mail-security tests..."
           pnpm --filter deep-tree-echo-orchestrator test -- --forceExit --no-coverage --testPathPattern="(cognitive-tick-processor|autonomy-lifecycle|mail-security)"
 
+      - name: Verify Dove9 conversational bridge tests
+        run: |
+          echo "Verifying dove9-conversational-bridge, orchestrator-echoagentloop, and agent-coordinator-toolengine tests..."
+          pnpm --filter deep-tree-echo-orchestrator test -- --forceExit --no-coverage --testPathPattern="(dove9-conversational-bridge|orchestrator-echoagentloop-integration|agent-coordinator-toolengine)"
+
       - name: Build all packages
         run: pnpm run build
 

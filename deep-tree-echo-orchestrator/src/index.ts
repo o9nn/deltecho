@@ -69,6 +69,17 @@ export {
   type Dove9Response,
 } from './dove9-integration.js';
 
+// Dove9 Conversational Bridge - "Everything is a chatbot" paradigm
+export {
+  Dove9ConversationalBridge,
+  COGNITIVE_MAILBOXES,
+  type ConversationalMessage,
+  type ConversationalProcess,
+  type CognitiveMailbox,
+  type Dove9ConversationalBridgeConfig,
+  type Dove9BridgeEvent,
+} from './dove9-conversational-bridge.js';
+
 // Sys6 Bridge - 30-step cognitive cycle integration
 export {
   Sys6OrchestratorBridge,

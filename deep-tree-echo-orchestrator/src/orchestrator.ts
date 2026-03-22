@@ -23,6 +23,7 @@ import { Sys6OrchestratorBridge, Sys6BridgeConfig } from './sys6-bridge/Sys6Orch
 import { ProactiveLoop, ProactiveLoopConfig } from './proactive-loop.js';
 import { AutonomyPipeline, AutonomyPipelineConfig } from './autonomy-pipeline.js';
 import { DeltaChatAutonomyBridge, BridgeConfig as AutonomyBridgeConfig } from './deltachat-autonomy-bridge.js';
+import { EchoAgentLoop, type EchoAgentLoopConfig } from './echo-agent-loop.js';
 
 const log = getLogger('deep-tree-echo-orchestrator/Orchestrator');
 
@@ -115,6 +116,10 @@ export interface OrchestratorConfig {
   enableCoreSelf: boolean;
   /** Autonomy bridge configuration */
   autonomyBridge?: Partial<AutonomyBridgeConfig>;
+  /** Enable unified EchoAgentLoop (grand cycle cognitive event loop) */
+  enableEchoAgentLoop: boolean;
+  /** EchoAgentLoop configuration */
+  echoAgentLoop?: Partial<EchoAgentLoopConfig>;
 }
 
 const DEFAULT_CONFIG: OrchestratorConfig = {
@@ -133,6 +138,7 @@ const DEFAULT_CONFIG: OrchestratorConfig = {
   enableProactiveLoop: true,
   enableAutonomyPipeline: true,
   enableCoreSelf: true,
+  enableEchoAgentLoop: true,
 };
 
 /**
@@ -151,6 +157,7 @@ export class Orchestrator {
   private proactiveLoop?: ProactiveLoop;
   private autonomyPipeline?: AutonomyPipeline;
   private autonomyBridge?: DeltaChatAutonomyBridge;
+  private echoAgentLoop?: EchoAgentLoop;
   private running: boolean = false;
 
   // Cognitive services for processing messages
@@ -321,6 +328,32 @@ export class Orchestrator {
           );
           log.info('DeltaChat Autonomy Bridge active (CoreSelf → Echobeats → Live)');
         }
+      }
+
+      // Initialize unified EchoAgentLoop (grand cycle cognitive event loop)
+      if (this.config.enableEchoAgentLoop) {
+        this.echoAgentLoop = new EchoAgentLoop({
+          stepDurationMs: 100,
+          enableThreadMultiplexing: true,
+          enableTriadCycling: true,
+          enableCosmicOrder: true,
+          enableTelemetry: true,
+          enableCognitiveProcessing: true,
+          maxConcurrentThreads: 4,
+          ...this.config.echoAgentLoop,
+        });
+
+        // Forward EchoAgentLoop events for telemetry
+        this.echoAgentLoop.on('grand_cycle_complete', (data) => {
+          log.info(`Grand cycle #${data.cycleNumber} complete — autonomy: ${data.metrics.autonomyScore.toFixed(2)}`);
+        });
+
+        this.echoAgentLoop.on('dove9_sync', (data) => {
+          log.debug(`Dove9 sync at step ${data.step}, triad ${data.triad}`);
+        });
+
+        await this.echoAgentLoop.start();
+        log.info('EchoAgentLoop started — 60-step grand cycle (Dove9×12 + Sys6×30) with cognitive processing');
       }
 
       this.running = true;
@@ -935,6 +968,10 @@ ${response.body}`;
     log.info('Stopping orchestrator services...');
 
     // Stop all services in reverse order (newest first)
+    if (this.echoAgentLoop) {
+      await this.echoAgentLoop.stop();
+    }
+
     this.autonomyBridge = undefined; // Bridge is stateless, just clear reference
 
     if (this.autonomyPipeline) {
@@ -1120,6 +1157,13 @@ ${response.body}`;
   }
 
   /**
+   * Get EchoAgentLoop for direct access
+   */
+  public getEchoAgentLoop(): EchoAgentLoop | undefined {
+    return this.echoAgentLoop;
+  }
+
+  /**
    * Get current cognitive tier mode
    */
   public getCognitiveTierMode(): CognitiveTierMode {
@@ -1149,6 +1193,7 @@ ${response.body}`;
     sys6: { running: boolean; cycleNumber?: number; currentStep?: number } | null;
     doubleMembrane: { running: boolean; identityEnergy?: number } | null;
     dove9: { running: boolean } | null;
+    echoAgentLoop: { running: boolean; grandCycles?: number; autonomyScore?: number; totalSteps?: number } | null;
     stats: {
       totalMessages: number;
       basicTierMessages: number;
@@ -1158,6 +1203,7 @@ ${response.body}`;
     };
   } {
     const sys6State = this.sys6Bridge?.getState();
+    const echoMetrics = this.echoAgentLoop?.getMetrics();
     return {
       tierMode: this.config.cognitiveTierMode,
       sys6: this.sys6Bridge
@@ -1176,6 +1222,14 @@ ${response.body}`;
       dove9: this.dove9Integration
         ? {
             running: this.dove9Integration.getCognitiveState()?.running || false,
+          }
+        : null,
+      echoAgentLoop: this.echoAgentLoop
+        ? {
+            running: true,
+            grandCycles: echoMetrics?.grandCycles,
+            autonomyScore: echoMetrics?.autonomyScore,
+            totalSteps: echoMetrics?.totalSteps,
           }
         : null,
       stats: { ...this.processingStats },

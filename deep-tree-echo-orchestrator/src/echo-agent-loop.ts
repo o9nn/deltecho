@@ -48,6 +48,10 @@ import {
   type CognitivePercept,
   type CognitiveGoal,
 } from './cognitive-tick-processor.js';
+import {
+  Dove9ConversationalBridge,
+  type Dove9ConversationalBridgeConfig,
+} from './dove9-conversational-bridge.js';
 
 const log = getLogger('deep-tree-echo-orchestrator/EchoAgentLoop');
 
@@ -130,12 +134,16 @@ export interface EchoAgentLoopConfig {
   enableTelemetry: boolean;
   /** Enable cognitive tick processing (real cognitive work per tick) */
   enableCognitiveProcessing: boolean;
+  /** Enable Dove9 conversational bridge ("Everything is a chatbot") */
+  enableConversationalBridge: boolean;
   /** Proactive loop configuration */
   proactiveConfig?: Partial<ProactiveLoopConfig>;
   /** Cosmic order bridge configuration */
   cosmicOrderConfig?: Partial<CosmicOrderBridgeConfig>;
   /** Cognitive tick processor configuration */
   cognitiveConfig?: Partial<CognitiveTickProcessorConfig>;
+  /** Dove9 conversational bridge configuration */
+  conversationalBridgeConfig?: Partial<Dove9ConversationalBridgeConfig>;
   /** Maximum concurrent threads */
   maxConcurrentThreads: number;
 }
@@ -147,6 +155,7 @@ const DEFAULT_CONFIG: EchoAgentLoopConfig = {
   enableCosmicOrder: true,
   enableTelemetry: true,
   enableCognitiveProcessing: true,
+  enableConversationalBridge: true,
   maxConcurrentThreads: 4,
 };
 
@@ -199,6 +208,7 @@ export class EchoAgentLoop extends EventEmitter {
   private cosmicOrderBridge: CosmicOrderBridge;
   private treePolytopeKernel: TreePolytopeKernel;
   private cognitiveProcessor?: CognitiveTickProcessor;
+  private conversationalBridge?: Dove9ConversationalBridge;
   private running: boolean = false;
   private grandCycleTimer?: ReturnType<typeof setInterval>;
 
@@ -229,6 +239,14 @@ export class EchoAgentLoop extends EventEmitter {
     if (this.config.enableCognitiveProcessing) {
       this.cognitiveProcessor = new CognitiveTickProcessor(this.config.cognitiveConfig);
       this.wireCognitiveProcessorEvents();
+    }
+
+    // Initialize Dove9 conversational bridge
+    if (this.config.enableConversationalBridge) {
+      this.conversationalBridge = new Dove9ConversationalBridge(
+        this.config.conversationalBridgeConfig
+      );
+      this.wireConversationalBridgeEvents();
     }
 
     // Initialize grand cycle state
@@ -335,6 +353,17 @@ export class EchoAgentLoop extends EventEmitter {
   }
 
   /**
+   * Wire conversational bridge events to loop metrics
+   */
+  private wireConversationalBridgeEvents(): void {
+    if (!this.conversationalBridge) return;
+
+    this.conversationalBridge.on('bridge_event', (event: any) => {
+      this.emit('conversational_event', event);
+    });
+  }
+
+  /**
    * Start the echo agent loop
    */
   public async start(): Promise<void> {
@@ -359,6 +388,11 @@ export class EchoAgentLoop extends EventEmitter {
 
     // Start proactive loop
     await this.proactiveLoop.start();
+
+    // Start conversational bridge
+    if (this.conversationalBridge) {
+      await this.conversationalBridge.start();
+    }
 
     // Start grand cycle timer
     this.grandCycleTimer = setInterval(() => {
@@ -386,6 +420,10 @@ export class EchoAgentLoop extends EventEmitter {
     // Stop cosmic order bridge
     if (this.config.enableCosmicOrder) {
       this.cosmicOrderBridge.stop();
+    }
+
+    if (this.conversationalBridge) {
+      await this.conversationalBridge.stop();
     }
 
     await this.proactiveLoop.stop();
@@ -690,6 +728,13 @@ export class EchoAgentLoop extends EventEmitter {
    */
   public getTreePolytopeKernel(): TreePolytopeKernel {
     return this.treePolytopeKernel;
+  }
+
+  /**
+   * Get conversational bridge
+   */
+  public getConversationalBridge(): Dove9ConversationalBridge | undefined {
+    return this.conversationalBridge;
   }
 
   /**
