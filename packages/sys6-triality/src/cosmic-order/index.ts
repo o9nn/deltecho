@@ -52,3 +52,21 @@ export {
   type SelfSimilarity,
   type SGramDefinition,
 } from './sgram-sequences.js';
+export {
+  multiplicativeOrbit,
+  orbitRepresentative,
+  allOrbits,
+  buildSGramRow,
+  buildSimpleSequence,
+  classificationCounts,
+  BLOCK_VALUES,
+  BLOCK_CLASSIFICATIONS,
+  buildSGramTable,
+  buildAllSGramTables,
+  verifySGramTable,
+  type SGramRow,
+  type SimpleSequence,
+  type TermClass,
+  type BlockTerm,
+  type SGramTable,
+} from './sgram-table.js';
