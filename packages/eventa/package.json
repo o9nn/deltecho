@@ -1,0 +1,44 @@
+{
+  "name": "@deltecho/eventa",
+  "version": "1.0.0",
+  "description": "Type-safe event-driven toolbox - Events are all you need",
+  "type": "module",
+  "main": "dist/index.js",
+  "types": "dist/index.d.ts",
+  "exports": {
+    ".": {
+      "import": "./dist/index.js",
+      "types": "./dist/index.d.ts"
+    }
+  },
+  "scripts": {
+    "build": "tsc",
+    "clean": "rm -rf dist tsconfig.tsbuildinfo",
+    "test": "node --experimental-vm-modules node_modules/jest/bin/jest.js --coverage",
+    "check:types": "tsc --noEmit"
+  },
+  "keywords": ["events", "ipc", "rpc", "type-safe", "deep-tree-echo"],
+  "author": "Deep Tree Echo",
+  "license": "MIT",
+  "devDependencies": {
+    "@types/jest": "^29.5.14",
+    "@types/node": "^20.19.27",
+    "jest": "^29.7.0",
+    "ts-jest": "^29.4.6",
+    "typescript": "^5.9.3"
+  },
+  "engines": {
+    "node": ">=20.0.0"
+  },
+  "jest": {
+    "preset": "ts-jest/presets/default-esm",
+    "testEnvironment": "node",
+    "extensionsToTreatAsEsm": [".ts"],
+    "moduleNameMapper": {
+      "^(\\.{1,2}/.*)\\.js$": "$1"
+    },
+    "transform": {
+      "^.+\\.tsx?$": ["ts-jest", { "useESM": true }]
+    }
+  }
+}

@@ -8,10 +8,9 @@
  */
 
 import { describe, it, expect, beforeEach, afterEach, jest } from '@jest/globals';
-import { Orchestrator, type CognitiveTierMode } from '../orchestrator.js';
 
 // Mock the external dependencies
-jest.mock('deep-tree-echo-core', () => ({
+jest.unstable_mockModule('deep-tree-echo-core', () => ({
   getLogger: () => ({
     info: jest.fn(),
     warn: jest.fn(),
@@ -19,7 +18,7 @@ jest.mock('deep-tree-echo-core', () => ({
     debug: jest.fn(),
   }),
   LLMService: jest.fn().mockImplementation(() => ({
-    generateFullParallelResponse: jest.fn().mockResolvedValue({
+    generateFullParallelResponse: jest.fn<() => Promise<any>>().mockResolvedValue({
       integratedResponse: 'Mock response from LLM',
     }),
     setConfig: jest.fn(),
@@ -41,11 +40,11 @@ jest.mock('deep-tree-echo-core', () => ({
 }));
 
 // Mock Sys6 Bridge
-jest.mock('../sys6-bridge/Sys6OrchestratorBridge.js', () => ({
+jest.unstable_mockModule('../sys6-bridge/Sys6OrchestratorBridge.js', () => ({
   Sys6OrchestratorBridge: jest.fn().mockImplementation(() => ({
-    start: jest.fn().mockResolvedValue(undefined),
-    stop: jest.fn().mockResolvedValue(undefined),
-    processMessage: jest.fn().mockResolvedValue('Mock Sys6 response'),
+    start: jest.fn<() => Promise<void>>().mockResolvedValue(undefined),
+    stop: jest.fn<() => Promise<void>>().mockResolvedValue(undefined),
+    processMessage: jest.fn<() => Promise<string>>().mockResolvedValue('Mock Sys6 response'),
     getState: jest.fn().mockReturnValue({
       running: true,
       cycleNumber: 5,
@@ -60,12 +59,12 @@ jest.mock('../sys6-bridge/Sys6OrchestratorBridge.js', () => ({
 }));
 
 // Mock Double Membrane Integration
-jest.mock('../double-membrane-integration.js', () => ({
+jest.unstable_mockModule('../double-membrane-integration.js', () => ({
   DoubleMembraneIntegration: jest.fn().mockImplementation(() => ({
-    start: jest.fn().mockResolvedValue(undefined),
-    stop: jest.fn().mockResolvedValue(undefined),
+    start: jest.fn<() => Promise<void>>().mockResolvedValue(undefined),
+    stop: jest.fn<() => Promise<void>>().mockResolvedValue(undefined),
     isRunning: jest.fn().mockReturnValue(true),
-    chat: jest.fn().mockResolvedValue('Mock Membrane response'),
+    chat: jest.fn<() => Promise<string>>().mockResolvedValue('Mock Membrane response'),
     getStatus: jest.fn().mockReturnValue({
       running: true,
       identityEnergy: 0.85,
@@ -80,60 +79,79 @@ jest.mock('../double-membrane-integration.js', () => ({
 }));
 
 // Mock other dependencies
-jest.mock('../deltachat-interface/index.js', () => ({
+jest.unstable_mockModule('../deltachat-interface/index.js', () => ({
   DeltaChatInterface: jest.fn().mockImplementation(() => ({
-    connect: jest.fn().mockResolvedValue(undefined),
-    disconnect: jest.fn().mockResolvedValue(undefined),
+    connect: jest.fn<() => Promise<void>>().mockResolvedValue(undefined),
+    disconnect: jest.fn<() => Promise<void>>().mockResolvedValue(undefined),
     isConnected: jest.fn().mockReturnValue(false),
     on: jest.fn(),
   })),
 }));
 
-jest.mock('../dovecot-interface/index.js', () => ({
+jest.unstable_mockModule('../dovecot-interface/index.js', () => ({
   DovecotInterface: jest.fn().mockImplementation(() => ({
-    start: jest.fn().mockResolvedValue(undefined),
-    stop: jest.fn().mockResolvedValue(undefined),
+    start: jest.fn<() => Promise<void>>().mockResolvedValue(undefined),
+    stop: jest.fn<() => Promise<void>>().mockResolvedValue(undefined),
     isRunning: jest.fn().mockReturnValue(false),
     on: jest.fn(),
   })),
 }));
 
-jest.mock('../ipc/server.js', () => ({
+jest.unstable_mockModule('../ipc/server.js', () => ({
   IPCServer: jest.fn().mockImplementation(() => ({
-    start: jest.fn().mockResolvedValue(undefined),
-    stop: jest.fn().mockResolvedValue(undefined),
+    start: jest.fn<() => Promise<void>>().mockResolvedValue(undefined),
+    stop: jest.fn<() => Promise<void>>().mockResolvedValue(undefined),
   })),
 }));
 
-jest.mock('../scheduler/task-scheduler.js', () => ({
+jest.unstable_mockModule('../scheduler/task-scheduler.js', () => ({
   TaskScheduler: jest.fn().mockImplementation(() => ({
-    start: jest.fn().mockResolvedValue(undefined),
-    stop: jest.fn().mockResolvedValue(undefined),
+    start: jest.fn<() => Promise<void>>().mockResolvedValue(undefined),
+    stop: jest.fn<() => Promise<void>>().mockResolvedValue(undefined),
   })),
 }));
 
-jest.mock('../webhooks/webhook-server.js', () => ({
+jest.unstable_mockModule('../webhooks/webhook-server.js', () => ({
   WebhookServer: jest.fn().mockImplementation(() => ({
-    start: jest.fn().mockResolvedValue(undefined),
-    stop: jest.fn().mockResolvedValue(undefined),
+    start: jest.fn<() => Promise<void>>().mockResolvedValue(undefined),
+    stop: jest.fn<() => Promise<void>>().mockResolvedValue(undefined),
   })),
 }));
 
-jest.mock('../dove9-integration.js', () => ({
+jest.unstable_mockModule('../dove9-integration.js', () => ({
   Dove9Integration: jest.fn().mockImplementation(() => ({
-    initialize: jest.fn().mockResolvedValue(undefined),
-    start: jest.fn().mockResolvedValue(undefined),
-    stop: jest.fn().mockResolvedValue(undefined),
+    initialize: jest.fn<() => Promise<void>>().mockResolvedValue(undefined),
+    start: jest.fn<() => Promise<void>>().mockResolvedValue(undefined),
+    stop: jest.fn<() => Promise<void>>().mockResolvedValue(undefined),
     onResponse: jest.fn(),
     getCognitiveState: jest.fn().mockReturnValue({ running: true }),
   })),
 }));
 
-describe('Cognitive Tier Integration', () => {
-  let orchestrator: Orchestrator;
+jest.unstable_mockModule('../proactive-loop.js', () => ({
+  ProactiveLoop: jest.fn().mockImplementation(() => ({
+    start: jest.fn<() => Promise<void>>().mockResolvedValue(undefined),
+    stop: jest.fn<() => Promise<void>>().mockResolvedValue(undefined),
+    registerPerceptionHandler: jest.fn(),
+    registerActionHandler: jest.fn(),
+    injectStimulus: jest.fn(),
+    getState: jest.fn().mockReturnValue({ running: true, totalCycles: 0 }),
+    on: jest.fn(),
+  })),
+}));
 
-  beforeEach(() => {
+type Orchestrator = import('../orchestrator.js').Orchestrator;
+type CognitiveTierMode = import('../orchestrator.js').CognitiveTierMode;
+
+let OrchestratorClass: typeof import('../orchestrator.js').Orchestrator;
+
+describe('Cognitive Tier Integration', () => {
+  let orchestrator: InstanceType<typeof OrchestratorClass>;
+
+  beforeEach(async () => {
     jest.clearAllMocks();
+    const mod = await import('../orchestrator.js');
+    OrchestratorClass = mod.Orchestrator;
   });
 
   afterEach(async () => {
@@ -144,17 +162,17 @@ describe('Cognitive Tier Integration', () => {
 
   describe('Orchestrator Configuration', () => {
     it('should use ADAPTIVE mode by default', () => {
-      orchestrator = new Orchestrator();
+      orchestrator = new OrchestratorClass();
       expect(orchestrator.getCognitiveTierMode()).toBe('ADAPTIVE');
     });
 
     it('should accept custom cognitive tier mode', () => {
-      orchestrator = new Orchestrator({ cognitiveTierMode: 'SYS6' });
+      orchestrator = new OrchestratorClass({ cognitiveTierMode: 'SYS6' });
       expect(orchestrator.getCognitiveTierMode()).toBe('SYS6');
     });
 
     it('should allow runtime mode changes', () => {
-      orchestrator = new Orchestrator({ cognitiveTierMode: 'BASIC' });
+      orchestrator = new OrchestratorClass({ cognitiveTierMode: 'BASIC' });
       expect(orchestrator.getCognitiveTierMode()).toBe('BASIC');
 
       orchestrator.setCognitiveTierMode('MEMBRANE');
@@ -162,7 +180,7 @@ describe('Cognitive Tier Integration', () => {
     });
 
     it('should configure complexity thresholds', () => {
-      orchestrator = new Orchestrator({
+      orchestrator = new OrchestratorClass({
         sys6ComplexityThreshold: 0.3,
         membraneComplexityThreshold: 0.6,
       });
@@ -173,7 +191,7 @@ describe('Cognitive Tier Integration', () => {
 
   describe('Service Initialization', () => {
     it('should start all cognitive tier services', async () => {
-      orchestrator = new Orchestrator({
+      orchestrator = new OrchestratorClass({
         enableDeltaChat: false,
         enableDovecot: false,
         enableIPC: false,
@@ -192,7 +210,7 @@ describe('Cognitive Tier Integration', () => {
     });
 
     it('should start with only BASIC tier when others disabled', async () => {
-      orchestrator = new Orchestrator({
+      orchestrator = new OrchestratorClass({
         enableDeltaChat: false,
         enableDovecot: false,
         enableIPC: false,
@@ -212,7 +230,7 @@ describe('Cognitive Tier Integration', () => {
     });
 
     it('should stop all services gracefully', async () => {
-      orchestrator = new Orchestrator({
+      orchestrator = new OrchestratorClass({
         enableDeltaChat: false,
         enableDovecot: false,
         enableIPC: false,
@@ -233,7 +251,7 @@ describe('Cognitive Tier Integration', () => {
 
   describe('Processing Statistics', () => {
     it('should track processing statistics', async () => {
-      orchestrator = new Orchestrator({
+      orchestrator = new OrchestratorClass({
         enableDeltaChat: false,
         enableDovecot: false,
         enableIPC: false,
@@ -256,7 +274,7 @@ describe('Cognitive Tier Integration', () => {
 
   describe('Cognitive System Status', () => {
     it('should provide comprehensive system status', async () => {
-      orchestrator = new Orchestrator({
+      orchestrator = new OrchestratorClass({
         enableDeltaChat: false,
         enableDovecot: false,
         enableIPC: false,
@@ -278,7 +296,7 @@ describe('Cognitive Tier Integration', () => {
     });
 
     it('should show null for disabled tiers', async () => {
-      orchestrator = new Orchestrator({
+      orchestrator = new OrchestratorClass({
         enableDeltaChat: false,
         enableDovecot: false,
         enableIPC: false,
@@ -303,7 +321,7 @@ describe('Complexity Assessment', () => {
   let orchestrator: Orchestrator;
 
   beforeEach(async () => {
-    orchestrator = new Orchestrator({
+    orchestrator = new OrchestratorClass({
       enableDeltaChat: false,
       enableDovecot: false,
       enableIPC: false,
@@ -347,7 +365,7 @@ describe('Tier Mode Configurations', () => {
 
   testCases.forEach(({ mode, description }) => {
     it(`${mode} mode ${description}`, async () => {
-      const orchestrator = new Orchestrator({
+      const orchestrator = new OrchestratorClass({
         enableDeltaChat: false,
         enableDovecot: false,
         enableIPC: false,

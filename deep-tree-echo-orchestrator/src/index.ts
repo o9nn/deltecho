@@ -100,3 +100,28 @@ export {
   type DoubleMembraneResponse,
   type IntegrationStatus,
 } from './double-membrane-integration.js';
+
+// Proactive Autonomous Loop - Self-initiated cognitive cycles
+export {
+  ProactiveLoop,
+  ProactivePhase,
+  OntogeneticStage,
+  type ProactiveLoopConfig,
+  type ProactiveLoopState,
+  type ProactiveLoopEvent,
+  type EnvironmentStimulus,
+  type ReflectionResult,
+  type AutonomousGoal,
+  type ActionResult,
+  type IntegrationResult,
+} from './proactive-loop.js';
+
+// Echo Agent Loop - Unified autonomous cognitive event loop
+export {
+  EchoAgentLoop,
+  type EchoAgentLoopConfig,
+  type EchoAgentMetrics,
+  type GrandCycleState,
+  type ThreadPermutation,
+  type TriadConfig,
+} from './echo-agent-loop.js';

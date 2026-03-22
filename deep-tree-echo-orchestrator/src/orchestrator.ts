@@ -20,6 +20,7 @@ import {
   DoubleMembraneIntegrationConfig,
 } from './double-membrane-integration.js';
 import { Sys6OrchestratorBridge, Sys6BridgeConfig } from './sys6-bridge/Sys6OrchestratorBridge.js';
+import { ProactiveLoop, ProactiveLoopConfig } from './proactive-loop.js';
 
 const log = getLogger('deep-tree-echo-orchestrator/Orchestrator');
 
@@ -100,6 +101,10 @@ export interface OrchestratorConfig {
   sys6ComplexityThreshold: number;
   /** Complexity threshold for ADAPTIVE mode to escalate from SYS6 to MEMBRANE */
   membraneComplexityThreshold: number;
+  /** Enable proactive autonomous loop */
+  enableProactiveLoop: boolean;
+  /** Proactive loop configuration */
+  proactiveLoop?: Partial<ProactiveLoopConfig>;
 }
 
 const DEFAULT_CONFIG: OrchestratorConfig = {
@@ -115,6 +120,7 @@ const DEFAULT_CONFIG: OrchestratorConfig = {
   enableDoubleMembrane: true,
   sys6ComplexityThreshold: 0.4,
   membraneComplexityThreshold: 0.7,
+  enableProactiveLoop: true,
 };
 
 /**
@@ -130,6 +136,7 @@ export class Orchestrator {
   private dove9Integration?: Dove9Integration;
   private sys6Bridge?: Sys6OrchestratorBridge;
   private doubleMembraneIntegration?: DoubleMembraneIntegration;
+  private proactiveLoop?: ProactiveLoop;
   private running: boolean = false;
 
   // Cognitive services for processing messages
@@ -246,6 +253,33 @@ export class Orchestrator {
         });
         await this.doubleMembraneIntegration.start();
         log.info('Double Membrane integration started with bio-inspired architecture');
+      }
+
+      // Initialize Proactive Autonomous Loop
+      if (this.config.enableProactiveLoop) {
+        this.proactiveLoop = new ProactiveLoop(this.config.proactiveLoop);
+
+        // Register perception handler for pending tasks
+        this.proactiveLoop.registerPerceptionHandler(async () => {
+          const stimuli = [];
+          // Check for pending scheduled tasks
+          if (this.scheduler) {
+            const tasks = this.scheduler.getRunningTasks?.() || [];
+            for (const task of tasks) {
+              stimuli.push({
+                type: 'task' as const,
+                source: 'scheduler',
+                priority: 7,
+                data: { taskId: task.id, name: task.name, status: task.status },
+                timestamp: Date.now(),
+              });
+            }
+          }
+          return stimuli;
+        });
+
+        await this.proactiveLoop.start();
+        log.info('Proactive autonomous loop started with self-initiated cognitive cycles');
       }
 
       this.running = true;
@@ -832,6 +866,10 @@ ${response.body}`;
     log.info('Stopping orchestrator services...');
 
     // Stop all services in reverse order (newest first)
+    if (this.proactiveLoop) {
+      await this.proactiveLoop.stop();
+    }
+
     if (this.doubleMembraneIntegration) {
       await this.doubleMembraneIntegration.stop();
     }
@@ -983,6 +1021,13 @@ ${response.body}`;
    */
   public getDoubleMembraneIntegration(): DoubleMembraneIntegration | undefined {
     return this.doubleMembraneIntegration;
+  }
+
+  /**
+   * Get Proactive Loop for direct access
+   */
+  public getProactiveLoop(): ProactiveLoop | undefined {
+    return this.proactiveLoop;
   }
 
   /**

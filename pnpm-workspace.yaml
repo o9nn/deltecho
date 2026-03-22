@@ -10,6 +10,7 @@ packages:
   - packages/sys6-triality
   - packages/membrane-transport
   - packages/gesture-glyph
+  - packages/eventa
   - delta-echo-desk
   - delta-echo-desk/packages/*
   - deltecho2

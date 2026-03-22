@@ -26,12 +26,17 @@ import {
   DEFAULT_DOVE9_CONFIG,
   ExecutionRecord,
   CognitiveMode,
+  MailMessage,
+  MailboxMapping,
+  DEFAULT_MAILBOX_MAPPING,
+  MailFlag,
 } from '../types/index.js';
 import {
   TriadicCognitiveEngine,
   CognitiveProcessor,
   TriadicEvent,
 } from '../cognitive/triadic-engine.js';
+import { MailProtocolBridge } from '../integration/mail-protocol-bridge.js';
 import { getLogger } from '../utils/logger.js';
 
 const logger = getLogger('Dove9Kernel');
@@ -68,6 +73,12 @@ export class Dove9Kernel extends EventEmitter {
   private activeProcesses: Set<string> = new Set();
   private running: boolean = false;
   private metrics: KernelMetrics;
+
+  // Mail protocol support
+  private mailBridge?: MailProtocolBridge;
+  private mailboxMapping?: MailboxMapping;
+  private messageToProcessMap: Map<string, string> = new Map(); // messageId → processId
+  private processToMessageMap: Map<string, string> = new Map(); // processId → messageId
 
   constructor(processor: CognitiveProcessor, config: Partial<Dove9Config> = {}) {
     super();
@@ -452,5 +463,272 @@ export class Dove9Kernel extends EventEmitter {
     this.enqueueProcess(processId, process.priority);
 
     return true;
+  }
+
+  // ============================================================
+  // Mail Protocol Integration
+  // ============================================================
+
+  /**
+   * Enable mail protocol bridge for native mail operations
+   */
+  public enableMailProtocol(mailboxes: Partial<MailboxMapping> = {}): void {
+    this.mailboxMapping = { ...DEFAULT_MAILBOX_MAPPING, ...mailboxes };
+    this.mailBridge = new MailProtocolBridge({
+      mailboxMapping: this.mailboxMapping,
+      defaultPriority: 5,
+      enableThreading: true,
+    });
+
+    logger.info('Mail protocol enabled', { mailboxes: this.mailboxMapping });
+
+    // Forward process completion events to mail system
+    this.on('process_completed', (event: { processId: string; result: any }) => {
+      if (this.mailBridge) {
+        const process = this.processTable.get(event.processId);
+        if (process) {
+          const response = this.formatProcessResponse(process, event.result);
+          const mailMessage = this.mailBridge.processToMail(process, response);
+          this.emit('mail_message_ready', mailMessage);
+        }
+      }
+    });
+  }
+
+  /**
+   * Check if mail protocol is enabled
+   */
+  public isMailProtocolEnabled(): boolean {
+    return this.mailBridge !== undefined;
+  }
+
+  /**
+   * Create a process from incoming mail message
+   */
+  public createProcessFromMail(mail: MailMessage): MessageProcess {
+    if (!this.mailBridge) {
+      throw new Error('Mail protocol not enabled. Call enableMailProtocol() first.');
+    }
+
+    // Convert mail to process using bridge
+    const process = this.mailBridge.mailToProcess(mail);
+
+    // Store in process table
+    this.processTable.set(process.id, process);
+
+    // Store bidirectional mapping
+    this.messageToProcessMap.set(mail.messageId, process.id);
+    this.processToMessageMap.set(process.id, mail.messageId);
+
+    // Enqueue for processing
+    this.enqueueProcess(process.id, process.priority);
+
+    // Emit creation event
+    this.emitEvent({ type: 'process_created', process });
+
+    logger.info('Created process from mail', {
+      processId: process.id,
+      messageId: mail.messageId,
+      from: mail.from,
+      subject: mail.subject,
+      priority: process.priority,
+    });
+
+    return process;
+  }
+
+  /**
+   * Get process by mail message ID
+   */
+  public getProcessByMessageId(messageId: string): MessageProcess | undefined {
+    const processId = this.messageToProcessMap.get(messageId);
+    if (!processId) return undefined;
+    return this.processTable.get(processId);
+  }
+
+  /**
+   * Get mail message ID for a process
+   */
+  public getMessageIdForProcess(processId: string): string | undefined {
+    return this.processToMessageMap.get(processId);
+  }
+
+  /**
+   * Query processes by mailbox (state mapping)
+   */
+  public getProcessesByMailbox(mailbox: string): MessageProcess[] {
+    if (!this.mailboxMapping) {
+      return [];
+    }
+
+    // Determine which process state corresponds to this mailbox
+    let targetState: ProcessState | undefined;
+
+    if (mailbox === this.mailboxMapping.inbox) {
+      targetState = ProcessState.PENDING;
+    } else if (mailbox === this.mailboxMapping.processing) {
+      targetState = ProcessState.PROCESSING;
+    } else if (mailbox === this.mailboxMapping.sent) {
+      targetState = ProcessState.COMPLETED;
+    } else if (mailbox === this.mailboxMapping.drafts) {
+      targetState = ProcessState.SUSPENDED;
+    } else if (mailbox === this.mailboxMapping.trash) {
+      targetState = ProcessState.TERMINATED;
+    }
+
+    if (targetState === undefined) {
+      return [];
+    }
+
+    return Array.from(this.processTable.values()).filter(p => p.state === targetState);
+  }
+
+  /**
+   * Move process to a different mailbox (change state)
+   */
+  public moveProcessToMailbox(processId: string, targetMailbox: string): boolean {
+    if (!this.mailboxMapping) {
+      return false;
+    }
+
+    const process = this.processTable.get(processId);
+    if (!process) return false;
+
+    // Determine new state from mailbox
+    let newState: ProcessState | undefined;
+
+    if (targetMailbox === this.mailboxMapping.inbox) {
+      newState = ProcessState.PENDING;
+    } else if (targetMailbox === this.mailboxMapping.processing) {
+      newState = ProcessState.PROCESSING;
+    } else if (targetMailbox === this.mailboxMapping.sent) {
+      newState = ProcessState.COMPLETED;
+    } else if (targetMailbox === this.mailboxMapping.drafts) {
+      newState = ProcessState.SUSPENDED;
+    } else if (targetMailbox === this.mailboxMapping.trash) {
+      newState = ProcessState.TERMINATED;
+    }
+
+    if (newState === undefined) {
+      return false;
+    }
+
+    // Update process state
+    const oldState = process.state;
+    process.state = newState;
+
+    // Handle state transitions
+    if (oldState === ProcessState.ACTIVE || oldState === ProcessState.PROCESSING) {
+      this.activeProcesses.delete(processId);
+    }
+
+    if (newState === ProcessState.PENDING) {
+      this.enqueueProcess(processId, process.priority);
+    }
+
+    logger.info('Moved process to mailbox', {
+      processId,
+      targetMailbox,
+      oldState,
+      newState,
+    });
+
+    return true;
+  }
+
+  /**
+   * Get mailbox for a process based on its state
+   */
+  public getMailboxForProcess(processId: string): string | undefined {
+    if (!this.mailboxMapping || !this.mailBridge) {
+      return undefined;
+    }
+
+    const process = this.processTable.get(processId);
+    if (!process) return undefined;
+
+    // Use the bridge's mailbox mapping based on state
+    const mapping = this.mailBridge.getMailboxMapping();
+
+    switch (process.state) {
+      case ProcessState.PENDING:
+        return mapping.inbox;
+      case ProcessState.ACTIVE:
+      case ProcessState.PROCESSING:
+      case ProcessState.WAITING:
+        return mapping.processing;
+      case ProcessState.COMPLETED:
+        return mapping.sent;
+      case ProcessState.SUSPENDED:
+        return mapping.drafts;
+      case ProcessState.TERMINATED:
+        return mapping.trash;
+      default:
+        return mapping.inbox;
+    }
+  }
+
+  /**
+   * Update process flags from mail flags
+   */
+  public updateProcessFromMailFlags(processId: string, flags: MailFlag[]): boolean {
+    const process = this.processTable.get(processId);
+    if (!process) return false;
+
+    // Map mail flags to process state
+    if (flags.includes(MailFlag.DELETED)) {
+      process.state = ProcessState.TERMINATED;
+      this.activeProcesses.delete(processId);
+    } else if (flags.includes(MailFlag.DRAFT)) {
+      process.state = ProcessState.SUSPENDED;
+      this.activeProcesses.delete(processId);
+    } else if (flags.includes(MailFlag.ANSWERED)) {
+      process.state = ProcessState.COMPLETED;
+      this.activeProcesses.delete(processId);
+    } else if (flags.includes(MailFlag.FLAGGED)) {
+      // Increase priority for flagged messages
+      process.priority = Math.min(10, process.priority + 2);
+    }
+
+    return true;
+  }
+
+  /**
+   * Get mail protocol bridge
+   */
+  public getMailBridge(): MailProtocolBridge | undefined {
+    return this.mailBridge;
+  }
+
+  /**
+   * Format process response for mail output
+   */
+  private formatProcessResponse(process: MessageProcess, result: any): string {
+    if (typeof result === 'string') {
+      return result;
+    }
+
+    if (result?.text) {
+      return result.text;
+    }
+
+    if (result?.response) {
+      return result.response;
+    }
+
+    // Format cognitive context as response
+    const ctx = process.cognitiveContext;
+    const lines = [
+      '[Cognitive Process Complete]',
+      `Subject: ${process.subject}`,
+      `Priority: ${process.priority}`,
+      `Salience: ${ctx.salienceScore.toFixed(2)}`,
+      `Emotional Valence: ${ctx.emotionalValence.toFixed(2)}`,
+      `Emotional Arousal: ${ctx.emotionalArousal.toFixed(2)}`,
+      `Active Couplings: ${ctx.activeCouplings.join(', ') || 'none'}`,
+      '',
+      `Processing completed at step ${process.currentStep} of cycle.`,
+    ];
+    return lines.join('\n');
   }
 }

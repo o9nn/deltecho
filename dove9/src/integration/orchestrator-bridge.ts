@@ -218,7 +218,9 @@ export class OrchestratorBridge extends EventEmitter {
       subject: email.subject,
       body: email.body,
       headers: email.headers,
-      receivedAt: email.receivedAt,
+      timestamp: email.receivedAt || new Date(),
+      receivedAt: email.receivedAt || new Date(),
+      mailbox: 'INBOX', // Default mailbox for incoming messages
     };
 
     // Process through Dove9

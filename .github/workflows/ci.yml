@@ -66,8 +66,11 @@ jobs:
       - name: Run tests - @deltecho/reasoning
         run: pnpm --filter @deltecho/reasoning test -- --coverage || echo "::warning::reasoning tests pending"
 
+      - name: Run tests - @deltecho/eventa
+        run: pnpm --filter @deltecho/eventa test -- --coverage
+
       - name: Run tests - deep-tree-echo-orchestrator
-        run: pnpm --filter deep-tree-echo-orchestrator test -- --coverage || echo "::warning::orchestrator tests pending"
+        run: pnpm --filter deep-tree-echo-orchestrator test -- --coverage
 
       - name: Run tests - @deltecho/sys6-triality
         run: pnpm --filter @deltecho/sys6-triality test -- --coverage || echo "::warning::sys6-triality tests pending"
@@ -86,6 +89,7 @@ jobs:
             ./packages/cognitive/coverage/lcov.info
             ./packages/reasoning/coverage/lcov.info
             ./deep-tree-echo-orchestrator/coverage/lcov.info
+            ./packages/eventa/coverage/lcov.info
             ./packages/sys6-triality/coverage/lcov.info
           flags: unittests
           name: deltecho-coverage
@@ -152,6 +156,8 @@ jobs:
           pnpm --filter @deltecho/shared build
           echo "Building dove9..."
           pnpm --filter dove9 build
+          echo "Building @deltecho/eventa..."
+          pnpm --filter @deltecho/eventa build
           echo "Building @deltecho/cognitive..."
           pnpm --filter @deltecho/cognitive build
           echo "Building @deltecho/reasoning..."

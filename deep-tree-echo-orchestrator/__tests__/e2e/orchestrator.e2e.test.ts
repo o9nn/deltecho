@@ -3,7 +3,7 @@
  * Tests the complete orchestration system including all subsystems
  */
 
-import { jest } from '@jest/globals';
+import { jest, describe, it, expect, beforeAll, afterAll, beforeEach, afterEach } from '@jest/globals';
 
 // Mock dependencies for E2E testing
 jest.unstable_mockModule('net', () => ({
@@ -268,7 +268,7 @@ describe('Orchestrator E2E Tests', () => {
       expect(sendResult.success).toBe(true);
 
       const chatsResult = await handleRpc('getChats', {});
-      expect(chatsResult.chats.length).toBe(1);
+      expect(chatsResult.chats?.length).toBe(1);
     });
   });
 
@@ -389,7 +389,7 @@ describe('Orchestrator E2E Tests', () => {
         return { success: true };
       };
 
-      const retry = async (fn: () => Promise<unknown>, retries: number) => {
+      const retry = async (fn: () => Promise<unknown>, retries: number): Promise<unknown> => {
         for (let i = 0; i < retries; i++) {
           try {
             return await fn();
@@ -397,6 +397,7 @@ describe('Orchestrator E2E Tests', () => {
             if (i === retries - 1) throw e;
           }
         }
+        return undefined;
       };
 
       const result = await retry(unreliableOperation, maxRetries);

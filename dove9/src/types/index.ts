@@ -257,3 +257,6 @@ export const DEFAULT_DOVE9_CONFIG: Dove9Config = {
   enableParallelCognition: true,
   defaultSalienceThreshold: 0.3,
 };
+
+// Export mail-related types
+export * from './mail.js';

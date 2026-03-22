@@ -552,3 +552,235 @@ describe('Cognitive Context Evolution', () => {
     expect(updated?.currentStep).toBeGreaterThanOrEqual(0);
   });
 });
+
+describe('Mail Protocol Integration', () => {
+  let kernel: Dove9Kernel;
+
+  beforeEach(() => {
+    kernel = createTestKernel();
+  });
+
+  afterEach(async () => {
+    await kernel.stop();
+  });
+
+  describe('enableMailProtocol', () => {
+    it('should enable mail protocol with default mapping', () => {
+      expect(kernel.isMailProtocolEnabled()).toBe(false);
+      kernel.enableMailProtocol();
+      expect(kernel.isMailProtocolEnabled()).toBe(true);
+    });
+
+    it('should enable mail protocol with custom mapping', () => {
+      kernel.enableMailProtocol({
+        inbox: 'INBOX.Custom',
+        processing: 'INBOX.Custom.Processing',
+      });
+      expect(kernel.isMailProtocolEnabled()).toBe(true);
+    });
+
+    it('should return mail bridge after enabling', () => {
+      kernel.enableMailProtocol();
+      const bridge = kernel.getMailBridge();
+      expect(bridge).toBeDefined();
+    });
+  });
+
+  describe('createProcessFromMail', () => {
+    it('should throw if mail protocol not enabled', () => {
+      const mail = {
+        messageId: '<test@example.com>',
+        from: 'sender@example.com',
+        to: ['recipient@example.com'],
+        subject: 'Test Email',
+        body: 'Hello World',
+        headers: new Map<string, string>(),
+        timestamp: new Date(),
+        receivedAt: new Date(),
+        mailbox: 'INBOX',
+      };
+      expect(() => kernel.createProcessFromMail(mail)).toThrow('Mail protocol not enabled');
+    });
+
+    it('should create process from mail message', () => {
+      kernel.enableMailProtocol();
+      
+      const mail = {
+        messageId: '<test123@example.com>',
+        from: 'sender@example.com',
+        to: ['echo@dove9.local'],
+        subject: 'Important Question',
+        body: 'What is the meaning of life?',
+        headers: new Map<string, string>(),
+        timestamp: new Date(),
+        receivedAt: new Date(),
+        mailbox: 'INBOX',
+      };
+
+      const process = kernel.createProcessFromMail(mail);
+      
+      expect(process).toBeDefined();
+      expect(process.messageId).toBe(mail.messageId);
+      expect(process.from).toBe(mail.from);
+      expect(process.subject).toBe(mail.subject);
+      expect(process.content).toBe(mail.body);
+      expect(process.state).toBe(ProcessState.PENDING);
+    });
+
+    it('should calculate priority for mail messages', () => {
+      kernel.enableMailProtocol();
+      
+      // Normal mail
+      const normalMail = {
+        messageId: '<normal@example.com>',
+        from: 'sender@example.com',
+        to: ['echo@dove9.local'],
+        subject: 'Hello',
+        body: 'Just saying hi',
+        headers: new Map<string, string>(),
+        timestamp: new Date(),
+        receivedAt: new Date(),
+        mailbox: 'INBOX',
+      };
+
+      // Urgent mail
+      const urgentMail = {
+        messageId: '<urgent@example.com>',
+        from: 'sender@example.com',
+        to: ['echo@dove9.local'],
+        subject: 'URGENT: Need help!',
+        body: 'This is urgent',
+        headers: new Map<string, string>(),
+        timestamp: new Date(),
+        receivedAt: new Date(),
+        mailbox: 'INBOX',
+      };
+
+      const normalProcess = kernel.createProcessFromMail(normalMail);
+      const urgentProcess = kernel.createProcessFromMail(urgentMail);
+      
+      expect(urgentProcess.priority).toBeGreaterThan(normalProcess.priority);
+    });
+  });
+
+  describe('getProcessByMessageId', () => {
+    it('should return undefined for unknown message ID', () => {
+      kernel.enableMailProtocol();
+      const result = kernel.getProcessByMessageId('<unknown@example.com>');
+      expect(result).toBeUndefined();
+    });
+
+    it('should return process for known message ID', () => {
+      kernel.enableMailProtocol();
+      
+      const mail = {
+        messageId: '<known@example.com>',
+        from: 'sender@example.com',
+        to: ['echo@dove9.local'],
+        subject: 'Test',
+        body: 'Content',
+        headers: new Map<string, string>(),
+        timestamp: new Date(),
+        receivedAt: new Date(),
+        mailbox: 'INBOX',
+      };
+
+      const created = kernel.createProcessFromMail(mail);
+      const retrieved = kernel.getProcessByMessageId(mail.messageId);
+      
+      expect(retrieved).toBeDefined();
+      expect(retrieved?.id).toBe(created.id);
+    });
+  });
+
+  describe('getProcessesByMailbox', () => {
+    it('should return empty array if mail protocol not enabled', () => {
+      const result = kernel.getProcessesByMailbox('INBOX');
+      expect(result).toEqual([]);
+    });
+
+    it('should return pending processes for inbox mailbox', () => {
+      kernel.enableMailProtocol();
+      
+      const mail = {
+        messageId: '<inbox@example.com>',
+        from: 'sender@example.com',
+        to: ['echo@dove9.local'],
+        subject: 'Test',
+        body: 'Content',
+        headers: new Map<string, string>(),
+        timestamp: new Date(),
+        receivedAt: new Date(),
+        mailbox: 'INBOX',
+      };
+
+      kernel.createProcessFromMail(mail);
+      
+      const result = kernel.getProcessesByMailbox('INBOX');
+      expect(result.length).toBe(1);
+      expect(result[0].state).toBe(ProcessState.PENDING);
+    });
+  });
+
+  describe('moveProcessToMailbox', () => {
+    it('should return false if mail protocol not enabled', () => {
+      const process = kernel.createProcess('msg', 'a@test.com', ['b@test.com'], 'S', 'C', 5);
+      const result = kernel.moveProcessToMailbox(process.id, 'Sent');
+      expect(result).toBe(false);
+    });
+
+    it('should move process and update state', () => {
+      kernel.enableMailProtocol();
+      
+      const mail = {
+        messageId: '<move@example.com>',
+        from: 'sender@example.com',
+        to: ['echo@dove9.local'],
+        subject: 'Test',
+        body: 'Content',
+        headers: new Map<string, string>(),
+        timestamp: new Date(),
+        receivedAt: new Date(),
+        mailbox: 'INBOX',
+      };
+
+      const process = kernel.createProcessFromMail(mail);
+      expect(process.state).toBe(ProcessState.PENDING);
+      
+      const result = kernel.moveProcessToMailbox(process.id, 'Sent');
+      expect(result).toBe(true);
+      
+      const updated = kernel.getProcess(process.id);
+      expect(updated?.state).toBe(ProcessState.COMPLETED);
+    });
+  });
+
+  describe('getMailboxForProcess', () => {
+    it('should return undefined if mail protocol not enabled', () => {
+      const process = kernel.createProcess('msg', 'a@test.com', ['b@test.com'], 'S', 'C', 5);
+      const result = kernel.getMailboxForProcess(process.id);
+      expect(result).toBeUndefined();
+    });
+
+    it('should return inbox for pending processes', () => {
+      kernel.enableMailProtocol();
+      
+      const mail = {
+        messageId: '<mailbox@example.com>',
+        from: 'sender@example.com',
+        to: ['echo@dove9.local'],
+        subject: 'Test',
+        body: 'Content',
+        headers: new Map<string, string>(),
+        timestamp: new Date(),
+        receivedAt: new Date(),
+        mailbox: 'INBOX',
+      };
+
+      const process = kernel.createProcessFromMail(mail);
+      const mailbox = kernel.getMailboxForProcess(process.id);
+      
+      expect(mailbox).toBe('INBOX');
+    });
+  });
+});
