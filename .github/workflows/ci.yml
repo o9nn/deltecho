@@ -96,6 +96,11 @@ jobs:
           echo "Verifying Lucy VM, Reservoir Feedback, ENACTION wiring, and Continuous Training tests..."
           pnpm --filter deep-tree-echo-orchestrator test -- --forceExit --no-coverage --testPathPattern="(lucy-vm-deployment|reservoir-feedback-loop|enaction-reservoir-wiring|continuous-training-pipeline)"
 
+      - name: Verify Level 6 Symbiotic Autonomy tests
+        run: |
+          echo "Verifying Lucy HF Deploy, Production Wiring, Echoself Introspection, and System 5 Telemetry tests..."
+          pnpm --filter deep-tree-echo-orchestrator test -- --forceExit --no-coverage --testPathPattern="(lucy-hf-deploy|production-wiring|echoself-introspection|system5-telemetry-shell)"
+
       - name: Build all packages
         run: pnpm run build
 

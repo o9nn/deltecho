@@ -279,3 +279,46 @@ export {
   type FeedbackLoopMetrics,
   type FeedbackLoopEvent,
 } from './reservoir-feedback-loop.js';
+
+// ─── Level 6: Symbiotic Autonomy ─────────────────────────────────
+
+// Level 6: Lucy HuggingFace Deployment — Model card, identity metadata, checkpoint upload
+export {
+  LucyHFDeploy,
+  type LucyHFDeployConfig,
+  type LucyIdentityMetadata,
+  type DeployResult,
+} from './lucy-hf-deploy.js';
+
+// Level 6: Production Orchestration Wiring — Live E2E startup of all subsystems
+export {
+  ProductionOrchestrationWiring,
+  type ProductionWiringConfig,
+  type WiringStatus,
+  type ComponentStatus,
+  type WiringPhase,
+} from './production-wiring.js';
+
+// Level 6: Echoself Introspection — Hypergraph memory visualization dashboard
+export {
+  EchoselfIntrospection,
+  type IntrospectionConfig,
+  type HypergraphNode,
+  type HypergraphEdge,
+  type HypergraphMetaEdge,
+  type HypergraphSnapshot,
+  type EvolutionTimelineEntry,
+  type IdentityDashboard,
+  type IntrospectionDashboardData,
+} from './echoself-introspection.js';
+
+// Level 6: System 5 Telemetry Shell — Prometheus metrics for thread-level multiplexing
+export {
+  System5TelemetryShell,
+  type TelemetryShellConfig,
+  type DyadicPair,
+  type TriadicBundle,
+  type MultiplexingState,
+  type NestedShellState,
+  type TelemetryDataPoint,
+} from './system5-telemetry-shell.js';
