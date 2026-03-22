@@ -29,6 +29,7 @@ import type {
 } from './cognitive-tick-processor.js';
 import type { Echobeats } from './echobeats.js';
 import type { SelfModificationEngine, ModificationResult } from './self-modification.js';
+import type { ReservoirFeedbackLoop } from './reservoir-feedback-loop.js';
 
 const log = getLogger('deep-tree-echo-orchestrator/AutonomyLifecycle');
 
@@ -139,6 +140,9 @@ export class AutonomyLifecycleCoordinator extends EventEmitter {
 
   // Self-modification engine (for ENACTION phase)
   private selfModEngine?: SelfModificationEngine;
+
+  // Reservoir feedback loop (for online learning and avgPredictionError)
+  private reservoirFeedback?: ReservoirFeedbackLoop;
 
   constructor(
     config: Partial<AutonomyLifecycleConfig> = {},
@@ -471,16 +475,20 @@ export class AutonomyLifecycleCoordinator extends EventEmitter {
 
     // Self-modification: propose and apply parameter changes
     const modifications: ModificationResult[] = [];
+    const coherenceBefore = this.computeCoherence();
     if (this.selfModEngine) {
-      const coherence = this.computeCoherence();
+      const coherence = coherenceBefore;
       const cogState = this.cognitiveProcessor?.getState();
       const memRatio = cogState && cogState.episodicMemories > 0
         ? cogState.consolidatedMemories / cogState.episodicMemories
         : 1;
 
+      // Get real avgPredictionError from reservoir feedback loop
+      const avgPredictionError = this.reservoirFeedback?.getAvgPredictionError() ?? 0;
+
       const proposals = this.selfModEngine.proposeModifications(
         coherence,
-        0, // avgPredictionError — will be wired to reservoir learner
+        avgPredictionError,
         activeGoals.length,
         memRatio,
       );
@@ -494,6 +502,15 @@ export class AutonomyLifecycleCoordinator extends EventEmitter {
     const appliedMods = modifications.filter(m => m.applied);
     if (appliedMods.length > 0) {
       log.info(`ENACTION: Applied ${appliedMods.length} self-modifications`);
+
+      // Feed self-modification outcomes back to reservoir learner
+      if (this.reservoirFeedback) {
+        const coherenceAfter = this.computeCoherence();
+        const coherenceDelta = coherenceAfter - coherenceBefore;
+        for (const _mod of appliedMods) {
+          this.reservoirFeedback.submitSelfModFeedback(true, coherenceDelta);
+        }
+      }
     }
 
     return {
@@ -649,6 +666,23 @@ export class AutonomyLifecycleCoordinator extends EventEmitter {
       echobeatsFeedback: this.echobeats?.isRunning() ?? false,
       system5Active: this.echobeats?.isSystem5Active() ?? false,
     };
+  }
+
+  /**
+   * Wire a ReservoirFeedbackLoop for online learning and ENACTION prediction error.
+   * This closes the loop: ENACTION uses real avgPredictionError from the reservoir,
+   * and feeds self-modification outcomes back as learning signals.
+   */
+  public wireReservoirFeedback(feedback: ReservoirFeedbackLoop): void {
+    this.reservoirFeedback = feedback;
+    log.info('ReservoirFeedbackLoop wired to autonomy lifecycle (online learning active)');
+  }
+
+  /**
+   * Get the reservoir feedback loop.
+   */
+  public getReservoirFeedback(): ReservoirFeedbackLoop | undefined {
+    return this.reservoirFeedback;
   }
 
   public getConfig(): AutonomyLifecycleConfig {

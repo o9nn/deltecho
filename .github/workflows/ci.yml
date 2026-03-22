@@ -91,6 +91,11 @@ jobs:
           echo "Verifying dove9-conversational-bridge, orchestrator-echoagentloop, and agent-coordinator-toolengine tests..."
           pnpm --filter deep-tree-echo-orchestrator test -- --forceExit --no-coverage --testPathPattern="(dove9-conversational-bridge|orchestrator-echoagentloop-integration|agent-coordinator-toolengine)"
 
+      - name: Verify Level 5 True Autonomy tests
+        run: |
+          echo "Verifying Lucy VM, Reservoir Feedback, ENACTION wiring, and Continuous Training tests..."
+          pnpm --filter deep-tree-echo-orchestrator test -- --forceExit --no-coverage --testPathPattern="(lucy-vm-deployment|reservoir-feedback-loop|enaction-reservoir-wiring|continuous-training-pipeline)"
+
       - name: Build all packages
         run: pnpm run build
 

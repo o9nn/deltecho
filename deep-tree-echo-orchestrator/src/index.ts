@@ -248,8 +248,34 @@ export {
   type TrainingStats,
 } from './training/index.js';
 
+// Level 5: Continuous Training Pipeline - INBOX.memory → NanEcho echoself fine-tuning
+export {
+  ContinuousTrainingPipeline,
+  type ContinuousTrainingConfig,
+  type ConsolidationEvent,
+  type PipelineMetrics,
+  type PipelineEvent,
+} from './training/index.js';
+
 // Entelechy Integration - Deep cognitive loop
 export {
   EntelechyIntegration,
   type EntelechyIntegrationConfig,
 } from './entelechy-integration.js';
+
+// Level 5: Lucy VM Deployment — llama.cpp server lifecycle management
+export {
+  LucyVMDeployment,
+  type LucyVMConfig,
+  type DeploymentStatus,
+  type DeploymentEvent,
+} from './lucy-vm-deployment.js';
+
+// Level 5: Reservoir Feedback Loop — Online RLS learning from conversational feedback
+export {
+  ReservoirFeedbackLoop,
+  type ReservoirFeedbackConfig,
+  type FeedbackEvent,
+  type FeedbackLoopMetrics,
+  type FeedbackLoopEvent,
+} from './reservoir-feedback-loop.js';
