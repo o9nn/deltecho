@@ -12,6 +12,7 @@
  * - Dove9 triadic 12-step cognitive cycle (3 streams × 4 steps)
  * - Sys6 30-step cognitive cycle (5 stages × 3 phases × 2 steps)
  * - ProactiveLoop 5-phase autonomous cycle (PERCEIVE→REFLECT→PLAN→ACT→INTEGRATE)
+ * - CognitiveTickProcessor for real cognitive work at each phase
  * - Grand cycle synchronization (LCM(12, 30) = 60 steps)
  *
  * Thread multiplexing follows the 4-particular permutation pattern:
@@ -41,6 +42,12 @@ import {
   type CosmicOrderSnapshot,
   type SystemLevelState,
 } from './cosmic-order-bridge.js';
+import {
+  CognitiveTickProcessor,
+  type CognitiveTickProcessorConfig,
+  type CognitivePercept,
+  type CognitiveGoal,
+} from './cognitive-tick-processor.js';
 
 const log = getLogger('deep-tree-echo-orchestrator/EchoAgentLoop');
 
@@ -75,6 +82,14 @@ export interface GrandCycleState {
   timestamp: number;
   /** Cosmic order snapshot — all 6 system levels */
   cosmicOrder?: CosmicOrderSnapshot;
+  /** Cognitive processor state summary */
+  cognitiveState?: {
+    tickCount: number;
+    activeGoals: number;
+    episodicMemories: number;
+    consolidatedMemories: number;
+    dominantMode?: string;
+  };
 }
 
 /**
@@ -91,6 +106,12 @@ export interface EchoAgentMetrics {
   feedForwardCycles: number;
   feedBackCycles: number;
   autonomyScore: number;
+  /** Cognitive processing metrics */
+  cognitivePercepts: number;
+  cognitiveGoalsCompleted: number;
+  cognitiveGoalsFailed: number;
+  memoryConsolidations: number;
+  selfImageSnapshots: number;
 }
 
 /**
@@ -107,10 +128,14 @@ export interface EchoAgentLoopConfig {
   enableCosmicOrder: boolean;
   /** Enable telemetry */
   enableTelemetry: boolean;
+  /** Enable cognitive tick processing (real cognitive work per tick) */
+  enableCognitiveProcessing: boolean;
   /** Proactive loop configuration */
   proactiveConfig?: Partial<ProactiveLoopConfig>;
   /** Cosmic order bridge configuration */
   cosmicOrderConfig?: Partial<CosmicOrderBridgeConfig>;
+  /** Cognitive tick processor configuration */
+  cognitiveConfig?: Partial<CognitiveTickProcessorConfig>;
   /** Maximum concurrent threads */
   maxConcurrentThreads: number;
 }
@@ -121,6 +146,7 @@ const DEFAULT_CONFIG: EchoAgentLoopConfig = {
   enableTriadCycling: true,
   enableCosmicOrder: true,
   enableTelemetry: true,
+  enableCognitiveProcessing: true,
   maxConcurrentThreads: 4,
 };
 
@@ -163,12 +189,16 @@ const GRAND_CYCLE_LENGTH = 60; // LCM(12, 30)
  *
  * The unified autonomous cognitive event loop that synchronizes
  * all cognitive subsystems through the 60-step grand cycle.
+ *
+ * Evolution: Now integrates CognitiveTickProcessor for real cognitive
+ * work at each phase, rather than purely structural/telemetry ticks.
  */
 export class EchoAgentLoop extends EventEmitter {
   private config: EchoAgentLoopConfig;
   private proactiveLoop: ProactiveLoop;
   private cosmicOrderBridge: CosmicOrderBridge;
   private treePolytopeKernel: TreePolytopeKernel;
+  private cognitiveProcessor?: CognitiveTickProcessor;
   private running: boolean = false;
   private grandCycleTimer?: ReturnType<typeof setInterval>;
 
@@ -195,6 +225,12 @@ export class EchoAgentLoop extends EventEmitter {
       ...this.config.proactiveConfig,
     });
 
+    // Initialize cognitive tick processor
+    if (this.config.enableCognitiveProcessing) {
+      this.cognitiveProcessor = new CognitiveTickProcessor(this.config.cognitiveConfig);
+      this.wireCognitiveProcessorEvents();
+    }
+
     // Initialize grand cycle state
     this.grandCycleState = {
       step: 0,
@@ -218,6 +254,11 @@ export class EchoAgentLoop extends EventEmitter {
       feedForwardCycles: 0,
       feedBackCycles: 0,
       autonomyScore: 0,
+      cognitivePercepts: 0,
+      cognitiveGoalsCompleted: 0,
+      cognitiveGoalsFailed: 0,
+      memoryConsolidations: 0,
+      selfImageSnapshots: 0,
     };
 
     // Clone triad configs
@@ -254,6 +295,46 @@ export class EchoAgentLoop extends EventEmitter {
   }
 
   /**
+   * Wire cognitive processor events to loop metrics and emissions
+   */
+  private wireCognitiveProcessorEvents(): void {
+    if (!this.cognitiveProcessor) return;
+
+    this.cognitiveProcessor.on('percept_injected', (percept: CognitivePercept) => {
+      this.metrics.cognitivePercepts++;
+      this.emit('cognitive_percept', percept);
+    });
+
+    this.cognitiveProcessor.on('goal_completed', (data: { goalId: string; result: Record<string, unknown> }) => {
+      this.metrics.cognitiveGoalsCompleted++;
+      this.emit('cognitive_goal_completed', data);
+    });
+
+    this.cognitiveProcessor.on('goal_failed', (data: { goalId: string; error: string }) => {
+      this.metrics.cognitiveGoalsFailed++;
+      this.emit('cognitive_goal_failed', data);
+    });
+
+    this.cognitiveProcessor.on('integration_complete', (data: any) => {
+      this.metrics.memoryConsolidations++;
+      this.emit('cognitive_integration', data);
+    });
+
+    this.cognitiveProcessor.on('self_image_captured', (snapshot: any) => {
+      this.metrics.selfImageSnapshots++;
+      this.emit('cognitive_self_image', snapshot);
+    });
+
+    this.cognitiveProcessor.on('perception_aggregated', (data: any) => {
+      this.emit('cognitive_perception', data);
+    });
+
+    this.cognitiveProcessor.on('reflection_complete', (data: any) => {
+      this.emit('cognitive_reflection', data);
+    });
+  }
+
+  /**
    * Start the echo agent loop
    */
   public async start(): Promise<void> {
@@ -267,6 +348,7 @@ export class EchoAgentLoop extends EventEmitter {
       `(Dove9: ${DOVE9_CYCLE_LENGTH}, Sys6: ${SYS6_CYCLE_LENGTH})`);
     log.info(`Step duration: ${this.config.stepDurationMs}ms`);
     log.info(`Cosmic Order: ${this.config.enableCosmicOrder ? 'enabled (sys1-6)' : 'disabled'}`);
+    log.info(`Cognitive Processing: ${this.config.enableCognitiveProcessing ? 'enabled' : 'disabled'}`);
 
     this.running = true;
 
@@ -315,6 +397,8 @@ export class EchoAgentLoop extends EventEmitter {
 
   /**
    * Single tick of the grand cycle
+   *
+   * Optimized: Now includes cognitive processing at each phase
    */
   private async tick(): Promise<void> {
     const tickStart = Date.now();
@@ -366,6 +450,24 @@ export class EchoAgentLoop extends EventEmitter {
 
     // Advance tree-polytope s-gram rhythms (structural temporal awareness)
     this.treePolytopeKernel.advanceSGrams();
+
+    // *** Cognitive tick processing — real cognitive work ***
+    if (this.config.enableCognitiveProcessing && this.cognitiveProcessor) {
+      await this.cognitiveProcessor.processTick(
+        this.grandCycleState.proactivePhase,
+        this.grandCycleState.step
+      );
+
+      // Update cognitive state in grand cycle state
+      const cogState = this.cognitiveProcessor.getState();
+      this.grandCycleState.cognitiveState = {
+        tickCount: cogState.tickCount,
+        activeGoals: cogState.activeGoals,
+        episodicMemories: cogState.episodicMemories,
+        consolidatedMemories: cogState.consolidatedMemories,
+        dominantMode: cogState.latestSelfImage?.dominantCognitiveMode,
+      };
+    }
 
     // Determine feed-forward vs feed-back
     const isFeedForward = this.grandCycleState.step % 2 === 0;
@@ -463,6 +565,8 @@ export class EchoAgentLoop extends EventEmitter {
 
   /**
    * Update autonomy score based on accumulated metrics
+   *
+   * Enhanced: Now includes cognitive processing metrics
    */
   private updateAutonomyScore(): void {
     const proactiveState = this.proactiveLoop.getState();
@@ -479,15 +583,30 @@ export class EchoAgentLoop extends EventEmitter {
       ? Math.min(1, this.metrics.threadSwitches / (this.metrics.grandCycles * 6 + 1))
       : 0;
 
-    // Tree-polytope structural integrity adds a 5th dimension
+    // Tree-polytope structural integrity
     const structuralIntegrity = this.treePolytopeKernel.computeIntegrity();
 
+    // Cognitive processing depth (new dimension)
+    let cognitiveDepth = 0;
+    if (this.cognitiveProcessor) {
+      const cogState = this.cognitiveProcessor.getState();
+      const memoryRatio = cogState.episodicMemories > 0
+        ? cogState.consolidatedMemories / cogState.episodicMemories
+        : 0;
+      const goalEfficiency = this.metrics.cognitiveGoalsCompleted > 0
+        ? this.metrics.cognitiveGoalsCompleted /
+          (this.metrics.cognitiveGoalsCompleted + this.metrics.cognitiveGoalsFailed + 1)
+        : 0;
+      cognitiveDepth = memoryRatio * 0.5 + goalEfficiency * 0.5;
+    }
+
     this.metrics.autonomyScore =
-      cycleMaturity * 0.25 +
-      goalCompletion * 0.25 +
-      feedbackBalance * 0.15 +
-      threadUtilization * 0.15 +
-      structuralIntegrity * 0.20;
+      cycleMaturity * 0.20 +
+      goalCompletion * 0.20 +
+      feedbackBalance * 0.10 +
+      threadUtilization * 0.10 +
+      structuralIntegrity * 0.15 +
+      cognitiveDepth * 0.25;
   }
 
   /**
@@ -495,6 +614,21 @@ export class EchoAgentLoop extends EventEmitter {
    */
   public injectStimulus(stimulus: EnvironmentStimulus): void {
     this.proactiveLoop.injectStimulus(stimulus);
+
+    // Also inject as cognitive percept if processor is active
+    if (this.cognitiveProcessor) {
+      this.cognitiveProcessor.injectPercept({
+        id: `stim_${Date.now()}_${Math.random().toString(36).slice(2, 8)}`,
+        source: stimulus.type === 'message' ? 'message' :
+                stimulus.type === 'schedule' ? 'schedule' : 'internal',
+        content: typeof stimulus.data === 'string' ? stimulus.data :
+                 JSON.stringify(stimulus.data).slice(0, 500),
+        salience: stimulus.priority ?? 0.5,
+        emotionalValence: 0,
+        timestamp: Date.now(),
+        metadata: { originalType: stimulus.type },
+      });
+    }
   }
 
   /**
@@ -502,6 +636,18 @@ export class EchoAgentLoop extends EventEmitter {
    */
   public registerPerceptionHandler(handler: () => Promise<EnvironmentStimulus[]>): void {
     this.proactiveLoop.registerPerceptionHandler(handler);
+  }
+
+  /**
+   * Register a cognitive action handler
+   */
+  public registerCognitiveActionHandler(
+    goalType: string,
+    handler: (goal: CognitiveGoal) => Promise<Record<string, unknown>>
+  ): void {
+    if (this.cognitiveProcessor) {
+      this.cognitiveProcessor.registerActionHandler(goalType, handler);
+    }
   }
 
   /**
@@ -523,6 +669,13 @@ export class EchoAgentLoop extends EventEmitter {
    */
   public getProactiveLoop(): ProactiveLoop {
     return this.proactiveLoop;
+  }
+
+  /**
+   * Get cognitive tick processor
+   */
+  public getCognitiveProcessor(): CognitiveTickProcessor | undefined {
+    return this.cognitiveProcessor;
   }
 
   /**

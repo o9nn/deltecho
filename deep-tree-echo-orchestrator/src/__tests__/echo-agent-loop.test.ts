@@ -9,7 +9,7 @@
  * - Feed-forward/feed-back balance
  * - Autonomy score calculation
  */
-import { describe, it, expect, beforeEach, afterEach } from '@jest/globals';
+import { describe, it, expect, beforeEach, afterEach, jest } from '@jest/globals';
 import { EchoAgentLoop } from '../echo-agent-loop.js';
 import { ProactivePhase } from '../proactive-loop.js';
 import type { EnvironmentStimulus } from '../proactive-loop.js';
@@ -378,6 +378,186 @@ describe('EchoAgentLoop', () => {
       await loop.stop();
 
       expect(called).toBe(true);
+    });
+  });
+});
+
+
+// ============================================================
+// Enhanced Tests for Cognitive Processing Integration
+// ============================================================
+
+describe('EchoAgentLoop - Cognitive Processing', () => {
+  let loop: EchoAgentLoop;
+
+  beforeEach(() => {
+    loop = new EchoAgentLoop({
+      stepDurationMs: 10,
+      enableThreadMultiplexing: true,
+      enableTriadCycling: true,
+      enableCosmicOrder: true,
+      enableTelemetry: true,
+      enableCognitiveProcessing: true,
+      maxConcurrentThreads: 4,
+      proactiveConfig: {
+        cycleIntervalMs: 120,
+        maxStimuliPerCycle: 5,
+        idleTimeoutMs: 500,
+      },
+      cognitiveConfig: {
+        maxEpisodicMemories: 50,
+        maxActiveGoals: 10,
+        selfImageInterval: 5,
+      },
+    });
+  });
+
+  afterEach(async () => {
+    await loop.stop();
+  });
+
+  describe('Cognitive Processor Access', () => {
+    it('should expose cognitive processor when enabled', () => {
+      const processor = loop.getCognitiveProcessor();
+      expect(processor).toBeDefined();
+    });
+
+    it('should not expose cognitive processor when disabled', () => {
+      const noCogLoop = new EchoAgentLoop({
+        stepDurationMs: 10,
+        enableCognitiveProcessing: false,
+      });
+      expect(noCogLoop.getCognitiveProcessor()).toBeUndefined();
+    });
+  });
+
+  describe('Cognitive Event Emission', () => {
+    it('should emit cognitive_percept when stimulus injected', () => {
+      const handler = jest.fn();
+      loop.on('cognitive_percept', handler);
+
+      loop.injectStimulus({
+        type: 'message',
+        source: 'test',
+        priority: 0.8,
+        data: { text: 'Hello' },
+        timestamp: Date.now(),
+      });
+
+      expect(handler).toHaveBeenCalledTimes(1);
+    });
+
+    it('should emit cognitive events during running', async () => {
+      const events: string[] = [];
+      loop.on('cognitive_percept', () => events.push('percept'));
+      loop.on('cognitive_self_image', () => events.push('self_image'));
+
+      loop.injectStimulus({
+        type: 'message',
+        source: 'test',
+        priority: 0.9,
+        data: { text: 'Important' },
+        timestamp: Date.now(),
+      });
+
+      await loop.start();
+      await new Promise(resolve => setTimeout(resolve, 300));
+      await loop.stop();
+
+      expect(events).toContain('percept');
+    });
+  });
+
+  describe('Cognitive Action Handler Registration', () => {
+    it('should register cognitive action handlers', () => {
+      loop.registerCognitiveActionHandler('test_action', async () => ({ done: true }));
+
+      const processor = loop.getCognitiveProcessor();
+      expect(processor).toBeDefined();
+    });
+  });
+
+  describe('Cognitive State in Grand Cycle', () => {
+    it('should include cognitive state in grand cycle state after running', async () => {
+      await loop.start();
+      await new Promise(resolve => setTimeout(resolve, 200));
+      await loop.stop();
+
+      const state = loop.getGrandCycleState();
+      expect(state.cognitiveState).toBeDefined();
+      expect(state.cognitiveState?.tickCount).toBeGreaterThan(0);
+    });
+  });
+
+  describe('Enhanced Metrics', () => {
+    it('should track cognitive metrics', async () => {
+      loop.injectStimulus({
+        type: 'message',
+        source: 'test',
+        priority: 0.9,
+        data: { text: 'Test' },
+        timestamp: Date.now(),
+      });
+
+      await loop.start();
+      await new Promise(resolve => setTimeout(resolve, 200));
+      await loop.stop();
+
+      const metrics = loop.getMetrics();
+      expect(metrics.cognitivePercepts).toBeGreaterThan(0);
+      expect(typeof metrics.cognitiveGoalsCompleted).toBe('number');
+      expect(typeof metrics.cognitiveGoalsFailed).toBe('number');
+      expect(typeof metrics.memoryConsolidations).toBe('number');
+    });
+  });
+
+  describe('Stimulus-to-Percept Bridge', () => {
+    it('should convert environment stimuli to cognitive percepts', () => {
+      const processor = loop.getCognitiveProcessor()!;
+      expect(processor.getState().perceptBufferSize).toBe(0);
+
+      loop.injectStimulus({
+        type: 'message',
+        source: 'user',
+        priority: 0.7,
+        data: { text: 'Hello world' },
+        timestamp: Date.now(),
+      });
+
+      expect(processor.getState().perceptBufferSize).toBe(1);
+    });
+
+    it('should map stimulus types to percept sources', () => {
+      const percepts: any[] = [];
+      loop.on('cognitive_percept', (p) => percepts.push(p));
+
+      loop.injectStimulus({
+        type: 'message',
+        source: 'user',
+        priority: 0.5,
+        data: {},
+        timestamp: Date.now(),
+      });
+
+      loop.injectStimulus({
+        type: 'schedule',
+        source: 'cron',
+        priority: 0.3,
+        data: {},
+        timestamp: Date.now(),
+      });
+
+      loop.injectStimulus({
+        type: 'system',
+        source: 'internal',
+        priority: 0.1,
+        data: {},
+        timestamp: Date.now(),
+      });
+
+      expect(percepts[0].source).toBe('message');
+      expect(percepts[1].source).toBe('schedule');
+      expect(percepts[2].source).toBe('internal');
     });
   });
 });

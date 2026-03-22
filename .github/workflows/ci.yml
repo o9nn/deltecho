@@ -70,7 +70,7 @@ jobs:
         run: pnpm --filter @deltecho/eventa test -- --coverage
 
       - name: Run tests - deep-tree-echo-orchestrator
-        run: pnpm --filter deep-tree-echo-orchestrator test -- --coverage
+        run: pnpm --filter deep-tree-echo-orchestrator test -- --coverage --forceExit
 
       - name: Run tests - @deltecho/sys6-triality
         run: pnpm --filter @deltecho/sys6-triality test -- --coverage || echo "::warning::sys6-triality tests pending"
@@ -80,6 +80,11 @@ jobs:
 
       - name: Run tests - tree-polytope-kernel
         run: npx jest --config jest.config.js --no-coverage --forceExit --testPathPattern="deep-tree-echo-core/src/__tests__/tree-polytope-kernel"
+
+      - name: Verify orchestrator cognitive tests
+        run: |
+          echo "Verifying cognitive-tick-processor, autonomy-lifecycle, and mail-security tests..."
+          pnpm --filter deep-tree-echo-orchestrator test -- --forceExit --no-coverage --testPathPattern="(cognitive-tick-processor|autonomy-lifecycle|mail-security)"
 
       - name: Build all packages
         run: pnpm run build
@@ -94,9 +99,10 @@ jobs:
             ./dove9/coverage/lcov.info
             ./packages/cognitive/coverage/lcov.info
             ./packages/reasoning/coverage/lcov.info
-            ./deep-tree-echo-orchestrator/coverage/lcov.info
             ./packages/eventa/coverage/lcov.info
+            ./deep-tree-echo-orchestrator/coverage/lcov.info
             ./packages/sys6-triality/coverage/lcov.info
+            ./packages/double-membrane/coverage/lcov.info
           flags: unittests
           name: deltecho-coverage
           fail_ci_if_error: false
@@ -183,6 +189,7 @@ jobs:
             packages/cognitive/dist
             packages/reasoning/dist
             dove9/dist
+            packages/eventa/dist
             deep-tree-echo-orchestrator/dist
             packages/ui-components/dist
           retention-days: 7

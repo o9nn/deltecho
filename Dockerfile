@@ -14,6 +14,8 @@ COPY package.json pnpm-lock.yaml pnpm-workspace.yaml ./
 COPY deep-tree-echo-core/package.json ./deep-tree-echo-core/
 COPY deep-tree-echo-orchestrator/package.json ./deep-tree-echo-orchestrator/
 COPY packages/shared/package.json ./packages/shared/
+COPY dove9/package.json ./dove9/
+COPY packages/eventa/package.json ./packages/eventa/
 
 # Install dependencies
 RUN pnpm install --frozen-lockfile
@@ -22,9 +24,15 @@ RUN pnpm install --frozen-lockfile
 COPY deep-tree-echo-core/ ./deep-tree-echo-core/
 COPY deep-tree-echo-orchestrator/ ./deep-tree-echo-orchestrator/
 COPY packages/shared/ ./packages/shared/
+COPY dove9/ ./dove9/
+COPY packages/eventa/ ./packages/eventa/
 
-# Build packages
-RUN pnpm -r build
+# Build packages in dependency order
+RUN pnpm --filter deep-tree-echo-core build && \
+    pnpm --filter @deltecho/shared build && \
+    pnpm --filter dove9 build && \
+    pnpm --filter @deltecho/eventa build && \
+    pnpm --filter deep-tree-echo-orchestrator build
 
 # Stage 2: Production
 FROM node:22-alpine AS production
@@ -49,6 +57,10 @@ COPY --from=builder /app/deep-tree-echo-orchestrator/dist ./deep-tree-echo-orche
 COPY --from=builder /app/deep-tree-echo-orchestrator/package.json ./deep-tree-echo-orchestrator/
 COPY --from=builder /app/packages/shared/dist ./packages/shared/dist
 COPY --from=builder /app/packages/shared/package.json ./packages/shared/
+COPY --from=builder /app/dove9/dist ./dove9/dist
+COPY --from=builder /app/dove9/package.json ./dove9/
+COPY --from=builder /app/packages/eventa/dist ./packages/eventa/dist
+COPY --from=builder /app/packages/eventa/package.json ./packages/eventa/
 
 # Set ownership
 RUN chown -R deltecho:deltecho /app

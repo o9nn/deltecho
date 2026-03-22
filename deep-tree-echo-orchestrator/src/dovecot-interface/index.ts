@@ -2,6 +2,8 @@ import { getLogger } from 'deep-tree-echo-core';
 import { MilterServer, MilterConfig, EmailMessage } from './milter-server.js';
 import { LMTPServer, LMTPConfig } from './lmtp-server.js';
 import { EmailProcessor } from './email-processor.js';
+import { EmailSanitizer, type SanitizerConfig, type SanitizationResult } from './email-sanitizer.js';
+import { MailRateLimiter, type RateLimiterConfig, type RateLimitResult } from './mail-rate-limiter.js';
 
 const log = getLogger('deep-tree-echo-orchestrator/DovecotInterface');
 
@@ -21,6 +23,14 @@ export interface DovecotConfig {
   allowedDomains: string[];
   /** Deep Tree Echo email address for bot identity */
   botEmailAddress: string;
+  /** Enable email sanitization (Phase 6 production hardening) */
+  enableSanitization: boolean;
+  /** Email sanitizer configuration */
+  sanitizer?: Partial<SanitizerConfig>;
+  /** Enable rate limiting */
+  enableRateLimiting: boolean;
+  /** Rate limiter configuration */
+  rateLimiter?: Partial<RateLimiterConfig>;
 }
 
 const DEFAULT_CONFIG: DovecotConfig = {
@@ -30,6 +40,8 @@ const DEFAULT_CONFIG: DovecotConfig = {
   lmtpSocket: '/var/run/deep-tree-echo/lmtp.sock',
   allowedDomains: ['*'],
   botEmailAddress: 'echo@localhost',
+  enableSanitization: true,
+  enableRateLimiting: true,
 };
 
 /**
@@ -40,17 +52,39 @@ const DEFAULT_CONFIG: DovecotConfig = {
  * - LMTP interface for local mail delivery processing
  * - Email-to-DeepTreeEcho message conversion
  * - Response generation and sending via SMTP
+ * - Email sanitization (XSS, injection, executable blocking)
+ * - Rate limiting (per-sender, per-domain, global)
  */
 export class DovecotInterface {
   private config: DovecotConfig;
   private milterServer?: MilterServer;
   private lmtpServer?: LMTPServer;
   private emailProcessor: EmailProcessor;
+  private emailSanitizer?: EmailSanitizer;
+  private mailRateLimiter?: MailRateLimiter;
   private running: boolean = false;
+
+  // Security metrics
+  private securityMetrics = {
+    totalProcessed: 0,
+    sanitized: 0,
+    rejected: 0,
+    rateLimited: 0,
+  };
 
   constructor(config: Partial<DovecotConfig> = {}) {
     this.config = { ...DEFAULT_CONFIG, ...config };
     this.emailProcessor = new EmailProcessor(this.config.botEmailAddress);
+
+    // Initialize security components
+    if (this.config.enableSanitization) {
+      this.emailSanitizer = new EmailSanitizer(this.config.sanitizer);
+      log.info('Email sanitizer initialized');
+    }
+    if (this.config.enableRateLimiting) {
+      this.mailRateLimiter = new MailRateLimiter(this.config.rateLimiter);
+      log.info('Mail rate limiter initialized');
+    }
   }
 
   /**
@@ -114,6 +148,10 @@ export class DovecotInterface {
       await this.lmtpServer.stop();
     }
 
+    if (this.mailRateLimiter) {
+      this.mailRateLimiter.stop();
+    }
+
     this.running = false;
     log.info('Dovecot integration stopped');
   }
@@ -127,13 +165,41 @@ export class DovecotInterface {
 
   /**
    * Handle incoming email from Milter or LMTP
+   *
+   * Pipeline: Rate Limit → Sanitize → Route → Process → Respond
    */
   private async handleIncomingEmail(email: EmailMessage): Promise<void> {
+    this.securityMetrics.totalProcessed++;
     log.info(`Processing email from ${email.from} to ${email.to.join(', ')}`);
 
     try {
-      // Check if this email is addressed to Deep Tree Echo
-      const isForBot = email.to.some(
+      // Step 1: Rate limiting
+      if (this.mailRateLimiter) {
+        const rateLimitResult = this.mailRateLimiter.checkLimit(email.from);
+        if (!rateLimitResult.allowed) {
+          this.securityMetrics.rateLimited++;
+          log.warn(`Email rate-limited from ${email.from}: ${rateLimitResult.reason}`);
+          return;
+        }
+      }
+
+      // Step 2: Sanitization
+      let processedEmail = email;
+      if (this.emailSanitizer) {
+        const sanitizationResult = this.emailSanitizer.sanitize(email);
+        if (sanitizationResult.rejected) {
+          this.securityMetrics.rejected++;
+          log.warn(`Email rejected from ${email.from}: ${sanitizationResult.rejectionReason}`);
+          return;
+        }
+        if (sanitizationResult.wasModified) {
+          this.securityMetrics.sanitized++;
+          processedEmail = sanitizationResult.message;
+        }
+      }
+
+      // Step 3: Check if this email is addressed to Deep Tree Echo
+      const isForBot = processedEmail.to.some(
         (addr) => addr.toLowerCase() === this.config.botEmailAddress.toLowerCase()
       );
 
@@ -142,23 +208,36 @@ export class DovecotInterface {
         return;
       }
 
-      // Process the email and generate a response
-      const response = await this.emailProcessor.processEmail(email);
+      // Step 4: Process the email and generate a response
+      const response = await this.emailProcessor.processEmail(processedEmail);
 
       if (response) {
-        log.info(`Generated response for ${email.from}`);
-        // The response will be sent via the DeltaChat interface or SMTP
+        log.info(`Generated response for ${processedEmail.from}`);
         this.emit('response', {
-          to: email.from,
+          to: processedEmail.from,
           from: this.config.botEmailAddress,
-          subject: `Re: ${email.subject}`,
+          subject: `Re: ${processedEmail.subject}`,
           body: response,
-          inReplyTo: email.messageId,
+          inReplyTo: processedEmail.messageId,
         });
       }
     } catch (error) {
       log.error('Failed to process email:', error);
     }
+  }
+
+  /**
+   * Get security metrics
+   */
+  public getSecurityMetrics(): typeof this.securityMetrics {
+    return { ...this.securityMetrics };
+  }
+
+  /**
+   * Get rate limiter statistics
+   */
+  public getRateLimiterStats() {
+    return this.mailRateLimiter?.getStats() ?? null;
   }
 
   /**
@@ -195,3 +274,5 @@ export class DovecotInterface {
 }
 
 export { EmailMessage, MilterConfig, LMTPConfig };
+export { EmailSanitizer, type SanitizerConfig, type SanitizationResult } from './email-sanitizer.js';
+export { MailRateLimiter, type RateLimiterConfig, type RateLimitResult } from './mail-rate-limiter.js';

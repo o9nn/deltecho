@@ -31,6 +31,16 @@ export {
   type EmailMessage,
 } from './dovecot-interface/index.js';
 
+// Dove9 Security - Email Sanitization & Rate Limiting (Phase 6 Production Hardening)
+export {
+  EmailSanitizer,
+  type SanitizerConfig,
+  type SanitizationResult,
+  MailRateLimiter,
+  type RateLimiterConfig,
+  type RateLimitResult,
+} from './dovecot-interface/index.js';
+
 // IPC Server
 export {
   IPCServer,
@@ -126,6 +136,16 @@ export {
   type TriadConfig,
 } from './echo-agent-loop.js';
 
+// Cognitive Tick Processor - Real cognitive work per tick
+export {
+  CognitiveTickProcessor,
+  type CognitiveTickProcessorConfig,
+  type CognitivePercept,
+  type EpisodicMemory,
+  type CognitiveGoal,
+  type SelfImageSnapshot,
+} from './cognitive-tick-processor.js';
+
 // Cosmic Order Bridge - Campbell's System hierarchy (sys1-6 composition)
 export {
   CosmicOrderBridge,
@@ -137,6 +157,17 @@ export {
 
 // AAR (Agent-Arena-Relation) System - Core identity architecture
 export * from './aar/index.js';
+
+// Autonomy Lifecycle - Developmental cycle for true autonomy
+export {
+  AutonomyLifecycleCoordinator,
+  createAutonomyLifecycleCoordinator,
+  AutonomyPhase,
+  type AutonomyLifecycleConfig,
+  type VirtualAgentModel,
+  type VirtualArenaModel,
+  type DevelopmentalCycleResult,
+} from './autonomy-lifecycle.js';
 
 // Entelechy Integration - Deep cognitive loop
 export {
