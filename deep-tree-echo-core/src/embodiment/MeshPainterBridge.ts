@@ -1,0 +1,229 @@
+/**
+ * @fileoverview MeshPainterBridge — Runtime texture atlas management for Live2D
+ *
+ * Composition: /deltecho ( /live2d-miara -> /live2d-dtecho ( "mesh-painter" ) )
+ *
+ * This module provides the TypeScript bridge between the mesh-painter Python tool
+ * (offline atlas generation) and the runtime Live2D expression pipeline. It:
+ *
+ * 1. Manages cognitive-mode texture atlas variants at runtime
+ * 2. Swaps texture atlases based on endocrine state (glow intensity/color)
+ * 3. Provides the atlas region map for expression-driven texture effects
+ * 4. Integrates with the DTEchoExpressionPipeline for seamless avatar rendering
+ *
+ * The mesh-painter Python tool generates the atlas variants offline:
+ *   python tools/mesh-painter/mesh_painter.py variants --input base.png --output-dir variants/
+ *
+ * This bridge then loads and swaps between those variants at runtime based on
+ * the current cognitive mode from the endocrine system.
+ *
+ * @packageDocumentation
+ */
+
+// ─── Types ──────────────────────────────────────────────────────
+
+/** Atlas region definition matching the Python mesh_painter regions */
+export interface AtlasRegion {
+  name: string;
+  x: number;
+  y: number;
+  width: number;
+  height: number;
+  description: string;
+}
+
+/** Cognitive mode glow configuration */
+export interface ModeGlowConfig {
+  color: [number, number, number, number]; // RGBA
+  intensity: number;
+  radius: number;
+}
+
+/** Texture atlas variant metadata */
+export interface AtlasVariant {
+  mode: string;
+  filename: string;
+  glowColor: [number, number, number, number];
+}
+
+/** Manifest for all generated variants */
+export interface VariantsManifest {
+  version: string;
+  baseAtlas: string;
+  variants: Record<string, string>;
+  modeGlowColors: Record<string, [number, number, number, number]>;
+}
+
+/** MeshPainterBridge configuration */
+export interface MeshPainterConfig {
+  /** Base URL for atlas assets (e.g., '/models/dtecho/') */
+  atlasBaseUrl: string;
+  /** Whether to preload all variants on init */
+  preloadAll: boolean;
+  /** Transition duration in ms when swapping atlases */
+  transitionMs: number;
+  /** Fallback atlas filename if variant not found */
+  fallbackAtlas: string;
+}
+
+// ─── Constants ──────────────────────────────────────────────────
+
+/** DTE atlas regions (must match Python mesh_painter.py DTE_ATLAS_REGIONS) */
+export const DTE_ATLAS_REGIONS: Record<string, AtlasRegion> = {
+  hair_main: { name: 'hair_main', x: 0, y: 0, width: 600, height: 500,
+    description: 'Primary hair strands — silver-white to mint gradient' },
+  hair_bangs: { name: 'hair_bangs', x: 0, y: 500, width: 400, height: 300,
+    description: 'Bangs and front hair pieces' },
+  hair_back: { name: 'hair_back', x: 600, y: 0, width: 400, height: 400,
+    description: 'Back hair and flowing strands' },
+  body_torso: { name: 'body_torso', x: 512, y: 1024, width: 1024, height: 600,
+    description: 'Torso with clothing — black tank top' },
+  body_arms: { name: 'body_arms', x: 400, y: 200, width: 600, height: 400,
+    description: 'Arms and hands' },
+  body_legs: { name: 'body_legs', x: 0, y: 600, width: 500, height: 400,
+    description: 'Legs and feet' },
+  mushroom_env: { name: 'mushroom_env', x: 1024, y: 0, width: 1024, height: 1024,
+    description: 'Bioluminescent mushroom environment' },
+  shoulder_pads: { name: 'shoulder_pads', x: 512, y: 1024, width: 1024, height: 512,
+    description: 'Amber neural-tree shoulder pads' },
+  choker: { name: 'choker', x: 768, y: 1024, width: 512, height: 200,
+    description: 'Purple LED cyberpunk choker' },
+  face_decals: { name: 'face_decals', x: 1400, y: 1600, width: 648, height: 448,
+    description: 'Holographic hearts, diamonds, hexagons' },
+  decorations: { name: 'decorations', x: 0, y: 1600, width: 600, height: 448,
+    description: 'Small decorative elements and accessories' },
+};
+
+/** Cognitive mode → glow color (must match Python MODE_GLOW_COLORS) */
+export const MODE_GLOW_COLORS: Record<string, [number, number, number, number]> = {
+  REWARD:      [255, 200, 50, 100],
+  EXPLORATORY: [0, 255, 220, 100],
+  REFLECTIVE:  [140, 100, 255, 80],
+  FOCUSED:     [200, 220, 255, 60],
+  SOCIAL:      [255, 150, 200, 90],
+  STRESSED:    [255, 100, 80, 80],
+  VIGILANT:    [0, 200, 255, 90],
+  RESTING:     [100, 150, 255, 50],
+  THREAT:      [255, 60, 60, 100],
+  MAINTENANCE: [180, 180, 180, 40],
+};
+
+const DEFAULT_CONFIG: MeshPainterConfig = {
+  atlasBaseUrl: '/models/dtecho/',
+  preloadAll: false,
+  transitionMs: 500,
+  fallbackAtlas: 'texture_00.png',
+};
+
+// ─── MeshPainterBridge ──────────────────────────────────────────
+
+export class MeshPainterBridge {
+  private config: MeshPainterConfig;
+  private currentMode: string = 'RESTING';
+  private loadedVariants: Map<string, HTMLImageElement | null> = new Map();
+  private manifest: VariantsManifest | null = null;
+
+  constructor(config: Partial<MeshPainterConfig> = {}) {
+    this.config = { ...DEFAULT_CONFIG, ...config };
+  }
+
+  /**
+   * Load the variants manifest generated by mesh-painter.
+   */
+  async loadManifest(manifestUrl?: string): Promise<VariantsManifest> {
+    const url = manifestUrl || `${this.config.atlasBaseUrl}variants/variants_manifest.json`;
+    try {
+      const response = await fetch(url);
+      this.manifest = await response.json();
+      return this.manifest!;
+    } catch (e) {
+      console.warn('[MeshPainterBridge] Failed to load manifest, using defaults');
+      this.manifest = {
+        version: '1.0.0',
+        baseAtlas: 'texture_00.png',
+        variants: {},
+        modeGlowColors: MODE_GLOW_COLORS as any,
+      };
+      return this.manifest;
+    }
+  }
+
+  /**
+   * Get the atlas filename for a given cognitive mode.
+   * Falls back to the base atlas if no variant exists.
+   */
+  getAtlasForMode(mode: string): string {
+    if (this.manifest?.variants[mode]) {
+      return `${this.config.atlasBaseUrl}variants/${this.manifest.variants[mode]}`;
+    }
+    return `${this.config.atlasBaseUrl}${this.config.fallbackAtlas}`;
+  }
+
+  /**
+   * Called by the expression pipeline on each tick.
+   * Returns the atlas URL to use based on the current cognitive mode.
+   */
+  onExpressionTick(mode: string): { atlasUrl: string; shouldSwap: boolean; glowColor: [number, number, number, number] } {
+    const shouldSwap = mode !== this.currentMode;
+    this.currentMode = mode;
+
+    return {
+      atlasUrl: this.getAtlasForMode(mode),
+      shouldSwap,
+      glowColor: MODE_GLOW_COLORS[mode] || MODE_GLOW_COLORS.RESTING,
+    };
+  }
+
+  /**
+   * Get the glow intensity for a cognitive mode (0-1).
+   */
+  getGlowIntensity(mode: string): number {
+    const color = MODE_GLOW_COLORS[mode] || MODE_GLOW_COLORS.RESTING;
+    return color[3] / 255;
+  }
+
+  /**
+   * Get the atlas region for a named body part.
+   */
+  getRegion(name: string): AtlasRegion | undefined {
+    return DTE_ATLAS_REGIONS[name];
+  }
+
+  /**
+   * Get all regions that should glow for a given mode.
+   * Different modes emphasize different body parts.
+   */
+  getGlowRegions(mode: string): string[] {
+    switch (mode) {
+      case 'REWARD':
+      case 'EXPLORATORY':
+        return ['mushroom_env', 'shoulder_pads', 'face_decals'];
+      case 'SOCIAL':
+        return ['face_decals', 'choker', 'hair_main'];
+      case 'FOCUSED':
+        return ['shoulder_pads', 'choker'];
+      case 'REFLECTIVE':
+        return ['mushroom_env', 'hair_main'];
+      case 'STRESSED':
+      case 'THREAT':
+        return ['choker', 'shoulder_pads'];
+      case 'RESTING':
+        return ['mushroom_env'];
+      default:
+        return ['mushroom_env'];
+    }
+  }
+
+  /** Get current mode */
+  getCurrentMode(): string {
+    return this.currentMode;
+  }
+}
+
+// ─── Factory ─────────────────────────────────────────────────────
+
+export function createMeshPainterBridge(
+  config?: Partial<MeshPainterConfig>,
+): MeshPainterBridge {
+  return new MeshPainterBridge(config);
+}
