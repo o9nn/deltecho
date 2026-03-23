@@ -37,6 +37,9 @@ export * from './tree-polytope-kernel';
 // Export core-self modules — persistent local intelligence
 export * from './core-self';
 
+// Export persona modules — cognitive persona architecture with tree-polytope grounding
+export * from './persona';
+
 // Export utility modules
 export * from './utils/logger';
 

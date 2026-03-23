@@ -155,6 +155,30 @@ jest.unstable_mockModule('../autonomy-pipeline.js', () => ({
   })),
 }));
 
+jest.unstable_mockModule('../deltachat-autonomy-bridge.js', () => ({
+  DeltaChatAutonomyBridge: jest.fn().mockImplementation(() => ({
+    start: jest.fn<() => Promise<void>>().mockResolvedValue(undefined),
+    stop: jest.fn<() => Promise<void>>().mockResolvedValue(undefined),
+    processMessage: jest.fn<() => Promise<any>>().mockResolvedValue({ response: 'mock' }),
+    getStats: jest.fn().mockReturnValue({ messagesProcessed: 0 }),
+    on: jest.fn(),
+  })),
+}));
+
+jest.unstable_mockModule('../echo-agent-loop.js', () => ({
+  EchoAgentLoop: jest.fn().mockImplementation(() => ({
+    start: jest.fn<() => Promise<void>>().mockResolvedValue(undefined),
+    stop: jest.fn<() => Promise<void>>().mockResolvedValue(undefined),
+    injectStimulus: jest.fn(),
+    getState: jest.fn().mockReturnValue({ running: false, totalTicks: 0 }),
+    getMetrics: jest.fn().mockReturnValue({
+      totalTicks: 0, perceptsProcessed: 0, actionsExecuted: 0,
+      memoriesConsolidated: 0, errors: 0, averageTickMs: 0,
+    }),
+    on: jest.fn(),
+  })),
+}));
+
 type Orchestrator = import('../orchestrator.js').Orchestrator;
 type CognitiveTierMode = import('../orchestrator.js').CognitiveTierMode;
 
