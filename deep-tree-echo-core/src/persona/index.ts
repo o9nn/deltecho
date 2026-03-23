@@ -77,3 +77,11 @@ export {
   type BackupManifest,
   type BackupImage,
 } from './persona-backup.js';
+// Persona Expression Bridge (connects persona to Live2D pipeline)
+export {
+  PersonaExpressionBridge,
+  createPersonaExpressionBridge,
+  generatePersonaExpressionTrainingData,
+  type PersonaExpressionState,
+  type PersonaExpressionBridgeConfig,
+} from './persona-expression-bridge.js';
