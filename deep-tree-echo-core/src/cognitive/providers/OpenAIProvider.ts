@@ -13,8 +13,8 @@ import {
   StreamChunk,
   ProviderHealth,
   registerProvider,
-} from './LLMProvider';
-import { getLogger } from '../../utils/logger';
+} from './LLMProvider.js';
+import { getLogger } from '../../utils/logger.js';
 
 const log = getLogger('deep-tree-echo-core/cognitive/providers/OpenAIProvider');
 

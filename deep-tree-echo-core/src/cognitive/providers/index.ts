@@ -18,12 +18,12 @@ export {
   createProvider,
   getRegisteredProviders,
   providerRegistry,
-} from './LLMProvider';
+} from './LLMProvider.js';
 
 // Import providers to register them
 import './OpenAIProvider';
 import './AnthropicProvider';
 
 // Export provider classes for direct use
-export { OpenAIProvider } from './OpenAIProvider';
-export { AnthropicProvider } from './AnthropicProvider';
+export { OpenAIProvider } from './OpenAIProvider.js';
+export { AnthropicProvider } from './AnthropicProvider.js';

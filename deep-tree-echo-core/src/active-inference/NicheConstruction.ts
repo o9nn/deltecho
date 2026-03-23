@@ -13,7 +13,7 @@
  * In cognitive terms, this means actively shaping the information environment.
  */
 
-import { getLogger } from "../utils/logger";
+import { getLogger } from "../utils/logger.js";
 import { EventEmitter } from "events";
 import {
   ActiveInference,

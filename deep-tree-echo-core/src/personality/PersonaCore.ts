@@ -1,5 +1,5 @@
-import { getLogger } from '../utils/logger';
-import { MemoryStorage, InMemoryStorage } from '../memory/storage';
+import { getLogger } from '../utils/logger.js';
+import { MemoryStorage, InMemoryStorage } from '../memory/storage.js';
 
 const log = getLogger('deep-tree-echo-core/personality/PersonaCore');
 

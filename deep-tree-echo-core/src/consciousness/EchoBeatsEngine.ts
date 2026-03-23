@@ -19,7 +19,7 @@
  */
 
 import { EventEmitter } from "events";
-import { getLogger } from "../utils/logger";
+import { getLogger } from "../utils/logger.js";
 
 const log = getLogger("deep-tree-echo-core/consciousness/EchoBeatsEngine");
 

@@ -1,5 +1,5 @@
-import { getLogger } from '../utils/logger';
-import { MemoryStorage, InMemoryStorage } from './storage';
+import { getLogger } from '../utils/logger.js';
+import { MemoryStorage, InMemoryStorage } from './storage.js';
 
 const log = getLogger('deep-tree-echo-core/memory/RAGMemoryStore');
 

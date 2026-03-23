@@ -9,7 +9,7 @@
  * - Audit logging
  */
 
-import { getLogger } from '../utils/logger';
+import { getLogger } from '../utils/logger.js';
 import * as crypto from 'crypto';
 
 const log = getLogger('deep-tree-echo-core/security/SecureIntegration');

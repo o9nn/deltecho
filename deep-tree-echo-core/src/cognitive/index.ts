@@ -4,14 +4,14 @@ export {
   type CognitiveFunction,
   CognitiveFunctionType,
   type ParallelCognitiveResult,
-} from './LLMService';
+} from './LLMService.js';
 
 export {
   EnhancedLLMService,
   type LLMConfig,
   type LLMMessage,
   type LLMResponse,
-} from './EnhancedLLMService';
+} from './EnhancedLLMService.js';
 
 export {
   ESNAutognosisReservoir,

@@ -1,4 +1,4 @@
-import { MemoryStorage } from './storage';
+import { MemoryStorage } from './storage.js';
 /**
  * Structure for a conversation memory
  */

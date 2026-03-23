@@ -17,21 +17,21 @@
  */
 
 import { EventEmitter } from "events";
-import { getLogger } from "../utils/logger";
+import { getLogger } from "../utils/logger.js";
 import {
   RelevanceRealizationWorkspace,
   relevanceWorkspace,
   RelevanceSignal,
   CognitiveDomain,
   RelevanceType,
-} from "../consciousness/RelevanceRealizationWorkspace";
+} from "../consciousness/RelevanceRealizationWorkspace.js";
 import {
   ScientificGeniusEngine,
   scientificGeniusEngine,
   ScientificDomain,
   ScientificInsight,
   Hypothesis,
-} from "./ScientificGeniusEngine";
+} from "./ScientificGeniusEngine.js";
 
 const log = getLogger(
   "deep-tree-echo-core/scientific-genius/RelevanceGeniusIntegration",

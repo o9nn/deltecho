@@ -9,7 +9,7 @@
  * functionality is production-ready with actual API integrations.
  */
 
-import { getLogger } from '../utils/logger';
+import { getLogger } from '../utils/logger.js';
 import {
   LLMProvider,
   ChatMessage,
@@ -18,7 +18,7 @@ import {
   StreamChunk,
   createProvider,
   getRegisteredProviders,
-} from './providers';
+} from './providers/index.js';
 
 const log = getLogger('deep-tree-echo-core/cognitive/UnifiedLLMService');
 

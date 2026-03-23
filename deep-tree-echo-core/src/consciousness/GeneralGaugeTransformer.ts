@@ -23,7 +23,7 @@
  */
 
 import { EventEmitter } from "events";
-import { getLogger } from "../utils/logger";
+import { getLogger } from "../utils/logger.js";
 import {
   GaugeCognitiveManifold,
   gaugeCognitiveManifold,
@@ -35,7 +35,7 @@ import {
   CognitiveSymmetry,
   LieGroup,
   LieGroupElement,
-} from "./GaugeCognitiveManifold";
+} from "./GaugeCognitiveManifold.js";
 
 const log = getLogger(
   "deep-tree-echo-core/consciousness/GeneralGaugeTransformer",

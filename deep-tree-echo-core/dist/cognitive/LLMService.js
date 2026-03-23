@@ -1,4 +1,4 @@
-import { getLogger } from '../utils/logger';
+import { getLogger } from '../utils/logger.js';
 const log = getLogger('deep-tree-echo-core/cognitive/LLMService');
 /**
  * Types of cognitive functions supported by the service

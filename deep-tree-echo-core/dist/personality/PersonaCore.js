@@ -1,5 +1,5 @@
-import { getLogger } from '../utils/logger';
-import { InMemoryStorage } from '../memory/storage';
+import { getLogger } from '../utils/logger.js';
+import { InMemoryStorage } from '../memory/storage.js';
 const log = getLogger('deep-tree-echo-core/personality/PersonaCore');
 // Storage keys for persona state
 const STORAGE_KEY_PERSONALITY = 'deepTreeEchoBotPersonality';

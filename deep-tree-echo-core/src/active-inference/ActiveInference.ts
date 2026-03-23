@@ -11,7 +11,7 @@
  * Based on Karl Friston's Free Energy Principle and Active Inference framework.
  */
 
-import { getLogger } from "../utils/logger";
+import { getLogger } from "../utils/logger.js";
 import { EventEmitter } from "events";
 
 const log = getLogger("deep-tree-echo-core/active-inference/ActiveInference");

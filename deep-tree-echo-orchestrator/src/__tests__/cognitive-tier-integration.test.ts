@@ -129,6 +129,15 @@ jest.unstable_mockModule('../dove9-integration.js', () => ({
 }));
 
 jest.unstable_mockModule('../proactive-loop.js', () => ({
+  ProactivePhase: {
+    IDLE: 'IDLE',
+    PERCEIVE: 'PERCEIVE',
+    REFLECT: 'REFLECT',
+    PLAN: 'PLAN',
+    ACT: 'ACT',
+    INTEGRATE: 'INTEGRATE',
+  },
+  EnvironmentStimulus: {},
   ProactiveLoop: jest.fn().mockImplementation(() => ({
     start: jest.fn<() => Promise<void>>().mockResolvedValue(undefined),
     stop: jest.fn<() => Promise<void>>().mockResolvedValue(undefined),
@@ -155,26 +164,26 @@ jest.unstable_mockModule('../autonomy-pipeline.js', () => ({
   })),
 }));
 
-jest.unstable_mockModule('../deltachat-autonomy-bridge.js', () => ({
-  DeltaChatAutonomyBridge: jest.fn().mockImplementation(() => ({
-    start: jest.fn<() => Promise<void>>().mockResolvedValue(undefined),
-    stop: jest.fn<() => Promise<void>>().mockResolvedValue(undefined),
-    processMessage: jest.fn<() => Promise<any>>().mockResolvedValue({ response: 'mock' }),
-    getStats: jest.fn().mockReturnValue({ messagesProcessed: 0 }),
-    on: jest.fn(),
-  })),
-}));
-
 jest.unstable_mockModule('../echo-agent-loop.js', () => ({
   EchoAgentLoop: jest.fn().mockImplementation(() => ({
     start: jest.fn<() => Promise<void>>().mockResolvedValue(undefined),
     stop: jest.fn<() => Promise<void>>().mockResolvedValue(undefined),
-    injectStimulus: jest.fn(),
-    getState: jest.fn().mockReturnValue({ running: false, totalTicks: 0 }),
+    isRunning: jest.fn().mockReturnValue(false),
+    processMessage: jest.fn<() => Promise<string>>().mockResolvedValue('Mock agent response'),
     getMetrics: jest.fn().mockReturnValue({
-      totalTicks: 0, perceptsProcessed: 0, actionsExecuted: 0,
-      memoriesConsolidated: 0, errors: 0, averageTickMs: 0,
+      totalCycles: 0,
+      totalActions: 0,
+      totalPerceptions: 0,
+      averageCycleTime: 0,
     }),
+    on: jest.fn(),
+  })),
+}));
+
+jest.unstable_mockModule('../deltachat-autonomy-bridge.js', () => ({
+  DeltaChatAutonomyBridge: jest.fn().mockImplementation(() => ({
+    start: jest.fn<() => Promise<void>>().mockResolvedValue(undefined),
+    stop: jest.fn<() => Promise<void>>().mockResolvedValue(undefined),
     on: jest.fn(),
   })),
 }));

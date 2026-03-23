@@ -6,7 +6,7 @@
  * zero-tolerance policy for stubs - all implementations are production-ready.
  */
 
-import { getLogger } from '../../utils/logger';
+import { getLogger } from '../../utils/logger.js';
 
 const log = getLogger('deep-tree-echo-core/cognitive/providers/LLMProvider');
 

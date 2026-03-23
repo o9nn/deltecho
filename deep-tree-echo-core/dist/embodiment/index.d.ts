@@ -1,2 +1,2 @@
-export { ProprioceptiveEmbodiment } from './ProprioceptiveEmbodiment';
+export { ProprioceptiveEmbodiment } from './ProprioceptiveEmbodiment.js';
 //# sourceMappingURL=index.d.ts.map

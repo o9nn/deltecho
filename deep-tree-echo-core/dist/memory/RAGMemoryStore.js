@@ -1,5 +1,5 @@
-import { getLogger } from '../utils/logger';
-import { InMemoryStorage } from './storage';
+import { getLogger } from '../utils/logger.js';
+import { InMemoryStorage } from './storage.js';
 const log = getLogger('deep-tree-echo-core/memory/RAGMemoryStore');
 // Default configuration
 const DEFAULT_MEMORY_LIMIT = 1000;

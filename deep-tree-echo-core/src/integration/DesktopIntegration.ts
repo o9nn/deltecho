@@ -5,12 +5,12 @@
  * into desktop applications (Electron, Tauri).
  */
 
-import { LLMService, CognitiveFunctionType } from '../cognitive/LLMService';
-import { EnhancedLLMService, LLMConfig } from '../cognitive/EnhancedLLMService';
-import { RAGMemoryStore, Memory } from '../memory/RAGMemoryStore';
-import { PersonaCore } from '../personality/PersonaCore';
-import { MemoryStorage, InMemoryStorage } from '../memory/storage';
-import { getLogger } from '../utils/logger';
+import { LLMService, CognitiveFunctionType } from '../cognitive/LLMService.js';
+import { EnhancedLLMService, LLMConfig } from '../cognitive/EnhancedLLMService.js';
+import { RAGMemoryStore, Memory } from '../memory/RAGMemoryStore.js';
+import { PersonaCore } from '../personality/PersonaCore.js';
+import { MemoryStorage, InMemoryStorage } from '../memory/storage.js';
+import { getLogger } from '../utils/logger.js';
 
 const log = getLogger('deep-tree-echo-core/integration/DesktopIntegration');
 
