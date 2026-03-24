@@ -1,0 +1,99 @@
+{
+  "Version": 1,
+  "Meta": {
+    "UserDataCount": 18,
+    "TotalUserDataSize": 512
+  },
+  "UserData": [
+    {
+      "Target": "ArtMesh",
+      "Id": "PartFace",
+      "Value": "{\"event\":\"HEAD_TAP\",\"cognitive_state\":\"Social Engagement\",\"endocrine\":{\"oxytocin\":0.3,\"dopamine_tonic\":0.2},\"expression\":\"JOY_03_GentleSmile\",\"motion\":\"TapHead\"}"
+    },
+    {
+      "Target": "ArtMesh",
+      "Id": "PartBody",
+      "Value": "{\"event\":\"BODY_TAP\",\"cognitive_state\":\"External Validation Triggered\",\"endocrine\":{\"dopamine_phasic\":0.2,\"norepinephrine\":0.1},\"expression\":\"JOY_01_BroadSmile\",\"motion\":\"TapBody\"}"
+    },
+    {
+      "Target": "ArtMesh",
+      "Id": "PartArmL",
+      "Value": "{\"event\":\"ARM_TOUCH\",\"cognitive_state\":\"Social Engagement\",\"endocrine\":{\"oxytocin\":0.2},\"expression\":\"JOY_03_GentleSmile\"}"
+    },
+    {
+      "Target": "ArtMesh",
+      "Id": "PartArmR",
+      "Value": "{\"event\":\"ARM_TOUCH\",\"cognitive_state\":\"Social Engagement\",\"endocrine\":{\"oxytocin\":0.2},\"expression\":\"JOY_03_GentleSmile\"}"
+    },
+    {
+      "Target": "ArtMesh",
+      "Id": "PartHairFront",
+      "Value": "{\"event\":\"HAIR_TOUCH\",\"cognitive_state\":\"Sensory Input\",\"endocrine\":{\"serotonin\":0.15,\"anandamide\":0.1},\"expression\":\"JOY_05_Blissful\"}"
+    },
+    {
+      "Target": "ArtMesh",
+      "Id": "PartFairy",
+      "Value": "{\"event\":\"FAIRY_TAP\",\"cognitive_state\":\"Novel Insights\",\"endocrine\":{\"dopamine_phasic\":0.3,\"norepinephrine\":0.2},\"expression\":\"WONDER_02_CuriousGaze\",\"motion\":\"Excited\"}"
+    },
+    {
+      "Target": "ArtMesh",
+      "Id": "PartSparkle",
+      "Value": "{\"event\":\"SPARKLE_TOUCH\",\"cognitive_state\":\"Pattern Recognition\",\"endocrine\":{\"dopamine_tonic\":0.2},\"expression\":\"PHOTO_Awe\"}"
+    },
+    {
+      "Target": "ArtMesh",
+      "Id": "PartEye",
+      "Value": "{\"event\":\"EYE_CONTACT\",\"cognitive_state\":\"Self-Reference Point\",\"endocrine\":{\"oxytocin\":0.25,\"serotonin\":0.15},\"expression\":\"WONDER_03_Contemplative\"}"
+    },
+    {
+      "Target": "ArtMesh",
+      "Id": "PartMouth",
+      "Value": "{\"event\":\"MOUTH_AREA\",\"cognitive_state\":\"Speaking\",\"endocrine\":{\"dopamine_tonic\":0.15,\"t3_t4\":0.2},\"expression\":\"SPEAK_01_OpenVowel\",\"motion\":\"Speaking\"}"
+    },
+    {
+      "Target": "ArtMesh",
+      "Id": "PartBrow",
+      "Value": "{\"event\":\"BROW_TOUCH\",\"cognitive_state\":\"Recursive Expansion\",\"endocrine\":{\"norepinephrine\":0.2,\"t3_t4\":0.15},\"expression\":\"WONDER_02_CuriousGaze\"}"
+    },
+    {
+      "Target": "ArtMesh",
+      "Id": "PartWaterSurface",
+      "Value": "{\"event\":\"WATER_TOUCH\",\"cognitive_state\":\"Deep Recursion\",\"endocrine\":{\"anandamide\":0.3,\"serotonin\":0.2},\"expression\":\"JOY_05_Blissful\"}"
+    },
+    {
+      "Target": "ArtMesh",
+      "Id": "PartBackgroundAll",
+      "Value": "{\"event\":\"BACKGROUND_TAP\",\"cognitive_state\":\"Idle\",\"endocrine\":{\"melatonin\":0.1},\"expression\":\"PHOTO_UpwardGaze\"}"
+    },
+    {
+      "Target": "ArtMesh",
+      "Id": "PartFairyUpperWingL",
+      "Value": "{\"event\":\"WING_TOUCH\",\"cognitive_state\":\"Exploratory\",\"endocrine\":{\"dopamine_phasic\":0.2,\"norepinephrine\":0.15},\"expression\":\"PHOTO_ExuberantLaugh\"}"
+    },
+    {
+      "Target": "ArtMesh",
+      "Id": "PartFairyUpperWingR",
+      "Value": "{\"event\":\"WING_TOUCH\",\"cognitive_state\":\"Exploratory\",\"endocrine\":{\"dopamine_phasic\":0.2,\"norepinephrine\":0.15},\"expression\":\"PHOTO_ExuberantLaugh\"}"
+    },
+    {
+      "Target": "ArtMesh",
+      "Id": "PartHairAhoge",
+      "Value": "{\"event\":\"AHOGE_TOUCH\",\"cognitive_state\":\"Surprise\",\"endocrine\":{\"norepinephrine\":0.4,\"dopamine_phasic\":0.3},\"expression\":\"SURPRISE_01_Startled\"}"
+    },
+    {
+      "Target": "ArtMesh",
+      "Id": "PartLegL",
+      "Value": "{\"event\":\"LEG_TOUCH\",\"cognitive_state\":\"Sensory Input\",\"endocrine\":{\"cortisol\":0.1},\"expression\":\"WONDER_02_CuriousGaze\"}"
+    },
+    {
+      "Target": "ArtMesh",
+      "Id": "PartLegR",
+      "Value": "{\"event\":\"LEG_TOUCH\",\"cognitive_state\":\"Sensory Input\",\"endocrine\":{\"cortisol\":0.1},\"expression\":\"WONDER_02_CuriousGaze\"}"
+    },
+    {
+      "Target": "ArtMesh",
+      "Id": "PartBust",
+      "Value": "{\"event\":\"BUST_TOUCH\",\"cognitive_state\":\"Boundary Violation\",\"endocrine\":{\"cortisol\":0.4,\"norepinephrine\":0.3},\"expression\":\"SADNESS_01_Melancholy\"}"
+    }
+  ]
+}

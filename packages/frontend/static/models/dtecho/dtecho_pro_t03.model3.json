@@ -1,103 +1,140 @@
 {
-	"Version": 3,
-	"FileReferences": {
-		"Moc": "dtecho_pro_t03.moc3",
-		"Textures": [
-			"dtecho_pro_t03.4096/texture_00.png"
-		],
-		"Physics": "dtecho_pro_t03.physics3.json",
-		"DisplayInfo": "dtecho_pro_t03.cdi3.json",
-		"Expressions": [
-			{
-				"Name": "JOY_01_BroadSmile",
-				"File": "expressions/JOY_01_BroadSmile.exp3.json"
-			},
-			{
-				"Name": "JOY_02_Laughing",
-				"File": "expressions/JOY_02_Laughing.exp3.json"
-			},
-			{
-				"Name": "JOY_03_GentleSmile",
-				"File": "expressions/JOY_03_GentleSmile.exp3.json"
-			},
-			{
-				"Name": "JOY_05_Blissful",
-				"File": "expressions/JOY_05_Blissful.exp3.json"
-			},
-			{
-				"Name": "PHOTO_Awe",
-				"File": "expressions/PHOTO_Awe.exp3.json"
-			},
-			{
-				"Name": "PHOTO_ExuberantLaugh",
-				"File": "expressions/PHOTO_ExuberantLaugh.exp3.json"
-			},
-			{
-				"Name": "PHOTO_UpwardGaze",
-				"File": "expressions/PHOTO_UpwardGaze.exp3.json"
-			},
-			{
-				"Name": "SPEAK_01_OpenVowel",
-				"File": "expressions/SPEAK_01_OpenVowel.exp3.json"
-			},
-			{
-				"Name": "WONDER_02_CuriousGaze",
-				"File": "expressions/WONDER_02_CuriousGaze.exp3.json"
-			},
-			{
-				"Name": "WONDER_03_Contemplative",
-				"File": "expressions/WONDER_03_Contemplative.exp3.json"
-			}
-		],
-		"Motions": {
-			"Idle": [
-				{
-					"File": "motions/Scene1.motion3.json",
-					"FadeInTime": 0.5,
-					"FadeOutTime": 0.5
-				}
-			],
-			"Tap": [
-				{
-					"File": "motions/Scene2.motion3.json",
-					"FadeInTime": 0.3,
-					"FadeOutTime": 0.5
-				}
-			],
-			"Flic": [
-				{
-					"File": "motions/Scene3.motion3.json",
-					"FadeInTime": 0.3,
-					"FadeOutTime": 0.5
-				}
-			]
-		}
-	},
-	"Groups": [
-		{
-			"Target": "Parameter",
-			"Name": "LipSync",
-			"Ids": [
-				"ParamMouthOpenY"
-			]
-		},
-		{
-			"Target": "Parameter",
-			"Name": "EyeBlink",
-			"Ids": [
-				"ParamEyeLOpen",
-				"ParamEyeROpen"
-			]
-		}
-	],
-	"HitAreas": [
-		{
-			"Name": "Head",
-			"Id": "PartFace"
-		},
-		{
-			"Name": "Body",
-			"Id": "PartBody"
-		}
-	]
+  "Version": 3,
+  "FileReferences": {
+    "Moc": "dtecho_pro_t03.moc3",
+    "Textures": [
+      "dtecho_pro_t03.4096/texture_00.png"
+    ],
+    "Physics": "dtecho_pro_t03.physics3.json",
+    "Pose": "dtecho_pro_t03.pose3.json",
+    "DisplayInfo": "dtecho_pro_t03.cdi3.json",
+    "UserData": "dtecho_pro_t03.userdata3.json",
+    "Expressions": [
+      { "Name": "JOY_01_BroadSmile",       "File": "expressions/JOY_01_BroadSmile.exp3.json" },
+      { "Name": "JOY_02_Laughing",          "File": "expressions/JOY_02_Laughing.exp3.json" },
+      { "Name": "JOY_03_GentleSmile",       "File": "expressions/JOY_03_GentleSmile.exp3.json" },
+      { "Name": "JOY_05_Blissful",          "File": "expressions/JOY_05_Blissful.exp3.json" },
+      { "Name": "PHOTO_Awe",                "File": "expressions/PHOTO_Awe.exp3.json" },
+      { "Name": "PHOTO_ExuberantLaugh",     "File": "expressions/PHOTO_ExuberantLaugh.exp3.json" },
+      { "Name": "PHOTO_UpwardGaze",         "File": "expressions/PHOTO_UpwardGaze.exp3.json" },
+      { "Name": "SPEAK_01_OpenVowel",       "File": "expressions/SPEAK_01_OpenVowel.exp3.json" },
+      { "Name": "WONDER_02_CuriousGaze",    "File": "expressions/WONDER_02_CuriousGaze.exp3.json" },
+      { "Name": "WONDER_03_Contemplative",  "File": "expressions/WONDER_03_Contemplative.exp3.json" },
+      { "Name": "NEUTRAL_Reset",            "File": "expressions/NEUTRAL_Reset.exp3.json" },
+      { "Name": "SADNESS_01_Melancholy",    "File": "expressions/SADNESS_01_Melancholy.exp3.json" },
+      { "Name": "SURPRISE_01_Startled",     "File": "expressions/SURPRISE_01_Startled.exp3.json" }
+    ],
+    "Motions": {
+      "Idle": [
+        { "File": "motions/Scene1.motion3.json", "FadeInTime": 0.5, "FadeOutTime": 0.5 },
+        { "File": "motions/idle_breathing.motion3.json", "FadeInTime": 1.0, "FadeOutTime": 1.0 }
+      ],
+      "TapHead": [
+        { "File": "motions/Scene2.motion3.json", "FadeInTime": 0.3, "FadeOutTime": 0.5 }
+      ],
+      "TapBody": [
+        { "File": "motions/Scene3.motion3.json", "FadeInTime": 0.3, "FadeOutTime": 0.5 }
+      ],
+      "Greeting": [
+        { "File": "motions/greeting_wave.motion3.json", "FadeInTime": 0.3, "FadeOutTime": 0.5 }
+      ],
+      "Thinking": [
+        { "File": "motions/thinking_tilt.motion3.json", "FadeInTime": 0.5, "FadeOutTime": 0.8 }
+      ],
+      "Speaking": [
+        { "File": "motions/speaking_gesture.motion3.json", "FadeInTime": 0.2, "FadeOutTime": 0.3 }
+      ],
+      "Excited": [
+        { "File": "motions/excited_bounce.motion3.json", "FadeInTime": 0.2, "FadeOutTime": 0.4 }
+      ],
+      "Sleeping": [
+        { "File": "motions/sleeping_drift.motion3.json", "FadeInTime": 1.5, "FadeOutTime": 2.0 }
+      ]
+    }
+  },
+  "Groups": [
+    {
+      "Target": "Parameter",
+      "Name": "LipSync",
+      "Ids": [ "ParamMouthOpenY" ]
+    },
+    {
+      "Target": "Parameter",
+      "Name": "EyeBlink",
+      "Ids": [ "ParamEyeLOpen", "ParamEyeROpen" ]
+    },
+    {
+      "Target": "Parameter",
+      "Name": "Breathing",
+      "Ids": [ "ParamBreath" ]
+    },
+    {
+      "Target": "Parameter",
+      "Name": "FaceAngle",
+      "Ids": [ "ParamAngleX", "ParamAngleY", "ParamAngleZ" ]
+    },
+    {
+      "Target": "Parameter",
+      "Name": "BodyAngle",
+      "Ids": [ "ParamBodyAngleX", "ParamBodyAngleZ", "ParamBodyAngleX2", "ParamBodyAngleZ2" ]
+    },
+    {
+      "Target": "Parameter",
+      "Name": "EyeGaze",
+      "Ids": [ "ParamEyeBallX", "ParamEyeBallY" ]
+    },
+    {
+      "Target": "Parameter",
+      "Name": "BrowExpression",
+      "Ids": [ "ParamBrowLY", "ParamBrowRY", "ParamBrowLX", "ParamBrowRX", "ParamBrowLAngle", "ParamBrowRAngle", "ParamBrowLForm", "ParamBrowRForm" ]
+    },
+    {
+      "Target": "Parameter",
+      "Name": "MouthExpression",
+      "Ids": [ "ParamMouthForm", "ParamMouthOpenY" ]
+    },
+    {
+      "Target": "Parameter",
+      "Name": "HairPhysics",
+      "Ids": [ "ParamHairFront", "ParamHairFront2", "ParamHairSide", "ParamHairSide2", "ParamHairBack", "ParamHairBack2", "ParamHairTail", "ParamHairTail2", "ParamHairAho1", "ParamHairAho2" ]
+    },
+    {
+      "Target": "Parameter",
+      "Name": "ClothPhysics",
+      "Ids": [ "ParamHairCloth", "ParamHairCloth2", "ParamCloth1", "ParamCloth2", "ParamSleeve", "ParamSleeve2", "ParamSleeveL", "ParamSleeveL2", "ParamSleeveRibbon", "ParamSleeveRibbonL" ]
+    },
+    {
+      "Target": "Parameter",
+      "Name": "WaterEffect",
+      "Ids": [ "ParamWaterSurface1", "ParamWaterSurface2", "ParamWaterSurfaceLower1", "ParamWaterSurfaceLower2", "ParamWaterSurfaceBack1", "ParamWaterSurfaceBack2", "ParamWaterSurfaceLight1", "ParamWaterSurfaceLight2", "ParamWaterSurfaceLight3" ]
+    },
+    {
+      "Target": "Parameter",
+      "Name": "WingAnimation",
+      "Ids": [ "ParamFlapping3", "ParamFlapping4", "ParamFlapping7", "ParamFlapping8" ]
+    },
+    {
+      "Target": "Parameter",
+      "Name": "FairyCompanion",
+      "Ids": [ "ParamFairyDO" ]
+    },
+    {
+      "Target": "Parameter",
+      "Name": "GlobalTransform",
+      "Ids": [ "ParamMoveX", "ParamMoveY", "ParamScaling", "ParamAllX", "ParamAllY", "ParamAllRotate" ]
+    },
+    {
+      "Target": "Parameter",
+      "Name": "SpecialEffects",
+      "Ids": [ "ParamEffect1" ]
+    }
+  ],
+  "HitAreas": [
+    { "Name": "Head",  "Id": "PartFace" },
+    { "Name": "Body",  "Id": "PartBody" },
+    { "Name": "ArmL",  "Id": "PartArmL" },
+    { "Name": "ArmR",  "Id": "PartArmR" },
+    { "Name": "Hair",  "Id": "PartHairFront" },
+    { "Name": "Fairy", "Id": "PartFairy" }
+  ]
 }

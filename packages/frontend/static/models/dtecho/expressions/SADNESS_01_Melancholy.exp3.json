@@ -5,7 +5,7 @@
   "Parameters": [
     {
       "Id": "ParamMouthForm",
-      "Value": 0.5,
+      "Value": -0.4,
       "Blend": "Add"
     },
     {
@@ -15,62 +15,72 @@
     },
     {
       "Id": "ParamEyeLOpen",
-      "Value": 0.25,
+      "Value": 0.6,
       "Blend": "Multiply"
     },
     {
       "Id": "ParamEyeROpen",
-      "Value": 0.25,
+      "Value": 0.6,
       "Blend": "Multiply"
     },
     {
       "Id": "ParamBrowLY",
-      "Value": 0.1,
+      "Value": -0.3,
       "Blend": "Add"
     },
     {
       "Id": "ParamBrowRY",
-      "Value": 0.1,
+      "Value": -0.3,
       "Blend": "Add"
     },
     {
       "Id": "ParamBrowLAngle",
-      "Value": -0.1,
+      "Value": -0.4,
       "Blend": "Add"
     },
     {
       "Id": "ParamBrowRAngle",
-      "Value": -0.1,
+      "Value": -0.4,
+      "Blend": "Add"
+    },
+    {
+      "Id": "ParamBrowLForm",
+      "Value": -0.5,
+      "Blend": "Add"
+    },
+    {
+      "Id": "ParamBrowRForm",
+      "Value": -0.5,
       "Blend": "Add"
     },
     {
       "Id": "ParamEyeBallY",
-      "Value": 0.2,
+      "Value": 0.4,
+      "Blend": "Add"
+    },
+    {
+      "Id": "ParamEyeBallX",
+      "Value": -0.2,
       "Blend": "Add"
     },
     {
       "Id": "ParamAngleY",
-      "Value": 5.0,
+      "Value": -5.0,
       "Blend": "Add"
     },
     {
       "Id": "ParamAngleZ",
-      "Value": -3.0,
+      "Value": -5.0,
       "Blend": "Add"
     },
     {
       "Id": "ParamBodyAngleZ",
-      "Value": -2.0,
+      "Value": -4.0,
       "Blend": "Add"
     },
     {
-      "Id": "ParamBreath",
-      "Value": 0.6,
-      "Blend": "Override"
-    },
-    {
       "Id": "ParamEffect1",
-      "Value": 0.7,
+      "Value": 0.2,
       "Blend": "Add"
     }
   ]

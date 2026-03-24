@@ -1,0 +1,107 @@
+{
+  "Type": "Live2D Expression",
+  "FadeInTime": 0.5,
+  "FadeOutTime": 0.8,
+  "Parameters": [
+    {
+      "Id": "ParamMouthForm",
+      "Value": 0.0,
+      "Blend": "Override"
+    },
+    {
+      "Id": "ParamMouthOpenY",
+      "Value": 0.0,
+      "Blend": "Override"
+    },
+    {
+      "Id": "ParamEyeLOpen",
+      "Value": 1.0,
+      "Blend": "Override"
+    },
+    {
+      "Id": "ParamEyeROpen",
+      "Value": 1.0,
+      "Blend": "Override"
+    },
+    {
+      "Id": "ParamBrowLY",
+      "Value": 0.0,
+      "Blend": "Override"
+    },
+    {
+      "Id": "ParamBrowRY",
+      "Value": 0.0,
+      "Blend": "Override"
+    },
+    {
+      "Id": "ParamBrowLAngle",
+      "Value": 0.0,
+      "Blend": "Override"
+    },
+    {
+      "Id": "ParamBrowRAngle",
+      "Value": 0.0,
+      "Blend": "Override"
+    },
+    {
+      "Id": "ParamBrowLForm",
+      "Value": 0.0,
+      "Blend": "Override"
+    },
+    {
+      "Id": "ParamBrowRForm",
+      "Value": 0.0,
+      "Blend": "Override"
+    },
+    {
+      "Id": "ParamBrowLX",
+      "Value": 0.0,
+      "Blend": "Override"
+    },
+    {
+      "Id": "ParamBrowRX",
+      "Value": 0.0,
+      "Blend": "Override"
+    },
+    {
+      "Id": "ParamEyeBallX",
+      "Value": 0.0,
+      "Blend": "Override"
+    },
+    {
+      "Id": "ParamEyeBallY",
+      "Value": 0.0,
+      "Blend": "Override"
+    },
+    {
+      "Id": "ParamAngleX",
+      "Value": 0.0,
+      "Blend": "Override"
+    },
+    {
+      "Id": "ParamAngleY",
+      "Value": 0.0,
+      "Blend": "Override"
+    },
+    {
+      "Id": "ParamAngleZ",
+      "Value": 0.0,
+      "Blend": "Override"
+    },
+    {
+      "Id": "ParamBodyAngleX",
+      "Value": 0.0,
+      "Blend": "Override"
+    },
+    {
+      "Id": "ParamBodyAngleZ",
+      "Value": 0.0,
+      "Blend": "Override"
+    },
+    {
+      "Id": "ParamEffect1",
+      "Value": 0.0,
+      "Blend": "Override"
+    }
+  ]
+}

@@ -1,0 +1,69 @@
+{
+  "Type": "Live2D Pose",
+  "FadeInTime": 0.5,
+  "Groups": [
+    [
+      { "Id": "PartFace",      "Link": [] },
+      { "Id": "PartBrow",      "Link": [] },
+      { "Id": "PartEye",       "Link": [] },
+      { "Id": "PartMouth",     "Link": [] }
+    ],
+    [
+      { "Id": "PartBody",      "Link": ["PartUpperBody", "PartLowerBody", "PartBust", "PartTrunk"] },
+      { "Id": "PartUpperBody", "Link": [] },
+      { "Id": "PartLowerBody", "Link": [] },
+      { "Id": "PartBust",      "Link": [] },
+      { "Id": "PartTrunk",     "Link": [] }
+    ],
+    [
+      { "Id": "PartArmL",      "Link": ["PartHandL"] },
+      { "Id": "PartHandL",     "Link": [] }
+    ],
+    [
+      { "Id": "PartArmR",      "Link": [] }
+    ],
+    [
+      { "Id": "PartLegL",      "Link": [] }
+    ],
+    [
+      { "Id": "PartLegR",      "Link": [] }
+    ],
+    [
+      { "Id": "PartHairFront",   "Link": ["PartHairAccFront"] },
+      { "Id": "PartHairSideL",   "Link": [] },
+      { "Id": "PartHairSideR",   "Link": [] },
+      { "Id": "PartHairAhoge",   "Link": [] },
+      { "Id": "PartHairL",       "Link": ["PartHairTwinL"] },
+      { "Id": "PartHairR",       "Link": ["PartHairTwinR"] },
+      { "Id": "PartHairBack",    "Link": ["PartHairBackTail", "PartHairSideLBack", "PartHairBackRBack"] },
+      { "Id": "PartHairAccFront","Link": [] },
+      { "Id": "PartHairTwinL",   "Link": [] },
+      { "Id": "PartHairTwinR",   "Link": [] },
+      { "Id": "PartHairBackTail","Link": [] },
+      { "Id": "PartHairSideLBack","Link": [] },
+      { "Id": "PartHairBackRBack","Link": [] }
+    ],
+    [
+      { "Id": "PartFairy",       "Link": ["PartFairyBody", "PartFairyUpperWingL", "PartFairyLowerWingL", "PartFairyUpperWingR", "PartFairyLowerWingR"] },
+      { "Id": "PartFairyBody",   "Link": [] },
+      { "Id": "PartFairyUpperWingL", "Link": [] },
+      { "Id": "PartFairyLowerWingL", "Link": [] },
+      { "Id": "PartFairyUpperWingR", "Link": [] },
+      { "Id": "PartFairyLowerWingR", "Link": [] }
+    ],
+    [
+      { "Id": "PartWaterSurface",      "Link": ["PartWaterSurfaceUpper", "PartWaterSurfaceBack", "PartWaterSurfaceUnder", "PartWaterSurfaceReflection"] },
+      { "Id": "PartWaterSurfaceUpper", "Link": [] },
+      { "Id": "PartWaterSurfaceBack",  "Link": [] },
+      { "Id": "PartWaterSurfaceUnder", "Link": [] },
+      { "Id": "PartWaterSurfaceReflection", "Link": [] }
+    ],
+    [
+      { "Id": "PartBackgroundAll", "Link": ["PartBackground"] },
+      { "Id": "PartBackground",    "Link": [] }
+    ],
+    [
+      { "Id": "PartSparkle",  "Link": [] }
+    ]
+  ]
+}

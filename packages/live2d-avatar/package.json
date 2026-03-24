@@ -1,0 +1,55 @@
+{
+  "name": "@deltecho/live2d-avatar",
+  "version": "1.0.0",
+  "description": "Production-grade Live2D Cubism 5 avatar integration for Deep Tree Echo cognitive architecture",
+  "type": "module",
+  "main": "dist/index.js",
+  "module": "dist/index.js",
+  "types": "dist/index.d.ts",
+  "exports": {
+    ".": {
+      "import": "./dist/index.js",
+      "types": "./dist/index.d.ts"
+    }
+  },
+  "files": [
+    "dist",
+    "src"
+  ],
+  "scripts": {
+    "build": "tsup src/index.ts --format esm --dts --clean",
+    "dev": "tsup src/index.ts --format esm --dts --watch",
+    "typecheck": "tsc --noEmit",
+    "lint": "eslint src --ext .ts"
+  },
+  "dependencies": {
+    "pixi.js": "^8.6.6",
+    "untitled-pixi-live2d-engine": "^1.0.4"
+  },
+  "devDependencies": {
+    "tsup": "^8.4.0",
+    "typescript": "^5.7.3",
+    "@types/node": "^22.13.0"
+  },
+  "peerDependencies": {
+    "@deltecho/deep-tree-echo-core": "workspace:*"
+  },
+  "engines": {
+    "node": ">=22.0.0"
+  },
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/o9nn/deltecho.git",
+    "directory": "packages/live2d-avatar"
+  },
+  "keywords": [
+    "live2d",
+    "cubism5",
+    "pixijs",
+    "avatar",
+    "deep-tree-echo",
+    "cognitive-architecture",
+    "vtuber"
+  ]
+}
