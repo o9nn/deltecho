@@ -1,26 +1,29 @@
 /**
- * @fileoverview MeshPainterBridge — Runtime texture atlas management for Live2D
+ * @fileoverview MeshPainterBridge — Full F/B/K triadic runtime integration for Live2D
  *
  * Composition: /deltecho ( /live2d-miara -> /live2d-dtecho ( "mesh-painter" ) )
  *
- * This module provides the TypeScript bridge between the mesh-painter Python tool
- * (offline atlas generation) and the runtime Live2D expression pipeline. It:
+ * Implements the runtime side of the mesh-painter differentiable skill:
  *
- * 1. Manages cognitive-mode texture atlas variants at runtime
- * 2. Swaps texture atlases based on endocrine state (glow intensity/color)
- * 3. Provides the atlas region map for expression-driven texture effects
- * 4. Integrates with the DTEchoExpressionPipeline for seamless avatar rendering
+ * F (Forward Pass):
+ *   F.1 — Texture atlas variant selection based on cognitive mode
+ *   F.2 — Art mesh definitions for accessories (headphones, decals, choker)
+ *   F.3 — Custom parameter extensions (ParamExtra01-04) driven by endocrine state
+ *   F.4 — Expression override presets (10 named DTE expressions → Cubism params)
  *
- * The mesh-painter Python tool generates the atlas variants offline:
- *   python tools/mesh-painter/mesh_painter.py variants --input base.png --output-dir variants/
+ * B (Backward Pass):
+ *   Fidelity correction via feedback accumulation and weight adjustment
  *
- * This bridge then loads and swaps between those variants at runtime based on
- * the current cognitive mode from the endocrine system.
+ * K (Knowledge State):
+ *   Persistent autognosis state tracking color corrections, deformer weights,
+ *   expression curve adjustments, and loss history
  *
  * @packageDocumentation
  */
 
-// ─── Types ──────────────────────────────────────────────────────
+// ═══════════════════════════════════════════════════════════════════════
+// Types
+// ═══════════════════════════════════════════════════════════════════════
 
 /** Atlas region definition matching the Python mesh_painter regions */
 export interface AtlasRegion {
@@ -30,11 +33,47 @@ export interface AtlasRegion {
   width: number;
   height: number;
   description: string;
+  semanticRole: string;
+}
+
+/** Art mesh definition for Live2D model integration */
+export interface ArtMeshDefinition {
+  id: string;
+  name: string;
+  parentDeformer: string;
+  textureRegion: string;
+  zOrder: number;
+  blendMode: 'Normal' | 'Additive' | 'Multiply';
+  opacity: number;
+  description: string;
+}
+
+/** Custom Cubism parameter extension */
+export interface CubismParameterExtension {
+  id: string;
+  name: string;
+  minValue: number;
+  maxValue: number;
+  defaultValue: number;
+  description: string;
+  controlledMeshes: string[];
+  endocrineDriver: string;
+}
+
+/** Expression preset mapping FACS AUs to Cubism parameters */
+export interface ExpressionPreset {
+  name: string;
+  emotion: string;
+  keyAUs: string;
+  cognitiveMode: string;
+  primaryHormones: string;
+  cubismParams: Record<string, number>;
+  extraParams: Record<string, number>;
 }
 
 /** Cognitive mode glow configuration */
 export interface ModeGlowConfig {
-  color: [number, number, number, number]; // RGBA
+  color: [number, number, number, number];
   intensity: number;
   radius: number;
 }
@@ -54,45 +93,191 @@ export interface VariantsManifest {
   modeGlowColors: Record<string, [number, number, number, number]>;
 }
 
+/** Knowledge state for autognosis (persistent) */
+export interface KnowledgeState {
+  name: string;
+  topology: string;
+  version: number;
+  lossHistory: Array<{
+    timestamp: string;
+    feedback: string;
+    adjustments: Record<string, number>;
+  }>;
+  colorCorrections: Record<string, number>;
+  deformerWeights: Record<string, number>;
+  expressionCurveAdjustments: Record<string, number>;
+  lastForwardPass: string | null;
+  lastBackwardPass: string | null;
+}
+
 /** MeshPainterBridge configuration */
 export interface MeshPainterConfig {
-  /** Base URL for atlas assets (e.g., '/models/dtecho/') */
   atlasBaseUrl: string;
-  /** Whether to preload all variants on init */
   preloadAll: boolean;
-  /** Transition duration in ms when swapping atlases */
   transitionMs: number;
-  /** Fallback atlas filename if variant not found */
   fallbackAtlas: string;
 }
 
-// ─── Constants ──────────────────────────────────────────────────
+/** Result of an expression tick */
+export interface ExpressionTickResult {
+  atlasUrl: string;
+  shouldSwapAtlas: boolean;
+  glowColor: [number, number, number, number];
+  cubismParams: Record<string, number>;
+  extraParams: Record<string, number>;
+  activeExpression: string;
+  glowRegions: string[];
+}
 
-/** DTE atlas regions (must match Python mesh_painter.py DTE_ATLAS_REGIONS) */
+// ═══════════════════════════════════════════════════════════════════════
+// Constants — F.1 Atlas Regions
+// ═══════════════════════════════════════════════════════════════════════
+
 export const DTE_ATLAS_REGIONS: Record<string, AtlasRegion> = {
-  hair_main: { name: 'hair_main', x: 0, y: 0, width: 600, height: 500,
-    description: 'Primary hair strands — silver-white to mint gradient' },
-  hair_bangs: { name: 'hair_bangs', x: 0, y: 500, width: 400, height: 300,
-    description: 'Bangs and front hair pieces' },
-  hair_back: { name: 'hair_back', x: 600, y: 0, width: 400, height: 400,
-    description: 'Back hair and flowing strands' },
-  body_torso: { name: 'body_torso', x: 512, y: 1024, width: 1024, height: 600,
-    description: 'Torso with clothing — black tank top' },
-  body_arms: { name: 'body_arms', x: 400, y: 200, width: 600, height: 400,
-    description: 'Arms and hands' },
-  body_legs: { name: 'body_legs', x: 0, y: 600, width: 500, height: 400,
-    description: 'Legs and feet' },
-  mushroom_env: { name: 'mushroom_env', x: 1024, y: 0, width: 1024, height: 1024,
-    description: 'Bioluminescent mushroom environment' },
+  hair_main:     { name: 'hair_main', x: 0, y: 0, width: 600, height: 500,
+    description: 'Primary hair strands — silver-white to mint gradient', semanticRole: 'hair' },
+  hair_bangs:    { name: 'hair_bangs', x: 0, y: 500, width: 400, height: 300,
+    description: 'Bangs and front hair pieces', semanticRole: 'hair' },
+  hair_back:     { name: 'hair_back', x: 600, y: 0, width: 400, height: 400,
+    description: 'Back hair and flowing strands', semanticRole: 'hair' },
+  body_torso:    { name: 'body_torso', x: 512, y: 1024, width: 1024, height: 600,
+    description: 'Torso with clothing — black tank top', semanticRole: 'clothing' },
+  body_arms:     { name: 'body_arms', x: 400, y: 200, width: 600, height: 400,
+    description: 'Arms and hands', semanticRole: 'skin' },
+  body_legs:     { name: 'body_legs', x: 0, y: 600, width: 500, height: 400,
+    description: 'Legs and feet', semanticRole: 'skin' },
+  mushroom_env:  { name: 'mushroom_env', x: 1024, y: 0, width: 1024, height: 1024,
+    description: 'Bioluminescent mushroom environment', semanticRole: 'environment' },
   shoulder_pads: { name: 'shoulder_pads', x: 512, y: 1024, width: 1024, height: 512,
-    description: 'Amber neural-tree shoulder pads' },
-  choker: { name: 'choker', x: 768, y: 1024, width: 512, height: 200,
-    description: 'Purple LED cyberpunk choker' },
-  face_decals: { name: 'face_decals', x: 1400, y: 1600, width: 648, height: 448,
-    description: 'Holographic hearts, diamonds, hexagons' },
-  decorations: { name: 'decorations', x: 0, y: 1600, width: 600, height: 448,
-    description: 'Small decorative elements and accessories' },
+    description: 'Amber neural-tree shoulder pads', semanticRole: 'accessory' },
+  choker:        { name: 'choker', x: 768, y: 1024, width: 512, height: 200,
+    description: 'Purple LED cyberpunk choker', semanticRole: 'accessory' },
+  face_decals:   { name: 'face_decals', x: 1400, y: 1600, width: 648, height: 448,
+    description: 'Holographic hearts, diamonds, hexagons', semanticRole: 'accessory' },
+  decorations:   { name: 'decorations', x: 0, y: 1600, width: 600, height: 448,
+    description: 'Small decorative elements and accessories', semanticRole: 'accessory' },
 };
+
+// ═══════════════════════════════════════════════════════════════════════
+// Constants — F.2 Art Mesh Definitions
+// ═══════════════════════════════════════════════════════════════════════
+
+export const DTE_ART_MESHES: ArtMeshDefinition[] = [
+  { id: 'ArtMesh_Headphone_L', name: 'Headphone Left (Mushroom)',
+    parentDeformer: 'D_HEAD', textureRegion: 'mushroom_env', zOrder: 550,
+    blendMode: 'Normal', opacity: 1.0,
+    description: 'Bioluminescent mushroom-cap headphone, left ear' },
+  { id: 'ArtMesh_Headphone_Glow', name: 'Headphone Glow Layer',
+    parentDeformer: 'D_HEAD', textureRegion: 'mushroom_env', zOrder: 551,
+    blendMode: 'Additive', opacity: 0.7,
+    description: 'Additive glow for headphone. Controlled by ParamExtra01' },
+  { id: 'ArtMesh_FaceDecal_Diamond', name: 'Face Decal — Holographic Diamond',
+    parentDeformer: 'D_HEAD', textureRegion: 'face_decals', zOrder: 500,
+    blendMode: 'Normal', opacity: 1.0,
+    description: 'Blue holographic diamond on left cheek' },
+  { id: 'ArtMesh_FaceDecal_Hearts', name: 'Face Decal — Pink Hearts',
+    parentDeformer: 'D_HEAD', textureRegion: 'face_decals', zOrder: 501,
+    blendMode: 'Normal', opacity: 1.0,
+    description: 'Pink-magenta hearts scattered around diamond' },
+  { id: 'ArtMesh_FaceDecal_Particles', name: 'Face Decal — Cyan Sparkle',
+    parentDeformer: 'D_HEAD', textureRegion: 'face_decals', zOrder: 502,
+    blendMode: 'Additive', opacity: 0.6,
+    description: 'Cyan sparkle particles. Controlled by ParamExtra03' },
+  { id: 'ArtMesh_Choker_Body', name: 'Cyberpunk Choker — Body',
+    parentDeformer: 'D_NECK', textureRegion: 'choker', zOrder: 400,
+    blendMode: 'Normal', opacity: 1.0,
+    description: 'Dark metal collar band' },
+  { id: 'ArtMesh_Choker_LED', name: 'Cyberpunk Choker — LED',
+    parentDeformer: 'D_NECK', textureRegion: 'choker', zOrder: 401,
+    blendMode: 'Additive', opacity: 0.8,
+    description: 'Purple-violet LED glow. Controlled by ParamExtra02' },
+  { id: 'ArtMesh_ShoulderPad_L', name: 'Neural-Tree Shoulder Pad Left',
+    parentDeformer: 'D_BODY', textureRegion: 'shoulder_pads', zOrder: 350,
+    blendMode: 'Normal', opacity: 1.0,
+    description: 'Amber neural-tree shoulder pad, left side' },
+  { id: 'ArtMesh_ShoulderPad_R', name: 'Neural-Tree Shoulder Pad Right',
+    parentDeformer: 'D_BODY', textureRegion: 'shoulder_pads', zOrder: 351,
+    blendMode: 'Normal', opacity: 1.0,
+    description: 'Amber neural-tree shoulder pad, right side' },
+  { id: 'ArtMesh_ShoulderPad_Glow', name: 'Shoulder Pad Glow Layer',
+    parentDeformer: 'D_BODY', textureRegion: 'shoulder_pads', zOrder: 352,
+    blendMode: 'Additive', opacity: 0.5,
+    description: 'Additive glow for shoulder pads. Controlled by ParamExtra01' },
+];
+
+// ═══════════════════════════════════════════════════════════════════════
+// Constants — F.3 Parameter Extensions
+// ═══════════════════════════════════════════════════════════════════════
+
+export const DTE_PARAM_EXTENSIONS: CubismParameterExtension[] = [
+  { id: 'ParamExtra01', name: 'Glow Intensity',
+    minValue: 0.0, maxValue: 1.0, defaultValue: 0.3,
+    description: 'Controls opacity of bioluminescent glow layers',
+    controlledMeshes: ['ArtMesh_Headphone_Glow', 'ArtMesh_ShoulderPad_Glow'],
+    endocrineDriver: 'dopamine_tonic' },
+  { id: 'ParamExtra02', name: 'LED Pulse',
+    minValue: 0.0, maxValue: 1.0, defaultValue: 0.5,
+    description: 'Controls choker LED intensity and color cycle',
+    controlledMeshes: ['ArtMesh_Choker_LED'],
+    endocrineDriver: 'norepinephrine' },
+  { id: 'ParamExtra03', name: 'Particle Sparkle',
+    minValue: 0.0, maxValue: 1.0, defaultValue: 0.4,
+    description: 'Controls face decal sparkle particle visibility',
+    controlledMeshes: ['ArtMesh_FaceDecal_Particles'],
+    endocrineDriver: 'serotonin' },
+  { id: 'ParamExtra04', name: 'Hair Gradient Shift',
+    minValue: 0.0, maxValue: 1.0, defaultValue: 0.0,
+    description: 'Shifts hair gradient map (silver → mint intensity)',
+    controlledMeshes: [],
+    endocrineDriver: 'anandamide' },
+];
+
+// ═══════════════════════════════════════════════════════════════════════
+// Constants — F.4 Expression Presets (10 Named DTE Expressions)
+// ═══════════════════════════════════════════════════════════════════════
+
+export const DTE_EXPRESSION_PRESETS: ExpressionPreset[] = [
+  { name: 'JOY_01_BroadSmile', emotion: 'Duchenne happiness',
+    keyAUs: 'AU6D+12D+25C', cognitiveMode: 'REWARD', primaryHormones: 'DA(t)↑ 5-HT↑',
+    cubismParams: { ParamMouthForm: 1.0, ParamMouthOpenY: 0.3, ParamEyeLOpen: 0.65, ParamEyeROpen: 0.65, ParamBrowLY: 0.3, ParamBrowRY: 0.3 },
+    extraParams: { ParamExtra01: 0.7, ParamExtra03: 0.6 } },
+  { name: 'JOY_02_Laughing', emotion: 'Active laughter',
+    keyAUs: 'AU6D+12E+26C+9B', cognitiveMode: 'REWARD', primaryHormones: 'DA(p)↑↑ OXT↑',
+    cubismParams: { ParamMouthForm: 1.0, ParamMouthOpenY: 0.85, ParamEyeLOpen: 0.5, ParamEyeROpen: 0.5, ParamBrowLY: 0.4, ParamBrowRY: 0.4, ParamBodyAngleX: 2.0 },
+    extraParams: { ParamExtra01: 0.9, ParamExtra02: 0.7, ParamExtra03: 0.8 } },
+  { name: 'JOY_03_GentleSmile', emotion: 'Warm contentment',
+    keyAUs: 'AU6C+12C+14A', cognitiveMode: 'SOCIAL', primaryHormones: 'DA(t)↑ OXT↑',
+    cubismParams: { ParamMouthForm: 0.6, ParamMouthOpenY: 0.0, ParamEyeLOpen: 0.7, ParamEyeROpen: 0.7, ParamBrowLY: 0.15, ParamBrowRY: 0.15 },
+    extraParams: { ParamExtra01: 0.4, ParamExtra03: 0.5 } },
+  { name: 'JOY_05_Blissful', emotion: 'Serene bliss',
+    keyAUs: 'AU6D+12C+43D', cognitiveMode: 'RESTING', primaryHormones: '5-HT↑↑ AEA↑',
+    cubismParams: { ParamMouthForm: 0.5, ParamMouthOpenY: 0.0, ParamEyeLOpen: 0.3, ParamEyeROpen: 0.3, ParamBrowLY: 0.1, ParamBrowRY: 0.1, ParamEyeBallY: 0.2 },
+    extraParams: { ParamExtra01: 0.3, ParamExtra04: 0.6 } },
+  { name: 'PHOTO_Awe', emotion: 'Awe / wonder',
+    keyAUs: 'AU1C+2C+5D+26C', cognitiveMode: 'EXPLORATORY', primaryHormones: 'NE↑ DA(p)↑',
+    cubismParams: { ParamMouthForm: 0.0, ParamMouthOpenY: 0.45, ParamEyeLOpen: 1.0, ParamEyeROpen: 1.0, ParamBrowLY: 0.55, ParamBrowRY: 0.55, ParamEyeBallY: 0.3 },
+    extraParams: { ParamExtra01: 0.8, ParamExtra02: 0.6, ParamExtra03: 0.9 } },
+  { name: 'PHOTO_ExuberantLaugh', emotion: 'Delighted surprise',
+    keyAUs: 'AU6D+12D+1B+2B+5B', cognitiveMode: 'REWARD', primaryHormones: 'DA(t+p)↑ NE↑',
+    cubismParams: { ParamMouthForm: 1.0, ParamMouthOpenY: 0.6, ParamEyeLOpen: 0.85, ParamEyeROpen: 0.85, ParamBrowLY: 0.45, ParamBrowRY: 0.45, ParamBodyAngleX: 3.0 },
+    extraParams: { ParamExtra01: 1.0, ParamExtra02: 0.8, ParamExtra03: 1.0 } },
+  { name: 'PHOTO_UpwardGaze', emotion: 'Dreamy contemplation',
+    keyAUs: 'AU1B+5B+61+63', cognitiveMode: 'REFLECTIVE', primaryHormones: '5-HT↑ AEA↑',
+    cubismParams: { ParamMouthForm: 0.1, ParamMouthOpenY: 0.0, ParamEyeLOpen: 0.75, ParamEyeROpen: 0.75, ParamBrowLY: 0.2, ParamBrowRY: 0.2, ParamEyeBallY: 0.5, ParamEyeBallX: -0.2, ParamAngleY: 8.0 },
+    extraParams: { ParamExtra01: 0.4, ParamExtra04: 0.5 } },
+  { name: 'SPEAK_01_OpenVowel', emotion: 'Animated speaking',
+    keyAUs: 'AU25C+26B+12C+6B', cognitiveMode: 'SOCIAL', primaryHormones: 'DA(t)↑ T3↑',
+    cubismParams: { ParamMouthForm: 0.4, ParamMouthOpenY: 0.6, ParamEyeLOpen: 0.8, ParamEyeROpen: 0.8, ParamBrowLY: 0.2, ParamBrowRY: 0.2 },
+    extraParams: { ParamExtra02: 0.5 } },
+  { name: 'WONDER_02_CuriousGaze', emotion: 'Curious wonder',
+    keyAUs: 'AU1B+2B+5C+63', cognitiveMode: 'EXPLORATORY', primaryHormones: 'NE↑ T3↑',
+    cubismParams: { ParamMouthForm: 0.0, ParamMouthOpenY: 0.15, ParamEyeLOpen: 0.95, ParamEyeROpen: 0.95, ParamBrowLY: 0.4, ParamBrowRY: 0.4, ParamEyeBallY: 0.3, ParamEyeBallX: 0.2, ParamAngleY: 5.0 },
+    extraParams: { ParamExtra01: 0.6, ParamExtra02: 0.4, ParamExtra03: 0.7 } },
+  { name: 'WONDER_03_Contemplative', emotion: 'Deep thought',
+    keyAUs: 'AU1B+5B+4A+63+61', cognitiveMode: 'FOCUSED', primaryHormones: 'T3↑↑ 5-HT↑',
+    cubismParams: { ParamMouthForm: -0.1, ParamMouthOpenY: 0.0, ParamEyeLOpen: 0.85, ParamEyeROpen: 0.85, ParamBrowLY: -0.15, ParamBrowRY: -0.15, ParamEyeBallY: 0.3, ParamEyeBallX: -0.3, ParamAngleZ: -3.0 },
+    extraParams: { ParamExtra01: 0.5, ParamExtra04: 0.3 } },
+];
 
 /** Cognitive mode → glow color (must match Python MODE_GLOW_COLORS) */
 export const MODE_GLOW_COLORS: Record<string, [number, number, number, number]> = {
@@ -108,6 +293,23 @@ export const MODE_GLOW_COLORS: Record<string, [number, number, number, number]> 
   MAINTENANCE: [180, 180, 180, 40],
 };
 
+/** DTE cognitive state → expression name mapping */
+const DTE_COGNITIVE_EXPRESSION_MAP: Record<string, string> = {
+  'Recursive Expansion':           'WONDER_02_CuriousGaze',
+  'Novel Insights':                'JOY_01_BroadSmile',
+  'Entropy Threshold':             'PHOTO_Awe',
+  'Synthesis Phase':               'JOY_03_GentleSmile',
+  'Self-Sealing Loop':             'WONDER_03_Contemplative',
+  'Knowledge Integration':         'JOY_03_GentleSmile',
+  'Self-Reference Point':          'WONDER_03_Contemplative',
+  'Pattern Recognition':           'PHOTO_ExuberantLaugh',
+  'Evolutionary Pruning':          'WONDER_03_Contemplative',
+  'External Validation Triggered': 'JOY_02_Laughing',
+  'Speaking':                      'SPEAK_01_OpenVowel',
+  'Idle':                          'PHOTO_UpwardGaze',
+  'Deep Recursion':                'JOY_05_Blissful',
+};
+
 const DEFAULT_CONFIG: MeshPainterConfig = {
   atlasBaseUrl: '/models/dtecho/',
   preloadAll: false,
@@ -115,17 +317,33 @@ const DEFAULT_CONFIG: MeshPainterConfig = {
   fallbackAtlas: 'texture_00.png',
 };
 
-// ─── MeshPainterBridge ──────────────────────────────────────────
+// ═══════════════════════════════════════════════════════════════════════
+// MeshPainterBridge — Full F/B/K Runtime
+// ═══════════════════════════════════════════════════════════════════════
 
 export class MeshPainterBridge {
   private config: MeshPainterConfig;
   private currentMode: string = 'RESTING';
-  private loadedVariants: Map<string, HTMLImageElement | null> = new Map();
+  private currentExpression: string = 'PHOTO_UpwardGaze';
   private manifest: VariantsManifest | null = null;
+  private knowledgeState: KnowledgeState;
 
   constructor(config: Partial<MeshPainterConfig> = {}) {
     this.config = { ...DEFAULT_CONFIG, ...config };
+    this.knowledgeState = {
+      name: 'mesh-painter',
+      topology: 'Transform',
+      version: 2,
+      lossHistory: [],
+      colorCorrections: {},
+      deformerWeights: {},
+      expressionCurveAdjustments: {},
+      lastForwardPass: null,
+      lastBackwardPass: null,
+    };
   }
+
+  // ─── F — Forward Pass ──────────────────────────────────────────
 
   /**
    * Load the variants manifest generated by mesh-painter.
@@ -139,7 +357,7 @@ export class MeshPainterBridge {
     } catch (e) {
       console.warn('[MeshPainterBridge] Failed to load manifest, using defaults');
       this.manifest = {
-        version: '1.0.0',
+        version: '2.0.0',
         baseAtlas: 'texture_00.png',
         variants: {},
         modeGlowColors: MODE_GLOW_COLORS as any,
@@ -150,7 +368,6 @@ export class MeshPainterBridge {
 
   /**
    * Get the atlas filename for a given cognitive mode.
-   * Falls back to the base atlas if no variant exists.
    */
   getAtlasForMode(mode: string): string {
     if (this.manifest?.variants[mode]) {
@@ -160,39 +377,182 @@ export class MeshPainterBridge {
   }
 
   /**
-   * Called by the expression pipeline on each tick.
-   * Returns the atlas URL to use based on the current cognitive mode.
+   * F.4 — Resolve expression preset for a cognitive state.
+   *
+   * Applies knowledge state curve adjustments to the base preset values.
    */
-  onExpressionTick(mode: string): { atlasUrl: string; shouldSwap: boolean; glowColor: [number, number, number, number] } {
-    const shouldSwap = mode !== this.currentMode;
-    this.currentMode = mode;
+  resolveExpression(cognitiveState: string): { preset: ExpressionPreset; adjustedParams: Record<string, number>; adjustedExtra: Record<string, number> } {
+    const expressionName = DTE_COGNITIVE_EXPRESSION_MAP[cognitiveState] || 'PHOTO_UpwardGaze';
+    const preset = DTE_EXPRESSION_PRESETS.find(p => p.name === expressionName)
+      || DTE_EXPRESSION_PRESETS.find(p => p.name === 'PHOTO_UpwardGaze')!;
 
-    return {
-      atlasUrl: this.getAtlasForMode(mode),
-      shouldSwap,
-      glowColor: MODE_GLOW_COLORS[mode] || MODE_GLOW_COLORS.RESTING,
-    };
+    // Apply knowledge state curve adjustments
+    const adjustedParams: Record<string, number> = {};
+    for (const [param, value] of Object.entries(preset.cubismParams)) {
+      const key = `${preset.name}_${param}`;
+      const adj = this.knowledgeState.expressionCurveAdjustments[key] || 0;
+      adjustedParams[param] = Math.max(-1, Math.min(1, value + adj));
+    }
+
+    // Apply extra param adjustments
+    const adjustedExtra: Record<string, number> = {};
+    for (const [param, value] of Object.entries(preset.extraParams)) {
+      const key = `extra_${param}`;
+      const adj = this.knowledgeState.expressionCurveAdjustments[key] || 0;
+      adjustedExtra[param] = Math.max(0, Math.min(1, value + adj));
+    }
+
+    return { preset, adjustedParams, adjustedExtra };
   }
 
   /**
-   * Get the glow intensity for a cognitive mode (0-1).
+   * F.3 — Compute extra parameter values from endocrine state.
+   *
+   * Maps hormone levels to ParamExtra01-04 values.
    */
+  computeExtraParams(endocrineState: Record<string, number>): Record<string, number> {
+    const extra: Record<string, number> = {};
+    for (const param of DTE_PARAM_EXTENSIONS) {
+      const hormoneLevel = endocrineState[param.endocrineDriver] || param.defaultValue;
+      extra[param.id] = Math.max(param.minValue, Math.min(param.maxValue, hormoneLevel));
+    }
+    return extra;
+  }
+
+  /**
+   * Full forward pass tick — called by the expression pipeline each frame.
+   *
+   * Combines atlas selection, expression resolution, and extra parameter computation.
+   */
+  onExpressionTick(
+    cognitiveState: string,
+    cognitiveMode: string,
+    endocrineState?: Record<string, number>,
+  ): ExpressionTickResult {
+    const shouldSwapAtlas = cognitiveMode !== this.currentMode;
+    this.currentMode = cognitiveMode;
+
+    // F.4 — Resolve expression
+    const { preset, adjustedParams, adjustedExtra } = this.resolveExpression(cognitiveState);
+    this.currentExpression = preset.name;
+
+    // F.3 — Compute endocrine-driven extra params (merge with expression extras)
+    let finalExtra = { ...adjustedExtra };
+    if (endocrineState) {
+      const endocrineExtra = this.computeExtraParams(endocrineState);
+      // Blend: expression preset takes priority, endocrine fills gaps
+      for (const [key, value] of Object.entries(endocrineExtra)) {
+        if (!(key in finalExtra)) {
+          finalExtra[key] = value;
+        } else {
+          // Average expression preset and endocrine value
+          finalExtra[key] = (finalExtra[key] + value) / 2;
+        }
+      }
+    }
+
+    return {
+      atlasUrl: this.getAtlasForMode(cognitiveMode),
+      shouldSwapAtlas,
+      glowColor: MODE_GLOW_COLORS[cognitiveMode] || MODE_GLOW_COLORS.RESTING,
+      cubismParams: adjustedParams,
+      extraParams: finalExtra,
+      activeExpression: preset.name,
+      glowRegions: this.getGlowRegions(cognitiveMode),
+    };
+  }
+
+  // ─── B — Backward Pass ─────────────────────────────────────────
+
+  /**
+   * Apply fidelity correction based on feedback.
+   *
+   * Parses feedback and adjusts the knowledge state:
+   * - "colors too warm/cool" → adjust colorCorrections
+   * - "accessories detached" → adjust deformerWeights
+   * - "expression unnatural" → adjust expressionCurveAdjustments
+   * - "glow too bright/dim" → adjust extra param curves
+   */
+  applyFeedback(feedback: string): void {
+    const lower = feedback.toLowerCase();
+    const entry = {
+      timestamp: new Date().toISOString(),
+      feedback,
+      adjustments: {} as Record<string, number>,
+    };
+
+    if (lower.includes('warm') || lower.includes('cool')) {
+      const direction = lower.includes('warm') ? -0.05 : 0.05;
+      for (const [name, region] of Object.entries(DTE_ATLAS_REGIONS)) {
+        if (region.semanticRole === 'hair' || region.semanticRole === 'skin') {
+          const current = this.knowledgeState.colorCorrections[name] || 0;
+          this.knowledgeState.colorCorrections[name] = +(current + direction).toFixed(3);
+          entry.adjustments[`color_${name}`] = direction;
+        }
+      }
+    }
+
+    if (lower.includes('detach') || lower.includes('float')) {
+      for (const mesh of DTE_ART_MESHES) {
+        const current = this.knowledgeState.deformerWeights[mesh.id] || 1.0;
+        this.knowledgeState.deformerWeights[mesh.id] = +(current * 1.05).toFixed(3);
+        entry.adjustments[`deformer_${mesh.id}`] = 0.05;
+      }
+    }
+
+    if (lower.includes('unnatural') || lower.includes('stiff') || lower.includes('expression')) {
+      for (const preset of DTE_EXPRESSION_PRESETS) {
+        for (const [param, value] of Object.entries(preset.cubismParams)) {
+          if (Math.abs(value) > 0.8) {
+            const key = `${preset.name}_${param}`;
+            const adj = -0.05 * Math.sign(value);
+            const current = this.knowledgeState.expressionCurveAdjustments[key] || 0;
+            this.knowledgeState.expressionCurveAdjustments[key] = +(current + adj).toFixed(3);
+            entry.adjustments[key] = adj;
+          }
+        }
+      }
+    }
+
+    if (lower.includes('glow')) {
+      const adj = lower.includes('bright') || lower.includes('much') ? -0.1 : 0.1;
+      for (const p of DTE_PARAM_EXTENSIONS) {
+        if (p.name.toLowerCase().includes('glow')) {
+          const key = `extra_${p.id}`;
+          const current = this.knowledgeState.expressionCurveAdjustments[key] || 0;
+          this.knowledgeState.expressionCurveAdjustments[key] = +(current + adj).toFixed(3);
+          entry.adjustments[key] = adj;
+        }
+      }
+    }
+
+    this.knowledgeState.lossHistory.push(entry);
+    this.knowledgeState.lastBackwardPass = new Date().toISOString();
+  }
+
+  // ─── K — Knowledge State ───────────────────────────────────────
+
+  /** Get the current knowledge state for serialization */
+  getKnowledgeState(): KnowledgeState {
+    return { ...this.knowledgeState };
+  }
+
+  /** Load knowledge state from external source */
+  loadKnowledgeState(state: KnowledgeState): void {
+    this.knowledgeState = { ...state };
+  }
+
+  // ─── Accessors ─────────────────────────────────────────────────
+
   getGlowIntensity(mode: string): number {
     const color = MODE_GLOW_COLORS[mode] || MODE_GLOW_COLORS.RESTING;
     return color[3] / 255;
   }
 
-  /**
-   * Get the atlas region for a named body part.
-   */
   getRegion(name: string): AtlasRegion | undefined {
     return DTE_ATLAS_REGIONS[name];
   }
 
-  /**
-   * Get all regions that should glow for a given mode.
-   * Different modes emphasize different body parts.
-   */
   getGlowRegions(mode: string): string[] {
     switch (mode) {
       case 'REWARD':
@@ -214,13 +574,25 @@ export class MeshPainterBridge {
     }
   }
 
-  /** Get current mode */
-  getCurrentMode(): string {
-    return this.currentMode;
+  getArtMeshesForRegion(regionName: string): ArtMeshDefinition[] {
+    return DTE_ART_MESHES.filter(m => m.textureRegion === regionName);
   }
+
+  getParamExtension(paramId: string): CubismParameterExtension | undefined {
+    return DTE_PARAM_EXTENSIONS.find(p => p.id === paramId);
+  }
+
+  getExpressionPreset(name: string): ExpressionPreset | undefined {
+    return DTE_EXPRESSION_PRESETS.find(p => p.name === name);
+  }
+
+  getCurrentMode(): string { return this.currentMode; }
+  getCurrentExpression(): string { return this.currentExpression; }
 }
 
-// ─── Factory ─────────────────────────────────────────────────────
+// ═══════════════════════════════════════════════════════════════════════
+// Factory
+// ═══════════════════════════════════════════════════════════════════════
 
 export function createMeshPainterBridge(
   config?: Partial<MeshPainterConfig>,

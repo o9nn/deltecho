@@ -1,0 +1,52 @@
+{
+  "version": "2.0.0",
+  "parameters": [
+    {
+      "id": "ParamExtra01",
+      "name": "Glow Intensity",
+      "min_value": 0.0,
+      "max_value": 1.0,
+      "default_value": 0.3,
+      "description": "Controls opacity of bioluminescent glow layers (headphones, shoulder pads)",
+      "controlled_meshes": [
+        "ArtMesh_Headphone_Glow",
+        "ArtMesh_ShoulderPad_Glow"
+      ],
+      "endocrine_driver": "dopamine_tonic"
+    },
+    {
+      "id": "ParamExtra02",
+      "name": "LED Pulse",
+      "min_value": 0.0,
+      "max_value": 1.0,
+      "default_value": 0.5,
+      "description": "Controls choker LED intensity and color cycle",
+      "controlled_meshes": [
+        "ArtMesh_Choker_LED"
+      ],
+      "endocrine_driver": "norepinephrine"
+    },
+    {
+      "id": "ParamExtra03",
+      "name": "Particle Sparkle",
+      "min_value": 0.0,
+      "max_value": 1.0,
+      "default_value": 0.4,
+      "description": "Controls visibility and movement of face decal sparkle particles",
+      "controlled_meshes": [
+        "ArtMesh_FaceDecal_Particles"
+      ],
+      "endocrine_driver": "serotonin"
+    },
+    {
+      "id": "ParamExtra04",
+      "name": "Hair Gradient Shift",
+      "min_value": 0.0,
+      "max_value": 1.0,
+      "default_value": 0.0,
+      "description": "Shifts the gradient map on hair textures (silver \u2192 mint intensity)",
+      "controlled_meshes": [],
+      "endocrine_driver": "anandamide"
+    }
+  ]
+}

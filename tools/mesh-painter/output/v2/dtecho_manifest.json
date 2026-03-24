@@ -1,0 +1,139 @@
+{
+  "version": "2.0.0",
+  "character": "dtecho",
+  "base_mesh": "miara",
+  "composition": "/deltecho ( /live2d-miara -> /live2d-dtecho ( 'mesh-painter' ) )",
+  "forward_pass": {
+    "aesthetic_analysis": "aesthetic_analysis.json",
+    "palette_atlas": "texture_00_palette.png",
+    "glow_atlas": "texture_00_glow.png",
+    "atlas_4k": "texture_00_4k.png",
+    "art_meshes": "art_meshes.json",
+    "parameter_extensions": "parameter_extensions.json",
+    "expression_presets": "expression_presets.json",
+    "variants_dir": "variants/"
+  },
+  "palette": {
+    "hair_base": "#E8E0D8",
+    "hair_gradient": "#A8E0D0",
+    "hair_highlights": "#C8E8F0",
+    "headphone_body": "#3A3A40",
+    "headphone_glow": "#FF8C20",
+    "headphone_accent": "#FFB040",
+    "decal_diamond": "#40A0FF",
+    "decal_hearts": "#FF60A0",
+    "decal_dots": "#60E0FF",
+    "choker_body": "#2A2A30",
+    "choker_led": "#A040FF",
+    "skin_tone": "#F5E8E0",
+    "freckles": "#D0B8A0",
+    "eye_left": "#40B8D0",
+    "eye_right": "#60C8A0",
+    "lip_color": "#E8A0A0",
+    "env_neon_pink": "#FF40A0",
+    "env_neon_amber": "#FF8040",
+    "env_neon_cyan": "#40D0FF"
+  },
+  "regions": {
+    "hair_main": {
+      "name": "hair_main",
+      "x": 0,
+      "y": 0,
+      "width": 600,
+      "height": 500,
+      "description": "Primary hair strands \u2014 silver-white to mint gradient",
+      "semantic_role": "hair"
+    },
+    "hair_bangs": {
+      "name": "hair_bangs",
+      "x": 0,
+      "y": 500,
+      "width": 400,
+      "height": 300,
+      "description": "Bangs and front hair pieces",
+      "semantic_role": "hair"
+    },
+    "hair_back": {
+      "name": "hair_back",
+      "x": 600,
+      "y": 0,
+      "width": 400,
+      "height": 400,
+      "description": "Back hair and flowing strands",
+      "semantic_role": "hair"
+    },
+    "body_torso": {
+      "name": "body_torso",
+      "x": 512,
+      "y": 1024,
+      "width": 1024,
+      "height": 600,
+      "description": "Torso with clothing \u2014 black tank top",
+      "semantic_role": "clothing"
+    },
+    "body_arms": {
+      "name": "body_arms",
+      "x": 400,
+      "y": 200,
+      "width": 600,
+      "height": 400,
+      "description": "Arms and hands",
+      "semantic_role": "skin"
+    },
+    "body_legs": {
+      "name": "body_legs",
+      "x": 0,
+      "y": 600,
+      "width": 500,
+      "height": 400,
+      "description": "Legs and feet",
+      "semantic_role": "skin"
+    },
+    "mushroom_env": {
+      "name": "mushroom_env",
+      "x": 1024,
+      "y": 0,
+      "width": 1024,
+      "height": 1024,
+      "description": "Bioluminescent mushroom environment",
+      "semantic_role": "environment"
+    },
+    "shoulder_pads": {
+      "name": "shoulder_pads",
+      "x": 512,
+      "y": 1024,
+      "width": 1024,
+      "height": 512,
+      "description": "Amber neural-tree shoulder pads",
+      "semantic_role": "accessory"
+    },
+    "choker": {
+      "name": "choker",
+      "x": 768,
+      "y": 1024,
+      "width": 512,
+      "height": 200,
+      "description": "Purple LED cyberpunk choker",
+      "semantic_role": "accessory"
+    },
+    "face_decals": {
+      "name": "face_decals",
+      "x": 1400,
+      "y": 1600,
+      "width": 648,
+      "height": 448,
+      "description": "Holographic hearts, diamonds, hexagons",
+      "semantic_role": "accessory"
+    },
+    "decorations": {
+      "name": "decorations",
+      "x": 0,
+      "y": 1600,
+      "width": 600,
+      "height": 448,
+      "description": "Small decorative elements and accessories",
+      "semantic_role": "accessory"
+    }
+  },
+  "timestamp": "2026-03-24T02:25:38Z"
+}

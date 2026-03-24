@@ -1,0 +1,78 @@
+{
+  "version": "2.0.0",
+  "base_atlas": "output/v2/texture_00_glow.png",
+  "variants": {
+    "REWARD": "texture_00_reward.png",
+    "EXPLORATORY": "texture_00_exploratory.png",
+    "REFLECTIVE": "texture_00_reflective.png",
+    "FOCUSED": "texture_00_focused.png",
+    "SOCIAL": "texture_00_social.png",
+    "STRESSED": "texture_00_stressed.png",
+    "VIGILANT": "texture_00_vigilant.png",
+    "RESTING": "texture_00_resting.png",
+    "THREAT": "texture_00_threat.png",
+    "MAINTENANCE": "texture_00_maintenance.png"
+  },
+  "mode_glow_colors": {
+    "REWARD": [
+      255,
+      200,
+      50,
+      100
+    ],
+    "EXPLORATORY": [
+      0,
+      255,
+      220,
+      100
+    ],
+    "REFLECTIVE": [
+      140,
+      100,
+      255,
+      80
+    ],
+    "FOCUSED": [
+      200,
+      220,
+      255,
+      60
+    ],
+    "SOCIAL": [
+      255,
+      150,
+      200,
+      90
+    ],
+    "STRESSED": [
+      255,
+      100,
+      80,
+      80
+    ],
+    "VIGILANT": [
+      0,
+      200,
+      255,
+      90
+    ],
+    "RESTING": [
+      100,
+      150,
+      255,
+      50
+    ],
+    "THREAT": [
+      255,
+      60,
+      60,
+      100
+    ],
+    "MAINTENANCE": [
+      180,
+      180,
+      180,
+      40
+    ]
+  }
+}

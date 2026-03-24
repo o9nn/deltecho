@@ -1,0 +1,211 @@
+{
+  "version": "2.0.0",
+  "expressions": [
+    {
+      "name": "JOY_01_BroadSmile",
+      "emotion": "Duchenne happiness",
+      "key_aus": "AU6D+12D+25C",
+      "cognitive_mode": "REWARD",
+      "primary_hormones": "DA(t)\u2191 5-HT\u2191",
+      "cubism_params": {
+        "ParamMouthForm": 1.0,
+        "ParamMouthOpenY": 0.3,
+        "ParamEyeLOpen": 0.65,
+        "ParamEyeROpen": 0.65,
+        "ParamBrowLY": 0.3,
+        "ParamBrowRY": 0.3
+      },
+      "extra_params": {
+        "ParamExtra01": 0.7,
+        "ParamExtra03": 0.6
+      }
+    },
+    {
+      "name": "JOY_02_Laughing",
+      "emotion": "Active laughter",
+      "key_aus": "AU6D+12E+26C+9B",
+      "cognitive_mode": "REWARD",
+      "primary_hormones": "DA(p)\u2191\u2191 OXT\u2191",
+      "cubism_params": {
+        "ParamMouthForm": 1.0,
+        "ParamMouthOpenY": 0.85,
+        "ParamEyeLOpen": 0.5,
+        "ParamEyeROpen": 0.5,
+        "ParamBrowLY": 0.4,
+        "ParamBrowRY": 0.4,
+        "ParamBodyAngleX": 2.0
+      },
+      "extra_params": {
+        "ParamExtra01": 0.9,
+        "ParamExtra02": 0.7,
+        "ParamExtra03": 0.8
+      }
+    },
+    {
+      "name": "JOY_03_GentleSmile",
+      "emotion": "Warm contentment",
+      "key_aus": "AU6C+12C+14A",
+      "cognitive_mode": "SOCIAL",
+      "primary_hormones": "DA(t)\u2191 OXT\u2191",
+      "cubism_params": {
+        "ParamMouthForm": 0.6,
+        "ParamMouthOpenY": 0.0,
+        "ParamEyeLOpen": 0.7,
+        "ParamEyeROpen": 0.7,
+        "ParamBrowLY": 0.15,
+        "ParamBrowRY": 0.15
+      },
+      "extra_params": {
+        "ParamExtra01": 0.4,
+        "ParamExtra03": 0.5
+      }
+    },
+    {
+      "name": "JOY_05_Blissful",
+      "emotion": "Serene bliss",
+      "key_aus": "AU6D+12C+43D",
+      "cognitive_mode": "RESTING",
+      "primary_hormones": "5-HT\u2191\u2191 AEA\u2191",
+      "cubism_params": {
+        "ParamMouthForm": 0.5,
+        "ParamMouthOpenY": 0.0,
+        "ParamEyeLOpen": 0.3,
+        "ParamEyeROpen": 0.3,
+        "ParamBrowLY": 0.1,
+        "ParamBrowRY": 0.1,
+        "ParamEyeBallY": 0.2
+      },
+      "extra_params": {
+        "ParamExtra01": 0.3,
+        "ParamExtra04": 0.6
+      }
+    },
+    {
+      "name": "PHOTO_Awe",
+      "emotion": "Awe / wonder",
+      "key_aus": "AU1C+2C+5D+26C",
+      "cognitive_mode": "EXPLORATORY",
+      "primary_hormones": "NE\u2191 DA(p)\u2191",
+      "cubism_params": {
+        "ParamMouthForm": 0.0,
+        "ParamMouthOpenY": 0.45,
+        "ParamEyeLOpen": 1.0,
+        "ParamEyeROpen": 1.0,
+        "ParamBrowLY": 0.55,
+        "ParamBrowRY": 0.55,
+        "ParamEyeBallY": 0.3
+      },
+      "extra_params": {
+        "ParamExtra01": 0.8,
+        "ParamExtra02": 0.6,
+        "ParamExtra03": 0.9
+      }
+    },
+    {
+      "name": "PHOTO_ExuberantLaugh",
+      "emotion": "Delighted surprise",
+      "key_aus": "AU6D+12D+1B+2B+5B",
+      "cognitive_mode": "REWARD",
+      "primary_hormones": "DA(t+p)\u2191 NE\u2191",
+      "cubism_params": {
+        "ParamMouthForm": 1.0,
+        "ParamMouthOpenY": 0.6,
+        "ParamEyeLOpen": 0.85,
+        "ParamEyeROpen": 0.85,
+        "ParamBrowLY": 0.45,
+        "ParamBrowRY": 0.45,
+        "ParamBodyAngleX": 3.0
+      },
+      "extra_params": {
+        "ParamExtra01": 1.0,
+        "ParamExtra02": 0.8,
+        "ParamExtra03": 1.0
+      }
+    },
+    {
+      "name": "PHOTO_UpwardGaze",
+      "emotion": "Dreamy contemplation",
+      "key_aus": "AU1B+5B+61+63",
+      "cognitive_mode": "REFLECTIVE",
+      "primary_hormones": "5-HT\u2191 AEA\u2191",
+      "cubism_params": {
+        "ParamMouthForm": 0.1,
+        "ParamMouthOpenY": 0.0,
+        "ParamEyeLOpen": 0.75,
+        "ParamEyeROpen": 0.75,
+        "ParamBrowLY": 0.2,
+        "ParamBrowRY": 0.2,
+        "ParamEyeBallY": 0.5,
+        "ParamEyeBallX": -0.2,
+        "ParamAngleY": 8.0
+      },
+      "extra_params": {
+        "ParamExtra01": 0.4,
+        "ParamExtra04": 0.5
+      }
+    },
+    {
+      "name": "SPEAK_01_OpenVowel",
+      "emotion": "Animated speaking",
+      "key_aus": "AU25C+26B+12C+6B",
+      "cognitive_mode": "SOCIAL",
+      "primary_hormones": "DA(t)\u2191 T3\u2191",
+      "cubism_params": {
+        "ParamMouthForm": 0.4,
+        "ParamMouthOpenY": 0.6,
+        "ParamEyeLOpen": 0.8,
+        "ParamEyeROpen": 0.8,
+        "ParamBrowLY": 0.2,
+        "ParamBrowRY": 0.2
+      },
+      "extra_params": {
+        "ParamExtra02": 0.5
+      }
+    },
+    {
+      "name": "WONDER_02_CuriousGaze",
+      "emotion": "Curious wonder",
+      "key_aus": "AU1B+2B+5C+63",
+      "cognitive_mode": "EXPLORATORY",
+      "primary_hormones": "NE\u2191 T3\u2191",
+      "cubism_params": {
+        "ParamMouthForm": 0.0,
+        "ParamMouthOpenY": 0.15,
+        "ParamEyeLOpen": 0.95,
+        "ParamEyeROpen": 0.95,
+        "ParamBrowLY": 0.4,
+        "ParamBrowRY": 0.4,
+        "ParamEyeBallY": 0.3,
+        "ParamEyeBallX": 0.2,
+        "ParamAngleY": 5.0
+      },
+      "extra_params": {
+        "ParamExtra01": 0.6,
+        "ParamExtra02": 0.4,
+        "ParamExtra03": 0.7
+      }
+    },
+    {
+      "name": "WONDER_03_Contemplative",
+      "emotion": "Deep thought",
+      "key_aus": "AU1B+5B+4A+63+61",
+      "cognitive_mode": "FOCUSED",
+      "primary_hormones": "T3\u2191\u2191 5-HT\u2191",
+      "cubism_params": {
+        "ParamMouthForm": -0.1,
+        "ParamMouthOpenY": 0.0,
+        "ParamEyeLOpen": 0.85,
+        "ParamEyeROpen": 0.85,
+        "ParamBrowLY": -0.15,
+        "ParamBrowRY": -0.15,
+        "ParamEyeBallY": 0.3,
+        "ParamEyeBallX": -0.3,
+        "ParamAngleZ": -3.0
+      },
+      "extra_params": {
+        "ParamExtra01": 0.5,
+        "ParamExtra04": 0.3
+      }
+    }
+  ]
+}

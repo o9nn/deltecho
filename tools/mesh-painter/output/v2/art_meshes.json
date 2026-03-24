@@ -1,0 +1,105 @@
+{
+  "version": "2.0.0",
+  "art_meshes": [
+    {
+      "id": "ArtMesh_Headphone_L",
+      "name": "Headphone Left (Mushroom)",
+      "parent_deformer": "D_HEAD",
+      "texture_region": "mushroom_env",
+      "z_order": 550,
+      "blend_mode": "Normal",
+      "opacity": 1.0,
+      "description": "Bioluminescent mushroom-cap headphone, left ear. Amber/orange glow."
+    },
+    {
+      "id": "ArtMesh_Headphone_Glow",
+      "name": "Headphone Glow Layer",
+      "parent_deformer": "D_HEAD",
+      "texture_region": "mushroom_env",
+      "z_order": 551,
+      "blend_mode": "Additive",
+      "opacity": 0.7,
+      "description": "Additive glow layer for headphone bioluminescence. Controlled by ParamExtra01."
+    },
+    {
+      "id": "ArtMesh_FaceDecal_Diamond",
+      "name": "Face Decal \u2014 Holographic Diamond",
+      "parent_deformer": "D_HEAD",
+      "texture_region": "face_decals",
+      "z_order": 500,
+      "blend_mode": "Normal",
+      "opacity": 1.0,
+      "description": "Blue holographic diamond on left cheek."
+    },
+    {
+      "id": "ArtMesh_FaceDecal_Hearts",
+      "name": "Face Decal \u2014 Pink Hearts",
+      "parent_deformer": "D_HEAD",
+      "texture_region": "face_decals",
+      "z_order": 501,
+      "blend_mode": "Normal",
+      "opacity": 1.0,
+      "description": "Pink-magenta hearts scattered around diamond."
+    },
+    {
+      "id": "ArtMesh_FaceDecal_Particles",
+      "name": "Face Decal \u2014 Cyan Sparkle Particles",
+      "parent_deformer": "D_HEAD",
+      "texture_region": "face_decals",
+      "z_order": 502,
+      "blend_mode": "Additive",
+      "opacity": 0.6,
+      "description": "Cyan sparkle particles. Controlled by ParamExtra03."
+    },
+    {
+      "id": "ArtMesh_Choker_Body",
+      "name": "Cyberpunk Choker \u2014 Body",
+      "parent_deformer": "D_NECK",
+      "texture_region": "choker",
+      "z_order": 400,
+      "blend_mode": "Normal",
+      "opacity": 1.0,
+      "description": "Dark metal collar band."
+    },
+    {
+      "id": "ArtMesh_Choker_LED",
+      "name": "Cyberpunk Choker \u2014 LED",
+      "parent_deformer": "D_NECK",
+      "texture_region": "choker",
+      "z_order": 401,
+      "blend_mode": "Additive",
+      "opacity": 0.8,
+      "description": "Purple-violet LED glow. Controlled by ParamExtra02."
+    },
+    {
+      "id": "ArtMesh_ShoulderPad_L",
+      "name": "Neural-Tree Shoulder Pad Left",
+      "parent_deformer": "D_BODY",
+      "texture_region": "shoulder_pads",
+      "z_order": 350,
+      "blend_mode": "Normal",
+      "opacity": 1.0,
+      "description": "Amber neural-tree shoulder pad, left side."
+    },
+    {
+      "id": "ArtMesh_ShoulderPad_R",
+      "name": "Neural-Tree Shoulder Pad Right",
+      "parent_deformer": "D_BODY",
+      "texture_region": "shoulder_pads",
+      "z_order": 351,
+      "blend_mode": "Normal",
+      "opacity": 1.0,
+      "description": "Amber neural-tree shoulder pad, right side."
+    },
+    {
+      "id": "ArtMesh_ShoulderPad_Glow",
+      "name": "Shoulder Pad Glow Layer",
+      "parent_deformer": "D_BODY",
+      "texture_region": "shoulder_pads",
+      "z_order": 352,
+      "blend_mode": "Additive",
+      "opacity": 0.5,
+      "description": "Additive glow for shoulder pads. Controlled by ParamExtra01."
+    }
+  ]
+}

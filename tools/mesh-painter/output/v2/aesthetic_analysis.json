@@ -1,0 +1,308 @@
+{
+  "source": "templates/DTE_REFERENCE.jpg",
+  "dimensions": "460x460",
+  "dominant_colors": [
+    {
+      "rgb": [
+        102,
+        79,
+        81
+      ],
+      "count": 3908,
+      "pct": 6.0
+    },
+    {
+      "rgb": [
+        36,
+        23,
+        31
+      ],
+      "count": 3840,
+      "pct": 5.9
+    },
+    {
+      "rgb": [
+        41,
+        33,
+        43
+      ],
+      "count": 3812,
+      "pct": 5.8
+    },
+    {
+      "rgb": [
+        19,
+        18,
+        28
+      ],
+      "count": 3723,
+      "pct": 5.7
+    },
+    {
+      "rgb": [
+        73,
+        46,
+        50
+      ],
+      "count": 3694,
+      "pct": 5.6
+    },
+    {
+      "rgb": [
+        130,
+        80,
+        86
+      ],
+      "count": 3479,
+      "pct": 5.3
+    },
+    {
+      "rgb": [
+        174,
+        154,
+        160
+      ],
+      "count": 3095,
+      "pct": 4.7
+    },
+    {
+      "rgb": [
+        129,
+        151,
+        172
+      ],
+      "count": 2902,
+      "pct": 4.4
+    },
+    {
+      "rgb": [
+        98,
+        91,
+        100
+      ],
+      "count": 2849,
+      "pct": 4.3
+    },
+    {
+      "rgb": [
+        157,
+        112,
+        118
+      ],
+      "count": 2813,
+      "pct": 4.3
+    },
+    {
+      "rgb": [
+        48,
+        41,
+        53
+      ],
+      "count": 2810,
+      "pct": 4.3
+    },
+    {
+      "rgb": [
+        77,
+        62,
+        71
+      ],
+      "count": 2747,
+      "pct": 4.2
+    }
+  ],
+  "mean_luminance": 100.7,
+  "palette_matches": {
+    "hair_base": {
+      "target_hex": "#E8E0D8",
+      "closest_extracted": [
+        174,
+        154,
+        160
+      ],
+      "distance": 106.8,
+      "match_quality": "fair"
+    },
+    "hair_gradient": {
+      "target_hex": "#A8E0D0",
+      "closest_extracted": [
+        174,
+        154,
+        160
+      ],
+      "distance": 85.1,
+      "match_quality": "fair"
+    },
+    "hair_highlights": {
+      "target_hex": "#C8E8F0",
+      "closest_extracted": [
+        174,
+        154,
+        160
+      ],
+      "distance": 114.7,
+      "match_quality": "fair"
+    },
+    "headphone_body": {
+      "target_hex": "#3A3A40",
+      "closest_extracted": [
+        77,
+        62,
+        71
+      ],
+      "distance": 20.6,
+      "match_quality": "good"
+    },
+    "headphone_glow": {
+      "target_hex": "#FF8C20",
+      "closest_extracted": [
+        157,
+        112,
+        118
+      ],
+      "distance": 133.4,
+      "match_quality": "poor"
+    },
+    "headphone_accent": {
+      "target_hex": "#FFB040",
+      "closest_extracted": [
+        174,
+        154,
+        160
+      ],
+      "distance": 127.5,
+      "match_quality": "poor"
+    },
+    "decal_diamond": {
+      "target_hex": "#40A0FF",
+      "closest_extracted": [
+        129,
+        151,
+        172
+      ],
+      "distance": 105.8,
+      "match_quality": "fair"
+    },
+    "decal_hearts": {
+      "target_hex": "#FF60A0",
+      "closest_extracted": [
+        174,
+        154,
+        160
+      ],
+      "distance": 99.6,
+      "match_quality": "fair"
+    },
+    "decal_dots": {
+      "target_hex": "#60E0FF",
+      "closest_extracted": [
+        129,
+        151,
+        172
+      ],
+      "distance": 115.4,
+      "match_quality": "fair"
+    },
+    "choker_body": {
+      "target_hex": "#2A2A30",
+      "closest_extracted": [
+        48,
+        41,
+        53
+      ],
+      "distance": 7.9,
+      "match_quality": "good"
+    },
+    "choker_led": {
+      "target_hex": "#A040FF",
+      "closest_extracted": [
+        129,
+        151,
+        172
+      ],
+      "distance": 124.2,
+      "match_quality": "poor"
+    },
+    "skin_tone": {
+      "target_hex": "#F5E8E0",
+      "closest_extracted": [
+        174,
+        154,
+        160
+      ],
+      "distance": 123.4,
+      "match_quality": "poor"
+    },
+    "freckles": {
+      "target_hex": "#D0B8A0",
+      "closest_extracted": [
+        174,
+        154,
+        160
+      ],
+      "distance": 45.3,
+      "match_quality": "good"
+    },
+    "eye_left": {
+      "target_hex": "#40B8D0",
+      "closest_extracted": [
+        129,
+        151,
+        172
+      ],
+      "distance": 81.3,
+      "match_quality": "fair"
+    },
+    "eye_right": {
+      "target_hex": "#60C8A0",
+      "closest_extracted": [
+        129,
+        151,
+        172
+      ],
+      "distance": 60.3,
+      "match_quality": "fair"
+    },
+    "lip_color": {
+      "target_hex": "#E8A0A0",
+      "closest_extracted": [
+        174,
+        154,
+        160
+      ],
+      "distance": 58.3,
+      "match_quality": "good"
+    },
+    "env_neon_pink": {
+      "target_hex": "#FF40A0",
+      "closest_extracted": [
+        157,
+        112,
+        118
+      ],
+      "distance": 116.9,
+      "match_quality": "fair"
+    },
+    "env_neon_amber": {
+      "target_hex": "#FF8040",
+      "closest_extracted": [
+        157,
+        112,
+        118
+      ],
+      "distance": 113.0,
+      "match_quality": "fair"
+    },
+    "env_neon_cyan": {
+      "target_hex": "#40D0FF",
+      "closest_extracted": [
+        129,
+        151,
+        172
+      ],
+      "distance": 119.8,
+      "match_quality": "fair"
+    }
+  },
+  "timestamp": "2026-03-24T02:24:34Z"
+}
