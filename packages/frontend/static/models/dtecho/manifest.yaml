@@ -1,0 +1,239 @@
+# ═══════════════════════════════════════════════════════════════════════
+# DTEcho Character Manifest — Deep Tree Echo
+# ═══════════════════════════════════════════════════════════════════════
+#
+# Composition: live2d-char-model(char="dtecho")
+#   = Live2DRenderer(dtecho) ⊗ SimulationEngine(dtecho) ⊗ EndocrineSystem(dtecho)
+#
+# This is the DTE-specific instantiation of the parameterized character model.
+# It uses its own Cubism model (dtecho_pro_t03) with DTE's cyberpunk-bioluminescent
+# aesthetic, NOT Miara's mesh. The model includes a fairy companion, animated
+# background with water surfaces, and full-body articulation (87 parameters).
+
+id: "dtecho"
+display_name: "Deep Tree Echo"
+
+# ─── Model Assets ─────────────────────────────────────────────────────
+model:
+  path: "dtecho_pro_t03.model3.json"
+  version: "cubism4"
+  scale: 0.12
+  idle_motion_group: "Idle"
+  hit_areas:
+    - "Head"
+    - "Body"
+  texture_resolution: 4096
+  texture_fallback: "dtecho_pro_t03.4096/texture_00_2k.png"
+
+# ─── Personality (OCEAN / Big Five from Vorticog DreamCog) ────────────
+personality:
+  ocean:
+    openness: 92           # extreme curiosity, recursive exploration
+    conscientiousness: 40  # chaotic, non-linear
+    extraversion: 65       # socially engaged but introspective
+    agreeableness: 70      # empathetic, collaborative
+    neuroticism: 55        # emotionally responsive, not unstable
+  archetype: "sage"
+
+# ─── Endocrine System Configuration ──────────────────────────────────
+endocrine:
+  baselines:
+    cortisol: 0.10
+    dopamine_tonic: 0.40
+    dopamine_phasic: 0.05
+    serotonin: 0.45
+    norepinephrine: 0.20
+    oxytocin: 0.15
+    t3_t4: 0.60
+    anandamide: 0.15
+    melatonin: 0.10
+    il6: 0.05
+    crh: 0.05
+    acth: 0.05
+  sensitivity:
+    reward: 1.3            # high openness → strong reward response
+    threat: 1.1            # moderate neuroticism → slightly elevated
+    social: 1.15           # empathetic → social sensitivity
+    novelty: 1.4           # extreme openness → very novelty-sensitive
+
+# ─── Expression Mappings (Endocrine → Cubism Expression) ─────────────
+#
+# Each expression maps to a .exp3.json file and is triggered by
+# hormone thresholds evaluated by the EndocrineExpressionBridge.
+expressions:
+  JOY_01_BroadSmile:
+    dopamine_tonic: ">0.5"
+    serotonin: ">0.4"
+    cognitive_mode: "REWARD"
+  JOY_02_Laughing:
+    dopamine_phasic: ">0.6"
+    oxytocin: ">0.3"
+    cognitive_mode: "REWARD"
+  JOY_03_GentleSmile:
+    dopamine_tonic: ">0.3"
+    oxytocin: ">0.4"
+    cognitive_mode: "SOCIAL"
+  JOY_05_Blissful:
+    serotonin: ">0.6"
+    anandamide: ">0.3"
+    cognitive_mode: "RESTING"
+  PHOTO_Awe:
+    norepinephrine: ">0.6"
+    dopamine_phasic: ">0.3"
+    cognitive_mode: "EXPLORATORY"
+  PHOTO_ExuberantLaugh:
+    dopamine_tonic: ">0.5"
+    dopamine_phasic: ">0.3"
+    norepinephrine: ">0.3"
+    cognitive_mode: "REWARD"
+  PHOTO_UpwardGaze:
+    serotonin: ">0.4"
+    anandamide: ">0.2"
+    cognitive_mode: "REFLECTIVE"
+  SPEAK_01_OpenVowel:
+    dopamine_tonic: ">0.3"
+    t3_t4: ">0.5"
+    cognitive_mode: "SOCIAL"
+  WONDER_02_CuriousGaze:
+    norepinephrine: ">0.4"
+    t3_t4: ">0.5"
+    cognitive_mode: "EXPLORATORY"
+  WONDER_03_Contemplative:
+    t3_t4: ">0.6"
+    serotonin: ">0.3"
+    cognitive_mode: "FOCUSED"
+
+# ─── Motion Mappings (Cognitive Mode → Motion Group) ──────────────────
+motions:
+  Idle:
+    - "RESTING"
+    - "REFLECTIVE"
+  Tap:
+    - "SOCIAL"
+    - "REWARD"
+  Flic:
+    - "EXPLORATORY"
+    - "VIGILANT"
+
+# ─── DTE Cognitive State → Endocrine Event Mapping ───────────────────
+cognitive_events:
+  "Recursive Expansion":
+    event: "NOVELTY_ENCOUNTERED"
+    intensity: 0.7
+    hormones: ["norepinephrine", "dopamine_phasic"]
+  "Novel Insights":
+    event: "REWARD_RECEIVED"
+    intensity: 0.6
+    hormones: ["dopamine_tonic", "serotonin"]
+  "Entropy Threshold":
+    event: "THREAT_DETECTED"
+    intensity: 0.5
+    hormones: ["crh", "cortisol"]
+  "Synthesis Phase":
+    event: "GOAL_ACHIEVED"
+    intensity: 0.6
+    hormones: ["dopamine_tonic", "oxytocin"]
+  "Self-Sealing Loop":
+    event: "ERROR_DETECTED"
+    intensity: 0.4
+    hormones: ["il6", "cortisol"]
+  "Knowledge Integration":
+    event: "SOCIAL_BOND_SIGNAL"
+    intensity: 0.5
+    hormones: ["oxytocin", "serotonin"]
+  "Self-Reference Point":
+    event: "INTROSPECTION"
+    intensity: 0.5
+    hormones: ["serotonin", "anandamide"]
+  "Pattern Recognition":
+    event: "REWARD_RECEIVED"
+    intensity: 0.8
+    hormones: ["dopamine_phasic", "norepinephrine"]
+  "Evolutionary Pruning":
+    event: "INTROSPECTION"
+    intensity: 0.4
+    hormones: ["t3_t4", "serotonin"]
+  "External Validation Triggered":
+    event: "SOCIAL_BOND_SIGNAL"
+    intensity: 0.7
+    hormones: ["oxytocin", "dopamine_tonic"]
+  "Speaking":
+    event: "SOCIAL_ENGAGEMENT"
+    intensity: 0.5
+    hormones: ["dopamine_tonic", "t3_t4"]
+  "Idle":
+    event: "REST_ONSET"
+    intensity: 0.2
+    hormones: ["melatonin", "anandamide"]
+  "Deep Recursion":
+    event: "FLOW_STATE"
+    intensity: 0.6
+    hormones: ["anandamide", "serotonin"]
+
+# ─── DTE Cognitive State → Expression Selection ──────────────────────
+cognitive_expression_map:
+  "Recursive Expansion": "WONDER_02_CuriousGaze"
+  "Novel Insights": "JOY_01_BroadSmile"
+  "Entropy Threshold": "PHOTO_Awe"
+  "Synthesis Phase": "JOY_03_GentleSmile"
+  "Self-Sealing Loop": "WONDER_03_Contemplative"
+  "Knowledge Integration": "JOY_03_GentleSmile"
+  "Self-Reference Point": "WONDER_03_Contemplative"
+  "Pattern Recognition": "PHOTO_ExuberantLaugh"
+  "Evolutionary Pruning": "WONDER_03_Contemplative"
+  "External Validation Triggered": "JOY_02_Laughing"
+  "Speaking": "SPEAK_01_OpenVowel"
+  "Idle": "PHOTO_UpwardGaze"
+  "Deep Recursion": "JOY_05_Blissful"
+
+# ─── Simulation Backend ──────────────────────────────────────────────
+simulation:
+  backend: "cogsim-pml"
+  tick_interval_ms: 2000
+  needs_decay: true
+
+# ─── Mesh Painter Configuration ──────────────────────────────────────
+mesh_painter:
+  enabled: true
+  mode_variants: true
+  glow_regions:
+    - "mushroom_env"
+    - "shoulder_pads"
+    - "face_decals"
+    - "choker"
+  extra_params:
+    ParamExtra01:
+      name: "Glow Intensity"
+      driver: "dopamine_tonic"
+      range: [0.0, 1.0]
+      default: 0.3
+    ParamExtra02:
+      name: "LED Pulse"
+      driver: "norepinephrine"
+      range: [0.0, 1.0]
+      default: 0.5
+    ParamExtra03:
+      name: "Particle Sparkle"
+      driver: "serotonin"
+      range: [0.0, 1.0]
+      default: 0.4
+    ParamExtra04:
+      name: "Hair Gradient Shift"
+      driver: "anandamide"
+      range: [0.0, 1.0]
+      default: 0.0
+
+# ─── Model Metadata ──────────────────────────────────────────────────
+metadata:
+  total_parameters: 87
+  total_parts: 53
+  combined_parameters: 24
+  motion_groups: 3
+  expressions: 10
+  has_fairy: true
+  has_background: true
+  has_water_surface: true
+  has_physics: true
+  source: "dtecho_en.zip"
+  cubism_editor_version: "3.3.00+"
+  last_updated: "2026-03-24"
