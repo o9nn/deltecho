@@ -1,27 +1,21 @@
 {
   "Type": "Live2D Expression",
-  "FadeInTime": 0.5,
-  "FadeOutTime": 0.8,
+  "Version": 3,
   "Parameters": [
-    {
-      "Id": "ParamMouthForm",
-      "Value": 0.0,
-      "Blend": "Add"
-    },
-    {
-      "Id": "ParamMouthOpenY",
-      "Value": 0.7,
-      "Blend": "Add"
-    },
     {
       "Id": "ParamEyeLOpen",
       "Value": 1.0,
-      "Blend": "Override"
+      "Blend": "Add"
     },
     {
       "Id": "ParamEyeROpen",
       "Value": 1.0,
-      "Blend": "Override"
+      "Blend": "Add"
+    },
+    {
+      "Id": "ParamEyeBallY",
+      "Value": 0.05,
+      "Blend": "Add"
     },
     {
       "Id": "ParamBrowLY",
@@ -35,48 +29,35 @@
     },
     {
       "Id": "ParamBrowLAngle",
-      "Value": 0.5,
+      "Value": 0.3,
       "Blend": "Add"
     },
     {
       "Id": "ParamBrowRAngle",
-      "Value": 0.5,
+      "Value": 0.3,
       "Blend": "Add"
     },
     {
-      "Id": "ParamEyeBallX",
+      "Id": "ParamMouthForm",
       "Value": 0.0,
-      "Blend": "Override"
+      "Blend": "Add"
     },
     {
-      "Id": "ParamEyeBallY",
-      "Value": 0.0,
-      "Blend": "Override"
+      "Id": "ParamMouthOpenY",
+      "Value": 0.7,
+      "Blend": "Add"
     },
     {
       "Id": "ParamAngleY",
-      "Value": -3.0,
+      "Value": 3,
       "Blend": "Add"
     },
     {
       "Id": "ParamBodyAngleX",
-      "Value": -2.0,
-      "Blend": "Add"
-    },
-    {
-      "Id": "ParamBodyAngleZ",
-      "Value": 3.0,
-      "Blend": "Add"
-    },
-    {
-      "Id": "ParamBreath",
-      "Value": 1.0,
-      "Blend": "Override"
-    },
-    {
-      "Id": "ParamEffect1",
-      "Value": 1.0,
+      "Value": -3,
       "Blend": "Add"
     }
-  ]
+  ],
+  "FadeInTime": 0.5,
+  "FadeOutTime": 0.8
 }

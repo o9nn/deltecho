@@ -1,107 +1,73 @@
 {
   "Type": "Live2D Expression",
-  "FadeInTime": 0.5,
-  "FadeOutTime": 0.8,
+  "Version": 3,
   "Parameters": [
-    {
-      "Id": "ParamMouthForm",
-      "Value": 0.0,
-      "Blend": "Override"
-    },
-    {
-      "Id": "ParamMouthOpenY",
-      "Value": 0.0,
-      "Blend": "Override"
-    },
     {
       "Id": "ParamEyeLOpen",
       "Value": 1.0,
-      "Blend": "Override"
+      "Blend": "Add"
     },
     {
       "Id": "ParamEyeROpen",
       "Value": 1.0,
-      "Blend": "Override"
-    },
-    {
-      "Id": "ParamBrowLY",
-      "Value": 0.0,
-      "Blend": "Override"
-    },
-    {
-      "Id": "ParamBrowRY",
-      "Value": 0.0,
-      "Blend": "Override"
-    },
-    {
-      "Id": "ParamBrowLAngle",
-      "Value": 0.0,
-      "Blend": "Override"
-    },
-    {
-      "Id": "ParamBrowRAngle",
-      "Value": 0.0,
-      "Blend": "Override"
-    },
-    {
-      "Id": "ParamBrowLForm",
-      "Value": 0.0,
-      "Blend": "Override"
-    },
-    {
-      "Id": "ParamBrowRForm",
-      "Value": 0.0,
-      "Blend": "Override"
-    },
-    {
-      "Id": "ParamBrowLX",
-      "Value": 0.0,
-      "Blend": "Override"
-    },
-    {
-      "Id": "ParamBrowRX",
-      "Value": 0.0,
-      "Blend": "Override"
+      "Blend": "Add"
     },
     {
       "Id": "ParamEyeBallX",
       "Value": 0.0,
-      "Blend": "Override"
+      "Blend": "Add"
     },
     {
       "Id": "ParamEyeBallY",
       "Value": 0.0,
-      "Blend": "Override"
+      "Blend": "Add"
+    },
+    {
+      "Id": "ParamBrowLY",
+      "Value": 0.0,
+      "Blend": "Add"
+    },
+    {
+      "Id": "ParamBrowRY",
+      "Value": 0.0,
+      "Blend": "Add"
+    },
+    {
+      "Id": "ParamBrowLAngle",
+      "Value": 0.0,
+      "Blend": "Add"
+    },
+    {
+      "Id": "ParamBrowRAngle",
+      "Value": 0.0,
+      "Blend": "Add"
+    },
+    {
+      "Id": "ParamMouthForm",
+      "Value": 0.0,
+      "Blend": "Add"
+    },
+    {
+      "Id": "ParamMouthOpenY",
+      "Value": 0.0,
+      "Blend": "Add"
     },
     {
       "Id": "ParamAngleX",
-      "Value": 0.0,
-      "Blend": "Override"
+      "Value": 0,
+      "Blend": "Add"
     },
     {
       "Id": "ParamAngleY",
-      "Value": 0.0,
-      "Blend": "Override"
+      "Value": 0,
+      "Blend": "Add"
     },
     {
       "Id": "ParamAngleZ",
-      "Value": 0.0,
-      "Blend": "Override"
-    },
-    {
-      "Id": "ParamBodyAngleX",
-      "Value": 0.0,
-      "Blend": "Override"
-    },
-    {
-      "Id": "ParamBodyAngleZ",
-      "Value": 0.0,
-      "Blend": "Override"
-    },
-    {
-      "Id": "ParamEffect1",
-      "Value": 0.0,
-      "Blend": "Override"
+      "Value": 0,
+      "Blend": "Add"
     }
-  ]
+  ],
+  "FadeInTime": 0.5,
+  "FadeOutTime": 0.8
 }
