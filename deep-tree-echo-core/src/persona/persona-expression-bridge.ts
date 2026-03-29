@@ -127,6 +127,11 @@ function echobeatsStepToCognitiveOverlay(step: number): string | null {
 
 // ─── Persona Expression Bridge ───────────────────────────────────
 
+/** Arousal threshold above which persona is considered to be in a speaking/composing state */
+const SPEAKING_AROUSAL_THRESHOLD = 0.7;
+/** Dominance threshold above which persona is considered to be in a speaking/composing state */
+const SPEAKING_DOMINANCE_THRESHOLD = 0.6;
+
 const DEFAULT_BRIDGE_CONFIG: PersonaExpressionBridgeConfig = {
   tickIntervalMs: 2000,
   valenceThreshold: 0.3,
@@ -176,9 +181,9 @@ export class PersonaExpressionBridge extends EventEmitter {
       this.echobeatsStep = (this.echobeatsStep + 1) % 12;
     }
 
-    // Check if persona is speaking
+    // Check if persona is in a composing/speaking emotional state (high arousal + high dominance)
     const personaState = persona.getState();
-    if (personaState.isActive && personaState.currentAction?.verb === 'COMPOSE') {
+    if (personaState.emotionalState.arousal > SPEAKING_AROUSAL_THRESHOLD && personaState.emotionalState.dominance > SPEAKING_DOMINANCE_THRESHOLD) {
       cogState = 'Speaking';
     }
 
@@ -234,11 +239,11 @@ export function generatePersonaExpressionTrainingData(): Array<{ messages: Array
 
   // Test various emotional states
   const testStates: EmotionalState[] = [
-    { valence: 0.8, arousal: 0.7, dominance: 0.6, joy: 0.8, sadness: 0.0, anger: 0.0 },
-    { valence: -0.3, arousal: 0.6, dominance: 0.3, joy: 0.1, sadness: 0.5, anger: 0.3 },
-    { valence: 0.5, arousal: 0.2, dominance: 0.4, joy: 0.4, sadness: 0.0, anger: 0.0 },
-    { valence: 0.9, arousal: 0.9, dominance: 0.8, joy: 0.9, sadness: 0.0, anger: 0.0 },
-    { valence: 0.1, arousal: 0.1, dominance: 0.3, joy: 0.1, sadness: 0.1, anger: 0.0 },
+    { valence: 0.8, arousal: 0.7, dominance: 0.6, joy: 0.8, sadness: 0.0, anger: 0.0, fear: 0.0, surprise: 0.1, trust: 0.7, anticipation: 0.5, disgust: 0.0 },
+    { valence: -0.3, arousal: 0.6, dominance: 0.3, joy: 0.1, sadness: 0.5, anger: 0.3, fear: 0.2, surprise: 0.1, trust: 0.2, anticipation: 0.1, disgust: 0.1 },
+    { valence: 0.5, arousal: 0.2, dominance: 0.4, joy: 0.4, sadness: 0.0, anger: 0.0, fear: 0.0, surprise: 0.0, trust: 0.5, anticipation: 0.3, disgust: 0.0 },
+    { valence: 0.9, arousal: 0.9, dominance: 0.8, joy: 0.9, sadness: 0.0, anger: 0.0, fear: 0.0, surprise: 0.2, trust: 0.8, anticipation: 0.8, disgust: 0.0 },
+    { valence: 0.1, arousal: 0.1, dominance: 0.3, joy: 0.1, sadness: 0.1, anger: 0.0, fear: 0.0, surprise: 0.0, trust: 0.3, anticipation: 0.1, disgust: 0.0 },
   ];
 
   for (const emotion of testStates) {
