@@ -7,7 +7,7 @@
  * - Tier 3 (MEMBRANE): Double Membrane bio-inspired architecture
  */
 
-import { describe, it, expect, beforeEach, afterEach, jest } from '@jest/globals';
+import { describe, it, expect, beforeAll, beforeEach, afterEach, jest } from '@jest/globals';
 
 // Mock the external dependencies
 jest.unstable_mockModule('deep-tree-echo-core', () => ({
@@ -193,13 +193,18 @@ type CognitiveTierMode = import('../orchestrator.js').CognitiveTierMode;
 
 let OrchestratorClass: typeof import('../orchestrator.js').Orchestrator;
 
+beforeAll(async () => {
+  // Import once at module load so all describe blocks (including outer ones)
+  // see OrchestratorClass — fixes scope-of-assignment bug in the original file.
+  const mod = await import('../orchestrator.js');
+  OrchestratorClass = mod.Orchestrator;
+});
+
 describe('Cognitive Tier Integration', () => {
   let orchestrator: InstanceType<typeof OrchestratorClass>;
 
-  beforeEach(async () => {
+  beforeEach(() => {
     jest.clearAllMocks();
-    const mod = await import('../orchestrator.js');
-    OrchestratorClass = mod.Orchestrator;
   });
 
   afterEach(async () => {

@@ -211,6 +211,11 @@ export class EchoAgentLoop extends EventEmitter {
   private conversationalBridge?: Dove9ConversationalBridge;
   private running: boolean = false;
   private grandCycleTimer?: ReturnType<typeof setInterval>;
+  // Reentrancy guard: ticks must not overlap. If processing exceeds stepDurationMs,
+  // subsequent timer fires are skipped and counted as overruns for telemetry.
+  private tickInProgress = false;
+  private tickOverruns = 0;
+  private lastTickStart = 0;
 
   // Grand cycle state
   private grandCycleState: GrandCycleState;
@@ -396,9 +401,28 @@ export class EchoAgentLoop extends EventEmitter {
 
     // Start grand cycle timer
     this.grandCycleTimer = setInterval(() => {
-      this.tick().catch(error => {
-        log.error('Grand cycle tick error:', error);
-      });
+      // Reentrancy guard: skip this tick if the previous one is still in flight.
+      // This prevents event-loop pile-up under adverse load and surfaces the
+      // overrun count as observable telemetry.
+      if (this.tickInProgress) {
+        this.tickOverruns++;
+        if (this.tickOverruns % 10 === 0) {
+          log.warn(
+            `Echo agent loop tick overrun: ${this.tickOverruns} skipped ticks ` +
+            `(last tick start: ${Date.now() - this.lastTickStart}ms ago)`
+          );
+        }
+        return;
+      }
+      this.tickInProgress = true;
+      this.lastTickStart = Date.now();
+      this.tick()
+        .catch((error) => {
+          log.error('Grand cycle tick error:', error);
+        })
+        .finally(() => {
+          this.tickInProgress = false;
+        });
     }, this.config.stepDurationMs);
 
     log.info('Echo Agent Loop started successfully');
@@ -645,6 +669,15 @@ export class EchoAgentLoop extends EventEmitter {
       threadUtilization * 0.10 +
       structuralIntegrity * 0.15 +
       cognitiveDepth * 0.25;
+  }
+
+  /**
+   * Total number of skipped ticks due to reentrancy guard.
+   * Persistent overruns indicate the cognitive processor is exceeding step duration —
+   * either reduce processor load or increase stepDurationMs.
+   */
+  public getTickOverruns(): number {
+    return this.tickOverruns;
   }
 
   /**
