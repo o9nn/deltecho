@@ -352,7 +352,7 @@ export class MeshPainterBridge {
     const url = manifestUrl || `${this.config.atlasBaseUrl}variants/variants_manifest.json`;
     try {
       const response = await fetch(url);
-      this.manifest = await response.json();
+      this.manifest = (await response.json()) as VariantsManifest;
       return this.manifest!;
     } catch (e) {
       console.warn('[MeshPainterBridge] Failed to load manifest, using defaults');

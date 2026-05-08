@@ -15,4 +15,12 @@ export {
   Alert,
 } from './TelemetryMonitor.js';
 
+export {
+  GlobalWorkspaceBroadcaster,
+  type GlobalWorkspaceSnapshot,
+  type Dove9CognitiveState,
+  type GrandCycleInfo,
+  type SnapshotSubscriber,
+} from './GlobalWorkspaceBroadcaster.js';
+
 export { default } from './TelemetryMonitor.js';

@@ -19,7 +19,13 @@ import {
   DoubleMembraneIntegration,
   DoubleMembraneIntegrationConfig,
 } from './double-membrane-integration.js';
-import { Sys6OrchestratorBridge, Sys6BridgeConfig } from './sys6-bridge/Sys6OrchestratorBridge.js';
+import { Sys6OrchestratorBridge, Sys6BridgeConfig, type SynchronizationEvent } from './sys6-bridge/Sys6OrchestratorBridge.js';
+import {
+  GlobalWorkspaceBroadcaster,
+  type GlobalWorkspaceSnapshot,
+  type Dove9CognitiveState,
+  type GrandCycleInfo,
+} from './telemetry/GlobalWorkspaceBroadcaster.js';
 import { ProactiveLoop, ProactiveLoopConfig } from './proactive-loop.js';
 import { AutonomyPipeline, AutonomyPipelineConfig } from './autonomy-pipeline.js';
 import { DeltaChatAutonomyBridge, BridgeConfig as AutonomyBridgeConfig } from './deltachat-autonomy-bridge.js';
@@ -153,6 +159,9 @@ export class Orchestrator {
   private webhookServer?: WebhookServer;
   private dove9Integration?: Dove9Integration;
   private sys6Bridge?: Sys6OrchestratorBridge;
+  // Global Workspace Theory broadcaster — fires at every Sys6 sync_event with
+  // a unified snapshot (telemetry + Dove9 state + Sys6 saliences + grand-cycle).
+  private globalWorkspaceBroadcaster: GlobalWorkspaceBroadcaster;
   private doubleMembraneIntegration?: DoubleMembraneIntegration;
   private proactiveLoop?: ProactiveLoop;
   private autonomyPipeline?: AutonomyPipeline;
@@ -186,6 +195,8 @@ export class Orchestrator {
     this.memoryStore.setEnabled(true);
     this.personaCore = new PersonaCore(this.storage);
     this.llmService = new LLMService();
+    // Instantiate the global workspace broadcaster (subscribers wired during start()).
+    this.globalWorkspaceBroadcaster = new GlobalWorkspaceBroadcaster();
   }
 
   /**
@@ -264,6 +275,16 @@ export class Orchestrator {
         this.sys6Bridge = new Sys6OrchestratorBridge(this.config.sys6);
         await this.sys6Bridge.start();
         log.info('Sys6-Triality cognitive cycle started with 30-step architecture');
+
+        // Wire Global Workspace Broadcaster: at every sync_event (when ≥2 Sys6
+        // channels align) fan out a joint snapshot to all subscribers.
+        this.sys6Bridge.on('sync_event', async (syncEvent: SynchronizationEvent) => {
+          await this.globalWorkspaceBroadcaster.onSynchronizationEvent(
+            syncEvent,
+            () => this.buildGlobalWorkspaceState(syncEvent)
+          );
+        });
+        log.info('Global Workspace broadcaster wired to Sys6 sync_event stream');
       }
 
       // Initialize Double Membrane bio-inspired architecture
@@ -1126,6 +1147,62 @@ ${response.body}`;
    */
   public getSys6Bridge(): Sys6OrchestratorBridge | undefined {
     return this.sys6Bridge;
+  }
+  /**
+   * Get the Global Workspace broadcaster for direct access.
+   * Subscribe to broadcasts via gwb.addSubscriber(snapshot => ...).
+   */
+  public getGlobalWorkspaceBroadcaster(): GlobalWorkspaceBroadcaster {
+    return this.globalWorkspaceBroadcaster;
+  }
+  /**
+   * Build the joint cognitive state captured at a Sys6 synchronization event.
+   * Called synchronously inside the sync_event handler so the snapshot
+   * reflects state at that exact moment of inter-channel coherence.
+   */
+  private buildGlobalWorkspaceState(_syncEvent: SynchronizationEvent): {
+    telemetry: any;
+    dove9: Dove9CognitiveState | null;
+    grandCycle: GrandCycleInfo | null;
+  } {
+    // Dove9 state
+    let dove9: Dove9CognitiveState | null = null;
+    if (this.dove9Integration) {
+      try {
+        const d9State: any = (this.dove9Integration as any).getState?.() ?? null;
+        if (d9State) {
+          dove9 = {
+            running: !!d9State.running,
+            activeProcessCount: d9State.activeProcessCount ?? 0,
+            mailProtocolEnabled: !!d9State.mailProtocolEnabled,
+            triadic: d9State.triadic ?? null,
+          };
+        }
+      } catch {
+        // Dove9 state unavailable — leave null.
+      }
+    }
+    // Grand-cycle (LCM(30,12)=60 step boundary)
+    let grandCycle: GrandCycleInfo | null = null;
+    const sys6Metrics: any = this.sys6Bridge?.getMetrics();
+    const dove9State: any = (this.dove9Integration as any)?.getState?.();
+    if (sys6Metrics && dove9State?.triadic) {
+      const sys6Cycles = sys6Metrics.totalCycles ?? 0;
+      const dove9Cycles = dove9State.triadic.cycleNumber ?? 0;
+      // Grand cycle: every 2 Sys6 cycles (60 steps) = every 5 Dove9 cycles (60 steps)
+      if (sys6Cycles > 0 && sys6Cycles % 2 === 0) {
+        grandCycle = {
+          grandCycleNumber: Math.floor(sys6Cycles / 2),
+          dove9CyclesCompleted: dove9Cycles,
+          sys6CyclesCompleted: sys6Cycles,
+        };
+      }
+    }
+    return {
+      telemetry: null, // wired when TelemetryMonitor is active
+      dove9,
+      grandCycle,
+    };
   }
 
   /**

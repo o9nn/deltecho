@@ -12,6 +12,8 @@ export {
   StreamState,
   CycleResult,
   CognitiveAgent,
+  type SynchronizationEvent,
+  type SynchronizedChannel,
 } from './Sys6OrchestratorBridge.js';
 
 export { default } from './Sys6OrchestratorBridge.js';
