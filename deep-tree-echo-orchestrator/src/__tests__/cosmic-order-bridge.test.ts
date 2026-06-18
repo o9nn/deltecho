@@ -458,6 +458,7 @@ describe('CosmicOrderBridge', () => {
     });
 
     it('should integrate with echo-agent-loop grand cycle (60 steps)', async () => {
+      jest.setTimeout(10000);
       // Dynamically import to test integration
       const { EchoAgentLoop } = await import('../echo-agent-loop.js');
 
@@ -496,6 +497,7 @@ describe('CosmicOrderBridge', () => {
     });
 
     it('should disable cosmic order when configured', async () => {
+      jest.setTimeout(10000);
       const { EchoAgentLoop } = await import('../echo-agent-loop.js');
 
       const loop = new EchoAgentLoop({

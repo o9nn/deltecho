@@ -73,7 +73,7 @@ export interface UnifiedCognitiveState {
   // Cognitive context from dove9
   cognitiveContext?: CognitiveContext;
   // Subsystem states
-  persona: PersonaState;
+  persona: UnifiedPersonaState;
   memories: MemoryState;
   reasoning: ReasoningState;
 }
@@ -81,7 +81,7 @@ export interface UnifiedCognitiveState {
 /**
  * Persona state for personality management
  */
-export interface PersonaState {
+export interface UnifiedPersonaState {
   name: string;
   traits: string[];
   currentMood: string;
@@ -120,10 +120,10 @@ export interface ReasoningState {
 /**
  * Event types emitted by the cognitive system
  */
-export type CognitiveEvent =
+export type UnifiedCognitiveEvent =
   | { type: 'message_received'; payload: UnifiedMessage }
   | { type: 'response_generated'; payload: UnifiedMessage }
   | { type: 'memory_updated'; payload: MemoryState }
-  | { type: 'persona_changed'; payload: PersonaState }
+  | { type: 'persona_changed'; payload: UnifiedPersonaState }
   | { type: 'reasoning_complete'; payload: ReasoningState }
   | { type: 'error'; payload: { message: string; code: string } };

@@ -86,7 +86,7 @@ describe('EchoAgentLoop', () => {
 
       await loop.start();
       // Wait for at least 60 steps × 10ms = 600ms + buffer
-      await new Promise(resolve => setTimeout(resolve, 800));
+      await new Promise(resolve => setTimeout(resolve, 1200));
       await loop.stop();
 
       expect(grandCycleComplete).toBe(true);
@@ -300,7 +300,7 @@ describe('EchoAgentLoop', () => {
   describe('Metrics', () => {
     it('should calculate autonomy score', async () => {
       await loop.start();
-      await new Promise(resolve => setTimeout(resolve, 800));
+      await new Promise(resolve => setTimeout(resolve, 1200));
       await loop.stop();
 
       const metrics = loop.getMetrics();

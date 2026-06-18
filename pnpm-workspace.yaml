@@ -16,6 +16,13 @@ packages:
   - deltecho2
   - deltecho2/packages/*
 
+allowBuilds:
+  '@parcel/watcher': set this to true or false
+  core-js: set this to true or false
+  electron: set this to true or false
+  esbuild: set this to true or false
+  less: set this to true or false
+
 catalog:
   '@deltachat/jsonrpc-client': 1.159.4
   '@deltachat/stdio-rpc-server': 1.159.4

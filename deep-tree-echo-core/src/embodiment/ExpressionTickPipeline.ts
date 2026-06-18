@@ -14,13 +14,13 @@
  * @packageDocumentation
  */
 
-import { CharacterRegistry, CharacterRegistration } from './CharacterRegistry';
+import { CharacterRegistry, CharacterRegistration } from './CharacterRegistry.js';
 import {
   EndocrineExpressionBridge,
   ExpressionEvaluation,
   EndocrineState,
   createEndocrineExpressionBridge,
-} from './EndocrineExpressionBridge';
+} from './EndocrineExpressionBridge.js';
 
 // ═══════════════════════════════════════════════════════════════════════
 // Types

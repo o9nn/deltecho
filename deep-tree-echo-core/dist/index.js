@@ -26,6 +26,8 @@ export * from './tree-polytope-kernel.js';
 export * from './core-self/index.js';
 // Export quantization modules — TQ ⊗ PPQ zero-multiply inference
 export * from './quantization/index.js';
+// Export persona modules — cognitive persona architecture with tree-polytope grounding
+export * from './persona/index.js';
 // Export utility modules
 export * from './utils/logger.js';
 // Export configuration modules

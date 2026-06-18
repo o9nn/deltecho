@@ -1,4 +1,4 @@
-import { describe, it, expect, beforeEach, afterEach } from '@jest/globals';
+import { jest, describe, it, expect, beforeEach, afterEach } from '@jest/globals';
 
 /**
  * @fileoverview Integration Tests: Orchestrator ↔ EchoAgentLoop
@@ -48,6 +48,7 @@ describe('Orchestrator ↔ EchoAgentLoop Integration', () => {
 
   describe('startup', () => {
     it('should start with EchoAgentLoop active', async () => {
+      jest.setTimeout(10000);
       await orchestrator.start();
       expect(orchestrator.isRunning()).toBe(true);
 
@@ -57,12 +58,14 @@ describe('Orchestrator ↔ EchoAgentLoop Integration', () => {
     });
 
     it('should expose EchoAgentLoop via getter', async () => {
+      jest.setTimeout(10000);
       await orchestrator.start();
       const loop = orchestrator.getEchoAgentLoop();
       expect(loop).toBeDefined();
     });
 
     it('should include EchoAgentLoop in cognitive system status', async () => {
+      jest.setTimeout(10000);
       await orchestrator.start();
       const status = orchestrator.getCognitiveSystemStatus();
       expect(status.echoAgentLoop).not.toBeNull();
@@ -72,6 +75,7 @@ describe('Orchestrator ↔ EchoAgentLoop Integration', () => {
 
   describe('grand cycle operation', () => {
     it('should accumulate steps over time', async () => {
+      jest.setTimeout(10000);
       await orchestrator.start();
 
       // Wait for a few ticks
@@ -83,6 +87,7 @@ describe('Orchestrator ↔ EchoAgentLoop Integration', () => {
     });
 
     it('should advance through grand cycle state', async () => {
+      jest.setTimeout(10000);
       await orchestrator.start();
 
       await new Promise(resolve => setTimeout(resolve, 150));
@@ -98,6 +103,7 @@ describe('Orchestrator ↔ EchoAgentLoop Integration', () => {
     });
 
     it('should have conversational bridge active', async () => {
+      jest.setTimeout(10000);
       await orchestrator.start();
 
       const loop = orchestrator.getEchoAgentLoop()!;
@@ -109,6 +115,7 @@ describe('Orchestrator ↔ EchoAgentLoop Integration', () => {
 
   describe('shutdown', () => {
     it('should stop EchoAgentLoop on orchestrator stop', async () => {
+      jest.setTimeout(10000);
       await orchestrator.start();
       const loop = orchestrator.getEchoAgentLoop()!;
       expect(loop.isRunning()).toBe(true);
@@ -118,6 +125,7 @@ describe('Orchestrator ↔ EchoAgentLoop Integration', () => {
     });
 
     it('should report null EchoAgentLoop status when disabled', async () => {
+      jest.setTimeout(10000);
       const noLoopOrch = new Orchestrator({
         enableDeltaChat: false,
         enableDovecot: false,

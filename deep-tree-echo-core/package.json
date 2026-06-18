@@ -38,6 +38,14 @@
       "import": "./dist/integration/index.js",
       "types": "./dist/integration/index.d.ts"
     },
+    "./core-self": {
+      "import": "./dist/core-self/index.js",
+      "types": "./dist/core-self/index.d.ts"
+    },
+    "./tree-polytope-kernel": {
+      "import": "./dist/tree-polytope-kernel.js",
+      "types": "./dist/tree-polytope-kernel.d.ts"
+    },
     "./config": {
       "import": "./dist/config/index.js",
       "types": "./dist/config/index.d.ts"

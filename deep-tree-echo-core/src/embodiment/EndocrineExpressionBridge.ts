@@ -26,7 +26,7 @@ import {
   ExtraParamConfig,
   EndocrineBaselines,
   EndocrineSensitivity,
-} from './CharacterRegistry';
+} from './CharacterRegistry.js';
 
 // ═══════════════════════════════════════════════════════════════════════
 // Types

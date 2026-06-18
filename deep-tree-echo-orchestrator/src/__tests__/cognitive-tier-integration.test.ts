@@ -42,6 +42,13 @@ jest.unstable_mockModule('deep-tree-echo-core', () => ({
 // Mock Sys6 Bridge
 jest.unstable_mockModule('../sys6-bridge/Sys6OrchestratorBridge.js', () => ({
   Sys6OrchestratorBridge: jest.fn().mockImplementation(() => ({
+    on: jest.fn(),
+    off: jest.fn(),
+    once: jest.fn(),
+    emit: jest.fn(),
+    addListener: jest.fn(),
+    removeListener: jest.fn(),
+    removeAllListeners: jest.fn(),
     start: jest.fn<() => Promise<void>>().mockResolvedValue(undefined),
     stop: jest.fn<() => Promise<void>>().mockResolvedValue(undefined),
     processMessage: jest.fn<() => Promise<string>>().mockResolvedValue('Mock Sys6 response'),

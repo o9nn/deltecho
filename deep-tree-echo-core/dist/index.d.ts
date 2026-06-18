@@ -12,6 +12,7 @@ export * from './scientific-genius/index.js';
 export * from './tree-polytope-kernel.js';
 export * from './core-self/index.js';
 export * from './quantization/index.js';
+export * from './persona/index.js';
 export * from './utils/logger.js';
 export * from './config/index.js';
 //# sourceMappingURL=index.d.ts.map

@@ -6,7 +6,7 @@ import type {
   UnifiedMessage,
   UnifiedCognitiveState,
   DeepTreeEchoBotConfig,
-  CognitiveEvent,
+  UnifiedCognitiveEvent,
 } from '../types/index.js';
 
 /**
@@ -46,7 +46,7 @@ export enum Sys6ProcessingMode {
 export class CognitiveOrchestrator {
   private config: DeepTreeEchoBotConfig;
   private state: UnifiedCognitiveState | null = null;
-  private eventListeners: Map<string, Array<(event: CognitiveEvent) => void>> = new Map();
+  private eventListeners: Map<string, Array<(event: UnifiedCognitiveEvent) => void>> = new Map();
   private conversationHistory: Array<{ role: string; content: string }> = [];
   private llmConfig: LLMProviderConfig | null = null;
 
@@ -626,7 +626,7 @@ Keep responses concise but thoughtful. Show genuine curiosity and engagement wit
   /**
    * Subscribe to cognitive events
    */
-  on(type: CognitiveEvent['type'], listener: (event: CognitiveEvent) => void): void {
+  on(type: UnifiedCognitiveEvent['type'], listener: (event: UnifiedCognitiveEvent) => void): void {
     const listeners = this.eventListeners.get(type) || [];
     listeners.push(listener);
     this.eventListeners.set(type, listeners);
@@ -635,7 +635,7 @@ Keep responses concise but thoughtful. Show genuine curiosity and engagement wit
   /**
    * Emit a cognitive event
    */
-  private emit(event: CognitiveEvent): void {
+  private emit(event: UnifiedCognitiveEvent): void {
     const listeners = this.eventListeners.get(event.type) || [];
     listeners.forEach((listener) => listener(event));
   }

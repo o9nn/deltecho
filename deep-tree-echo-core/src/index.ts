@@ -41,7 +41,7 @@ export * from './core-self/index.js';
 export * from './quantization/index.js';
 
 // Export persona modules — cognitive persona architecture with tree-polytope grounding
-export * from './persona';
+export * from './persona/index.js';
 
 // Export utility modules
 export * from './utils/logger.js';
