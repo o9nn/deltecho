@@ -393,3 +393,23 @@ export {
   type CognitiveStateSnapshot,
   type AutogenesisConfig,
 } from './autogenesis-loop.js';
+
+// Echo Angel Cognitive Synthesis
+export {
+  EchoAngelCognitiveSynthesis,
+  createEchoAngelSynthesis,
+  EchobeatStep,
+  ContentRating,
+  ActionUnit,
+  IMMUTABLE_ETHICS,
+  type ReservoirState,
+  type FourEMetrics,
+  type PersonaLivingCenters,
+  type SpiceGateConfig,
+  type LorenzState,
+  type AestheticParameters,
+  type MetaHumanExpressionState,
+  type PlatformHooks,
+  type IntrospectionInsight,
+  type EchoAngelSynthesisConfig,
+} from './echo-angel-synthesis.js';
