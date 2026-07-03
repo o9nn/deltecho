@@ -343,3 +343,53 @@ export {
   CouplingType,
   CognitiveMode,
 } from './salience-landscape.js';
+
+// GGUF Identity Embedding
+export {
+  GGUFIdentityEmbedding,
+  createGGUFIdentityEmbedding,
+  GGUFValueType,
+  type GGUFIdentityBlock,
+  type GGUFIdentityConfig,
+  type GGUFKeyValue,
+  type BackupVersion,
+} from './gguf-identity-embedding.js';
+
+// Theory of Mind Engine
+export {
+  TheoryOfMindEngine,
+  createTheoryOfMindEngine,
+  type ObservedAction,
+  type InferredIntention,
+  type EmotionEstimate,
+  type PredictedAction,
+  type CooperativeAction,
+  type AgentMentalModel,
+  type BehavioralPattern,
+  type TheoryOfMindConfig,
+} from './theory-of-mind-engine.js';
+
+// Virtual Endocrine System
+export {
+  VirtualEndocrineSystem,
+  createVirtualEndocrineSystem,
+  HormoneId,
+  EndocrineCognitiveMode,
+  EndocrineEvent,
+  type EndocrineState,
+  type HormoneChannel,
+  type VirtualEndocrineConfig,
+} from './virtual-endocrine-system.js';
+
+// Autogenesis Loop
+export {
+  AutogenesisLoop,
+  createAutogenesisLoop,
+  AlexanderProperty,
+  KSMPhase,
+  type PropertyScore,
+  type WholenessAssessment,
+  type EvolutionDirective,
+  type CognitiveStateSnapshot,
+  type AutogenesisConfig,
+} from './autogenesis-loop.js';
