@@ -30,6 +30,7 @@ import { ProactiveLoop, ProactiveLoopConfig } from './proactive-loop.js';
 import { AutonomyPipeline, AutonomyPipelineConfig } from './autonomy-pipeline.js';
 import { DeltaChatAutonomyBridge, BridgeConfig as AutonomyBridgeConfig } from './deltachat-autonomy-bridge.js';
 import { EchoAgentLoop, type EchoAgentLoopConfig } from './echo-agent-loop.js';
+import { ProactiveOrchestrationWiring, type ProactiveOrchestrationWiringConfig } from './proactive-orchestration-wiring.js';
 
 const log = getLogger('deep-tree-echo-orchestrator/Orchestrator');
 
@@ -167,6 +168,7 @@ export class Orchestrator {
   private autonomyPipeline?: AutonomyPipeline;
   private autonomyBridge?: DeltaChatAutonomyBridge;
   private echoAgentLoop?: EchoAgentLoop;
+  private proactiveOrchestrationWiring?: ProactiveOrchestrationWiring;
   private running: boolean = false;
 
   // Cognitive services for processing messages
@@ -375,6 +377,22 @@ export class Orchestrator {
 
         await this.echoAgentLoop.start();
         log.info('EchoAgentLoop started — 60-step grand cycle (Dove9×12 + Sys6×30) with cognitive processing');
+      }
+
+      // Wire proactive orchestration feedback loops (REPAIR: closes the gap
+      // between aspirational production-wiring declarations and actual runtime connections)
+      if (this.config.enableProactiveLoop && this.proactiveLoop) {
+        this.proactiveOrchestrationWiring = new ProactiveOrchestrationWiring(
+          this.llmService,
+          this.memoryStore,
+          this.personaCore,
+          this.proactiveLoop
+        );
+        await this.proactiveOrchestrationWiring.wire(
+          this.echoAgentLoop,
+          this.dove9Integration
+        );
+        log.info('Proactive orchestration wiring complete — all feedback loops live');
       }
 
       this.running = true;

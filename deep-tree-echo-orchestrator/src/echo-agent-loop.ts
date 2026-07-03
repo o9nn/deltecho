@@ -52,6 +52,11 @@ import {
   Dove9ConversationalBridge,
   type Dove9ConversationalBridgeConfig,
 } from './dove9-conversational-bridge.js';
+import {
+  SalienceLandscape,
+  type SalienceLandscapeConfig,
+  type RenegotiationEvent,
+} from './salience-landscape.js';
 
 const log = getLogger('deep-tree-echo-orchestrator/EchoAgentLoop');
 
@@ -93,6 +98,13 @@ export interface GrandCycleState {
     episodicMemories: number;
     consolidatedMemories: number;
     dominantMode?: string;
+  };
+  /** Salience landscape state */
+  salienceLandscape?: {
+    totalEntries: number;
+    averageSalience: number;
+    isPivotalRR: boolean;
+    isTPoint: boolean;
   };
 }
 
@@ -136,6 +148,8 @@ export interface EchoAgentLoopConfig {
   enableCognitiveProcessing: boolean;
   /** Enable Dove9 conversational bridge ("Everything is a chatbot") */
   enableConversationalBridge: boolean;
+  /** Enable Salience Landscape Renegotiation (PIVOTAL_RR from delovecho) */
+  enableSalienceLandscape: boolean;
   /** Proactive loop configuration */
   proactiveConfig?: Partial<ProactiveLoopConfig>;
   /** Cosmic order bridge configuration */
@@ -144,6 +158,8 @@ export interface EchoAgentLoopConfig {
   cognitiveConfig?: Partial<CognitiveTickProcessorConfig>;
   /** Dove9 conversational bridge configuration */
   conversationalBridgeConfig?: Partial<Dove9ConversationalBridgeConfig>;
+  /** Salience landscape configuration */
+  salienceLandscapeConfig?: Partial<SalienceLandscapeConfig>;
   /** Maximum concurrent threads */
   maxConcurrentThreads: number;
 }
@@ -156,6 +172,7 @@ const DEFAULT_CONFIG: EchoAgentLoopConfig = {
   enableTelemetry: true,
   enableCognitiveProcessing: true,
   enableConversationalBridge: true,
+  enableSalienceLandscape: true,
   maxConcurrentThreads: 4,
 };
 
@@ -209,6 +226,7 @@ export class EchoAgentLoop extends EventEmitter {
   private treePolytopeKernel: TreePolytopeKernel;
   private cognitiveProcessor?: CognitiveTickProcessor;
   private conversationalBridge?: Dove9ConversationalBridge;
+  private salienceLandscape?: SalienceLandscape;
   private running: boolean = false;
   private grandCycleTimer?: ReturnType<typeof setInterval>;
   // Reentrancy guard: ticks must not overlap. If processing exceeds stepDurationMs,
@@ -252,6 +270,17 @@ export class EchoAgentLoop extends EventEmitter {
         this.config.conversationalBridgeConfig
       );
       this.wireConversationalBridgeEvents();
+    }
+
+    // Initialize Salience Landscape (PIVOTAL_RR from delovecho)
+    if (this.config.enableSalienceLandscape) {
+      this.salienceLandscape = new SalienceLandscape(this.config.salienceLandscapeConfig);
+      this.salienceLandscape.on('pivotal_rr', (event: RenegotiationEvent) => {
+        this.emit('pivotal_rr', event);
+      });
+      this.salienceLandscape.on('t_point_convergence', (event: RenegotiationEvent) => {
+        this.emit('t_point_convergence', event);
+      });
     }
 
     // Initialize grand cycle state
@@ -513,6 +542,19 @@ export class EchoAgentLoop extends EventEmitter {
     // Advance tree-polytope s-gram rhythms (structural temporal awareness)
     this.treePolytopeKernel.advanceSGrams();
 
+    // Advance salience landscape (PIVOTAL_RR renegotiation)
+    if (this.config.enableSalienceLandscape && this.salienceLandscape) {
+      const renegotiationEvent = this.salienceLandscape.advanceStep(this.grandCycleState.step);
+      this.grandCycleState.salienceLandscape = {
+        totalEntries: renegotiationEvent.topEntries.length,
+        averageSalience: renegotiationEvent.topEntries.length > 0
+          ? renegotiationEvent.topEntries.reduce((a, e) => a + e.salience, 0) / renegotiationEvent.topEntries.length
+          : 0,
+        isPivotalRR: renegotiationEvent.isPivotalRR,
+        isTPoint: renegotiationEvent.isTPoint,
+      };
+    }
+
     // *** Cognitive tick processing — real cognitive work ***
     if (this.config.enableCognitiveProcessing && this.cognitiveProcessor) {
       await this.cognitiveProcessor.processTick(
@@ -768,6 +810,13 @@ export class EchoAgentLoop extends EventEmitter {
    */
   public getConversationalBridge(): Dove9ConversationalBridge | undefined {
     return this.conversationalBridge;
+  }
+
+  /**
+   * Get salience landscape (PIVOTAL_RR from delovecho)
+   */
+  public getSalienceLandscape(): SalienceLandscape | undefined {
+    return this.salienceLandscape;
   }
 
   /**

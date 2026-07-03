@@ -322,3 +322,24 @@ export {
   type NestedShellState,
   type TelemetryDataPoint,
 } from './system5-telemetry-shell.js';
+
+// ─── Level 7: Proactive Orchestration Repair ─────────────────────────────────
+
+// Proactive Orchestration Wiring — Real feedback loop connections
+export {
+  ProactiveOrchestrationWiring,
+  type ProactiveOrchestrationWiringConfig,
+  type SomaticMarker,
+  type SelfModificationDirective,
+} from './proactive-orchestration-wiring.js';
+
+// Salience Landscape Renegotiation — PIVOTAL_RR from delovecho C layer
+export {
+  SalienceLandscape,
+  type SalienceLandscapeConfig,
+  type SalienceEntry,
+  type RenegotiationEvent,
+  CognitiveTerm,
+  CouplingType,
+  CognitiveMode,
+} from './salience-landscape.js';
