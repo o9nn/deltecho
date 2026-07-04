@@ -440,3 +440,28 @@ export type {
   IntrospectionSession,
   VorticogCoreSelfConfig,
 } from './vorticog-core-self-engine.js';
+
+// Live2D DTEcho Expression Engine — /live2d-dtecho
+export {
+  Live2DDTEchoExpressionEngine,
+  createLive2DDTEchoExpressionEngine,
+  DTEExpression,
+  DTECognitiveState,
+  CognitiveMode as DTECognitiveMode,
+  FACSIntensity,
+  DTE_AESTHETIC,
+  DTE_PERSONALITY,
+  DTE_ENDOCRINE_BASELINES,
+} from './live2d-dtecho-expression-engine.js';
+export type {
+  CubismParameters,
+  RigLogicControls,
+  ActionUnitState,
+  HormoneProfile,
+  ModePose,
+  ExpressionBlend,
+  EndocrineSensitivity,
+  DTEAesthetic,
+  DTEchoExpressionConfig,
+  ExpressionTickResult,
+} from './live2d-dtecho-expression-engine.js';
