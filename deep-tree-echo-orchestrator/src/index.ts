@@ -413,3 +413,30 @@ export {
   type IntrospectionInsight,
   type EchoAngelSynthesisConfig,
 } from './echo-angel-synthesis.js';
+
+// Vorticog Core Self Engine — /unreal-echo(/deep-tree-echo-core-self -> /vorticog(/echo-introspect))
+export {
+  VorticogCoreSelfEngine,
+  createVorticogCoreSelfEngine,
+  AgentRole,
+  CoreValue,
+  CognitiveNeed,
+  ActionType,
+  AutognosisLevel,
+  SkillCategory,
+} from './vorticog-core-self-engine.js';
+export type {
+  IdentityMesh,
+  IdentityNode,
+  SelfImageLayers,
+  NeedState,
+  SimAction,
+  SimRelationship,
+  SkillState,
+  SimEvent,
+  BigFivePersonality,
+  ShadowAnalysis,
+  MoralPerception,
+  IntrospectionSession,
+  VorticogCoreSelfConfig,
+} from './vorticog-core-self-engine.js';
