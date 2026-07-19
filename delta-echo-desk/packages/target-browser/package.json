@@ -6,7 +6,7 @@
   "license": "GPL-3.0-or-later",
   "scripts": {
     "check:types": "tsc --noEmit && tsc --noEmit -p runtime-browser",
-    "build": "pnpm build:locales && pnpm build:backend && pnpm --filter=@deltachat-desktop/frontend build && pnpm run build:compose-frontend",
+    "build": "pnpm build:locales && pnpm build:backend && pnpm run build:compose-frontend",
     "build:locales": "pnpm -w translations:convert",
     "build:backend": "node ./bin/build.js",
     "build:runtime-impl": "pnpm esbuild --format=esm --bundle --minify --keep-names --sourcemap --outdir=./dist runtime-browser/runtime.ts",
@@ -15,6 +15,7 @@
     "start:server": "node dist/server.js"
   },
   "dependencies": {
+    "@deltachat-desktop/frontend": "link:../frontend",
     "@deltachat-desktop/runtime-interface": "link:../runtime",
     "@deltachat-desktop/shared": "link:../shared",
     "@deltachat/jsonrpc-client": "catalog:",
