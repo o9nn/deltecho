@@ -5,6 +5,10 @@
  * Covers system monitoring, percept emission, lifecycle, and statistics.
  */
 import { describe, it, expect, afterEach, jest } from '@jest/globals';
+import { mkdtempSync, rmSync, writeFileSync } from 'node:fs';
+import { tmpdir } from 'node:os';
+import { join } from 'node:path';
+import { execSync } from 'node:child_process';
 import { PerceptionHandlers } from '../perception/PerceptionHandlers.js';
 import type { CognitivePercept } from '../cognitive-tick-processor.js';
 
@@ -222,29 +226,50 @@ describe('PerceptionHandlers', () => {
 
   describe('Git Scanner', () => {
     it('should scan git repositories when configured', async () => {
+      const tempRepo = mkdtempSync(join(tmpdir(), 'perception-git-'));
       const percepts: CognitivePercept[] = [];
+      const getGitPercepts = () => percepts.filter(p => p.metadata.handler === 'git_scan');
 
-      handlers = new PerceptionHandlers({
-        enableFilesystemWatch: false,
-        enableSystemMonitor: false,
-        enableGitScan: true,
-        gitRepositories: ['/home/ubuntu/deltecho'], // The repo we're working on
-        gitScanInterval: 60000,
-      });
+      try {
+        const runGit = (command: string) => {
+          try {
+            execSync(command, { cwd: tempRepo, stdio: 'ignore' });
+          } catch (error) {
+            const message = error instanceof Error ? error.message : String(error);
+            throw new Error(`Failed to run git command "${command}": ${message}`);
+          }
+        };
 
-      handlers.onPercept((percept) => percepts.push(percept));
-      await handlers.start();
+        // Create a deterministic git repo with uncommitted changes
+        runGit('git init');
+        runGit('git config user.email "test@example.com"');
+        runGit('git config user.name "Test User"');
+        writeFileSync(join(tempRepo, 'tracked.txt'), 'initial\n');
+        runGit('git add tracked.txt');
+        runGit('git commit -m "initial commit"');
+        writeFileSync(join(tempRepo, 'tracked.txt'), 'modified\n');
 
-      // Wait for initial scan
-      await new Promise(resolve => setTimeout(resolve, 2000));
+        handlers = new PerceptionHandlers({
+          enableFilesystemWatch: false,
+          enableSystemMonitor: false,
+          enableGitScan: true,
+          gitRepositories: [tempRepo],
+          gitScanInterval: 60000,
+        });
 
-      // Should have detected uncommitted changes (our new files)
-      const gitPercepts = percepts.filter(p =>
-        p.metadata.handler === 'git_scan'
-      );
+        handlers.onPercept((percept) => percepts.push(percept));
+        await handlers.start();
 
-      // There should be at least one git percept (uncommitted changes)
-      expect(gitPercepts.length).toBeGreaterThanOrEqual(1);
+        const start = Date.now();
+        let gitPercepts = getGitPercepts();
+        while (gitPercepts.length === 0 && Date.now() - start < 2000) {
+          await new Promise(resolve => setTimeout(resolve, 50));
+          gitPercepts = getGitPercepts();
+        }
+        expect(gitPercepts.length).toBeGreaterThanOrEqual(1);
+      } finally {
+        rmSync(tempRepo, { recursive: true, force: true });
+      }
     }, 10000);
   });
 });
