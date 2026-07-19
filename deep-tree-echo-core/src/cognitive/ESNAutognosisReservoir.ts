@@ -1006,17 +1006,27 @@ export class ESNAutognosisReservoir extends EventEmitter {
    */
   public static deserialize(data: any): ESNAutognosisReservoir {
     const reservoir = new ESNAutognosisReservoir(data.config);
-    reservoir.W_in = new Float64Array(data.W_in);
-    reservoir.W_res = new Float64Array(data.W_res);
-    reservoir.W_out = new Float64Array(data.W_out);
-    reservoir.W_fb = new Float64Array(data.W_fb);
-    reservoir.x = new Float64Array(data.x);
-    reservoir.y = new Float64Array(data.y);
-    reservoir.tickCount = data.tickCount;
-    reservoir.readoutTrained = data.readoutTrained;
-    reservoir.entropyHistory = data.entropyHistory || [];
-    reservoir.lastAutognosisReport = data.lastAutognosisReport || null;
+    reservoir.restore(data);
     return reservoir;
+  }
+
+  /**
+   * Restore persisted state into this instance (in-place counterpart of
+   * the static deserialize, usable on the shared singleton).
+   */
+  public restore(data: any): void {
+    if (!data) return;
+    if (data.W_in) this.W_in = new Float64Array(data.W_in);
+    if (data.W_res) this.W_res = new Float64Array(data.W_res);
+    if (data.W_out) this.W_out = new Float64Array(data.W_out);
+    if (data.W_fb) this.W_fb = new Float64Array(data.W_fb);
+    if (data.x) this.x = new Float64Array(data.x);
+    if (data.y) this.y = new Float64Array(data.y);
+    this.tickCount = data.tickCount ?? 0;
+    this.readoutTrained = data.readoutTrained ?? false;
+    this.entropyHistory = data.entropyHistory || [];
+    this.lastAutognosisReport = data.lastAutognosisReport || null;
+    log.info(`Reservoir state restored (tick=${this.tickCount})`);
   }
 
   /**

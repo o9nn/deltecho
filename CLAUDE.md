@@ -59,6 +59,7 @@ System daemon that coordinates all Deep Tree Echo services:
 - Task Scheduler (cron-like scheduling)
 - Webhook Server (external integrations)
 - Dove9 Integration (cognitive OS)
+- Entelechy Integration (ESN reservoir + EchoBeats + consciousness emergence monitoring, see [docs/architecture/ENTELECHY.md](docs/architecture/ENTELECHY.md))
 
 **Key Commands**:
 

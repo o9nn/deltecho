@@ -16,6 +16,10 @@ import { TaskScheduler } from './scheduler/task-scheduler.js';
 import { WebhookServer } from './webhooks/webhook-server.js';
 import { Dove9Integration, Dove9IntegrationConfig, Dove9Response } from './dove9-integration.js';
 import {
+  EntelechyIntegration,
+  EntelechyIntegrationConfig,
+} from './entelechy-integration.js';
+import {
   DoubleMembraneIntegration,
   DoubleMembraneIntegrationConfig,
 } from './double-membrane-integration.js';
@@ -25,6 +29,7 @@ import {
   type GlobalWorkspaceSnapshot,
   type Dove9CognitiveState,
   type GrandCycleInfo,
+  type EntelechyTelemetry,
 } from './telemetry/GlobalWorkspaceBroadcaster.js';
 import { ProactiveLoop, ProactiveLoopConfig } from './proactive-loop.js';
 import { AutonomyPipeline, AutonomyPipelineConfig } from './autonomy-pipeline.js';
@@ -97,6 +102,10 @@ export interface OrchestratorConfig {
   enableDove9: boolean;
   /** Dove9 configuration */
   dove9?: Partial<Dove9IntegrationConfig>;
+  /** Enable Entelechy emergence integration (ESN + EchoBeats + consciousness) */
+  enableEntelechy: boolean;
+  /** Entelechy configuration */
+  entelechy?: Partial<EntelechyIntegrationConfig>;
   /** Cognitive tier processing mode */
   cognitiveTierMode: CognitiveTierMode;
   /** Enable Sys6-Triality cognitive cycle integration */
@@ -137,6 +146,7 @@ const DEFAULT_CONFIG: OrchestratorConfig = {
   enableWebhooks: true,
   processIncomingMessages: true,
   enableDove9: true,
+  enableEntelechy: true,
   cognitiveTierMode: 'ADAPTIVE',
   enableSys6: true,
   enableDoubleMembrane: true,
@@ -159,6 +169,7 @@ export class Orchestrator {
   private scheduler?: TaskScheduler;
   private webhookServer?: WebhookServer;
   private dove9Integration?: Dove9Integration;
+  private entelechyIntegration?: EntelechyIntegration;
   private sys6Bridge?: Sys6OrchestratorBridge;
   // Global Workspace Theory broadcaster — fires at every Sys6 sync_event with
   // a unified snapshot (telemetry + Dove9 state + Sys6 saliences + grand-cycle).
@@ -270,6 +281,36 @@ export class Orchestrator {
 
         await this.dove9Integration.start();
         log.info('Dove9 cognitive OS started with triadic loop architecture');
+      }
+
+      // Initialize Entelechy emergence integration (ESN reservoir + EchoBeats
+      // + consciousness + scientific genius + entelechy monitoring)
+      if (this.config.enableEntelechy) {
+        this.entelechyIntegration = new EntelechyIntegration(this.config.entelechy);
+
+        // Restore persisted emergence state so progress survives restarts
+        try {
+          const persisted = await this.storage.load('entelechy-state');
+          if (persisted) {
+            this.entelechyIntegration.restore(JSON.parse(persisted));
+            log.info('Entelechy state restored from persistence');
+          }
+        } catch (error) {
+          log.warn('Failed to restore persisted entelechy state:', error);
+        }
+
+        // Forward emergence events into the global workspace broadcaster
+        this.entelechyIntegration.on('entelechy-realized', (state) => {
+          log.info('Entelechy realized — full self-realization achieved');
+          this.globalWorkspaceBroadcaster.emit('entelechy-realized', state);
+        });
+        this.entelechyIntegration.on('pattern-detected', (patternId) => {
+          log.info(`Entelechy pattern detected: ${patternId}`);
+          this.globalWorkspaceBroadcaster.emit('entelechy-pattern-detected', patternId);
+        });
+
+        await this.entelechyIntegration.start();
+        log.info('Entelechy Integration started — emergence monitoring active');
       }
 
       // Initialize Sys6-Triality cognitive cycle integration
@@ -617,6 +658,14 @@ export class Orchestrator {
         text: messageText,
       });
 
+      // Drive entelechy emergence with the inbound message (fire-and-forget —
+      // emergence monitoring must never block or fail message processing)
+      if (this.entelechyIntegration?.isRunning()) {
+        this.entelechyIntegration
+          .processMessage(messageText, 'deltachat')
+          .catch((error) => log.warn('Entelechy message processing error:', error));
+      }
+
       // Determine cognitive tier based on mode
       let targetTier: CognitiveTierMode;
       let complexity: ComplexityAssessment | undefined;
@@ -829,6 +878,7 @@ Orchestrator running: ${this.running ? 'Yes' : 'No'}
 - DeltaChat: ${this.deltachatInterface?.isConnected() ? 'Connected' : 'Disconnected'}
 - Dovecot: ${this.dovecotInterface?.isRunning() ? 'Running' : 'Stopped'}
 - Dove9: ${dove9State?.running ? 'Running' : 'Stopped'}
+- Entelechy: ${this.entelechyIntegration?.isRunning() ? this.entelechyIntegration.describeState() || 'Running' : 'Stopped'}
 ${
   sys6State?.running
     ? `
@@ -862,6 +912,7 @@ ${
 - DeltaChat Interface: ${this.deltachatInterface ? 'Enabled' : 'Disabled'}
 - Dovecot Interface: ${this.dovecotInterface ? 'Enabled' : 'Disabled'}
 - Dove9 Cognitive OS: ${this.dove9Integration ? 'Enabled' : 'Disabled'}
+- Entelechy Emergence: ${this.entelechyIntegration ? 'Enabled' : 'Disabled'}
 - Sys6-Triality: ${this.sys6Bridge ? 'Enabled' : 'Disabled'}
 - Double Membrane: ${this.doubleMembraneIntegration ? 'Enabled' : 'Disabled'}
 - CoreSelf Engine: ${this.autonomyPipeline?.getCoreSelfEngine() ? 'Active' : 'Inactive'}
@@ -1029,6 +1080,19 @@ ${response.body}`;
       await this.sys6Bridge.stop();
     }
 
+    if (this.entelechyIntegration) {
+      // Persist emergence state so progress survives restarts
+      try {
+        await this.storage.save(
+          'entelechy-state',
+          JSON.stringify(this.entelechyIntegration.serialize())
+        );
+      } catch (error) {
+        log.warn('Failed to persist entelechy state:', error);
+      }
+      await this.entelechyIntegration.stop();
+    }
+
     if (this.dove9Integration) {
       await this.dove9Integration.stop();
     }
@@ -1090,6 +1154,23 @@ ${response.body}`;
    */
   public getDove9CognitiveState(): any {
     return this.dove9Integration?.getCognitiveState() || null;
+  }
+
+  /**
+   * Get Entelechy integration for direct access
+   */
+  public getEntelechyIntegration(): EntelechyIntegration | undefined {
+    return this.entelechyIntegration;
+  }
+
+  /**
+   * Get the latest entelechy emergence state (level, score, narrative, patterns)
+   */
+  public getEntelechyState(): any {
+    const snapshot =
+      this.entelechyIntegration?.getLastSnapshot() ??
+      this.entelechyIntegration?.takeSnapshot();
+    return snapshot?.entelechy ?? null;
   }
 
   /**
@@ -1182,6 +1263,7 @@ ${response.body}`;
     telemetry: any;
     dove9: Dove9CognitiveState | null;
     grandCycle: GrandCycleInfo | null;
+    entelechy: EntelechyTelemetry | null;
   } {
     // Dove9 state
     let dove9: Dove9CognitiveState | null = null;
@@ -1220,7 +1302,30 @@ ${response.body}`;
       telemetry: null, // wired when TelemetryMonitor is active
       dove9,
       grandCycle,
+      entelechy: this.buildEntelechyTelemetry(),
     };
+  }
+
+  /**
+   * Build the entelechy emergence summary for telemetry broadcasts.
+   */
+  private buildEntelechyTelemetry(): EntelechyTelemetry | null {
+    if (!this.entelechyIntegration) return null;
+    try {
+      const entelechyState = this.getEntelechyState();
+      if (!entelechyState) return null;
+      return {
+        level: entelechyState.level,
+        score: entelechyState.score,
+        narrative: entelechyState.narrative,
+        patternCount: entelechyState.patterns?.length ?? 0,
+        reservoirCoupling: entelechyState.reservoirCoupling,
+        temporalSynchrony: entelechyState.temporalSynchrony,
+      };
+    } catch {
+      // Entelechy state unavailable — leave null.
+      return null;
+    }
   }
 
   /**
@@ -1288,6 +1393,7 @@ ${response.body}`;
     sys6: { running: boolean; cycleNumber?: number; currentStep?: number } | null;
     doubleMembrane: { running: boolean; identityEnergy?: number } | null;
     dove9: { running: boolean } | null;
+    entelechy: { running: boolean; level?: string; score?: number; patternCount?: number } | null;
     echoAgentLoop: { running: boolean; grandCycles?: number; autonomyScore?: number; totalSteps?: number } | null;
     stats: {
       totalMessages: number;
@@ -1299,6 +1405,7 @@ ${response.body}`;
   } {
     const sys6State = this.sys6Bridge?.getState();
     const echoMetrics = this.echoAgentLoop?.getMetrics();
+    const entelechyState = this.entelechyIntegration ? this.getEntelechyState() : null;
     return {
       tierMode: this.config.cognitiveTierMode,
       sys6: this.sys6Bridge
@@ -1317,6 +1424,14 @@ ${response.body}`;
       dove9: this.dove9Integration
         ? {
             running: this.dove9Integration.getCognitiveState()?.running || false,
+          }
+        : null,
+      entelechy: this.entelechyIntegration
+        ? {
+            running: this.entelechyIntegration.isRunning(),
+            level: entelechyState?.level,
+            score: entelechyState?.score,
+            patternCount: entelechyState?.patterns?.length,
           }
         : null,
       echoAgentLoop: this.echoAgentLoop

@@ -260,7 +260,10 @@ export {
 // Entelechy Integration - Deep cognitive loop
 export {
   EntelechyIntegration,
+  entelechyIntegration,
   type EntelechyIntegrationConfig,
+  type CognitiveSnapshot,
+  type EntelechyProcessingResult,
 } from './entelechy-integration.js';
 
 // Level 5: Lucy VM Deployment — llama.cpp server lifecycle management

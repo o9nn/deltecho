@@ -50,6 +50,8 @@ export interface GlobalWorkspaceSnapshot {
   streamSaliences: [number, number, number];
   /** Grand-cycle information when applicable */
   grandCycle: GrandCycleInfo | null;
+  /** Entelechy emergence state at this moment (may be null if not available) */
+  entelechy: EntelechyTelemetry | null;
 }
 
 /** Dove9 cognitive state summary included in each broadcast */
@@ -69,6 +71,22 @@ export interface GrandCycleInfo {
   grandCycleNumber: number;
   dove9CyclesCompleted: number;
   sys6CyclesCompleted: number;
+}
+
+/** Entelechy emergence summary included in each broadcast */
+export interface EntelechyTelemetry {
+  /** Current emergence level (latent → entelechial) */
+  level: string;
+  /** Overall entelechy score (0-1) */
+  score: number;
+  /** First-person emergence narrative */
+  narrative: string;
+  /** Number of active emergent patterns */
+  patternCount: number;
+  /** Reservoir-consciousness coupling strength */
+  reservoirCoupling: number;
+  /** EchoBeats-consciousness temporal synchrony */
+  temporalSynchrony: number;
 }
 
 /**
@@ -128,6 +146,7 @@ export class GlobalWorkspaceBroadcaster extends EventEmitter {
       telemetry: TelemetrySnapshot | null;
       dove9: Dove9CognitiveState | null;
       grandCycle: GrandCycleInfo | null;
+      entelechy?: EntelechyTelemetry | null;
     }
   ): Promise<void> {
     const state = getState();
@@ -141,6 +160,7 @@ export class GlobalWorkspaceBroadcaster extends EventEmitter {
       dove9: state.dove9,
       streamSaliences: syncEvent.streamSaliences,
       grandCycle: state.grandCycle,
+      entelechy: state.entelechy ?? null,
     };
 
     this.lastSnapshot = snapshot;
