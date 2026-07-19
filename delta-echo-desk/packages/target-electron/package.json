@@ -31,7 +31,7 @@
   "scripts": {
     "check:types": "tsc --noEmit && tsc --noEmit -p runtime-electron || node ./bin/printCheckWarning.js",
     "build4production": "NODE_ENV=production pnpm build && pnpm -w check:types",
-    "build": "pnpm build:locales && pnpm build:backend && pnpm --filter=@deltachat-desktop/frontend build && pnpm build:compose-frontend",
+    "build": "pnpm build:locales && pnpm build:backend && pnpm build:compose-frontend",
     "build:locales": "pnpm -w translations:convert",
     "build:backend": "node ./bin/build.js",
     "build:runtime-impl": "pnpm esbuild --format=esm --bundle --minify --keep-names --sourcemap --outdir=./html-dist runtime-electron/runtime.ts",
@@ -54,6 +54,7 @@
     "pack:all": "electron-builder --config ./electron-builder.json5 --mac dmg --win nsis portable --linux AppImage deb"
   },
   "dependencies": {
+    "@deltachat-desktop/frontend": "link:../frontend",
     "@deltachat/jsonrpc-client": "catalog:",
     "@deltachat/stdio-rpc-server": "catalog:",
     "mime-types": "catalog:",

@@ -9,7 +9,7 @@
     "check:webxdc-denied-permissions": "node ../../bin/webxdc-check-permissions-policy-count.js",
     "start": "tauri dev",
     "build4production": "NODE_ENV=production pnpm build",
-    "build": "pnpm build:locales && pnpm --filter=@deltachat-desktop/frontend build && pnpm build:compose-frontend && pnpm build:html-email-view && pnpm build:webxdc-js",
+    "build": "pnpm build:locales && pnpm build:compose-frontend && pnpm build:html-email-view && pnpm build:webxdc-js",
     "build:locales": "pnpm -w translations:convert",
     "build:runtime-impl": "pnpm esbuild --format=esm --bundle --minify --keep-names --sourcemap --outdir=./html-dist runtime-tauri/runtime.ts",
     "build:html-email-view": "pnpm esbuild --bundle --minify --keep-names --sourcemap --outdir=./html-dist/tauri_html_email_view tauri-html-email-view/html_email_view.ts",
@@ -20,6 +20,7 @@
     "lint": "cd src-tauri && cargo clippy"
   },
   "dependencies": {
+    "@deltachat-desktop/frontend": "link:../frontend",
     "@tauri-apps/api": "^2.9.1",
     "@tauri-apps/plugin-log": "^2.7.1",
     "@tauri-apps/plugin-opener": "^2.5.2",
