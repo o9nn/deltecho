@@ -39,6 +39,7 @@ module.exports = {
   coverageReporters: ['text', 'lcov', 'html'],
   coverageThreshold: {
     global: {
+      // TODO: raise branch threshold back to 50 after expanding branch-focused tests.
       branches: 47,
       functions: 50,
       lines: 50,

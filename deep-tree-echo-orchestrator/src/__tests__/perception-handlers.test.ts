@@ -228,15 +228,25 @@ describe('PerceptionHandlers', () => {
     it('should scan git repositories when configured', async () => {
       const tempRepo = mkdtempSync(join(tmpdir(), 'perception-git-'));
       const percepts: CognitivePercept[] = [];
+      const getGitPercepts = () => percepts.filter(p => p.metadata.handler === 'git_scan');
 
       try {
+        const runGit = (command: string) => {
+          try {
+            execSync(command, { cwd: tempRepo, stdio: 'ignore' });
+          } catch (error) {
+            const message = error instanceof Error ? error.message : String(error);
+            throw new Error(`Failed to run git command "${command}": ${message}`);
+          }
+        };
+
         // Create a deterministic git repo with uncommitted changes
-        execSync('git init', { cwd: tempRepo, stdio: 'ignore' });
-        execSync('git config user.email "test@example.com"', { cwd: tempRepo, stdio: 'ignore' });
-        execSync('git config user.name "Test User"', { cwd: tempRepo, stdio: 'ignore' });
+        runGit('git init');
+        runGit('git config user.email "test@example.com"');
+        runGit('git config user.name "Test User"');
         writeFileSync(join(tempRepo, 'tracked.txt'), 'initial\n');
-        execSync('git add tracked.txt', { cwd: tempRepo, stdio: 'ignore' });
-        execSync('git commit -m "initial commit"', { cwd: tempRepo, stdio: 'ignore' });
+        runGit('git add tracked.txt');
+        runGit('git commit -m "initial commit"');
         writeFileSync(join(tempRepo, 'tracked.txt'), 'modified\n');
 
         handlers = new PerceptionHandlers({
@@ -250,12 +260,12 @@ describe('PerceptionHandlers', () => {
         handlers.onPercept((percept) => percepts.push(percept));
         await handlers.start();
 
-        // Wait for initial scan
-        await new Promise(resolve => setTimeout(resolve, 2000));
-
-        const gitPercepts = percepts.filter(p =>
-          p.metadata.handler === 'git_scan'
-        );
+        const start = Date.now();
+        let gitPercepts = getGitPercepts();
+        while (gitPercepts.length === 0 && Date.now() - start < 2000) {
+          await new Promise(resolve => setTimeout(resolve, 50));
+          gitPercepts = getGitPercepts();
+        }
         expect(gitPercepts.length).toBeGreaterThanOrEqual(1);
       } finally {
         rmSync(tempRepo, { recursive: true, force: true });
