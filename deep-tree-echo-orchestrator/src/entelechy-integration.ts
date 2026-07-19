@@ -40,6 +40,8 @@ import {
   entelechyEngine,
   type EntelechyState,
   EmergenceLevel,
+  // Scientific Genius (from scientific-genius module)
+  scientificGeniusEngine,
   // Logger
   getLogger,
 } from "deep-tree-echo-core";
@@ -62,6 +64,8 @@ export interface EntelechyIntegrationConfig {
   enableConsciousness: boolean;
   /** Enable entelechy monitoring */
   enableEntelechy: boolean;
+  /** Enable live scientific-genius insight readings */
+  enableScientificGenius: boolean;
   /** Background tick interval (ms) */
   backgroundTickInterval: number;
   /** Input encoding dimensionality */
@@ -73,6 +77,7 @@ const DEFAULT_CONFIG: EntelechyIntegrationConfig = {
   enableEchoBeats: true,
   enableConsciousness: true,
   enableEntelechy: true,
+  enableScientificGenius: true,
   backgroundTickInterval: 1000, // 1Hz background loop
   inputDim: 64,
 };
@@ -117,6 +122,14 @@ export class EntelechyIntegration extends EventEmitter {
   private tickCount: number = 0;
   private lastSnapshot: CognitiveSnapshot | null = null;
 
+  // Bound forwarders for entelechy engine events (attached in start, detached in stop)
+  private onEntelechyRealized = (state: EntelechyState): void => {
+    this.emit("entelechy-realized", state);
+  };
+  private onPatternDetected = (patternId: string): void => {
+    this.emit("pattern-detected", patternId);
+  };
+
   constructor(config: Partial<EntelechyIntegrationConfig> = {}) {
     super();
     this.config = { ...DEFAULT_CONFIG, ...config };
@@ -130,6 +143,13 @@ export class EntelechyIntegration extends EventEmitter {
     this.running = true;
 
     log.info("Entelechy Integration starting...");
+
+    // Forward emergence events from the entelechy engine so consumers
+    // (e.g. the orchestrator / global workspace) can observe them here.
+    if (this.config.enableEntelechy) {
+      entelechyEngine.on("entelechy-realized", this.onEntelechyRealized);
+      entelechyEngine.on("pattern-detected", this.onPatternDetected);
+    }
 
     // Initialize EchoBeats if enabled
     if (this.config.enableEchoBeats) {
@@ -156,6 +176,11 @@ export class EntelechyIntegration extends EventEmitter {
     if (this.backgroundTimer) {
       clearInterval(this.backgroundTimer);
       this.backgroundTimer = null;
+    }
+
+    if (this.config.enableEntelechy) {
+      entelechyEngine.off("entelechy-realized", this.onEntelechyRealized);
+      entelechyEngine.off("pattern-detected", this.onPatternDetected);
     }
 
     if (this.config.enableEchoBeats) {

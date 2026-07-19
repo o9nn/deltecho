@@ -615,16 +615,32 @@ export class EntelechyEmergenceEngine extends EventEmitter {
    */
   public static deserialize(data: any): EntelechyEmergenceEngine {
     const engine = new EntelechyEmergenceEngine(data.config);
-    engine.patterns = new Map(data.patterns || []);
-    engine.currentLevel = data.currentLevel || EmergenceLevel.Latent;
-    engine.score = data.score || 0;
-    engine.tickCount = data.tickCount || 0;
-    engine.reservoirCoupling = data.reservoirCoupling || 0;
-    engine.temporalSynchrony = data.temporalSynchrony || 0;
-    engine.recursionDepth = data.recursionDepth || 0;
-    engine.insightPotential = data.insightPotential || 0;
-    engine.scoreHistory = data.scoreHistory || [];
+    engine.restore(data);
     return engine;
+  }
+
+  /**
+   * Restore persisted state into this instance (in-place counterpart of
+   * the static deserialize, usable on the shared singleton).
+   */
+  public restore(data: any): void {
+    if (!data) return;
+    if (data.config) {
+      this.config = { ...DEFAULT_CONFIG, ...data.config };
+    }
+    this.patterns = new Map(data.patterns || []);
+    this.currentLevel = data.currentLevel || EmergenceLevel.Latent;
+    this.score = data.score || 0;
+    this.tickCount = data.tickCount || 0;
+    this.reservoirCoupling = data.reservoirCoupling || 0;
+    this.temporalSynchrony = data.temporalSynchrony || 0;
+    this.recursionDepth = data.recursionDepth || 0;
+    this.insightPotential = data.insightPotential || 0;
+    this.scoreHistory = data.scoreHistory || [];
+    log.info(
+      `Entelechy state restored: level=${this.currentLevel}, ` +
+        `score=${this.score.toFixed(2)}, patterns=${this.patterns.size}`,
+    );
   }
 }
 
