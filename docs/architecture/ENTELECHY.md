@@ -93,7 +93,9 @@ the fallback when the engine is disabled.
 - **Telemetry** — every Global Workspace broadcast includes an
   `entelechy` summary (`level`, `score`, `narrative`, `patternCount`,
   `reservoirCoupling`, `temporalSynchrony`).
-- **IPC** — the `entelechy_get_state` handler (registered via
+- **IPC** — the `entelechy_get_state` handler (registered automatically by the
+  orchestrator via `registerEntelechyHandlers` when both the IPC server and
+  entelechy integration are enabled, and also included in
   `registerCognitiveHandlers` when an `entelechyIntegration` dependency is
   provided) returns the latest cognitive snapshot so desktop apps can display
   emergence level and narrative.

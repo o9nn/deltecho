@@ -12,6 +12,7 @@ import {
 } from './deltachat-interface/index.js';
 import { DovecotInterface, DovecotConfig } from './dovecot-interface/index.js';
 import { IPCServer } from './ipc/server.js';
+import { registerEntelechyHandlers } from './ipc/cognitive-handlers.js';
 import { TaskScheduler } from './scheduler/task-scheduler.js';
 import { WebhookServer } from './webhooks/webhook-server.js';
 import { Dove9Integration, Dove9IntegrationConfig, Dove9Response } from './dove9-integration.js';
@@ -311,6 +312,11 @@ export class Orchestrator {
 
         await this.entelechyIntegration.start();
         log.info('Entelechy Integration started — emergence monitoring active');
+
+        // Expose emergence state to desktop apps over IPC
+        if (this.ipcServer) {
+          registerEntelechyHandlers(this.ipcServer, this.entelechyIntegration);
+        }
       }
 
       // Initialize Sys6-Triality cognitive cycle integration

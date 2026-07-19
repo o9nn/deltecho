@@ -85,12 +85,17 @@ export interface CognitiveHandlerDependencies {
     getConversationContext: (chatId: number) => string[];
     isEnabled: () => boolean;
   };
-  entelechyIntegration?: {
-    isRunning: () => boolean;
-    takeSnapshot: () => any;
-    getLastSnapshot: () => any | null;
-    describeState: () => string;
-  };
+  entelechyIntegration?: EntelechyHandlerDependency;
+}
+
+/**
+ * Minimal surface of the EntelechyIntegration needed by the IPC handlers
+ */
+export interface EntelechyHandlerDependency {
+  isRunning: () => boolean;
+  takeSnapshot: () => any;
+  getLastSnapshot: () => any | null;
+  describeState: () => string;
 }
 
 /**
@@ -588,25 +593,40 @@ export function registerCognitiveHandlers(
   // ============================================================================
 
   if (entelechyIntegration) {
-    /**
-     * Get the latest entelechy emergence state (full cognitive snapshot)
-     * so desktop apps can display emergence level, score, and narrative.
-     */
-    ipcServer.registerHandler(
-      'entelechy_get_state',
-      async (): Promise<any> => {
-        const snapshot =
-          entelechyIntegration.getLastSnapshot() ??
-          entelechyIntegration.takeSnapshot();
-        return {
-          running: entelechyIntegration.isRunning(),
-          snapshot,
-          entelechy: snapshot?.entelechy ?? null,
-          description: entelechyIntegration.describeState(),
-        };
-      },
-    );
+    registerEntelechyHandlers(ipcServer, entelechyIntegration);
   }
 
   log.info("Cognitive IPC handlers registered successfully");
+}
+
+/**
+ * Register the entelechy emergence IPC handlers on the IPC server.
+ *
+ * Exposed separately so the orchestrator can wire entelechy observability
+ * even when the full cognitive handler set is not registered.
+ */
+export function registerEntelechyHandlers(
+  ipcServer: IPCServer,
+  entelechyIntegration: EntelechyHandlerDependency,
+): void {
+  /**
+   * Get the latest entelechy emergence state (full cognitive snapshot)
+   * so desktop apps can display emergence level, score, and narrative.
+   */
+  ipcServer.registerHandler(
+    'entelechy_get_state',
+    async (): Promise<any> => {
+      const snapshot =
+        entelechyIntegration.getLastSnapshot() ??
+        entelechyIntegration.takeSnapshot();
+      return {
+        running: entelechyIntegration.isRunning(),
+        snapshot,
+        entelechy: snapshot?.entelechy ?? null,
+        description: entelechyIntegration.describeState(),
+      };
+    },
+  );
+
+  log.info("Entelechy IPC handlers registered");
 }
