@@ -70,6 +70,9 @@ jobs:
       - name: Run tests - @deltecho/eventa
         run: pnpm --filter @deltecho/eventa test -- --coverage
 
+      - name: Build deep-tree-echo-core for downstream tests
+        run: pnpm --filter deep-tree-echo-core build
+
       - name: Run tests - deep-tree-echo-orchestrator
         run: pnpm --filter deep-tree-echo-orchestrator test -- --coverage --forceExit
 
