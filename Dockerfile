@@ -7,10 +7,10 @@ FROM node:22-alpine AS builder
 WORKDIR /app
 
 # Install pnpm
-RUN corepack enable && corepack prepare pnpm@latest --activate
+RUN corepack enable && corepack prepare pnpm@9.6.0 --activate
 
 # Copy package files
-COPY package.json pnpm-lock.yaml pnpm-workspace.yaml ./
+COPY package.json pnpm-lock.yaml pnpm-workspace.yaml tsconfig.json ./
 COPY deep-tree-echo-core/package.json ./deep-tree-echo-core/
 COPY deep-tree-echo-orchestrator/package.json ./deep-tree-echo-orchestrator/
 COPY packages/shared/package.json ./packages/shared/
@@ -40,7 +40,7 @@ FROM node:22-alpine AS production
 WORKDIR /app
 
 # Install pnpm
-RUN corepack enable && corepack prepare pnpm@latest --activate
+RUN corepack enable && corepack prepare pnpm@9.6.0 --activate
 
 # Create non-root user
 RUN addgroup -g 1001 -S deltecho && \
