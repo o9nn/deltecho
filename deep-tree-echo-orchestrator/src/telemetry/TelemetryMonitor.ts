@@ -515,7 +515,7 @@ export class TelemetryMonitor extends EventEmitter {
     const memoryPercent = (memoryUsage.heapUsed / memoryUsage.heapTotal) * 100;
     components.push({
       name: 'memory',
-      status: memoryPercent > 90 ? 'unhealthy' : memoryPercent > 70 ? 'degraded' : 'healthy',
+      status: memoryPercent > this.config.alertThresholds.memoryUsagePercent ? 'degraded' : 'healthy',
       message: `${memoryPercent.toFixed(1)}% used`,
     });
 
