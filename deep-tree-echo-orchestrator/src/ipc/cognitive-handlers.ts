@@ -85,6 +85,12 @@ export interface CognitiveHandlerDependencies {
     getConversationContext: (chatId: number) => string[];
     isEnabled: () => boolean;
   };
+  entelechyIntegration?: {
+    isRunning: () => boolean;
+    takeSnapshot: () => any;
+    getLastSnapshot: () => any | null;
+    describeState: () => string;
+  };
 }
 
 /**
@@ -132,7 +138,7 @@ export function registerCognitiveHandlers(
   ipcServer: IPCServer,
   deps: CognitiveHandlerDependencies,
 ): void {
-  const { cognitiveOrchestrator, personaCore, memoryStore } = deps;
+  const { cognitiveOrchestrator, personaCore, memoryStore, entelechyIntegration } = deps;
 
   log.info("Registering cognitive IPC handlers...");
 
@@ -572,6 +578,31 @@ export function registerCognitiveHandlers(
           analyticalDepth: cognitiveState.analyticalDepth ?? 0.5,
           empathy: cognitiveState.empathy ?? 0.5,
           curiosity: cognitiveState.curiosity ?? 0.5,
+        };
+      },
+    );
+  }
+
+  // ============================================================================
+  // Entelechy Operations
+  // ============================================================================
+
+  if (entelechyIntegration) {
+    /**
+     * Get the latest entelechy emergence state (full cognitive snapshot)
+     * so desktop apps can display emergence level, score, and narrative.
+     */
+    ipcServer.registerHandler(
+      'entelechy_get_state',
+      async (): Promise<any> => {
+        const snapshot =
+          entelechyIntegration.getLastSnapshot() ??
+          entelechyIntegration.takeSnapshot();
+        return {
+          running: entelechyIntegration.isRunning(),
+          snapshot,
+          entelechy: snapshot?.entelechy ?? null,
+          description: entelechyIntegration.describeState(),
         };
       },
     );

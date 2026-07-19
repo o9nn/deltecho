@@ -20,6 +20,7 @@ export {
   type GlobalWorkspaceSnapshot,
   type Dove9CognitiveState,
   type GrandCycleInfo,
+  type EntelechyTelemetry,
   type SnapshotSubscriber,
 } from './GlobalWorkspaceBroadcaster.js';
 

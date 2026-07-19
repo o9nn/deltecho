@@ -230,7 +230,7 @@ export class EntelechyIntegration extends EventEmitter {
           echoBeatsCoherence: echoBeatsState?.globalCoherence ?? 0.5,
           consciousnessScore: consciousnessState?.overallConsciousness ?? 0.3,
           selfAwareness: consciousnessState?.selfAwareness ?? 0.2,
-          scientificInsight: 0.3, // Base level
+          scientificInsight: this.computeScientificInsight(0.3), // Base level fallback
         });
       }
 
@@ -295,7 +295,8 @@ export class EntelechyIntegration extends EventEmitter {
         echoBeatsCoherence: echoBeatsState?.globalCoherence ?? 0.5,
         consciousnessScore: consciousnessState?.overallConsciousness ?? 0.5,
         selfAwareness: consciousnessState?.selfAwareness ?? 0.3,
-        scientificInsight: 0.6, // Elevated during message processing
+        // Elevated fallback during message processing
+        scientificInsight: this.computeScientificInsight(0.6),
       });
     }
 
@@ -377,6 +378,52 @@ export class EntelechyIntegration extends EventEmitter {
     }
 
     return input;
+  }
+
+  // ==========================================================================
+  // SCIENTIFIC GENIUS COUPLING
+  // ==========================================================================
+
+  /**
+   * Derive a 0-1 scientific insight signal from the live
+   * ScientificGeniusEngine state. The provided fallback (the previous
+   * hardcoded constant) acts as a floor: live engine activity scales
+   * the remaining headroom, so an idle engine never reads below the
+   * historical baseline, and the signal is used verbatim when the
+   * engine is disabled.
+   */
+  private computeScientificInsight(fallback: number): number {
+    if (!this.config.enableScientificGenius) return fallback;
+
+    try {
+      const state = scientificGeniusEngine.getState();
+      const hypothesisSignal = Math.min(1, (state.hypothesesCount ?? 0) / 10);
+      const insightSignal = Math.min(1, (state.insightsCount ?? 0) / 20);
+      const workspaceSignal = Math.min(
+        1,
+        Math.max(0, state.globalWorkspaceIntegration ?? 0),
+      );
+      const loopSignal = Math.min(1, (state.strangeLoopDepth ?? 0) / 5);
+      const geniusBonus = state.isGeniusMode ? 0.2 : 0;
+
+      const liveSignal = Math.min(
+        1,
+        hypothesisSignal * 0.25 +
+          insightSignal * 0.25 +
+          workspaceSignal * 0.25 +
+          loopSignal * 0.25 +
+          geniusBonus,
+      );
+
+      // Fallback is the floor; live activity fills the remaining headroom.
+      return Math.min(1, Math.max(0, fallback + liveSignal * (1 - fallback)));
+    } catch (error) {
+      log.warn(
+        "Failed to read scientific genius state, using fallback insight:",
+        error,
+      );
+      return fallback;
+    }
   }
 
   // ==========================================================================
@@ -470,6 +517,38 @@ export class EntelechyIntegration extends EventEmitter {
       reservoir: esnReservoir.serialize(),
       entelechy: entelechyEngine.serialize(),
     };
+  }
+
+  /**
+   * Restore persisted state — symmetric with serialize().
+   *
+   * Restores the integration tick count plus the reservoir and
+   * entelechy engine states, so emergence progress survives restarts.
+   */
+  public restore(data: any): void {
+    if (!data) return;
+
+    if (typeof data.tickCount === "number") {
+      this.tickCount = data.tickCount;
+    }
+
+    if (data.reservoir && this.config.enableReservoir) {
+      try {
+        esnReservoir.restore(data.reservoir);
+      } catch (error) {
+        log.warn("Failed to restore reservoir state:", error);
+      }
+    }
+
+    if (data.entelechy && this.config.enableEntelechy) {
+      try {
+        entelechyEngine.restore(data.entelechy);
+      } catch (error) {
+        log.warn("Failed to restore entelechy engine state:", error);
+      }
+    }
+
+    log.info(`Entelechy Integration state restored (tick=${this.tickCount})`);
   }
 }
 
