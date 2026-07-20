@@ -176,7 +176,7 @@ export class ConversationTrainingGenerator extends EventEmitter {
     // Write concept graph
     if (this.config.includeConceptExtraction) {
       const conceptFile = path.join(this.config.outputDir, 'concepts.json');
-      fs.writeFileSync(
+      this.writeFileEnsuringDir(
         conceptFile,
         JSON.stringify(
           {
@@ -192,7 +192,7 @@ export class ConversationTrainingGenerator extends EventEmitter {
 
     // Write stats
     const statsFile = path.join(this.config.outputDir, 'training_stats.json');
-    fs.writeFileSync(statsFile, JSON.stringify(this.stats, null, 2));
+    this.writeFileEnsuringDir(statsFile, JSON.stringify(this.stats, null, 2));
 
     log.info(
       `Generated ${examples.length} training examples (${this.stats.totalTokensEstimate} tokens est.)`
@@ -360,29 +360,38 @@ export class ConversationTrainingGenerator extends EventEmitter {
     // so createWriteStream never races into ENOENT.
     fs.mkdirSync(this.config.outputDir, { recursive: true });
 
-    // Main training data
+    // Synchronous writes: createWriteStream opens asynchronously, so a
+    // concurrently-removed output dir surfaces as an unhandled 'error' event
+    // in whatever code happens to be running. writeFileSync keeps any
+    // failure synchronous and attributable to this call.
     const mainFile = path.join(this.config.outputDir, `dte_training_${timestamp}.jsonl`);
-    const mainStream = fs.createWriteStream(mainFile);
-
-    for (const example of examples) {
-      mainStream.write(JSON.stringify({ text: example.text }) + '\n');
-    }
-    mainStream.end();
+    const mainContent = examples.map((ex) => JSON.stringify({ text: ex.text }) + '\n').join('');
+    this.writeFileEnsuringDir(mainFile, mainContent);
     files.push(mainFile);
 
     // Metadata file (for analysis and reservoir training)
     if (this.config.includeValence || this.config.includeAARState) {
       const metaFile = path.join(this.config.outputDir, `dte_metadata_${timestamp}.jsonl`);
-      const metaStream = fs.createWriteStream(metaFile);
-
-      for (const example of examples) {
-        metaStream.write(JSON.stringify(example.metadata) + '\n');
-      }
-      metaStream.end();
+      const metaContent = examples.map((ex) => JSON.stringify(ex.metadata) + '\n').join('');
+      this.writeFileEnsuringDir(metaFile, metaContent);
       files.push(metaFile);
     }
 
     return files;
+  }
+
+  /**
+   * Write a file, recreating its parent directory once if it vanished
+   * between the initial mkdir and this write.
+   */
+  private writeFileEnsuringDir(file: string, content: string): void {
+    try {
+      fs.writeFileSync(file, content);
+    } catch (err) {
+      if ((err as NodeJS.ErrnoException).code !== 'ENOENT') throw err;
+      fs.mkdirSync(path.dirname(file), { recursive: true });
+      fs.writeFileSync(file, content);
+    }
   }
 
   /**
