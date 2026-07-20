@@ -681,6 +681,9 @@ importers:
       '@types/node':
         specifier: ^20.19.27
         version: 20.19.27
+      esbuild:
+        specifier: ^0.25.0
+        version: 0.25.12
 
   deltecho2/packages/frontend:
     dependencies:

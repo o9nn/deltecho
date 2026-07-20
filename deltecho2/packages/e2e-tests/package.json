@@ -7,9 +7,12 @@
   "description": "Comprehensive E2E test suite for Deltecho cognitive ecosystem",
   "devDependencies": {
     "@playwright/test": "^1.57.0",
-    "@types/node": "^20.19.27"
+    "@types/node": "^20.19.27",
+    "esbuild": "^0.25.0"
   },
   "scripts": {
+    "build:cognitive-harness": "node bin/build-cognitive-harness.mjs",
+    "e2e:cognitive:real": "pnpm run build:cognitive-harness && pnpm exec playwright test --config playwright.cognitive.config.ts",
     "e2e": "pnpm exec playwright test",
     "e2e:headed": "pnpm exec playwright test --headed",
     "e2e:debug": "pnpm exec playwright test --debug",

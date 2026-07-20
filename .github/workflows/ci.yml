@@ -381,13 +381,14 @@ jobs:
           CI: true
           NODE_TLS_REJECT_UNAUTHORIZED: '0'
 
+      # Cognitive Integration runs against a self-contained harness that boots
+      # the real browser-safe cognitive system, so it is a HARD gate (no
+      # `|| echo` mask): a failure here fails the build.
       - name: Run E2E tests - Cognitive Integration (deltecho2)
-        run: pnpm exec playwright test cognitive-integration.spec.ts || echo "::warning::Cognitive Integration E2E tests not fully configured"
+        run: pnpm run e2e:cognitive:real
         working-directory: deltecho2/packages/e2e-tests
         env:
-          WEB_PASSWORD: ${{ secrets.WEB_PASSWORD || 'test-password' }}
           CI: true
-          NODE_TLS_REJECT_UNAUTHORIZED: '0'
 
       - name: Run E2E tests - Triadic Cognitive Loop (deltecho2)
         run: pnpm exec playwright test triadic-cognitive-loop.spec.ts || echo "::warning::Triadic Cognitive Loop E2E tests not fully configured"

@@ -1,0 +1,2 @@
+# Built by `pnpm run build:cognitive-harness` (rebuilt in CI before the suite runs)
+dist/
