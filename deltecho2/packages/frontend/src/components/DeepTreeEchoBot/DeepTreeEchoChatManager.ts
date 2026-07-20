@@ -516,7 +516,7 @@ export class DeepTreeEchoChatManager {
     scheduledTime: number,
     reason: string
   ): string {
-    const id = `scheduled-${Date.now()}-${Math.random().toString(36).slice(2)}`
+    const id = `scheduled-${Date.now()}-${crypto.randomUUID().slice(0, 8)}`
 
     this.scheduledMessages.push({
       id,
@@ -1086,8 +1086,12 @@ export class DeepTreeEchoChatManager {
               }
             }
 
-            // Count matches
-            const regex = new RegExp(query, 'gi')
+            // Count matches — escape the user-supplied query so regex
+            // metacharacters can't inject patterns or trigger backtracking
+            const escapedQuery = query
+              .slice(0, 200)
+              .replace(/[.*+?^${}()|[\]\\]/g, '\\$&')
+            const regex = new RegExp(escapedQuery, 'gi')
             const matches = msg.text.match(regex)
 
             results.push({

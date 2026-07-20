@@ -1,6 +1,5 @@
 import React from 'react'
 import { render, screen } from '@testing-library/react'
-import DeepTreeEchoBot from '../DeepTreeEchoBot'
 
 // Mock the cognitive modules to avoid complex initializations in tests
 jest.mock('../HyperDimensionalMemory', () => ({
@@ -95,6 +94,15 @@ jest.mock('../SecureIntegration', () => ({
     })
   },
 }))
+
+// The React component lives in DeepTreeEchoBot.tsx, which shares its base
+// name with the DeepTreeEchoBot.ts class module. Static imports resolve to
+// the .ts file first, so the component is loaded from the explicit .tsx path.
+// This file is compiled without jest.mock() hoisting, so the component must
+// be required after the mocks above have been registered.
+const { default: DeepTreeEchoBot } = jest.requireActual<{
+  default: React.FC
+}>('../DeepTreeEchoBot.tsx')
 
 describe('DeepTreeEchoBot', () => {
   it('renders the bot with idle state by default', () => {

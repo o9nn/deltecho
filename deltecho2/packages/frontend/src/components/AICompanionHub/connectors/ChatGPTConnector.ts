@@ -401,7 +401,7 @@ export class ChatGPTConnector extends BaseConnector {
 
     // Create our internal message format
     return {
-      id: `msg_img_${Date.now()}_${Math.random().toString(36).substring(2, 7)}`,
+      id: `msg_img_${Date.now()}_${crypto.randomUUID().slice(0, 8)}`,
       role: 'user',
       content: JSON.stringify(content), // Store the content as stringified JSON for our internal format
       timestamp: Date.now(),

@@ -1,21 +1,22 @@
+import { RAGMemoryStore } from '../RAGMemoryStore.js';
 
-// Mock logger
-jest.mock('@deltachat-desktop/shared/logger', () => ({
-  getLogger: jest.fn(() => ({
-    info: jest.fn(),
-    error: jest.fn(),
-    warn: jest.fn(),
-    debug: jest.fn(),
-  })),
-}));
+/**
+ * Small helper that yields to the macrotask queue so that async
+ * constructor work (loadMemories) settles and stored memories get
+ * distinct timestamps where ordering matters.
+ */
+const wait = (ms = 0) => new Promise((resolve) => setTimeout(resolve, ms));
 
 describe('RAGMemoryStore', () => {
   let memoryStore: RAGMemoryStore;
 
-  beforeEach(() => {
+  beforeEach(async () => {
     memoryStore = RAGMemoryStore.getInstance();
-    void memoryStore.setEnabled(true);
-    memoryStore.clearAllMemories();
+    // Let the constructor's async loadMemories() settle before we
+    // enable the store, otherwise it can overwrite the enabled flag.
+    await wait(0);
+    memoryStore.setEnabled(true);
+    await memoryStore.clearAllMemories();
   });
 
   describe('storeMemory', () => {
@@ -82,7 +83,7 @@ describe('RAGMemoryStore', () => {
         });
 
         // Small delay to ensure different timestamps
-        await new Promise((resolve) => setTimeout(resolve, 5));
+        await wait(5);
       }
 
       const recentMemories = memoryStore.retrieveRecentMemories(3);
@@ -112,12 +113,14 @@ describe('RAGMemoryStore', () => {
 
   describe('searchMemories', () => {
     it('should find memories matching the search query', async () => {
+      // Use distinct timestamps so the recency ordering is deterministic
       await memoryStore.storeMemory({
         text: 'I like apples and bananas',
         sender: 'user' as const,
         chatId: 123,
         messageId: 900,
       });
+      await wait(5);
 
       await memoryStore.storeMemory({
         text: 'Bananas are yellow',
@@ -125,6 +128,7 @@ describe('RAGMemoryStore', () => {
         chatId: 123,
         messageId: 901,
       });
+      await wait(5);
 
       await memoryStore.storeMemory({
         text: 'Apples are red or green',

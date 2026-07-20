@@ -10,6 +10,10 @@ module.exports = {
     '\\.(css|less|scss|sass)$': 'identity-obj-proxy',
   },
   transform: {
+    // DeepTreeEchoBot.tsx shares its basename with DeepTreeEchoBot.ts, so the
+    // program-based ts-jest compiler cannot emit it (output collision). Compile
+    // this one file with a transpile-only transformer instead.
+    '/DeepTreeEchoBot/DeepTreeEchoBot\\.tsx$': '<rootDir>/jest.transpile-tsx.cjs',
     '^.+\\.tsx?$': [
       'ts-jest',
       {
@@ -18,7 +22,12 @@ module.exports = {
       },
     ],
   },
-  testMatch: ['**/__tests__/**/*.test.ts', '**/__tests__/**/*.test.tsx', '**/*.spec.ts', '**/*.spec.tsx'],
+  testMatch: [
+    '**/__tests__/**/*.test.ts',
+    '**/__tests__/**/*.test.tsx',
+    '**/*.spec.ts',
+    '**/*.spec.tsx',
+  ],
   collectCoverageFrom: [
     'DeepTreeEchoBot/**/*.{ts,tsx}',
     'AICompanionHub/**/*.{ts,tsx}',

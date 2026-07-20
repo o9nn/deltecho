@@ -1040,7 +1040,12 @@ export class AgentToolExecutor {
             /^git\s(status|log|diff|branch)/,
           ]
 
-          const isSafe = safePatterns.some(p => p.test(command))
+          // A prefix match alone is bypassable via shell chaining
+          // ("cat x; rm -rf ~") — reject any shell metacharacters outright
+          // before consulting the allowlist.
+          const hasShellMetachars = /[;&|`$<>(){}\n\\]/.test(command)
+          const isSafe =
+            !hasShellMetachars && safePatterns.some(p => p.test(command))
           if (!isSafe) {
             return {
               success: false,

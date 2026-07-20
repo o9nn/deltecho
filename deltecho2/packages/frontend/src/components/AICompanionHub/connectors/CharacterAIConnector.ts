@@ -409,9 +409,7 @@ export class CharacterAIConnector extends BaseConnector {
 
       // Format the AI response
       return {
-        messageId: `char_${Date.now()}_${Math.random()
-          .toString(36)
-          .substring(2, 7)}`,
+        messageId: `char_${Date.now()}_${crypto.randomUUID().slice(0, 8)}`,
         content: replyMessage.text,
         // Character.AI doesn't provide token usage info
         usage: {

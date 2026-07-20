@@ -1,4 +1,5 @@
 import type { CookieOptions, Request } from "express";
+import { ENV } from "./env";
 
 const LOCAL_HOSTS = new Set(["localhost", "127.0.0.1", "::1"]);
 
@@ -39,10 +40,15 @@ export function getSessionCookieOptions(
   //       ? hostname
   //       : undefined;
 
+  // SameSite=None is required for the cross-site Manus embedding flow, but
+  // browsers reject it without Secure. Force Secure in production instead of
+  // trusting a spoofable x-forwarded-proto header; fall back to Lax on plain
+  // HTTP (local dev) so the session cookie never ships cross-site insecurely.
+  const secure = ENV.isProduction || isSecureRequest(req);
   return {
     httpOnly: true,
     path: "/",
-    sameSite: "none",
-    secure: isSecureRequest(req),
+    sameSite: secure ? "none" : "lax",
+    secure,
   };
 }

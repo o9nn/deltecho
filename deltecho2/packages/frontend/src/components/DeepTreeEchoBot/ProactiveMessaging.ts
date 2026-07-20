@@ -269,7 +269,7 @@ export class ProactiveMessaging {
   public addTrigger(
     trigger: Omit<ProactiveTrigger, 'id' | 'triggerCount'>
   ): string {
-    const id = `trigger-${Date.now()}-${Math.random().toString(36).slice(2)}`
+    const id = `trigger-${Date.now()}-${crypto.randomUUID().slice(0, 8)}`
 
     const fullTrigger: ProactiveTrigger = {
       ...trigger,
@@ -655,7 +655,7 @@ export class ProactiveMessaging {
     priority?: 'low' | 'normal' | 'high'
     scheduledTime?: number
   }): string {
-    const id = `msg-${Date.now()}-${Math.random().toString(36).slice(2)}`
+    const id = `msg-${Date.now()}-${crypto.randomUUID().slice(0, 8)}`
 
     const queuedMessage: QueuedMessage = {
       id,

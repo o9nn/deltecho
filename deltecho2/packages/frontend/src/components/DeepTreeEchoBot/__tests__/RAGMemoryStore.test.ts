@@ -120,12 +120,18 @@ describe('RAGMemoryStore', () => {
         messageId: 900,
       })
 
+      // Small delay so each memory gets a distinct timestamp, making the
+      // recency ordering assertions below deterministic
+      await new Promise(resolve => setTimeout(resolve, 5))
+
       await memoryStore.storeMemory({
         text: 'Bananas are yellow',
         sender: 'bot' as const,
         chatId: 123,
         messageId: 901,
       })
+
+      await new Promise(resolve => setTimeout(resolve, 5))
 
       await memoryStore.storeMemory({
         text: 'Apples are red or green',

@@ -300,7 +300,16 @@ In recursion, truth is found.
   }
 
   updatePersonality(traits: Partial<AICompanionConfig>): void {
-    Object.assign(this.config, traits)
+    // Copy own keys only, skipping prototype-polluting names — traits can
+    // originate from persisted/parsed JSON
+    for (const key of Object.keys(traits)) {
+      if (key === '__proto__' || key === 'constructor' || key === 'prototype') {
+        continue
+      }
+      ;(this.config as unknown as Record<string, unknown>)[key] = (
+        traits as unknown as Record<string, unknown>
+      )[key]
+    }
     this.emit('personalityUpdated', traits)
   }
 }

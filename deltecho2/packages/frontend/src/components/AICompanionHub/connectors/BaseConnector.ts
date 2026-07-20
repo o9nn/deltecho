@@ -162,7 +162,7 @@ export abstract class BaseConnector extends EventEmitter {
 
     // Add user message
     const userMessage: Message = {
-      id: `msg_${Date.now()}_${Math.random().toString(36).substring(2, 7)}`,
+      id: `msg_${Date.now()}_${crypto.randomUUID().slice(0, 8)}`,
       role: 'user',
       content: message,
       timestamp: Date.now(),
@@ -179,7 +179,7 @@ export abstract class BaseConnector extends EventEmitter {
     if (relevantMemories.length > 0) {
       const memoryContent = this.formatMemoriesForPrompt(relevantMemories)
       const systemMemoryMessage: Message = {
-        id: `sys_${Date.now()}_${Math.random().toString(36).substring(2, 7)}`,
+        id: `sys_${Date.now()}_${crypto.randomUUID().slice(0, 8)}`,
         role: 'system',
         content: memoryContent,
         timestamp: Date.now(),
@@ -262,7 +262,7 @@ export abstract class BaseConnector extends EventEmitter {
 
     // Create memory
     const memory: AIMemory = {
-      id: `mem_${Date.now()}_${Math.random().toString(36).substring(2, 7)}`,
+      id: `mem_${Date.now()}_${crypto.randomUUID().slice(0, 8)}`,
       companionId: this.config.id,
       timestamp: Date.now(),
       content,

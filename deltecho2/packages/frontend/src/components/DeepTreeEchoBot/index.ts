@@ -150,6 +150,17 @@ export {
   PUBLIC_OPENAI_ENDPOINT,
 } from './llmEndpoint'
 
+// Inferno kernel (AGI reasoning: AtomSpace, PLN, attention allocation)
+export {
+  InfernoKernelService,
+  getInfernoKernelService,
+} from './InfernoKernelService'
+export type {
+  InfernoKernelState,
+  InfernoKernelStatus,
+  AttentionStats,
+} from './InfernoKernelService'
+
 // Proactive messaging
 export {
   ProactiveMessaging,

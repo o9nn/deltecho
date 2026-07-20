@@ -13,11 +13,17 @@ module.exports = {
     // Mock wasm module
     '@deltachat/message_parser_wasm': '<rootDir>/__mocks__/wasmMock.js',
     // Mock shared modules
-    '@deltachat-desktop/shared/util.js': '<rootDir>/__mocks__/sharedUtilMock.js',
+    '@deltachat-desktop/shared/util.js':
+      '<rootDir>/__mocks__/sharedUtilMock.js',
     // Mock logger with relative path
     '../../../../shared/logger': '<rootDir>/__mocks__/loggerMock.js',
   },
   transform: {
+    // These .tsx files share their basenames with .ts siblings, so the
+    // program-based ts-jest compiler cannot emit them (output path collision).
+    // Compile them with a transpile-only transformer instead.
+    '/DeepTreeEchoBot/(?:__tests__/DeepTreeEchoBot\\.test|DeepTreeEchoBot)\\.tsx$':
+      '<rootDir>/jest.transpile-tsx.cjs',
     '^.+\\.(ts|tsx)$': [
       'ts-jest',
       {

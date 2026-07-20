@@ -704,7 +704,7 @@ If no natural follow-up exists, respond with: {"topic": null}`
   // ============================================================
 
   private generateId(): string {
-    return `impulse_${Date.now()}_${Math.random().toString(36).substring(2, 8)}`
+    return `impulse_${Date.now()}_${crypto.randomUUID().slice(0, 8)}`
   }
 
   /**

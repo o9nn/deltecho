@@ -21,8 +21,24 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - **dtecho-nakama-airi** - Integrated the standalone cognitive-avatar web app (React 19 + tRPC + Nakama presence + Drizzle) as a workspace member with root `dev/build/test/check:nakama` scripts
 - **gesture-glyph tests & dovecot docker config** - Ported delovecho's test suite for @deltecho/gesture-glyph and `docker/dovecot/` configuration
 
+- **AICompanionHub avatar suite in deltecho2** - Live2D avatar component (lazy CDN-loaded Cubism/PixiJS runtime with graceful sprite fallback), responsive sprite avatar with bundled sprite images, video calibration lab, and avatar/calibration tabs in the hub
+- **ScientificGenius UI in deltecho2** - Scientific dashboard and knowledge-graph visualization (browser-safe canvas force-graph), exposed as a Scientific Cortex screen with navbar access, backed by the AgentToolExecutor knowledge tools
+- **Inferno Kernel wired into deltecho2** - New InfernoKernelService (lazy singleton over InfernoKernel/AtomSpace/PLN/AttentionAllocation) with an Inferno Kernel status tab in the Deep Tree Echo settings screen; the kernel package is now a frontend workspace dependency
+
+### Security
+
+- Escaped user-supplied search queries before RegExp construction in DeepTreeEchoChatManager (regex injection/ReDoS)
+- Rejected shell metacharacters in AgentToolExecutor's command allowlist (prefix-anchored patterns were bypassable via command chaining)
+- Replaced Math.random()-based identifier generation with crypto.randomUUID() across AICompanionHub, connectors, and proactive messaging
+- Replaced a backtracking suggestion-parsing regex in CopilotConnector with line-based parsing and capped parsed length (polynomial ReDoS)
+- Guarded AIPlatformConnector.updatePersonality against prototype-polluting keys
+- dtecho-nakama-airi: session cookies now force Secure in production and fall back to SameSite=Lax off HTTPS; session JWT signing now fails fast when JWT_SECRET is unset (empty HMAC key was trivially forgeable)
+- Documented the autonomous bot's intentional bash execution with a CodeQL suppression and sandboxing guidance
+
 ### Fixed
 
+- Deflaked ConversationTrainingGenerator: output dir is re-created at write time so concurrent test cleanup can't race createWriteStream into ENOENT
+- Repaired all 8 pre-existing failing test suites (5 in @deltecho/ui-components rewritten against current component APIs under the ESM jest preset; 3 in deltecho2 frontend incl. deterministic RAGMemoryStore ordering and named-export imports)
 - Resolved duplicate `@types/react` resolution across the workspace (packageExtensions for lucide-react/next-themes/sonner, React types pinned for both desktop apps, react/react-dom paths dedupe for dtecho-nakama-airi)
 - deltecho2 ESLint now passes with 0 errors (was 42): unused vars, jest env in mocks, var-requires in ported tests
 - @deltecho/ui-components test harness now runs under the ESM preset (jest globals shim, consistent React 18 pair); new Live2DAvatar test passes

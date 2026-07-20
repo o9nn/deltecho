@@ -225,6 +225,17 @@ export default function MainScreen({ accountId }: Props) {
               <Icon icon='settings' size={20} />
             </Button>
           )}
+          {!showArchivedChats && (
+            <Button
+              aria-label='Scientific Cortex'
+              onClick={() => changeScreen(Screens.ScientificGenius)}
+              className='navbar-button'
+              style={{ marginLeft: '8px' }}
+              title='Open the Scientific Cortex knowledge graph'
+            >
+              <Icon icon='code-tags' size={20} />
+            </Button>
+          )}
         </nav>
         <ChatList
           queryStr={queryStr}

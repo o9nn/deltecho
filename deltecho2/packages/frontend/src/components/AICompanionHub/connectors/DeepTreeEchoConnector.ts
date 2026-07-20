@@ -114,9 +114,7 @@ export class DeepTreeEchoConnector extends BaseConnector {
     )
 
     return {
-      messageId: `echo_${Date.now()}_${Math.random()
-        .toString(36)
-        .substring(2, 7)}`,
+      messageId: `echo_${Date.now()}_${crypto.randomUUID().slice(0, 8)}`,
       content: response,
       usage: {
         promptTokens: this.estimateTokens(lastUserMessage.content),

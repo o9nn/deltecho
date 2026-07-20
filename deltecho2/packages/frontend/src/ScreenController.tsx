@@ -27,6 +27,7 @@ import DeepTreeEchoBot from './components/chat/DeepTreeEchoBot'
 import AINeighborhoodDashboard from './components/screens/AINeighborhoodDashboard/AINeighborhoodDashboard'
 import AINavigation from './components/AINavigation'
 import { MemoryPersistenceLayer } from './components/AICompanionHub/MemoryPersistenceLayer'
+import { ScientificDashboard } from './components/ScientificGenius/ScientificDashboard'
 
 const log = getLogger('renderer/ScreenController')
 
@@ -43,6 +44,7 @@ export enum Screens {
   DeleteAccount = 'deleteAccount',
   NoAccountSelected = 'noAccountSelected',
   AINeighborhood = 'aiNeighborhood',
+  ScientificGenius = 'scientificGenius',
 }
 
 const BREAKPOINT_FOR_SMALLSCREEN_MODE = 720
@@ -358,6 +360,13 @@ export default class ScreenController extends Component {
         return <NoAccountSelectedScreen />
       case Screens.AINeighborhood:
         return <AINeighborhoodDashboard />
+      case Screens.ScientificGenius:
+        return (
+          <ScientificDashboard
+            onClose={() => this.changeScreen(Screens.Main)}
+            key={key}
+          />
+        )
       default:
         return null
     }

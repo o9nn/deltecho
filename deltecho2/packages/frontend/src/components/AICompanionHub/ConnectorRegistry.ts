@@ -396,9 +396,9 @@ export class ConnectorRegistry extends EventEmitter {
     connectorId: string,
     initialMessage?: string
   ): string {
-    const conversationId = `conv_${Date.now()}_${Math.random()
-      .toString(36)
-      .substring(2, 7)}`
+    const conversationId = `conv_${Date.now()}_${crypto
+      .randomUUID()
+      .slice(0, 8)}`
 
     if (initialMessage) {
       this.sendMessage(connectorId, conversationId, initialMessage).catch(

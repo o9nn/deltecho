@@ -410,9 +410,7 @@ export class CopilotConnector extends BaseConnector {
 
       // Format the AI response
       return {
-        messageId: `copilot_${Date.now()}_${Math.random()
-          .toString(36)
-          .substring(2, 7)}`,
+        messageId: `copilot_${Date.now()}_${crypto.randomUUID().slice(0, 8)}`,
         content: choice.message.content,
         usage: data.usage
           ? {
@@ -606,7 +604,9 @@ Provide a comprehensive review with specific suggestions for improvement.`,
 
       // Parse the response to extract structured review data
       // This is a simplified implementation - in practice, you would want more robust parsing
-      const reviewContent = response.content
+      // Cap the parsed length so backtracking regexes below stay linear in
+      // practice even on pathological model output
+      const reviewContent = response.content.slice(0, 20000)
 
       // Extract summary (first paragraph)
       const summaryMatch = reviewContent.match(/^(.+?)(?:\n\n|\n\d\.|\n#)/s)
@@ -614,10 +614,12 @@ Provide a comprehensive review with specific suggestions for improvement.`,
         ? summaryMatch[1].trim()
         : 'Code review completed.'
 
-      // Extract suggestions (look for numbered or bulleted lists)
-      const suggestionRegex =
-        /(?:^|\n)(?:\d+\.|\*|-)\s+(.+?)(?=(?:\n(?:\d+\.|\*|-|\n|$)))/gs
-      const suggestionMatches = [...reviewContent.matchAll(suggestionRegex)]
+      // Extract suggestions line-by-line (list items) instead of a global
+      // backtracking regex over the whole document
+      const suggestionMatches = reviewContent
+        .split('\n')
+        .map(line => line.match(/^(?:\d+\.|\*|-)\s+(.+)$/))
+        .filter((m): m is RegExpMatchArray => m !== null)
 
       const suggestions = suggestionMatches.map(match => {
         const suggestion = match[1].trim()

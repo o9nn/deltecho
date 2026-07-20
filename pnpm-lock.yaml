@@ -687,6 +687,9 @@ importers:
       '@breezystack/lamejs':
         specifier: ^1.2.7
         version: 1.2.7
+      '@deltachat-desktop/inferno-kernel':
+        specifier: workspace:*
+        version: link:../inferno-kernel
       '@deltachat-desktop/runtime-interface':
         specifier: link:../runtime
         version: link:../runtime

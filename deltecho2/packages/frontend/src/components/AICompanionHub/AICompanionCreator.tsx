@@ -164,9 +164,9 @@ const AICompanionCreatorContent: React.FC<{
       setError(null)
 
       // Generate unique ID
-      const companionId = `companion_${Date.now()}_${Math.random()
-        .toString(36)
-        .substring(2, 7)}`
+      const companionId = `companion_${Date.now()}_${crypto
+        .randomUUID()
+        .slice(0, 8)}`
 
       // Create companion config
       const companionConfig = {

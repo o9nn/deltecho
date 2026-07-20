@@ -15,7 +15,9 @@ import {
   AlertCircle,
   Loader,
   Network,
+  User,
   HomeIcon,
+  Video,
 } from 'lucide-react'
 
 import { AICompanionProvider, useAICompanion } from './AICompanionController'
@@ -23,6 +25,13 @@ import { ConnectorInfo } from './ConnectorRegistry'
 import { AIMemory } from './MemoryPersistenceLayer'
 import MemoryVisualization from './MemoryVisualization'
 import AICompanionCreator from './AICompanionCreator'
+import { VideoCalibrationLab } from './VideoCalibrationLab'
+import { Live2DAvatar } from './Live2DAvatar'
+import type {
+  Live2DAvatarController,
+  Expression,
+  AvatarMotion,
+} from './Live2DAvatar'
 import { getLogger } from '@deltachat-desktop/shared/logger'
 
 const log = getLogger('render/components/AICompanionHub/AICompanionHub')
@@ -192,8 +201,20 @@ const AICompanionHubContent: React.FC = () => {
   const [chatInput, setChatInput] = useState('')
   const [isSending, setIsSending] = useState(false)
   const [view, setView] = useState<
-    'chat' | 'memories' | 'settings' | 'visualization' | 'create'
+    | 'chat'
+    | 'memories'
+    | 'settings'
+    | 'visualization'
+    | 'create'
+    | 'avatar'
+    | 'calibration'
   >('chat')
+  const [avatarController, setAvatarController] =
+    useState<Live2DAvatarController | null>(null)
+  const [avatarLoaded, setAvatarLoaded] = useState(false)
+  const [currentExpression, setCurrentExpression] =
+    useState<Expression>('neutral')
+  const [avatarAudioLevel, setAvatarAudioLevel] = useState(0)
 
   // Get current conversation messages
   const currentMessages =
@@ -372,6 +393,20 @@ const AICompanionHubContent: React.FC = () => {
                     <span>Memories</span>
                   </button>
                   <button
+                    className={`tab ${view === 'avatar' ? 'active' : ''}`}
+                    onClick={() => setView('avatar')}
+                  >
+                    <User size={18} />
+                    <span>Avatar</span>
+                  </button>
+                  <button
+                    className={`tab ${view === 'calibration' ? 'active' : ''}`}
+                    onClick={() => setView('calibration')}
+                  >
+                    <Video size={18} />
+                    <span>Calibration</span>
+                  </button>
+                  <button
                     className='tab'
                     onClick={() => setView('visualization')}
                   >
@@ -507,6 +542,123 @@ const AICompanionHubContent: React.FC = () => {
                 <p>Advanced settings coming soon...</p>
               </div>
             </div>
+          ) : view === 'avatar' ? (
+            <div className='avatar-view'>
+              <div className='avatar-display-section'>
+                <div className='avatar-display-header'>
+                  <h3>
+                    <User size={18} />
+                    Live2D Avatar
+                  </h3>
+                  <div className='avatar-status'>
+                    <span
+                      className={`avatar-status-indicator ${
+                        avatarLoaded ? '' : 'loading'
+                      }`}
+                    />
+                    <span>{avatarLoaded ? 'Ready' : 'Loading...'}</span>
+                  </div>
+                </div>
+                <div className='avatar-display-container'>
+                  <Live2DAvatar
+                    model='miara'
+                    width={320}
+                    height={320}
+                    scale={0.3}
+                    audioLevel={avatarAudioLevel}
+                    onLoad={() => setAvatarLoaded(true)}
+                    onError={err => log.error('Avatar error:', err)}
+                    onControllerReady={setAvatarController}
+                  />
+                </div>
+                <div className='avatar-controls'>
+                  <div className='expression-buttons'>
+                    {(
+                      [
+                        'neutral',
+                        'happy',
+                        'surprised',
+                        'curious',
+                        'concerned',
+                        'focused',
+                      ] as Expression[]
+                    ).map(expr => (
+                      <button
+                        key={expr}
+                        className={`expression-btn ${
+                          currentExpression === expr ? 'active' : ''
+                        }`}
+                        onClick={() => {
+                          setCurrentExpression(expr)
+                          avatarController?.setExpression(expr, 0.8)
+                        }}
+                      >
+                        {expr === 'neutral'
+                          ? '😐'
+                          : expr === 'happy'
+                            ? '😊'
+                            : expr === 'surprised'
+                              ? '😲'
+                              : expr === 'curious'
+                                ? '🤔'
+                                : expr === 'concerned'
+                                  ? '😟'
+                                  : '🎯'}{' '}
+                        {expr}
+                      </button>
+                    ))}
+                  </div>
+                </div>
+              </div>
+              <div className='avatar-motion-section'>
+                <h4>Motions</h4>
+                <div className='motion-buttons'>
+                  {[
+                    { motion: 'idle' as AvatarMotion, label: '💤 Idle' },
+                    { motion: 'nod' as AvatarMotion, label: '👍 Nod' },
+                    {
+                      motion: 'tilt_head_left' as AvatarMotion,
+                      label: '↩️ Tilt Left',
+                    },
+                    {
+                      motion: 'tilt_head_right' as AvatarMotion,
+                      label: '↪️ Tilt Right',
+                    },
+                  ].map(({ motion, label }) => (
+                    <button
+                      key={motion}
+                      className='avatar-control-btn'
+                      onClick={() => avatarController?.playMotion(motion)}
+                    >
+                      {label}
+                    </button>
+                  ))}
+                </div>
+              </div>
+              <div className='avatar-lipsync-section'>
+                <h4>Lip Sync Test</h4>
+                <div className='lipsync-controls'>
+                  <input
+                    type='range'
+                    min='0'
+                    max='100'
+                    value={avatarAudioLevel * 100}
+                    onChange={e => {
+                      const level = parseInt(e.target.value) / 100
+                      setAvatarAudioLevel(level)
+                      avatarController?.updateLipSync(level)
+                    }}
+                    className='lipsync-slider'
+                    aria-label='Lip sync audio level'
+                  />
+                  <span className='lipsync-value'>
+                    {Math.round(avatarAudioLevel * 100)}%
+                  </span>
+                </div>
+              </div>
+            </div>
+          ) : view === 'calibration' ? (
+            <VideoCalibrationLab />
           ) : null}
         </div>
       </div>

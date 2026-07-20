@@ -141,11 +141,7 @@ export class ConversationTrainingGenerator extends EventEmitter {
     for (const conversation of conversations) {
       if (conversation.length < this.config.minTurns) continue;
 
-      const conversationExamples = this.processConversation(
-        conversation,
-        identityPrompt,
-        aarStage
-      );
+      const conversationExamples = this.processConversation(conversation, identityPrompt, aarStage);
 
       for (const example of conversationExamples) {
         // Deduplication via content hash
@@ -332,11 +328,7 @@ export class ConversationTrainingGenerator extends EventEmitter {
   /**
    * Add or update a concept in the graph.
    */
-  private addConcept(
-    label: string,
-    type: ConceptNode['type'],
-    timestamp: number
-  ): void {
+  private addConcept(label: string, type: ConceptNode['type'], timestamp: number): void {
     const id = `${type}:${label}`;
     const existing = this.concepts.get(id);
 
@@ -362,6 +354,11 @@ export class ConversationTrainingGenerator extends EventEmitter {
   private async writeOutput(examples: TrainingExample[]): Promise<string[]> {
     const files: string[] = [];
     const timestamp = new Date().toISOString().replace(/[:.]/g, '-').slice(0, 19);
+
+    // The output dir can disappear between construction and write (e.g. a
+    // concurrent test suite's cleanup removing a shared tmp dir); recreate it
+    // so createWriteStream never races into ENOENT.
+    fs.mkdirSync(this.config.outputDir, { recursive: true });
 
     // Main training data
     const mainFile = path.join(this.config.outputDir, `dte_training_${timestamp}.jsonl`);

@@ -96,9 +96,7 @@ export class MemoryPersistenceLayer extends EventEmitter {
 
     // Ensure memory has the required fields
     if (!memory.id)
-      memory.id = `mem_${Date.now()}_${Math.random()
-        .toString(36)
-        .substring(2, 9)}`
+      memory.id = `mem_${Date.now()}_${crypto.randomUUID().slice(0, 8)}`
     if (!memory.timestamp) memory.timestamp = Date.now()
 
     // Store the memory

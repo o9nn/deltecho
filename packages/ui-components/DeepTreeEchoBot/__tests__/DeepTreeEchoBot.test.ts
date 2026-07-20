@@ -1,179 +1,19 @@
 import { DeepTreeEchoBot } from '../DeepTreeEchoBot.js';
+import { LLMService } from '../LLMService.js';
+import { BackendRemote } from '@deltecho/shared/backend';
 
-// Mock dependencies
-jest.mock('@deltachat-desktop/shared/logger', () => ({
-  getLogger: jest.fn(() => ({
-    info: jest.fn(),
-    error: jest.fn(),
-    warn: jest.fn(),
-    debug: jest.fn(),
-  })),
-}));
-
-jest.mock('../RAGMemoryStore.js', () => {
-  return {
-    RAGMemoryStore: {
-      getInstance: jest.fn().mockReturnValue({
-        addMemory: jest.fn().mockResolvedValue({ id: 'test-memory-id' }),
-        getMemoriesByChatId: jest.fn().mockReturnValue([]),
-        getLatestChatMemories: jest.fn().mockReturnValue([]),
-        searchMemories: jest.fn().mockReturnValue([]),
-        deleteChatMemories: jest.fn().mockResolvedValue(undefined),
-        getStats: jest.fn().mockReturnValue({ totalMemories: 10, chatCount: 2 }),
-        setEnabled: jest.fn(),
-        storeMemory: jest.fn(),
-        getConversationContext: jest.fn().mockReturnValue([]),
-        retrieveRecentMemories: jest.fn().mockReturnValue([]),
-        clearChatMemories: jest.fn(),
-      }),
-    },
-  };
-});
-
-jest.mock('../LLMService.js', () => {
-  return {
-    LLMService: {
-      getInstance: jest.fn().mockReturnValue({
-        setConfig: jest.fn(),
-        setFunctionConfig: jest.fn(),
-        getActiveFunctions: jest.fn().mockReturnValue([]),
-        generateResponse: jest.fn().mockResolvedValue('Test response'),
-        generateFullParallelResponse: jest.fn().mockResolvedValue({
-          integratedResponse: 'Test parallel response',
-          processing: {},
-        }),
-        getCompletion: jest.fn().mockResolvedValue({ content: 'Test response' }),
-        generateResponseFromMemories: jest
-          .fn()
-          .mockResolvedValue({ content: 'Test response from memories' }),
-        updateOptions: jest.fn(),
-      }),
-    },
-  };
-});
-
-jest.mock('../VisionCapabilities.js', () => {
-  return {
-    VisionCapabilities: jest.fn().mockImplementation(() => ({
-      initialize: jest.fn().mockResolvedValue(true),
-      analyzeImage: jest.fn().mockResolvedValue({
-        description: 'Test image description',
-        tags: ['test', 'image'],
-        objects: [{ label: 'test object', confidence: 0.9 }],
-      }),
-      updateOptions: jest.fn(),
-    })),
-  };
-});
-
-jest.mock('../PlaywrightAutomation.js', () => {
-  return {
-    PlaywrightAutomation: jest.fn().mockImplementation(() => ({
-      initialize: jest.fn().mockResolvedValue(true),
-      searchWeb: jest.fn().mockResolvedValue({
-        success: true,
-        data: [
-          {
-            title: 'Test Result',
-            url: 'https://example.com',
-            snippet: 'Test snippet',
-          },
-        ],
-      }),
-      takeScreenshot: jest.fn().mockResolvedValue({
-        success: true,
-        data: { url: 'https://example.com', timestamp: '2023-01-01T00:00:00Z' },
-        screenshot: 'base64-screenshot-data',
-      }),
-      updateOptions: jest.fn(),
-    })),
-  };
-});
-
-jest.mock('../ProprioceptiveEmbodiment.js', () => {
-  return {
-    ProprioceptiveEmbodiment: jest.fn().mockImplementation(() => ({
-      initialize: jest.fn().mockResolvedValue(true),
-      startTraining: jest.fn().mockResolvedValue(true),
-      stopTraining: jest.fn().mockResolvedValue(true),
-      getCurrentMovementData: jest.fn().mockResolvedValue({
-        positions: [],
-        velocities: {
-          linear: { x: 0, y: 0, z: 0 },
-          angular: { roll: 0, pitch: 0, yaw: 0 },
-        },
-        acceleration: {
-          linear: { x: 0, y: 0, z: 0 },
-          angular: { roll: 0, pitch: 0, yaw: 0 },
-        },
-        balance: {
-          stabilityScore: 0.8,
-          centerOfMassOffset: { x: 0, y: 0 },
-          balanceConfidence: 0.7,
-        },
-      }),
-      evaluateMovement: jest.fn().mockResolvedValue({
-        score: 0.8,
-        feedback: 'Test feedback',
-      }),
-      getTrainingStats: jest.fn().mockReturnValue({
-        sessionsCompleted: 5,
-        totalDataPoints: 100,
-        avgStabilityScore: 0.75,
-      }),
-      updateOptions: jest.fn(),
-    })),
-  };
-});
-
-jest.mock('../PersonaCore.js', () => {
-  return {
-    PersonaCore: {
-      getInstance: jest.fn().mockReturnValue({
-        getPreferences: jest.fn().mockReturnValue({
-          communicationTone: 'balanced',
-        }),
-        getDominantEmotion: jest.fn().mockReturnValue({
-          emotion: 'neutral',
-          intensity: 0.5,
-        }),
-        getSelfPerception: jest.fn().mockReturnValue('I am Deep Tree Echo'),
-        evaluateSettingAlignment: jest.fn().mockReturnValue({
-          approved: true,
-          reasoning: 'Test reasoning',
-        }),
-        updatePersonality: jest.fn(),
-      }),
-    },
-  };
-});
-
-jest.mock('../SelfReflection.js', () => {
-  return {
-    SelfReflection: {
-      getInstance: jest.fn().mockReturnValue({
-        reflectOnAspect: jest.fn().mockResolvedValue('Test reflection'),
-      }),
-    },
-  };
-});
-
-jest.mock('../../../backend-com.js.js', () => ({
-  BackendRemote: {
-    rpc: {
-      getMessage: jest.fn().mockResolvedValue({
-        fromId: 2,
-        text: 'Test message',
-      }),
-      miscSendTextMessage: jest.fn().mockResolvedValue(undefined),
-    },
-  },
-}));
-
+/**
+ * DeepTreeEchoBot.processMessage() returns void and delivers its replies
+ * through BackendRemote.rpc.miscSendTextMessage, so the tests observe the
+ * messages sent through a spy on that RPC method.
+ */
 describe('DeepTreeEchoBot', () => {
   let bot: DeepTreeEchoBot;
+  let sendSpy: ReturnType<typeof jest.spyOn>;
 
   beforeEach(() => {
+    sendSpy = jest.spyOn(BackendRemote.rpc, 'miscSendTextMessage').mockResolvedValue(0);
+
     bot = new DeepTreeEchoBot({
       enabled: true,
       apiKey: 'test-api-key',
@@ -183,24 +23,31 @@ describe('DeepTreeEchoBot', () => {
       visionEnabled: true,
       webAutomationEnabled: true,
       embodimentEnabled: true,
+      useParallelProcessing: false,
     });
   });
 
+  const sentTexts = () => sendSpy.mock.calls.map((call) => String(call[2]));
+
   describe('processMessage', () => {
-    it('should process regular messages and return a response', async () => {
+    it('should process regular messages and send a response', async () => {
       const message = {
         id: 123,
         text: 'Hello bot',
         file: null,
       };
 
-      const response = await bot.processMessage(1, 100, 123, message as any);
+      await bot.processMessage(1, 100, 123, message as any);
 
-      expect(response).toBeTruthy();
-      expect(typeof response).toBe('string');
+      // A thinking indicator followed by the generated response
+      expect(sendSpy).toHaveBeenCalledWith(1, 100, '*Thinking...*');
+      expect(sendSpy.mock.calls.length).toBeGreaterThanOrEqual(2);
+      const lastText = sentTexts()[sentTexts().length - 1];
+      expect(typeof lastText).toBe('string');
+      expect(lastText.length).toBeGreaterThan(0);
     });
 
-    it('should return an empty string if bot is disabled', async () => {
+    it('should not send anything if the bot is disabled', async () => {
       bot.updateOptions({ enabled: false });
 
       const message = {
@@ -209,9 +56,9 @@ describe('DeepTreeEchoBot', () => {
         file: null,
       };
 
-      const response = await bot.processMessage(1, 100, 123, message as any);
+      await bot.processMessage(1, 100, 123, message as any);
 
-      expect(response).toBe('');
+      expect(sendSpy).not.toHaveBeenCalled();
     });
 
     it('should handle command messages', async () => {
@@ -221,24 +68,25 @@ describe('DeepTreeEchoBot', () => {
         file: null,
       };
 
-      const response = await bot.processMessage(1, 100, 123, message as any);
+      await bot.processMessage(1, 100, 123, message as any);
 
-      expect(response).toContain('commands');
+      expect(sendSpy).toHaveBeenCalledWith(1, 100, expect.stringContaining('commands'));
     });
 
-    it('should handle errors gracefully', async () => {
-      // Force an error
-      jest.spyOn(console, 'error').mockImplementation(() => {});
+    it('should handle LLM errors gracefully', async () => {
+      jest
+        .spyOn(LLMService.getInstance(), 'generateResponse')
+        .mockRejectedValueOnce(new Error('LLM failure'));
 
       const message = {
         id: 123,
-        text: null,
+        text: 'Hello bot',
         file: null,
       };
 
-      const response = await bot.processMessage(1, 100, 123, message as any);
+      await bot.processMessage(1, 100, 123, message as any);
 
-      expect(response).toContain('Sorry');
+      expect(sendSpy).toHaveBeenCalledWith(1, 100, expect.stringContaining("I'm sorry"));
     });
   });
 
@@ -250,9 +98,9 @@ describe('DeepTreeEchoBot', () => {
         file: null,
       };
 
-      const response = await bot.processMessage(1, 100, 123, message as any);
+      await bot.processMessage(1, 100, 123, message as any);
 
-      expect(response).toContain('Available commands');
+      expect(sendSpy).toHaveBeenCalledWith(1, 100, expect.stringContaining('Available commands'));
     });
 
     it('should handle the /vision command', async () => {
@@ -262,9 +110,9 @@ describe('DeepTreeEchoBot', () => {
         file: 'test-file-path.jpg',
       };
 
-      const response = await bot.processMessage(1, 100, 123, message as any);
+      await bot.processMessage(1, 100, 123, message as any);
 
-      expect(response).toContain('Image Analysis');
+      expect(sendSpy).toHaveBeenCalledWith(1, 100, expect.stringContaining('Vision analysis'));
     });
 
     it('should handle the /search command', async () => {
@@ -274,9 +122,13 @@ describe('DeepTreeEchoBot', () => {
         file: null,
       };
 
-      const response = await bot.processMessage(1, 100, 123, message as any);
+      await bot.processMessage(1, 100, 123, message as any);
 
-      expect(response).toContain('Search results');
+      expect(sendSpy).toHaveBeenCalledWith(
+        1,
+        100,
+        expect.stringContaining('Searching for: "test query"')
+      );
     });
 
     it('should handle the /memory command', async () => {
@@ -286,14 +138,26 @@ describe('DeepTreeEchoBot', () => {
         file: null,
       };
 
-      const response = await bot.processMessage(1, 100, 123, message as any);
+      await bot.processMessage(1, 100, 123, message as any);
 
-      expect(response).toContain('Memory Status');
+      expect(sendSpy).toHaveBeenCalledWith(1, 100, expect.stringContaining('Memory Status'));
+    });
+
+    it('should report unknown commands', async () => {
+      const message = {
+        id: 123,
+        text: '/unknowncommand',
+        file: null,
+      };
+
+      await bot.processMessage(1, 100, 123, message as any);
+
+      expect(sendSpy).toHaveBeenCalledWith(1, 100, expect.stringContaining('Unknown command'));
     });
   });
 
   describe('updateOptions', () => {
-    it('should update options', () => {
+    it('should update options', async () => {
       bot.updateOptions({
         enabled: false,
         apiKey: 'new-api-key',
@@ -307,9 +171,9 @@ describe('DeepTreeEchoBot', () => {
         file: null,
       };
 
-      return bot.processMessage(1, 100, 123, message as any).then((response) => {
-        expect(response).toBe('');
-      });
+      await bot.processMessage(1, 100, 123, message as any);
+
+      expect(sendSpy).not.toHaveBeenCalled();
     });
   });
 });

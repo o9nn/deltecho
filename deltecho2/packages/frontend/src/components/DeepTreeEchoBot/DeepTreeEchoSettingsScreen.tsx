@@ -1,9 +1,13 @@
-import React, { useState } from 'react'
+import React, { useEffect, useState } from 'react'
 import { getLogger } from '@deltachat-desktop/shared/logger'
 import BotSettings from './BotSettings'
 import ProactiveMessagingSettings from './ProactiveMessagingSettings'
 import TriggerManager from './TriggerManager'
 import { saveBotSettings, getBotInstance } from './DeepTreeEchoIntegration'
+import {
+  InfernoKernelService,
+  InfernoKernelStatus,
+} from './InfernoKernelService'
 import { runtime as _runtime } from '@deltachat-desktop/runtime-interface'
 import { selectedAccountId } from '../../ScreenController'
 
@@ -11,7 +15,7 @@ const log = getLogger(
   'render/components/DeepTreeEchoBot/DeepTreeEchoSettingsScreen'
 )
 
-type SettingsTab = 'general' | 'proactive' | 'triggers'
+type SettingsTab = 'general' | 'proactive' | 'triggers' | 'inferno'
 
 /**
  * DeepTreeEchoSettingsScreen - Main settings screen component for the Deep Tree Echo bot
@@ -21,6 +25,31 @@ const DeepTreeEchoSettingsScreen: React.FC = () => {
   const [isSaving, setIsSaving] = useState(false)
   const [saveMessage, setSaveMessage] = useState('')
   const [activeTab, setActiveTab] = useState<SettingsTab>('general')
+  const [kernelStatus, setKernelStatus] = useState<InfernoKernelStatus | null>(
+    null
+  )
+
+  // Load (and lazily boot) the Inferno kernel when its tab is opened
+  useEffect(() => {
+    if (activeTab !== 'inferno') {
+      return
+    }
+    let cancelled = false
+    const service = InfernoKernelService.getInstance()
+    service
+      .init()
+      .catch(error => {
+        log.error('Failed to initialize Inferno kernel:', error)
+      })
+      .then(() => {
+        if (!cancelled) {
+          setKernelStatus(service.getStatus())
+        }
+      })
+    return () => {
+      cancelled = true
+    }
+  }, [activeTab])
 
   // Resolve the account id, falling back to the first account
   // when no account is selected yet (e.g. during onboarding).
@@ -156,6 +185,14 @@ const DeepTreeEchoSettingsScreen: React.FC = () => {
           <span className='tab-icon'>🎯</span>
           Triggers
         </button>
+        <button
+          type='button'
+          className={`tab ${activeTab === 'inferno' ? 'active' : ''}`}
+          onClick={() => setActiveTab('inferno')}
+        >
+          <span className='tab-icon'>🔥</span>
+          Inferno Kernel
+        </button>
       </div>
 
       {/* Tab Content */}
@@ -187,6 +224,56 @@ const DeepTreeEchoSettingsScreen: React.FC = () => {
               accountId={getAccountId()}
               onClose={() => setActiveTab('proactive')}
             />
+          </div>
+        )}
+
+        {activeTab === 'inferno' && (
+          <div className='inferno-kernel-status'>
+            <h3>Inferno Kernel</h3>
+            <p className='settings-description'>
+              The Inferno kernel provides AGI reasoning services (AtomSpace
+              hypergraph knowledge, PLN inference and attention allocation) for
+              Deep Tree Echo. It is active when the bot is enabled and parallel
+              processing is turned on.
+            </p>
+            {kernelStatus === null ? (
+              <p>Loading kernel status...</p>
+            ) : (
+              <ul className='kernel-status-list'>
+                <li>
+                  Enabled:{' '}
+                  <strong>{kernelStatus.enabled ? 'Yes' : 'No'}</strong>
+                </li>
+                <li>
+                  State: <strong>{kernelStatus.state}</strong>
+                </li>
+                <li>
+                  Atoms in AtomSpace: <strong>{kernelStatus.atomCount}</strong>
+                </li>
+                {kernelStatus.kernelStats && (
+                  <>
+                    <li>
+                      Active cognitive processes:{' '}
+                      <strong>
+                        {kernelStatus.kernelStats.activeProcesses}
+                      </strong>
+                    </li>
+                    <li>
+                      Reasoning cycles:{' '}
+                      <strong>
+                        {kernelStatus.kernelStats.reasoningCycles}
+                      </strong>
+                    </li>
+                  </>
+                )}
+                {kernelStatus.attentionStats && (
+                  <li>
+                    Attentional focus size:{' '}
+                    <strong>{kernelStatus.attentionStats.focusSize}</strong>
+                  </li>
+                )}
+              </ul>
+            )}
           </div>
         )}
       </div>

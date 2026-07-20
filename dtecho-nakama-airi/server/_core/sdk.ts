@@ -156,6 +156,13 @@ class SDKServer {
 
   private getSessionSecret() {
     const secret = ENV.cookieSecret;
+    if (!secret) {
+      // An empty HMAC key would make session JWTs trivially forgeable —
+      // refuse to sign/verify without a real secret.
+      throw new Error(
+        "JWT_SECRET is not set; refusing to sign or verify session tokens"
+      );
+    }
     return new TextEncoder().encode(secret);
   }
 
