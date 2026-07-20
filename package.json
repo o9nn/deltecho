@@ -37,11 +37,48 @@
     "test:glyph": "pnpm --filter @deltecho/gesture-glyph test",
     "dev:desktop": "pnpm --filter deltecho2 dev",
     "dev:electron": "pnpm --filter deltecho2 dev:electron",
+    "dev:nakama": "pnpm --filter dtecho-nakama-airi dev",
+    "build:nakama": "pnpm --filter dtecho-nakama-airi build",
+    "test:nakama": "pnpm --filter dtecho-nakama-airi test",
+    "check:nakama": "pnpm --filter dtecho-nakama-airi check",
+    "start:bot": "npx ts-node bin/deltecho-bot.ts",
     "start:orchestrator": "pnpm --filter deep-tree-echo-orchestrator start"
   },
   "pnpm": {
     "overrides": {
       "qs": ">=6.14.1"
+    },
+    "packageExtensions": {
+      "lucide-react": {
+        "peerDependencies": {
+          "@types/react": "*"
+        },
+        "peerDependenciesMeta": {
+          "@types/react": {
+            "optional": true
+          }
+        }
+      },
+      "next-themes": {
+        "peerDependencies": {
+          "@types/react": "*"
+        },
+        "peerDependenciesMeta": {
+          "@types/react": {
+            "optional": true
+          }
+        }
+      },
+      "sonner": {
+        "peerDependencies": {
+          "@types/react": "*"
+        },
+        "peerDependenciesMeta": {
+          "@types/react": {
+            "optional": true
+          }
+        }
+      }
     },
     "supportedArchitectures": {
       "os": [
@@ -61,6 +98,9 @@
     ]
   },
   "devDependencies": {
+    "@anthropic-ai/sdk": "^0.39.0",
+    "@deltachat/jsonrpc-client": "catalog:",
+    "@deltachat/stdio-rpc-server": "catalog:",
     "@types/jest": "^29.5.14",
     "@types/node": "^20.19.27",
     "@typescript-eslint/eslint-plugin": "^7.18.0",

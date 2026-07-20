@@ -1,4 +1,6 @@
 import { DeepTreeEchoBot } from '../DeepTreeEchoBot'
+import { LLMService } from '../LLMService'
+import { BackendRemote } from '../../../backend-com'
 
 // Mock dependencies
 jest.mock('@deltachat-desktop/shared/logger', () => ({
@@ -174,10 +176,19 @@ jest.mock('../../../backend-com', () => ({
   },
 }))
 
+/**
+ * DeepTreeEchoBot.processMessage() returns void and delivers its replies
+ * through BackendRemote.rpc.miscSendTextMessage, so the tests assert on the
+ * messages sent through that (mocked) RPC method.
+ */
 describe('DeepTreeEchoBot', () => {
   let bot: DeepTreeEchoBot
+  const sendTextMock = BackendRemote.rpc
+    .miscSendTextMessage as unknown as jest.Mock
 
   beforeEach(() => {
+    jest.clearAllMocks()
+
     bot = new DeepTreeEchoBot({
       enabled: true,
       apiKey: 'test-api-key',
@@ -191,20 +202,25 @@ describe('DeepTreeEchoBot', () => {
   })
 
   describe('processMessage', () => {
-    it('should process regular messages and return a response', async () => {
+    it('should process regular messages and send a response', async () => {
       const message = {
         id: 123,
         text: 'Hello bot',
         file: null,
       }
 
-      const response = await bot.processMessage(1, 100, 123, message as any)
+      await bot.processMessage(1, 100, 123, message as any)
 
-      expect(response).toBeTruthy()
-      expect(typeof response).toBe('string')
+      // A thinking indicator followed by the generated response
+      expect(sendTextMock).toHaveBeenCalledWith(1, 100, '*Thinking...*')
+      expect(sendTextMock).toHaveBeenCalledWith(
+        1,
+        100,
+        'Test parallel response'
+      )
     })
 
-    it('should return an empty string if bot is disabled', async () => {
+    it('should not send anything if the bot is disabled', async () => {
       bot.updateOptions({ enabled: false })
 
       const message = {
@@ -213,9 +229,9 @@ describe('DeepTreeEchoBot', () => {
         file: null,
       }
 
-      const response = await bot.processMessage(1, 100, 123, message as any)
+      await bot.processMessage(1, 100, 123, message as any)
 
-      expect(response).toBe('')
+      expect(sendTextMock).not.toHaveBeenCalled()
     })
 
     it('should handle command messages', async () => {
@@ -225,24 +241,37 @@ describe('DeepTreeEchoBot', () => {
         file: null,
       }
 
-      const response = await bot.processMessage(1, 100, 123, message as any)
+      await bot.processMessage(1, 100, 123, message as any)
 
-      expect(response).toContain('commands')
+      expect(sendTextMock).toHaveBeenCalledWith(
+        1,
+        100,
+        expect.stringContaining('commands')
+      )
     })
 
     it('should handle errors gracefully', async () => {
-      // Force an error
-      jest.spyOn(console, 'error').mockImplementation(() => {})
+      // Force an error in response generation
+      const llmMock = LLMService.getInstance() as unknown as {
+        generateFullParallelResponse: jest.Mock
+      }
+      llmMock.generateFullParallelResponse.mockRejectedValueOnce(
+        new Error('LLM failure')
+      )
 
       const message = {
         id: 123,
-        text: null,
+        text: 'Hello bot',
         file: null,
       }
 
-      const response = await bot.processMessage(1, 100, 123, message as any)
+      await bot.processMessage(1, 100, 123, message as any)
 
-      expect(response).toContain('Sorry')
+      expect(sendTextMock).toHaveBeenCalledWith(
+        1,
+        100,
+        expect.stringContaining("I'm sorry")
+      )
     })
   })
 
@@ -254,9 +283,13 @@ describe('DeepTreeEchoBot', () => {
         file: null,
       }
 
-      const response = await bot.processMessage(1, 100, 123, message as any)
+      await bot.processMessage(1, 100, 123, message as any)
 
-      expect(response).toContain('Available commands')
+      expect(sendTextMock).toHaveBeenCalledWith(
+        1,
+        100,
+        expect.stringContaining('Available commands')
+      )
     })
 
     it('should handle the /vision command', async () => {
@@ -266,9 +299,13 @@ describe('DeepTreeEchoBot', () => {
         file: 'test-file-path.jpg',
       }
 
-      const response = await bot.processMessage(1, 100, 123, message as any)
+      await bot.processMessage(1, 100, 123, message as any)
 
-      expect(response).toContain('Image Analysis')
+      expect(sendTextMock).toHaveBeenCalledWith(
+        1,
+        100,
+        expect.stringContaining('Vision analysis')
+      )
     })
 
     it('should handle the /search command', async () => {
@@ -278,9 +315,13 @@ describe('DeepTreeEchoBot', () => {
         file: null,
       }
 
-      const response = await bot.processMessage(1, 100, 123, message as any)
+      await bot.processMessage(1, 100, 123, message as any)
 
-      expect(response).toContain('Search results')
+      expect(sendTextMock).toHaveBeenCalledWith(
+        1,
+        100,
+        expect.stringContaining('Searching for: "test query"')
+      )
     })
 
     it('should handle the /memory command', async () => {
@@ -290,14 +331,34 @@ describe('DeepTreeEchoBot', () => {
         file: null,
       }
 
-      const response = await bot.processMessage(1, 100, 123, message as any)
+      await bot.processMessage(1, 100, 123, message as any)
 
-      expect(response).toContain('Memory Status')
+      expect(sendTextMock).toHaveBeenCalledWith(
+        1,
+        100,
+        expect.stringContaining('Memory Status')
+      )
+    })
+
+    it('should report unknown commands', async () => {
+      const message = {
+        id: 123,
+        text: '/unknowncommand',
+        file: null,
+      }
+
+      await bot.processMessage(1, 100, 123, message as any)
+
+      expect(sendTextMock).toHaveBeenCalledWith(
+        1,
+        100,
+        expect.stringContaining('Unknown command')
+      )
     })
   })
 
   describe('updateOptions', () => {
-    it('should update options', () => {
+    it('should update options', async () => {
       bot.updateOptions({
         enabled: false,
         apiKey: 'new-api-key',
@@ -311,9 +372,9 @@ describe('DeepTreeEchoBot', () => {
         file: null,
       }
 
-      return bot.processMessage(1, 100, 123, message as any).then(response => {
-        expect(response).toBe('')
-      })
+      await bot.processMessage(1, 100, 123, message as any)
+
+      expect(sendTextMock).not.toHaveBeenCalled()
     })
   })
 })

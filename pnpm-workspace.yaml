@@ -15,6 +15,7 @@ packages:
   - delta-echo-desk/packages/*
   - deltecho2
   - deltecho2/packages/*
+  - dtecho-nakama-airi
 
 allowBuilds:
   '@parcel/watcher': set this to true or false

@@ -126,7 +126,8 @@ describe('ConversationTrainingGenerator', () => {
       const jsonlFiles = stats.outputFiles.filter(f => f.endsWith('.jsonl'));
       expect(jsonlFiles.length).toBeGreaterThan(0);
 
-      // Verify JSONL format
+      // Verify JSONL format: every line parses; training files (not the
+      // dte_metadata_* companion files) carry a `text` property
       for (const file of jsonlFiles) {
         if (fs.existsSync(file)) {
           const content = fs.readFileSync(file, 'utf-8');
@@ -134,7 +135,9 @@ describe('ConversationTrainingGenerator', () => {
           for (const line of lines) {
             expect(() => JSON.parse(line)).not.toThrow();
             const parsed = JSON.parse(line);
-            expect(parsed).toHaveProperty('text');
+            if (path.basename(file).startsWith('dte_training_')) {
+              expect(parsed).toHaveProperty('text');
+            }
           }
         }
       }

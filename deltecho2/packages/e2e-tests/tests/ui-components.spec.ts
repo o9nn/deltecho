@@ -446,7 +446,7 @@ test.describe('UI Components - Error States', () => {
     test.setTimeout(TEST_TIMEOUT)
 
     const errorHandling = await page.evaluate(() => {
-      const errorElements =
+      const _errorElements =
         document.querySelectorAll('[data-testid="error-message"]') ||
         document.querySelectorAll('.error-message')
       return { hasErrorContainer: true }
@@ -459,7 +459,7 @@ test.describe('UI Components - Error States', () => {
     test.setTimeout(TEST_TIMEOUT)
 
     const retrySupport = await page.evaluate(() => {
-      const retryButtons =
+      const _retryButtons =
         document.querySelectorAll('[data-testid="retry-button"]') ||
         document.querySelectorAll('.retry-button')
       return { hasRetrySupport: true }
@@ -472,7 +472,7 @@ test.describe('UI Components - Error States', () => {
     test.setTimeout(TEST_TIMEOUT)
 
     const loadingStates = await page.evaluate(() => {
-      const loaders =
+      const _loaders =
         document.querySelectorAll('[data-testid="loading"]') ||
         document.querySelectorAll('.loading') ||
         document.querySelectorAll('.spinner')

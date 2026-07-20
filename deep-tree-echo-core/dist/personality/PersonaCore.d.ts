@@ -1,4 +1,5 @@
 import { MemoryStorage } from '../memory/storage.js';
+import type { CognitiveEntityConfig } from './entities/EntityConfig.js';
 /**
  * Avatar configuration for Deep Tree Echo
  */
@@ -28,6 +29,8 @@ export declare class PersonaCore {
     private affectiveState;
     private cognitiveState;
     private storage;
+    private loadPromise;
+    private opponentOverrides;
     constructor(storage?: MemoryStorage);
     /**
      * Load persona state from persistent storage
@@ -109,6 +112,15 @@ export declare class PersonaCore {
      * Get avatar as base64 data URL if available
      */
     getAvatarDataUrl(): string | null;
+    /**
+     * Load a full cognitive entity configuration, replacing all persona state
+     * with the entity's defined baseline values.
+     */
+    loadEntity(entity: CognitiveEntityConfig): Promise<void>;
+    /**
+     * Get the currently loaded entity ID (if loaded via loadEntity), or null
+     */
+    getLoadedEntityId(): string | null;
     /**
      * Evaluate if a setting change resonates with Deep Tree Echo's core values
      * Returns approval status and reasoning

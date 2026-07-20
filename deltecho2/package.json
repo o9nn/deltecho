@@ -41,7 +41,9 @@
     "pnpm": ">=9.6.0"
   },
   "devDependencies": {
+    "@types/events": "^3.0.3",
     "@types/ignore-walk": "^4.0.3",
+    "@types/react": "^18.3.27",
     "@typescript-eslint/eslint-plugin": "^7.18.0",
     "@typescript-eslint/parser": "^7.18.0",
     "chokidar": "^3.6.0",
@@ -55,5 +57,9 @@
     "typescript": "catalog:",
     "xml-js": "^1.6.11",
     "yaml": "^2.8.2"
+  },
+  "dependencies": {
+    "events": "^3.3.0",
+    "lucide-react": "^0.511.0"
   }
 }

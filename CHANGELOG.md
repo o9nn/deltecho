@@ -9,6 +9,41 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
+#### Desktop Full-Feature Port (from deltecho-chat & delovecho)
+
+- **AICompanionHub in deltecho2** - Ported the complete AI Companion Hub subsystem from delta-echo-desk into the production desktop app: hub UI, companion creator/controller, ConnectorRegistry with six platform connectors (Claude, ChatGPT, Character.AI, Copilot, Deep Tree Echo, base), memory persistence layer, memory visualization, AINeighborhoodDashboard screen, AINavigation, and AICompanionSettings, wired into ScreenController, MainScreen, and Settings
+- **ProactiveMessaging suite in deltecho2** - Ported from deltecho-chat: proactive trigger/queue engine, proactive integration and action kernel, conversation impulse router, relationship trust gate, trigger manager UI, proactive settings and status indicator, plus DeepTreeEchoChatManager and the agentic LLM cluster (AgenticLLMService, AgentToolExecutor with a browser-safe reasoning shim, llmEndpoint)
+- **Autonomous bot** - Added `bin/deltecho-bot.ts` (Claude-powered DeltaChat bot with bash tool use, per-chat history, recursion/timeout safety limits) and a root `start:bot` script
+- **Dove9 cognitive engine in Electron main process** - Added `cognitive-engine.ts` (from delovecho) to both desktop apps' target-electron, exposing `cognitive:*` IPC channels backed by the dove9 workspace package
+- **Cognitive entity system** - Ported Aion entity configuration, EntityConfig/EntityRegistry, and entity-aware PersonaCore enhancements (opponent-process overrides, avatarConfig persistence, load race fix) into deep-tree-echo-core
+- **Live2DAvatar persona-driver layer** - Ported to @deltecho/ui-components: Aion/Angelica/Miara manifests, AngelicaDiary experiential learning, Lorenz/NeuroChao chaotic drivers, MetaHumanDNA cognitive bridge, SuperHot assessment, endocrine expression bridge
+- **Miara Live2D model assets** - Bundled runtime model files under `static/models/miara/` in both desktop apps
+- **dtecho-nakama-airi** - Integrated the standalone cognitive-avatar web app (React 19 + tRPC + Nakama presence + Drizzle) as a workspace member with root `dev/build/test/check:nakama` scripts
+- **gesture-glyph tests & dovecot docker config** - Ported delovecho's test suite for @deltecho/gesture-glyph and `docker/dovecot/` configuration
+
+- **AICompanionHub avatar suite in deltecho2** - Live2D avatar component (lazy CDN-loaded Cubism/PixiJS runtime with graceful sprite fallback), responsive sprite avatar with bundled sprite images, video calibration lab, and avatar/calibration tabs in the hub
+- **ScientificGenius UI in deltecho2** - Scientific dashboard and knowledge-graph visualization (browser-safe canvas force-graph), exposed as a Scientific Cortex screen with navbar access, backed by the AgentToolExecutor knowledge tools
+- **Inferno Kernel wired into deltecho2** - New InfernoKernelService (lazy singleton over InfernoKernel/AtomSpace/PLN/AttentionAllocation) with an Inferno Kernel status tab in the Deep Tree Echo settings screen; the kernel package is now a frontend workspace dependency
+
+### Security
+
+- Escaped user-supplied search queries before RegExp construction in DeepTreeEchoChatManager (regex injection/ReDoS)
+- Rejected shell metacharacters in AgentToolExecutor's command allowlist (prefix-anchored patterns were bypassable via command chaining)
+- Replaced Math.random()-based identifier generation with crypto.randomUUID() across AICompanionHub, connectors, and proactive messaging
+- Replaced a backtracking suggestion-parsing regex in CopilotConnector with line-based parsing and capped parsed length (polynomial ReDoS)
+- Guarded AIPlatformConnector.updatePersonality against prototype-polluting keys
+- dtecho-nakama-airi: session cookies now force Secure in production and fall back to SameSite=Lax off HTTPS; session JWT signing now fails fast when JWT_SECRET is unset (empty HMAC key was trivially forgeable)
+- Documented the autonomous bot's intentional bash execution with a CodeQL suppression and sandboxing guidance
+
+### Fixed
+
+- Deflaked ConversationTrainingGenerator: output dir is re-created at write time so concurrent test cleanup can't race createWriteStream into ENOENT
+- Repaired all 8 pre-existing failing test suites (5 in @deltecho/ui-components rewritten against current component APIs under the ESM jest preset; 3 in deltecho2 frontend incl. deterministic RAGMemoryStore ordering and named-export imports)
+- Resolved duplicate `@types/react` resolution across the workspace (packageExtensions for lucide-react/next-themes/sonner, React types pinned for both desktop apps, react/react-dom paths dedupe for dtecho-nakama-airi)
+- deltecho2 ESLint now passes with 0 errors (was 42): unused vars, jest env in mocks, var-requires in ported tests
+- @deltecho/ui-components test harness now runs under the ESM preset (jest globals shim, consistent React 18 pair); new Live2DAvatar test passes
+- Renamed entity `CommunicationStyle` re-export to `EntityCommunicationStyle` to resolve ambiguity with the persona module
+
 #### Infrastructure & Build System
 
 - Added comprehensive Jest test configuration for monorepo

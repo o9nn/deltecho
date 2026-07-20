@@ -25,6 +25,7 @@
   },
   "dependencies": {
     "@breezystack/lamejs": "^1.2.7",
+    "@deltachat-desktop/inferno-kernel": "workspace:*",
     "@deltachat-desktop/runtime-interface": "link:../runtime",
     "@deltachat-desktop/shared": "link:../shared",
     "@deltachat/jsonrpc-client": "catalog:",

@@ -37,7 +37,7 @@ async function waitForCognitiveSystem(
     })
 }
 
-async function getCognitiveState(page: Page) {
+async function _getCognitiveState(page: Page) {
   return page.evaluate(() => {
     const win = window as unknown as {
       __deepTreeEchoState?: {

@@ -31,7 +31,7 @@ async function waitForSys6System(page: Page, timeout = SYS6_LOAD_TIMEOUT) {
 }
 
 // Helper to get Sys6 state
-async function getSys6State(page: Page) {
+async function _getSys6State(page: Page) {
   return page.evaluate(() => {
     const win = window as unknown as {
       __sys6?: {

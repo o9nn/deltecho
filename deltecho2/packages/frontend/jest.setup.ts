@@ -35,6 +35,14 @@ Object.defineProperty(window, 'localStorage', { value: localStorageMock })
 window.confirm = jest.fn()
 window.alert = jest.fn()
 
+// jsdom's WebCrypto implementation lacks randomUUID; polyfill it from Node
+// so code using crypto.randomUUID() works in tests.
+// eslint-disable-next-line @typescript-eslint/no-var-requires
+const nodeCrypto = require('crypto')
+if (typeof globalThis.crypto.randomUUID !== 'function') {
+  ;(globalThis.crypto as any).randomUUID = () => nodeCrypto.randomUUID()
+}
+
 // Initialize logger for tests
 jest.mock('@deltachat-desktop/shared/logger', () => ({
   getLogger: jest.fn(() => ({

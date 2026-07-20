@@ -346,7 +346,7 @@ export class CognitiveOrchestrator {
     }
   }
 
-  private async callLLM(userMessage: string): Promise<string> {
+  private async callLLM(_userMessage: string): Promise<string> {
     if (!this.llmConfig || !this.llmConfig.apiKey) {
       throw new Error('LLM not configured')
     }

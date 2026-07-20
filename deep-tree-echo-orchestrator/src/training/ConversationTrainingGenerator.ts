@@ -141,11 +141,7 @@ export class ConversationTrainingGenerator extends EventEmitter {
     for (const conversation of conversations) {
       if (conversation.length < this.config.minTurns) continue;
 
-      const conversationExamples = this.processConversation(
-        conversation,
-        identityPrompt,
-        aarStage
-      );
+      const conversationExamples = this.processConversation(conversation, identityPrompt, aarStage);
 
       for (const example of conversationExamples) {
         // Deduplication via content hash
@@ -180,7 +176,7 @@ export class ConversationTrainingGenerator extends EventEmitter {
     // Write concept graph
     if (this.config.includeConceptExtraction) {
       const conceptFile = path.join(this.config.outputDir, 'concepts.json');
-      fs.writeFileSync(
+      this.writeFileEnsuringDir(
         conceptFile,
         JSON.stringify(
           {
@@ -196,7 +192,7 @@ export class ConversationTrainingGenerator extends EventEmitter {
 
     // Write stats
     const statsFile = path.join(this.config.outputDir, 'training_stats.json');
-    fs.writeFileSync(statsFile, JSON.stringify(this.stats, null, 2));
+    this.writeFileEnsuringDir(statsFile, JSON.stringify(this.stats, null, 2));
 
     log.info(
       `Generated ${examples.length} training examples (${this.stats.totalTokensEstimate} tokens est.)`
@@ -332,11 +328,7 @@ export class ConversationTrainingGenerator extends EventEmitter {
   /**
    * Add or update a concept in the graph.
    */
-  private addConcept(
-    label: string,
-    type: ConceptNode['type'],
-    timestamp: number
-  ): void {
+  private addConcept(label: string, type: ConceptNode['type'], timestamp: number): void {
     const id = `${type}:${label}`;
     const existing = this.concepts.get(id);
 
@@ -363,29 +355,43 @@ export class ConversationTrainingGenerator extends EventEmitter {
     const files: string[] = [];
     const timestamp = new Date().toISOString().replace(/[:.]/g, '-').slice(0, 19);
 
-    // Main training data
-    const mainFile = path.join(this.config.outputDir, `dte_training_${timestamp}.jsonl`);
-    const mainStream = fs.createWriteStream(mainFile);
+    // The output dir can disappear between construction and write (e.g. a
+    // concurrent test suite's cleanup removing a shared tmp dir); recreate it
+    // so createWriteStream never races into ENOENT.
+    fs.mkdirSync(this.config.outputDir, { recursive: true });
 
-    for (const example of examples) {
-      mainStream.write(JSON.stringify({ text: example.text }) + '\n');
-    }
-    mainStream.end();
+    // Synchronous writes: createWriteStream opens asynchronously, so a
+    // concurrently-removed output dir surfaces as an unhandled 'error' event
+    // in whatever code happens to be running. writeFileSync keeps any
+    // failure synchronous and attributable to this call.
+    const mainFile = path.join(this.config.outputDir, `dte_training_${timestamp}.jsonl`);
+    const mainContent = examples.map((ex) => JSON.stringify({ text: ex.text }) + '\n').join('');
+    this.writeFileEnsuringDir(mainFile, mainContent);
     files.push(mainFile);
 
     // Metadata file (for analysis and reservoir training)
     if (this.config.includeValence || this.config.includeAARState) {
       const metaFile = path.join(this.config.outputDir, `dte_metadata_${timestamp}.jsonl`);
-      const metaStream = fs.createWriteStream(metaFile);
-
-      for (const example of examples) {
-        metaStream.write(JSON.stringify(example.metadata) + '\n');
-      }
-      metaStream.end();
+      const metaContent = examples.map((ex) => JSON.stringify(ex.metadata) + '\n').join('');
+      this.writeFileEnsuringDir(metaFile, metaContent);
       files.push(metaFile);
     }
 
     return files;
+  }
+
+  /**
+   * Write a file, recreating its parent directory once if it vanished
+   * between the initial mkdir and this write.
+   */
+  private writeFileEnsuringDir(file: string, content: string): void {
+    try {
+      fs.writeFileSync(file, content);
+    } catch (err) {
+      if ((err as NodeJS.ErrnoException).code !== 'ENOENT') throw err;
+      fs.mkdirSync(path.dirname(file), { recursive: true });
+      fs.writeFileSync(file, content);
+    }
   }
 
   /**

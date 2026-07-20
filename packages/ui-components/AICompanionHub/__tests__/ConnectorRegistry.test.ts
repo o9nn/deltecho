@@ -1,322 +1,186 @@
 /**
  * Unit tests for ConnectorRegistry
- * Tests the AI platform connector management system
+ * Tests the AI platform connector management system.
+ *
+ * ConnectorRegistry is a singleton (private constructor) whose connectors are
+ * created from configurations via createConnector() and removed via
+ * removeConnector(). These tests exercise that API against the in-memory
+ * runtime provided by @deltecho/shared.
  */
 
-import { ConnectorRegistry } from '../ConnectorRegistry.js';
+import { ConnectorRegistry, ConnectorRegistryEvent } from '../ConnectorRegistry.js';
+import { AICapability, AIConnectorConfig } from '../connectors/BaseConnector.js';
+
+const makeConfig = (id: string, name: string, type = 'deep-tree-echo'): AIConnectorConfig => ({
+  id,
+  name,
+  type,
+  capabilities: [AICapability.TEXT_GENERATION],
+  personalityTraits: { curiosity: 0.8, empathy: 0.7 },
+});
 
 describe('ConnectorRegistry', () => {
   let registry: ConnectorRegistry;
+  const createdIds: string[] = [];
 
-  beforeEach(() => {
-    registry = new ConnectorRegistry();
+  const createConnector = async (config: AIConnectorConfig) => {
+    const connector = await registry.createConnector(config);
+    createdIds.push(config.id);
+    return connector;
+  };
+
+  beforeAll(async () => {
+    registry = ConnectorRegistry.getInstance();
+    await registry.initialize();
+  });
+
+  afterEach(async () => {
+    // Remove connectors created during the test to keep the singleton clean
+    while (createdIds.length > 0) {
+      const id = createdIds.pop();
+      if (id) await registry.removeConnector(id);
+    }
   });
 
   describe('initialization', () => {
-    it('should create an empty registry', () => {
+    it('should expose a singleton instance', () => {
       expect(registry).toBeDefined();
-      expect(registry.getConnectors()).toEqual([]);
+      expect(ConnectorRegistry.getInstance()).toBe(registry);
+    });
+
+    it('should start with no connectors', () => {
+      expect(registry.getAllConnectors()).toEqual([]);
     });
   });
 
-  describe('connector registration', () => {
-    it('should register a connector', () => {
-      const connector = {
-        id: 'test-connector',
-        name: 'Test Connector',
-        type: 'llm' as const,
-        connect: jest.fn(),
-        disconnect: jest.fn(),
-        sendMessage: jest.fn(),
-        isConnected: jest.fn().mockReturnValue(false),
-      };
+  describe('connector creation', () => {
+    it('should create a connector from a configuration', async () => {
+      const connector = await createConnector(makeConfig('test-connector', 'Test Connector'));
 
-      registry.register(connector);
-      const connectors = registry.getConnectors();
-
-      expect(connectors.length).toBe(1);
-      expect(connectors[0].id).toBe('test-connector');
+      expect(connector).toBeDefined();
+      expect(registry.getAllConnectors().length).toBe(1);
+      expect(registry.getConnector('test-connector')).toBe(connector);
     });
 
-    it('should register multiple connectors', () => {
-      const connectors = [
-        {
-          id: 'connector-1',
-          name: 'Connector 1',
-          type: 'llm' as const,
-          connect: jest.fn(),
-          disconnect: jest.fn(),
-          sendMessage: jest.fn(),
-          isConnected: jest.fn().mockReturnValue(false),
-        },
-        {
-          id: 'connector-2',
-          name: 'Connector 2',
-          type: 'llm' as const,
-          connect: jest.fn(),
-          disconnect: jest.fn(),
-          sendMessage: jest.fn(),
-          isConnected: jest.fn().mockReturnValue(false),
-        },
-      ];
+    it('should create multiple connectors', async () => {
+      await createConnector(makeConfig('connector-1', 'Connector 1'));
+      await createConnector(makeConfig('connector-2', 'Connector 2'));
 
-      connectors.forEach((c) => registry.register(c));
-
-      expect(registry.getConnectors().length).toBe(2);
+      expect(registry.getAllConnectors().length).toBe(2);
     });
 
-    it('should replace connector with same id', () => {
-      const connector1 = {
-        id: 'same-id',
-        name: 'Original',
-        type: 'llm' as const,
-        connect: jest.fn(),
-        disconnect: jest.fn(),
-        sendMessage: jest.fn(),
-        isConnected: jest.fn().mockReturnValue(false),
-      };
+    it('should reject a duplicate connector id', async () => {
+      await createConnector(makeConfig('same-id', 'Original'));
 
-      const connector2 = {
-        id: 'same-id',
-        name: 'Replacement',
-        type: 'llm' as const,
-        connect: jest.fn(),
-        disconnect: jest.fn(),
-        sendMessage: jest.fn(),
-        isConnected: jest.fn().mockReturnValue(false),
-      };
+      await expect(registry.createConnector(makeConfig('same-id', 'Replacement'))).rejects.toThrow(
+        /already exists/
+      );
+    });
 
-      registry.register(connector1);
-      registry.register(connector2);
-
-      const connectors = registry.getConnectors();
-      expect(connectors.length).toBe(1);
-      expect(connectors[0].name).toBe('Replacement');
+    it('should reject an unknown connector type', async () => {
+      await expect(
+        registry.createConnector(makeConfig('bad-type', 'Bad Type', 'not-a-real-type'))
+      ).rejects.toThrow(/Unknown connector type/);
     });
   });
 
   describe('connector retrieval', () => {
-    beforeEach(() => {
-      const connectors = [
-        {
-          id: 'openai',
-          name: 'OpenAI',
-          type: 'llm' as const,
-          connect: jest.fn(),
-          disconnect: jest.fn(),
-          sendMessage: jest.fn(),
-          isConnected: jest.fn().mockReturnValue(true),
-        },
-        {
-          id: 'claude',
-          name: 'Claude',
-          type: 'llm' as const,
-          connect: jest.fn(),
-          disconnect: jest.fn(),
-          sendMessage: jest.fn(),
-          isConnected: jest.fn().mockReturnValue(false),
-        },
-      ];
-      connectors.forEach((c) => registry.register(c));
-    });
+    it('should get connector by id', async () => {
+      const connector = await createConnector(makeConfig('openai', 'OpenAI'));
 
-    it('should get connector by id', () => {
-      const connector = registry.getConnector('openai');
-
-      expect(connector).toBeDefined();
-      expect(connector?.name).toBe('OpenAI');
+      expect(registry.getConnector('openai')).toBe(connector);
     });
 
     it('should return undefined for non-existent id', () => {
-      const connector = registry.getConnector('non-existent');
-
-      expect(connector).toBeUndefined();
+      expect(registry.getConnector('non-existent')).toBeUndefined();
     });
 
-    it('should get all connectors', () => {
-      const connectors = registry.getConnectors();
+    it('should report connector info including offline status', async () => {
+      await createConnector(makeConfig('info-connector', 'Info Connector'));
 
-      expect(connectors.length).toBe(2);
+      const infos = await registry.getConnectorInfos();
+      const info = infos.find((i) => i.id === 'info-connector');
+
+      expect(info).toBeDefined();
+      expect(info?.name).toBe('Info Connector');
+      expect(info?.type).toBe('deep-tree-echo');
+      expect(info?.status).toBe('offline');
+      expect(info?.conversationCount).toBe(0);
+    });
+  });
+
+  describe('connector updates', () => {
+    it('should update a connector configuration', async () => {
+      await createConnector(makeConfig('to-update', 'Before Update'));
+
+      await registry.updateConnector('to-update', { name: 'After Update' });
+
+      const infos = await registry.getConnectorInfos();
+      const info = infos.find((i) => i.id === 'to-update');
+      expect(info?.name).toBe('After Update');
     });
 
-    it('should get connected connectors', () => {
-      const connected = registry.getConnectedConnectors();
-
-      expect(connected.length).toBe(1);
-      expect(connected[0].id).toBe('openai');
+    it('should reject updates for unknown connectors', async () => {
+      await expect(registry.updateConnector('non-existent', { name: 'Nope' })).rejects.toThrow(
+        /not found/
+      );
     });
   });
 
   describe('connector removal', () => {
-    it('should remove a connector', () => {
-      const connector = {
-        id: 'to-remove',
-        name: 'To Remove',
-        type: 'llm' as const,
-        connect: jest.fn(),
-        disconnect: jest.fn(),
-        sendMessage: jest.fn(),
-        isConnected: jest.fn().mockReturnValue(false),
-      };
+    it('should remove a connector', async () => {
+      await createConnector(makeConfig('to-remove', 'To Remove'));
+      expect(registry.getAllConnectors().length).toBe(1);
 
-      registry.register(connector);
-      expect(registry.getConnectors().length).toBe(1);
+      const removed = await registry.removeConnector('to-remove');
 
-      registry.unregister('to-remove');
-      expect(registry.getConnectors().length).toBe(0);
+      expect(removed).toBe(true);
+      expect(registry.getConnector('to-remove')).toBeUndefined();
+      expect(registry.getAllConnectors().length).toBe(0);
     });
 
-    it('should do nothing when removing non-existent connector', () => {
-      registry.unregister('non-existent');
-      expect(registry.getConnectors().length).toBe(0);
-    });
-  });
+    it('should return false when removing a non-existent connector', async () => {
+      const removed = await registry.removeConnector('non-existent');
 
-  describe('connector lifecycle', () => {
-    it('should connect all connectors', async () => {
-      const connector1 = {
-        id: 'c1',
-        name: 'C1',
-        type: 'llm' as const,
-        connect: jest.fn().mockResolvedValue(true),
-        disconnect: jest.fn(),
-        sendMessage: jest.fn(),
-        isConnected: jest.fn().mockReturnValue(false),
-      };
-
-      const connector2 = {
-        id: 'c2',
-        name: 'C2',
-        type: 'llm' as const,
-        connect: jest.fn().mockResolvedValue(true),
-        disconnect: jest.fn(),
-        sendMessage: jest.fn(),
-        isConnected: jest.fn().mockReturnValue(false),
-      };
-
-      registry.register(connector1);
-      registry.register(connector2);
-
-      await registry.connectAll();
-
-      expect(connector1.connect).toHaveBeenCalled();
-      expect(connector2.connect).toHaveBeenCalled();
-    });
-
-    it('should disconnect all connectors', async () => {
-      const connector = {
-        id: 'c1',
-        name: 'C1',
-        type: 'llm' as const,
-        connect: jest.fn(),
-        disconnect: jest.fn().mockResolvedValue(undefined),
-        sendMessage: jest.fn(),
-        isConnected: jest.fn().mockReturnValue(true),
-      };
-
-      registry.register(connector);
-      await registry.disconnectAll();
-
-      expect(connector.disconnect).toHaveBeenCalled();
-    });
-
-    it('should handle connection failures gracefully', async () => {
-      const failingConnector = {
-        id: 'failing',
-        name: 'Failing',
-        type: 'llm' as const,
-        connect: jest.fn().mockRejectedValue(new Error('Connection failed')),
-        disconnect: jest.fn(),
-        sendMessage: jest.fn(),
-        isConnected: jest.fn().mockReturnValue(false),
-      };
-
-      registry.register(failingConnector);
-
-      // Should not throw
-      await expect(registry.connectAll()).resolves.not.toThrow();
+      expect(removed).toBe(false);
     });
   });
 
   describe('message routing', () => {
-    it('should send message through specific connector', async () => {
-      const connector = {
-        id: 'router',
-        name: 'Router',
-        type: 'llm' as const,
-        connect: jest.fn(),
-        disconnect: jest.fn(),
-        sendMessage: jest.fn().mockResolvedValue({ content: 'Response' }),
-        isConnected: jest.fn().mockReturnValue(true),
-      };
-
-      registry.register(connector);
-
-      const response = await registry.sendMessage('router', 'Hello');
-
-      expect(connector.sendMessage).toHaveBeenCalledWith('Hello');
-      expect(response).toEqual({ content: 'Response' });
-    });
-
-    it('should throw for non-existent connector', async () => {
-      await expect(registry.sendMessage('non-existent', 'Hello')).rejects.toThrow();
-    });
-
-    it('should throw for disconnected connector', async () => {
-      const connector = {
-        id: 'disconnected',
-        name: 'Disconnected',
-        type: 'llm' as const,
-        connect: jest.fn(),
-        disconnect: jest.fn(),
-        sendMessage: jest.fn(),
-        isConnected: jest.fn().mockReturnValue(false),
-      };
-
-      registry.register(connector);
-
-      await expect(registry.sendMessage('disconnected', 'Hello')).rejects.toThrow();
+    it('should reject sending through a non-existent connector', async () => {
+      await expect(registry.sendMessage('non-existent', 'conv-1', 'Hello')).rejects.toThrow(
+        /not found/
+      );
     });
   });
 
   describe('events', () => {
-    it('should emit connector registered event', () => {
+    it('should emit an event when a connector is added', async () => {
       const listener = jest.fn();
-      registry.on('connectorRegistered', listener);
+      registry.on(ConnectorRegistryEvent.CONNECTOR_ADDED, listener);
 
-      const connector = {
-        id: 'new',
-        name: 'New',
-        type: 'llm' as const,
-        connect: jest.fn(),
-        disconnect: jest.fn(),
-        sendMessage: jest.fn(),
-        isConnected: jest.fn().mockReturnValue(false),
-      };
+      await createConnector(makeConfig('event-add', 'Event Add'));
 
-      registry.register(connector);
+      expect(listener).toHaveBeenCalledWith({
+        id: 'event-add',
+        type: 'deep-tree-echo',
+        name: 'Event Add',
+      });
 
-      expect(listener).toHaveBeenCalledWith({ connector });
+      registry.off(ConnectorRegistryEvent.CONNECTOR_ADDED, listener);
     });
 
-    it('should emit connector unregistered event', () => {
+    it('should emit an event when a connector is removed', async () => {
       const listener = jest.fn();
-      registry.on('connectorUnregistered', listener);
+      registry.on(ConnectorRegistryEvent.CONNECTOR_REMOVED, listener);
 
-      const connector = {
-        id: 'to-remove',
-        name: 'To Remove',
-        type: 'llm' as const,
-        connect: jest.fn(),
-        disconnect: jest.fn(),
-        sendMessage: jest.fn(),
-        isConnected: jest.fn().mockReturnValue(false),
-      };
+      await createConnector(makeConfig('event-remove', 'Event Remove'));
+      await registry.removeConnector('event-remove');
+      createdIds.pop();
 
-      registry.register(connector);
-      registry.unregister('to-remove');
+      expect(listener).toHaveBeenCalledWith({ id: 'event-remove' });
 
-      expect(listener).toHaveBeenCalledWith({ connectorId: 'to-remove' });
+      registry.off(ConnectorRegistryEvent.CONNECTOR_REMOVED, listener);
     });
   });
 });

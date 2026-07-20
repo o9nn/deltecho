@@ -4,6 +4,16 @@
  */
 
 import '@testing-library/jest-dom';
+import { jest } from '@jest/globals';
+import { setLogHandler } from '@deltecho/shared/logger';
+
+// Under the ESM preset (--experimental-vm-modules) jest globals are not
+// injected, so expose the imported jest object for all test files.
+(globalThis as any).jest = jest;
+
+// Initialize the shared logger with a no-op handler so components that
+// call getLogger() can log without throwing during tests.
+setLogHandler(() => {}, { 'log-debug': false, 'log-to-console': false } as any);
 
 // Mock fetch globally for tests
 global.fetch = jest.fn(() =>
