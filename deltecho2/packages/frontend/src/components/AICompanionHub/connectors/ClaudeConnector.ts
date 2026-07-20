@@ -295,9 +295,19 @@ export class ClaudeConnector extends BaseConnector {
       // This is a simplified implementation - in production, use a more robust approach
       if (content.includes('```json') && functions && functions.length > 0) {
         try {
-          const jsonMatch = content.match(/```json\n([\s\S]*?)\n```/)
-          if (jsonMatch && jsonMatch[1]) {
-            const parsedJson = JSON.parse(jsonMatch[1])
+          // Linear fence extraction via indexOf (a lazy [\s\S]*? regex over
+          // attacker-influenced model output backtracks super-linearly —
+          // js/polynomial-redos)
+          const fenceOpen = '```json\n'
+          const fenceClose = '\n```'
+          const openIdx = content.indexOf(fenceOpen)
+          const closeIdx =
+            openIdx >= 0
+              ? content.indexOf(fenceClose, openIdx + fenceOpen.length)
+              : -1
+          if (openIdx >= 0 && closeIdx >= 0) {
+            const jsonBody = content.slice(openIdx + fenceOpen.length, closeIdx)
+            const parsedJson = JSON.parse(jsonBody)
             if (parsedJson.function && parsedJson.arguments) {
               functionCall = {
                 name: parsedJson.function,
@@ -305,10 +315,10 @@ export class ClaudeConnector extends BaseConnector {
               }
 
               // Optionally remove the function call from the content
-              content = content.replace(
-                /```json\n[\s\S]*?\n```/,
-                `[Function call: ${parsedJson.function}]`
-              )
+              content =
+                content.slice(0, openIdx) +
+                `[Function call: ${parsedJson.function}]` +
+                content.slice(closeIdx + fenceClose.length)
             }
           }
         } catch (e) {

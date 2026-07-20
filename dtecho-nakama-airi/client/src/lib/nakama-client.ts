@@ -2,7 +2,7 @@
  * Nakama Client Service
  * Wraps @heroiclabs/nakama-js for WebSocket communication,
  * match management, chat, and real-time state synchronization.
- * 
+ *
  * Derived from: ReZorg/nakama integration
  */
 
@@ -42,11 +42,13 @@ export type NakamaEventHandler = {
   onError?: (error: string) => void;
 };
 
+// Local-dev defaults; every field is overridable via Vite env so the
+// well-known public Nakama server key is not the only configuration path.
 const DEFAULT_CONFIG: NakamaConfig = {
-  host: "127.0.0.1",
-  port: "7350",
-  serverKey: "defaultkey",
-  useSSL: false,
+  host: import.meta.env.VITE_NAKAMA_HOST ?? "127.0.0.1",
+  port: import.meta.env.VITE_NAKAMA_PORT ?? "7350",
+  serverKey: import.meta.env.VITE_NAKAMA_SERVER_KEY ?? "defaultkey",
+  useSSL: import.meta.env.VITE_NAKAMA_USE_SSL === "true",
 };
 
 export class NakamaService {
@@ -95,7 +97,7 @@ export class NakamaService {
         this.handlers.onDisconnect?.();
       };
 
-      this.socket.onmatchpresence = (event) => {
+      this.socket.onmatchpresence = event => {
         if (event.joins) {
           const joins: PresenceInfo[] = event.joins.map((p: any) => ({
             userId: p.user_id,
@@ -118,16 +120,22 @@ export class NakamaService {
         }
       };
 
-      this.socket.onmatchdata = (matchData) => {
+      this.socket.onmatchdata = matchData => {
         try {
-          const data = JSON.parse(new TextDecoder().decode(matchData.data as Uint8Array));
-          this.handlers.onMatchState?.(matchData.op_code, data, matchData.presence?.user_id || "");
+          const data = JSON.parse(
+            new TextDecoder().decode(matchData.data as Uint8Array)
+          );
+          this.handlers.onMatchState?.(
+            matchData.op_code,
+            data,
+            matchData.presence?.user_id || ""
+          );
         } catch {
           // ignore parse errors
         }
       };
 
-      this.socket.onchannelmessage = (msg) => {
+      this.socket.onchannelmessage = msg => {
         try {
           const content = msg.content ? JSON.parse(msg.content as string) : {};
           this.handlers.onChatMessage?.(
@@ -150,12 +158,19 @@ export class NakamaService {
     }
   }
 
-  async joinOrCreateMatch(matchName: string = "dtecho-cognitive"): Promise<string | null> {
+  async joinOrCreateMatch(
+    matchName: string = "dtecho-cognitive"
+  ): Promise<string | null> {
     if (!this.socket || !this.session) return null;
 
     try {
       // Try to find an existing match
-      const result = await this.client.listMatches(this.session, 1, true, matchName);
+      const result = await this.client.listMatches(
+        this.session,
+        1,
+        true,
+        matchName
+      );
       if (result.matches && result.matches.length > 0) {
         const match = await this.socket.joinMatch(result.matches[0].match_id);
         this.matchId = match.match_id;

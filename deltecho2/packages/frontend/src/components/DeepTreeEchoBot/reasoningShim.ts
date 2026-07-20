@@ -321,7 +321,11 @@ export class DuckDBAdapter {
   ): Promise<T[]> {
     if (!this.initialized) await this.initialize()
 
-    const outgoingMatch = sqlQuery.match(/\$\.outgoing'\)\s+LIKE\s+'%(.+?)%'/i)
+    // Body restricted to a negated class (no lazy .+? over attacker-influenced
+    // query text) so the match stays linear — js/polynomial-redos
+    const outgoingMatch = sqlQuery.match(
+      /\$\.outgoing'\)\s+LIKE\s+'%([^%']*)%'/i
+    )
     if (outgoingMatch) {
       const target = outgoingMatch[1]
       return Array.from(this.records.values()).filter(r => {
