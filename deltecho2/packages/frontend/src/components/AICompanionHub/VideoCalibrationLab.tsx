@@ -27,7 +27,10 @@ const VIDEO_FILES = [
 ]
 
 export const VideoCalibrationLab: React.FC = () => {
-  const [selectedVideo, setSelectedVideo] = useState(VIDEO_FILES[0])
+  // Track the selection as an index into the hardcoded VIDEO_FILES list so
+  // DOM-sourced text never flows into the video src (CodeQL js/xss-through-dom)
+  const [selectedVideoIndex, setSelectedVideoIndex] = useState(0)
+  const selectedVideo = VIDEO_FILES[selectedVideoIndex] ?? VIDEO_FILES[0]
 
   const [isPlaying, setIsPlaying] = useState(false)
   const [audioLevel, setAudioLevel] = useState(0)
@@ -165,16 +168,23 @@ export const VideoCalibrationLab: React.FC = () => {
           </div>
           <div className='video-controls'>
             <select
-              value={selectedVideo}
+              value={selectedVideoIndex}
               onChange={e => {
-                setSelectedVideo(e.target.value)
+                const index = Number(e.target.value)
+                if (
+                  Number.isInteger(index) &&
+                  index >= 0 &&
+                  index < VIDEO_FILES.length
+                ) {
+                  setSelectedVideoIndex(index)
+                }
                 setIsPlaying(false)
               }}
               className='video-selector'
               aria-label='Select reference video'
             >
-              {VIDEO_FILES.map(file => (
-                <option key={file} value={file}>
+              {VIDEO_FILES.map((file, index) => (
+                <option key={file} value={index}>
                   {file}
                 </option>
               ))}
