@@ -1,0 +1,168 @@
+name: E2E Test Series
+
+# Rigorous, verbose, parallel run of EVERY E2E suite across both desktop apps.
+# Each suite runs independently (fail-fast: false), captures its full log, and
+# the aggregation job writes a tracked progress ledger under `e2e-logs/`.
+#
+# This is a TRACKING workflow, not a merge gate — the merge gate is the
+# `cognitive-e2e` job in ci.yml. Suites that need the full Delta Chat backend
+# will surface their true state (fail / honest skip); that is the point.
+
+on:
+  workflow_dispatch:
+    inputs:
+      commit_logs:
+        description: 'Commit logs to e2e-logs/ (main only)'
+        type: boolean
+        default: true
+  schedule:
+    - cron: '0 6 * * *' # nightly, 06:00 UTC
+  push:
+    branches: [main]
+    paths:
+      - 'deltecho2/packages/e2e-tests/**'
+      - 'delta-echo-desk/packages/e2e-tests/**'
+      - '.github/workflows/e2e.yml'
+      - '.github/scripts/e2e-*.mjs'
+
+permissions:
+  contents: write
+
+concurrency:
+  group: e2e-series-${{ github.ref }}
+  cancel-in-progress: true
+
+env:
+  NODE_VERSION: '22.x'
+  PNPM_VERSION: '9.6.0'
+
+jobs:
+  # Discover every *.spec.ts across both apps → matrix (one entry per suite).
+  discover:
+    name: Discover suites
+    runs-on: ubuntu-latest
+    outputs:
+      matrix: ${{ steps.set.outputs.matrix }}
+    steps:
+      - uses: actions/checkout@v4
+      - name: Build suite matrix
+        id: set
+        run: node .github/scripts/e2e-matrix.mjs
+
+  # Run each suite in parallel, verbose, capturing a full per-suite log.
+  suite:
+    name: E2E ${{ matrix.app }} / ${{ matrix.suite }}
+    needs: discover
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    strategy:
+      fail-fast: false
+      max-parallel: 6
+      matrix: ${{ fromJSON(needs.discover.outputs.matrix) }}
+    env:
+      CI: true
+      NODE_TLS_REJECT_UNAUTHORIZED: '0'
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Setup pnpm
+        uses: pnpm/action-setup@v5
+        with:
+          version: ${{ env.PNPM_VERSION }}
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          cache: 'pnpm'
+
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile
+
+      - name: Install Playwright Chromium
+        run: pnpm exec playwright install --with-deps chromium
+        working-directory: ${{ matrix.dir }}
+
+      - name: Run suite (verbose, capture log)
+        id: run
+        working-directory: ${{ matrix.dir }}
+        run: |
+          set -o pipefail
+          mkdir -p "$GITHUB_WORKSPACE/e2e-artifacts"
+          LOG="$GITHUB_WORKSPACE/e2e-artifacts/output.log"
+          echo "== ${{ matrix.app }} / ${{ matrix.suite }} ==" | tee "$LOG"
+          echo "command: ${{ matrix.cmd }}" | tee -a "$LOG"
+          echo "" | tee -a "$LOG"
+          ${{ matrix.cmd }} 2>&1 | tee -a "$LOG"
+          code=${PIPESTATUS[0]}
+          echo "exit_code=$code" >> "$GITHUB_OUTPUT"
+          echo "" | tee -a "$LOG"
+          echo "exit code: $code" | tee -a "$LOG"
+          # Never fail this step; the true status is reflected by a later step.
+          exit 0
+
+      - name: Parse result
+        run: |
+          node .github/scripts/e2e-parse.mjs \
+            "$GITHUB_WORKSPACE/e2e-artifacts/output.log" \
+            "${{ matrix.app }}" "${{ matrix.suite }}" "${{ matrix.spec }}" \
+            "${{ steps.run.outputs.exit_code }}" \
+            "$GITHUB_WORKSPACE/e2e-artifacts/result.json"
+
+      - name: Upload suite artifact
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: e2e-${{ matrix.app }}-${{ matrix.suite }}
+          path: e2e-artifacts/
+          retention-days: 14
+
+      - name: Reflect true suite status
+        run: |
+          echo "Suite exit code was ${{ steps.run.outputs.exit_code }}"
+          exit ${{ steps.run.outputs.exit_code }}
+
+  # Collect all suite artifacts → tracked ledger under e2e-logs/, commit it.
+  aggregate:
+    name: Aggregate & record progress
+    needs: suite
+    if: always()
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+
+      - name: Download all suite artifacts
+        uses: actions/download-artifact@v4
+        with:
+          path: e2e-download
+          pattern: e2e-*
+
+      - name: Aggregate into e2e-logs/
+        run: |
+          export E2E_RUN_TIMESTAMP="$(date -u +%Y-%m-%dT%H:%M:%SZ)"
+          node .github/scripts/e2e-aggregate.mjs e2e-download
+
+      - name: Publish run summary
+        run: cat e2e-logs/latest/summary.md >> "$GITHUB_STEP_SUMMARY"
+
+      - name: Commit logs to e2e-logs/ (main only)
+        if: >-
+          github.event_name != 'pull_request' &&
+          github.ref == 'refs/heads/main' &&
+          github.repository == 'o9nn/deltecho' &&
+          (github.event_name != 'workflow_dispatch' || inputs.commit_logs)
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          git add e2e-logs/
+          if git diff --cached --quiet; then
+            echo "No e2e-logs changes to commit."
+          else
+            git commit -m "chore(e2e-logs): record run ${{ github.run_id }} [skip ci]"
+            git push
+          fi
