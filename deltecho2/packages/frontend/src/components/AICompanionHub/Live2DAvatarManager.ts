@@ -46,12 +46,23 @@ export interface Live2DAvatarManagerProps {
   debug?: boolean
 }
 
-// Runtime scripts, loaded lazily and only once per page.
+// Runtime scripts, loaded lazily and only once per page. Each is pinned and
+// carries a subresource-integrity hash so a compromised or updated CDN file
+// fails closed (the avatar falls back to the sprite renderer).
 const CUBISM_CORE_URL =
   'https://cubism.live2d.com/sdk-web/cubismcore/live2dcubismcore.min.js'
 const PIXI_URL = 'https://cdn.jsdelivr.net/npm/pixi.js@7.4.2/dist/pixi.min.js'
 const PIXI_LIVE2D_URL =
   'https://cdn.jsdelivr.net/npm/pixi-live2d-display-lipsyncpatch@0.5.0-ls-8/dist/cubism4.min.js'
+
+const SCRIPT_INTEGRITY: Record<string, string> = {
+  [CUBISM_CORE_URL]:
+    'sha384-MeKqhuhBpq1ZqqshjOzqDOQJ/00BuDVdnNeYgPKul9hmgROzmT17WkmUeFJ9Jlrb',
+  [PIXI_URL]:
+    'sha384-9oZ4NtPN/IdabMfsgMnEAm+FTH+xpnGN/C33Kz3OdcRyh9aaO2N6PuIONCebF1jh',
+  [PIXI_LIVE2D_URL]:
+    'sha384-GkO2hT7gHhS+ECYnxRuXTrUiHyy2GMS4QuBXKaB7V6f63sbvGUng7+lBv+9x0fkU',
+}
 
 const SCRIPT_LOAD_TIMEOUT_MS = 20000
 
@@ -68,6 +79,11 @@ function loadScript(src: string): Promise<void> {
     }
     const script = document.createElement('script')
     script.src = src
+    const integrity = SCRIPT_INTEGRITY[src]
+    if (integrity) {
+      script.integrity = integrity
+      script.crossOrigin = 'anonymous'
+    }
     script.async = true
     const timeout = setTimeout(() => {
       script.remove()

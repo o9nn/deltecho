@@ -13,13 +13,21 @@ import { useState, useEffect, useRef } from 'react';
 import type { ScriptLoadState } from './types.js';
 
 const DEFAULT_URLS = {
-  cubismCore:
-    'https://cubism.live2d.com/sdk-web/cubismcore/live2dcubismcore.min.js',
-  pixi:
-    'https://cdn.jsdelivr.net/npm/pixi.js-legacy@6.5.2/dist/browser/pixi-legacy.min.js',
-  pixiLive2D:
-    'https://cdn.jsdelivr.net/npm/pixi-live2d-display/dist/index.min.js',
+  cubismCore: 'https://cubism.live2d.com/sdk-web/cubismcore/live2dcubismcore.min.js',
+  pixi: 'https://cdn.jsdelivr.net/npm/pixi.js-legacy@6.5.2/dist/browser/pixi-legacy.min.js',
+  pixiLive2D: 'https://cdn.jsdelivr.net/npm/pixi-live2d-display@0.4.0/dist/index.min.js',
 } as const;
+
+// Subresource-integrity hashes for the pinned default URLs so a compromised
+// or silently-updated CDN file fails closed. Caller-supplied override URLs
+// have no pinned hash and load without one (the consumer owns that risk).
+const DEFAULT_INTEGRITY: Record<string, string> = {
+  [DEFAULT_URLS.cubismCore]:
+    'sha384-MeKqhuhBpq1ZqqshjOzqDOQJ/00BuDVdnNeYgPKul9hmgROzmT17WkmUeFJ9Jlrb',
+  [DEFAULT_URLS.pixi]: 'sha384-+jjSMTS6TK1RBBCISfElV8nTiV6pq1q+1rDMG7LO8WPVRud5U1CJlRJjpTGCIX8d',
+  [DEFAULT_URLS.pixiLive2D]:
+    'sha384-Ukg4e48mEdLvXx4ipNmtVmWcMoKjgs89aotHN/5CB3Bj77JPioyjXXYORMiunxFz',
+};
 
 // Global de-duplication across component instances
 const loadedScripts = new Set<string>();
@@ -32,6 +40,11 @@ function loadScript(src: string): Promise<void> {
   const promise = new Promise<void>((resolve, reject) => {
     const el = document.createElement('script');
     el.src = src;
+    const integrity = DEFAULT_INTEGRITY[src];
+    if (integrity) {
+      el.integrity = integrity;
+      el.crossOrigin = 'anonymous';
+    }
     el.async = false; // preserve evaluation order
     el.onload = () => {
       loadedScripts.add(src);

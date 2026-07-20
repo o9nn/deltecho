@@ -87,12 +87,13 @@ const tools: Anthropic.Tool[] = [
 
 async function executeCommand(command: string): Promise<string> {
   try {
-    // codeql[js/command-line-injection] -- Executing model-authored bash is
-    // this bot's documented purpose (see CLAUDE.md "Tool Use"). Deploy the
-    // bot in a sandbox (container / unprivileged user / limited egress);
-    // runtime guards: 30s timeout, 10MB buffer, tool-recursion cap, and it
-    // only responds to 1:1 chats.
-    const { stdout, stderr } = await execAsync(command, {
+    // Executing model-authored bash is this bot's documented purpose (see
+    // CLAUDE.md "Tool Use"). Deploy the bot in a sandbox (container /
+    // unprivileged user / limited egress); runtime guards: 30s timeout,
+    // 10MB buffer, tool-recursion cap, and it only responds to 1:1 chats.
+    // The suppression must sit on the alert line itself:
+    // prettier-ignore
+    const { stdout, stderr } = await execAsync(command, { // codeql[js/command-line-injection] intentional: model-driven bash tool, sandboxed deployment documented above
       cwd: process.cwd(),
       maxBuffer: MAX_OUTPUT_BUFFER,
       timeout: COMMAND_TIMEOUT_MS,
