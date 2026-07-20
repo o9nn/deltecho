@@ -135,6 +135,20 @@ jest.unstable_mockModule('../dove9-integration.js', () => ({
   })),
 }));
 
+jest.unstable_mockModule('../entelechy-integration.js', () => ({
+  EntelechyIntegration: jest.fn().mockImplementation(() => ({
+    start: jest.fn<() => Promise<void>>().mockResolvedValue(undefined),
+    stop: jest.fn<() => Promise<void>>().mockResolvedValue(undefined),
+    isRunning: jest.fn().mockReturnValue(false),
+    restore: jest.fn(),
+    serialize: jest.fn().mockReturnValue({}),
+    describeState: jest.fn().mockReturnValue('Mock entelechy state'),
+    on: jest.fn(),
+    getLastSnapshot: jest.fn().mockReturnValue(null),
+    takeSnapshot: jest.fn().mockReturnValue(null),
+  })),
+}));
+
 jest.unstable_mockModule('../proactive-loop.js', () => ({
   ProactivePhase: {
     IDLE: 'IDLE',
