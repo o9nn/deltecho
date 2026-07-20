@@ -22,6 +22,7 @@ module.exports = {
   collectCoverageFrom: [
     'DeepTreeEchoBot/**/*.{ts,tsx}',
     'AICompanionHub/**/*.{ts,tsx}',
+    'Live2DAvatar/**/*.{ts,tsx}',
     '!**/*.d.ts',
     '!**/node_modules/**',
     '!**/__tests__/**',

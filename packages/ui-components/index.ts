@@ -21,3 +21,6 @@ export * from './AICompanionHub/ConnectorRegistry.js';
 export * from './AICompanionHub/MemoryPersistenceLayer.js';
 export * from './AICompanionHub/MemoryVisualization.js';
 export * from './AICompanionHub/AtomSpaceTypes.js';
+
+// Export Live2D Avatar components
+export * from './Live2DAvatar/index.js';

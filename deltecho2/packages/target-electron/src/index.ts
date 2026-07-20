@@ -138,6 +138,7 @@ import {
   cleanupInternalTempDirs,
 } from './cleanup_temp_dir.js'
 import { initCognitiveStorage } from './cognitive-storage.js'
+import { initCognitiveEngine } from './cognitive-engine.js'
 
 app.ipcReady = false
 app.isQuitting = false
@@ -163,6 +164,7 @@ Also make sure you are not trying to run multiple instances of deltachat.`
 
 let ipc_shutdown_function: (() => void) | null = null
 let cognitive_storage_cleanup: (() => Promise<void>) | null = null
+let cognitive_engine_cleanup: (() => Promise<void>) | null = null
 
 async function onReady([_appReady, _loadedState, _appx, _webxdc_cleanup]: [
   any,
@@ -185,6 +187,14 @@ async function onReady([_appReady, _loadedState, _appx, _webxdc_cleanup]: [
     log.info('Cognitive storage initialized')
   } catch (error) {
     log.error('Failed to initialize cognitive storage:', error)
+  }
+
+  // Initialize Dove9 cognitive engine in the main process
+  try {
+    cognitive_engine_cleanup = await initCognitiveEngine()
+    log.info('Cognitive engine (Dove9) initialized')
+  } catch (error) {
+    log.error('Failed to initialize cognitive engine:', error)
   }
 
   mainWindow.init({ hidden: app.rc['minimized'] })
@@ -271,6 +281,13 @@ export function quit(e?: Electron.Event) {
   if (cognitive_storage_cleanup) {
     cognitive_storage_cleanup().catch(err =>
       log.error('Failed to cleanup cognitive storage:', err)
+    )
+  }
+
+  // Cleanup cognitive engine (Dove9)
+  if (cognitive_engine_cleanup) {
+    cognitive_engine_cleanup().catch(err =>
+      log.error('Failed to cleanup cognitive engine:', err)
     )
   }
 

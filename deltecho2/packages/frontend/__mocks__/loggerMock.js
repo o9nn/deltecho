@@ -1,3 +1,4 @@
+/* eslint-env jest */
 module.exports = {
   getLogger: jest.fn(() => ({
     info: jest.fn(),

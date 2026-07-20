@@ -1,3 +1,4 @@
+/* eslint-env jest */
 module.exports = {
   throttle: jest.fn((func, wait) => {
     let timeout

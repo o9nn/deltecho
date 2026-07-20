@@ -128,7 +128,7 @@ async function runFullDemo() {
   })
 
   // Define simple fitness function
-  const fitnessFunc = (program: any) => {
+  const fitnessFunc = (_program: any) => {
     // Simple fitness based on program complexity
     return Math.random() * 0.5 + 0.3
   }
@@ -210,9 +210,9 @@ async function runFullDemo() {
 
   // 10. Cognitive Processes
   console.log('\n10. Cognitive Processes...')
-  const reasoningPid = kernel.createCognitiveProcess('reasoning', 10)
-  const learningPid = kernel.createCognitiveProcess('learning', 8)
-  const attentionPid = kernel.createCognitiveProcess('attention', 7)
+  const _reasoningPid = kernel.createCognitiveProcess('reasoning', 10)
+  const _learningPid = kernel.createCognitiveProcess('learning', 8)
+  const _attentionPid = kernel.createCognitiveProcess('attention', 7)
 
   console.log('Active cognitive processes:')
   for (const proc of kernel.listProcesses()) {

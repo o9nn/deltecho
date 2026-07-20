@@ -19,6 +19,7 @@ import useDialog from '../../hooks/dialog/useDialog'
 import useTranslationFunction from '../../hooks/useTranslationFunction'
 import BotSettings from './BotSettings'
 import DeepTreeEchoHubSimple from '../DeepTreeEchoBot/DeepTreeEchoHubSimple'
+import AICompanionSettings from '../Settings/AICompanionSettings'
 
 import type { DialogProps } from '../../contexts/DialogContext'
 
@@ -30,6 +31,7 @@ type SettingsView =
   | 'advanced'
   | 'bot_settings'
   | 'deep_tree_echo_hub'
+  | 'ai_companion_settings'
 
 export default function Settings({ onClose }: DialogProps) {
   const { openDialog, closeDialog, openDialogIds } = useDialog()
@@ -157,6 +159,13 @@ export default function Settings({ onClose }: DialogProps) {
               Deep Tree Echo Hub
             </SettingsIconButton>
             <SettingsIconButton
+              icon='apps'
+              onClick={() => setSettingsMode('ai_companion_settings')}
+              dataTestid='open-ai-companion-settings'
+            >
+              AI Companion Neighborhood
+            </SettingsIconButton>
+            <SettingsIconButton
               icon='code-tags'
               onClick={() => setSettingsMode('advanced')}
               dataTestid='open-advanced-settings'
@@ -264,6 +273,19 @@ export default function Settings({ onClose }: DialogProps) {
           />
           <DialogBody>
             <DeepTreeEchoHubSimple />
+          </DialogBody>
+        </>
+      )}
+      {settingsMode === 'ai_companion_settings' && (
+        <>
+          <DialogHeader
+            title='AI Companion Neighborhood'
+            onClickBack={() => setSettingsMode('main')}
+            onClose={onClose}
+            dataTestid='settings-ai-companions'
+          />
+          <DialogBody>
+            <AICompanionSettings />
           </DialogBody>
         </>
       )}

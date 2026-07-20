@@ -35,6 +35,7 @@ import { selectedAccountId } from '../../../ScreenController'
 import { openMapWebxdc } from '../../../system-integration/webxdc'
 import { ChatView } from '../../../contexts/ChatContext'
 import { ScreenContext } from '../../../contexts/ScreenContext'
+import { Screens } from '../../../ScreenController'
 
 import type { T } from '@deltachat/jsonrpc-client'
 import CreateChat from '../../dialogs/CreateChat'
@@ -48,6 +49,7 @@ export default function MainScreen({ accountId }: Props) {
   useSelectLastChat(accountId)
 
   const tx = useTranslationFunction()
+  const { changeScreen } = useContext(ScreenContext)
 
   const [queryStr, setQueryStr] = useState('')
   const [queryChatId, setQueryChatId] = useState<null | number>(null)
@@ -211,6 +213,17 @@ export default function MainScreen({ accountId }: Props) {
               onClear={queryChatId ? () => handleSearchClear() : undefined}
               value={queryStr}
             />
+          )}
+          {!showArchivedChats && (
+            <Button
+              aria-label='AI Neighborhood'
+              onClick={() => changeScreen(Screens.AINeighborhood)}
+              className='navbar-button'
+              style={{ marginLeft: '8px' }}
+              title='Visit the AI Companion Neighborhood'
+            >
+              <Icon icon='settings' size={20} />
+            </Button>
           )}
         </nav>
         <ChatList

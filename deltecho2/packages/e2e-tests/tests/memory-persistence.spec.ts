@@ -32,7 +32,7 @@ async function waitForMemorySystem(page: Page, timeout = MEMORY_LOAD_TIMEOUT) {
 }
 
 // Helper to get memory system state
-async function getMemorySystemState(page: Page) {
+async function _getMemorySystemState(page: Page) {
   return page.evaluate(() => {
     const win = window as unknown as {
       __memorySystem?: {

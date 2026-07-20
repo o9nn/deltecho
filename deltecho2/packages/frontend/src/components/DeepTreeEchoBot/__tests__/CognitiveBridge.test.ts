@@ -771,7 +771,7 @@ describe('CognitiveBridge', () => {
         }),
       } as Response)
 
-      const response2 = await orchestrator.processMessage({
+      const _response2 = await orchestrator.processMessage({
         id: 'after-config',
         content: 'Test after LLM config',
         role: 'user',

@@ -56,6 +56,7 @@
   "dependencies": {
     "@deltachat/jsonrpc-client": "catalog:",
     "@deltachat/stdio-rpc-server": "catalog:",
+    "dove9": "workspace:*",
     "mime-types": "catalog:",
     "sass": "catalog:",
     "ws": "7.5.10"

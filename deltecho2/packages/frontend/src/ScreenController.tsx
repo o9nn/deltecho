@@ -24,6 +24,9 @@ import { ContextMenuProvider } from './contexts/ContextMenuContext'
 import { InstantOnboardingProvider } from './contexts/InstantOnboardingContext'
 import { SmallScreenModeMacOSTitleBar } from './components/SmallScreenModeMacOSTitleBar'
 import DeepTreeEchoBot from './components/chat/DeepTreeEchoBot'
+import AINeighborhoodDashboard from './components/screens/AINeighborhoodDashboard/AINeighborhoodDashboard'
+import AINavigation from './components/AINavigation'
+import { MemoryPersistenceLayer } from './components/AICompanionHub/MemoryPersistenceLayer'
 
 const log = getLogger('renderer/ScreenController')
 
@@ -39,6 +42,7 @@ export enum Screens {
   Loading = 'loading',
   DeleteAccount = 'deleteAccount',
   NoAccountSelected = 'noAccountSelected',
+  AINeighborhood = 'aiNeighborhood',
 }
 
 const BREAKPOINT_FOR_SMALLSCREEN_MODE = 720
@@ -265,6 +269,16 @@ export default class ScreenController extends Component {
   }
 
   componentDidMount() {
+    // Initialize the Memory Persistence Layer for AI Companions
+    const memoryLayer = MemoryPersistenceLayer.getInstance()
+    memoryLayer.initialize().catch(error => {
+      log.error('Failed to initialize Memory Persistence Layer:', error)
+      this.userFeedback({
+        type: 'error',
+        text: 'Failed to initialize AI Companion Memory System',
+      })
+    })
+
     BackendRemote.on('Error', this.onError)
 
     runtime.onResumeFromSleep = debounce(() => {
@@ -342,6 +356,8 @@ export default class ScreenController extends Component {
         )
       case Screens.NoAccountSelected:
         return <NoAccountSelectedScreen />
+      case Screens.AINeighborhood:
+        return <AINeighborhoodDashboard />
       default:
         return null
     }
@@ -363,6 +379,11 @@ export default class ScreenController extends Component {
             <p>{this.state.message.text}</p>
           </div>
         )}
+        {/* Enhanced AI Neighborhood Navigation */}
+        <AINavigation
+          currentScreen={this.state.screen}
+          changeScreen={this.changeScreen}
+        />
         <ScreenContext.Provider
           value={{
             userFeedback: this.userFeedback,

@@ -4,6 +4,11 @@
  */
 
 import '@testing-library/jest-dom';
+import { jest } from '@jest/globals';
+
+// Under the ESM preset (--experimental-vm-modules) jest globals are not
+// injected, so expose the imported jest object for all test files.
+(globalThis as any).jest = jest;
 
 // Mock fetch globally for tests
 global.fetch = jest.fn(() =>

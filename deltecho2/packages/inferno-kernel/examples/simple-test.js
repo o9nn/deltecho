@@ -19,7 +19,7 @@ import {
 console.log('✓ All imports successful')
 
 // Test basic instantiation
-const kernel = new InfernoKernel()
+const _kernel = new InfernoKernel()
 console.log('✓ InfernoKernel instantiated')
 
 const atomSpace = new AtomSpace()
@@ -28,19 +28,19 @@ console.log('✓ AtomSpace instantiated')
 const matcher = new PatternMatcher(atomSpace)
 console.log('✓ PatternMatcher instantiated')
 
-const plnEngine = new PLNEngine(atomSpace)
+const _plnEngine = new PLNEngine(atomSpace)
 console.log('✓ PLNEngine instantiated')
 
 const attention = new AttentionAllocation(atomSpace)
 console.log('✓ AttentionAllocation instantiated')
 
-const moses = new MOSES(atomSpace)
+const _moses = new MOSES(atomSpace)
 console.log('✓ MOSES instantiated')
 
 const openPsi = new OpenPsi(atomSpace)
 console.log('✓ OpenPsi instantiated')
 
-const coordinator = new DistributedCoordinator(atomSpace)
+const _coordinator = new DistributedCoordinator(atomSpace)
 console.log('✓ DistributedCoordinator instantiated')
 
 // Test basic operations

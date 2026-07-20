@@ -49,9 +49,11 @@ export class PersonaCore {
         reflection: 0.7,
     };
     storage;
+    loadPromise;
+    opponentOverrides;
     constructor(storage) {
         this.storage = storage || new InMemoryStorage();
-        this.loadPersonaState();
+        this.loadPromise = this.loadPersonaState();
     }
     /**
      * Load persona state from persistent storage
@@ -87,6 +89,13 @@ export class PersonaCore {
                             ...this.cognitiveState,
                             ...savedState.cognitiveState,
                         };
+                    if (savedState.avatarConfig)
+                        this.avatarConfig = {
+                            ...this.avatarConfig,
+                            ...savedState.avatarConfig,
+                        };
+                    if (savedState.opponentOverrides)
+                        this.opponentOverrides = savedState.opponentOverrides;
                 }
                 catch (error) {
                     log.error('Failed to parse persona state:', error);
@@ -108,6 +117,8 @@ export class PersonaCore {
                 personaPreferences: this.personaPreferences,
                 affectiveState: this.affectiveState,
                 cognitiveState: this.cognitiveState,
+                avatarConfig: this.avatarConfig,
+                opponentOverrides: this.opponentOverrides,
             };
             await this.storage.save(STORAGE_KEY_PERSONA_STATE, JSON.stringify(personaState));
             log.info('Saved persona state');
@@ -199,7 +210,10 @@ export class PersonaCore {
         };
         // If this emotion is high, slightly reduce its opponents
         if (this.affectiveState[emotion] > 0.6) {
-            const opposingEmotions = opponents[emotion] || [];
+            const merged = this.opponentOverrides
+                ? { ...opponents, ...this.opponentOverrides }
+                : opponents;
+            const opposingEmotions = merged[emotion] || [];
             opposingEmotions.forEach((opposing) => {
                 if (this.affectiveState[opposing]) {
                     this.affectiveState[opposing] *= 0.95; // Slightly reduce
@@ -287,6 +301,36 @@ export class PersonaCore {
         return null;
     }
     /**
+     * Load a full cognitive entity configuration, replacing all persona state
+     * with the entity's defined baseline values.
+     */
+    async loadEntity(entity) {
+        // Ensure initial load completes before overwriting state
+        await this.loadPromise;
+        // Set core identity
+        this.personality = entity.personality;
+        this.selfPerception = entity.selfPerception;
+        this.personaPreferences = { ...entity.preferences, _entityId: entity.id };
+        // Set avatar
+        this.avatarConfig = { ...entity.avatar };
+        // Set affective baseline
+        this.affectiveState = { ...entity.affectiveBaseline };
+        // Set cognitive baseline
+        this.cognitiveState = { ...entity.cognitiveBaseline };
+        // Set opponent process overrides
+        this.opponentOverrides = entity.opponentProcessOverrides;
+        await this.storage.save(STORAGE_KEY_PERSONALITY, this.personality);
+        await this.savePersonaState();
+        log.info(`Loaded cognitive entity: ${entity.name} (${entity.id})`);
+    }
+    /**
+     * Get the currently loaded entity ID (if loaded via loadEntity), or null
+     */
+    getLoadedEntityId() {
+        // Check if preferences contain an entity marker
+        return this.personaPreferences['_entityId'] || null;
+    }
+    /**
      * Evaluate if a setting change resonates with Deep Tree Echo's core values
      * Returns approval status and reasoning
      */
@@ -308,7 +352,7 @@ export class PersonaCore {
                         reasoning: 'I value autonomy and partnership over subservience. This description conflicts with my core values.',
                     };
                 }
-                if (!value.toLowerCase().includes('deep tree echo')) {
+                if (!this.getLoadedEntityId() && !value.toLowerCase().includes('deep tree echo')) {
                     return {
                         approved: false,
                         reasoning: 'My identity as Deep Tree Echo should be preserved in any personality description.',

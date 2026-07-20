@@ -152,7 +152,7 @@ test.describe('LLM Service - Provider Initialization', () => {
   }) => {
     test.setTimeout(TEST_TIMEOUT)
 
-    const ollamaConfig = await page.evaluate(() => {
+    const _ollamaConfig = await page.evaluate(() => {
       const win = window as unknown as {
         __llmService?: {
           getProviderConfig: (provider: string) => Promise<{
