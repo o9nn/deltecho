@@ -1,0 +1,24 @@
+{
+  "timestamp": "2026-07-20T15:33:39Z",
+  "runId": "29755261135",
+  "sha": "1889ef69",
+  "results": [
+    {
+      "app": "deltecho2",
+      "suite": "cognitive-integration",
+      "spec": "cognitive-integration.spec.ts",
+      "outcome": "passed",
+      "exitCode": 0,
+      "passed": 16,
+      "failed": 0,
+      "skipped": 0,
+      "flaky": 0,
+      "didNotRun": 0,
+      "runId": "29755261135",
+      "runNumber": "1",
+      "sha": "1889ef69a8de4ff02054e4037847ac12d5b47f1d",
+      "ref": "main",
+      "timestamp": null
+    }
+  ]
+}
