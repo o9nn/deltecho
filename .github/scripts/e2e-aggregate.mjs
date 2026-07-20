@@ -47,8 +47,28 @@ for (const entry of readdirSync(artifactsRoot)) {
   if (!statSync(dir).isDirectory()) continue
   const resultPath = join(dir, 'result.json')
   const logPath = join(dir, 'output.log')
-  if (!existsSync(resultPath)) continue
-  const result = JSON.parse(readFileSync(resultPath, 'utf8'))
+
+  let result
+  if (existsSync(resultPath)) {
+    result = JSON.parse(readFileSync(resultPath, 'utf8'))
+  } else {
+    // No result record — never silently drop the suite. Recover its identity
+    // from the artifact dir name (e2e-<app>-<suite>) and mark it errored so
+    // the ledger still reflects that the suite ran and produced no result.
+    const m = entry.match(/^e2e-(deltecho2|delta-echo-desk)-(.+)$/)
+    result = {
+      app: m ? m[1] : 'unknown',
+      suite: m ? m[2] : entry.replace(/^e2e-/, ''),
+      spec: null,
+      outcome: 'errored',
+      exitCode: null,
+      passed: 0,
+      failed: 0,
+      skipped: 0,
+      flaky: 0,
+      didNotRun: 0,
+    }
+  }
   results.push(result)
   if (existsSync(logPath)) {
     copyFileSync(logPath, join(latestDir, `${result.app}__${result.suite}.log`))
@@ -84,7 +104,7 @@ const totals = results.reduce(
   { suites: 0, passedSuites: 0, failedSuites: 0, passed: 0, failed: 0, skipped: 0, flaky: 0 }
 )
 
-const icon = o => (o === 'passed' ? '✅' : '❌')
+const icon = o => (o === 'passed' ? '✅' : o === 'errored' ? '⚠️' : '❌')
 const rows = results
   .map(
     r =>

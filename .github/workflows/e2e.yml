@@ -86,7 +86,13 @@ jobs:
       - name: Run suite (verbose, capture log)
         id: run
         working-directory: ${{ matrix.dir }}
+        # GitHub runs `run:` blocks under `bash -e` (errexit). A failing suite
+        # command would otherwise abort this step at the pipe — before we
+        # capture its exit code and write the result — so disable errexit and
+        # capture the true code explicitly. The suite's real pass/fail is
+        # surfaced by the "Reflect true suite status" step below.
         run: |
+          set +e
           set -o pipefail
           mkdir -p "$GITHUB_WORKSPACE/e2e-artifacts"
           LOG="$GITHUB_WORKSPACE/e2e-artifacts/output.log"
@@ -98,15 +104,15 @@ jobs:
           echo "exit_code=$code" >> "$GITHUB_OUTPUT"
           echo "" | tee -a "$LOG"
           echo "exit code: $code" | tee -a "$LOG"
-          # Never fail this step; the true status is reflected by a later step.
           exit 0
 
       - name: Parse result
+        if: always()
         run: |
           node .github/scripts/e2e-parse.mjs \
             "$GITHUB_WORKSPACE/e2e-artifacts/output.log" \
             "${{ matrix.app }}" "${{ matrix.suite }}" "${{ matrix.spec }}" \
-            "${{ steps.run.outputs.exit_code }}" \
+            "${{ steps.run.outputs.exit_code || '1' }}" \
             "$GITHUB_WORKSPACE/e2e-artifacts/result.json"
 
       - name: Upload suite artifact
