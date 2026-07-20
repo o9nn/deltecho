@@ -290,6 +290,45 @@ jobs:
           retention-days: 7
 
   # ============================================
+  # Cognitive Integration E2E (hard gate, runs on PRs AND push)
+  # ============================================
+  # Runs against a self-contained harness that boots the real browser-safe
+  # cognitive system, so it is fast, deterministic, and independent of the full
+  # Delta Chat backend. Unlike the `e2e-tests` job below (push/main only), this
+  # job runs on pull_request too, so it can actually block a broken PR.
+  cognitive-e2e:
+    name: Cognitive Integration E2E
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    env:
+      CI: true
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Setup pnpm
+        uses: pnpm/action-setup@v5
+        with:
+          version: ${{ env.PNPM_VERSION }}
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          cache: 'pnpm'
+
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile
+
+      - name: Install Playwright Chromium
+        run: pnpm exec playwright install --with-deps chromium
+        working-directory: deltecho2/packages/e2e-tests
+
+      - name: Run Cognitive Integration E2E (real gate)
+        run: pnpm run e2e:cognitive:real
+        working-directory: deltecho2/packages/e2e-tests
+
+  # ============================================
   # E2E Tests (Linux only for speed)
   # ============================================
   e2e-tests:
@@ -381,14 +420,9 @@ jobs:
           CI: true
           NODE_TLS_REJECT_UNAUTHORIZED: '0'
 
-      # Cognitive Integration runs against a self-contained harness that boots
-      # the real browser-safe cognitive system, so it is a HARD gate (no
-      # `|| echo` mask): a failure here fails the build.
-      - name: Run E2E tests - Cognitive Integration (deltecho2)
-        run: pnpm run e2e:cognitive:real
-        working-directory: deltecho2/packages/e2e-tests
-        env:
-          CI: true
+      # NOTE: Cognitive Integration is a HARD gate and runs in its own
+      # `cognitive-e2e` job (on pull_request AND push) so it can block PRs.
+      # This job is push/main-only, so it cannot gate PRs on its own.
 
       - name: Run E2E tests - Triadic Cognitive Loop (deltecho2)
         run: pnpm exec playwright test triadic-cognitive-loop.spec.ts || echo "::warning::Triadic Cognitive Loop E2E tests not fully configured"
