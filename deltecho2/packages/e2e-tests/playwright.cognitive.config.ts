@@ -1,19 +1,40 @@
 import { defineConfig, devices } from '@playwright/test'
 
 /**
- * Dedicated Playwright config for the Cognitive Integration E2E suite.
+ * Dedicated Playwright config for Cognitive E2E suites.
  *
  * Unlike the generic config (which boots the full Delta Chat browser app and
  * cannot reliably run headless in CI), this config serves a self-contained
  * cognitive harness that installs the real `window.__*` cognitive hooks. The
- * suite therefore runs deterministically and can be a hard CI gate.
+ * suites therefore run deterministically and can be a hard CI gate.
+ *
+ * Suites that use this config:
+ * - cognitive-integration.spec.ts
+ * - triadic-cognitive-loop.spec.ts
+ * - sys6-triality.spec.ts
+ * - llm-service.spec.ts
+ * - memory-persistence.spec.ts
+ * - ipc-electron.spec.ts
+ *
+ * NOTE: cognitive-memory.spec.ts is NOT included because it uses profiles
+ * from playwright-helper.ts which require the full Delta Chat app.
+ * NOTE: ui-components.spec.ts is NOT included because it needs the actual
+ * React components from the full app UI.
  */
 const port = Number(process.env.PORT ?? 3100)
 const baseURL = `http://localhost:${port}`
 
 export default defineConfig({
   testDir: './tests',
-  testMatch: ['cognitive-integration.spec.ts'],
+  // Match cognitive harness suites (not Delta Chat backend tests)
+  testMatch: [
+    'cognitive-integration.spec.ts',
+    'triadic-cognitive-loop.spec.ts',
+    'sys6-triality.spec.ts',
+    'llm-service.spec.ts',
+    'memory-persistence.spec.ts',
+    'ipc-electron.spec.ts',
+  ],
   fullyParallel: false,
   forbidOnly: !!process.env.CI,
   retries: 0,

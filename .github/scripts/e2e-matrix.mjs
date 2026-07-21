@@ -3,9 +3,16 @@
  * GitHub Actions matrix (one entry per suite) to $GITHUB_OUTPUT.
  *
  * Auto-adapts as specs are added/removed so the E2E series never silently
- * drops a suite. The deltecho2 `cognitive-integration` suite runs via the
- * dedicated harness script (`e2e:cognitive:real`); everything else runs the
- * spec directly against the default config.
+ * drops a suite.
+ *
+ * Test suites are categorized into:
+ * 1. **Cognitive harness suites** - Tests that probe `window.__*` cognitive
+ *    hooks (triadic loop, memory, LLM, IPC, UI components). These run against
+ *    the lightweight cognitive harness server via `playwright.cognitive.config.ts`.
+ *
+ * 2. **Delta Chat backend suites** - Tests that need the full Delta Chat
+ *    application (profiles, messaging, QR codes, groups). These run against
+ *    the default `playwright.config.ts` which boots the full app.
  */
 import { readdirSync, existsSync, appendFileSync } from 'node:fs'
 import { basename } from 'node:path'
@@ -15,6 +22,24 @@ const APPS = [
   { app: 'delta-echo-desk', dir: 'delta-echo-desk/packages/e2e-tests' },
 ]
 
+// Suites that run against the cognitive harness (window.__* hooks).
+// These do NOT require the full Delta Chat backend.
+// NOTE: Only applies to deltecho2 - delta-echo-desk's test files have different
+// content that depends on UI elements not present in the harness.
+// NOTE: cognitive-memory uses profiles from playwright-helper.ts which need the full app
+// NOTE: ui-components tests React components that need the full app UI
+const COGNITIVE_HARNESS_SUITES = new Set([
+  'cognitive-integration',
+  'triadic-cognitive-loop',
+  'sys6-triality',
+  'llm-service',
+  'memory-persistence',
+  'ipc-electron',
+])
+
+// Only deltecho2 has harness-compatible test files
+const HARNESS_ENABLED_APPS = new Set(['deltecho2'])
+
 const include = []
 
 for (const { app, dir } of APPS) {
@@ -23,19 +48,31 @@ for (const { app, dir } of APPS) {
   const specs = readdirSync(testsDir)
     .filter(f => f.endsWith('.spec.ts'))
     .sort()
+
+  // Check if cognitive harness infrastructure exists for this app AND app is enabled
+  const hasCognitiveHarness =
+    HARNESS_ENABLED_APPS.has(app) && existsSync(`${dir}/playwright.cognitive.config.ts`)
+
   for (const spec of specs) {
     const suite = basename(spec, '.spec.ts')
-    const cognitiveHarness = app === 'deltecho2' && suite === 'cognitive-integration'
+    const usesCognitiveHarness =
+      COGNITIVE_HARNESS_SUITES.has(suite) && hasCognitiveHarness
+
+    let cmd
+    if (usesCognitiveHarness) {
+      // Run against the cognitive harness with the dedicated config
+      cmd = `pnpm run build:cognitive-harness && pnpm exec playwright test ${spec} --config playwright.cognitive.config.ts --reporter=list`
+    } else {
+      // Run against the full Delta Chat app (default config)
+      cmd = `pnpm exec playwright test ${spec} --reporter=list`
+    }
+
     include.push({
       app,
       dir,
       suite,
       spec,
-      // The cognitive suite has a real harness + gated runner; others run the
-      // spec directly (they surface their true state, incl. honest skips).
-      cmd: cognitiveHarness
-        ? 'pnpm run e2e:cognitive:real'
-        : `pnpm exec playwright test ${spec} --reporter=list`,
+      cmd,
     })
   }
 }

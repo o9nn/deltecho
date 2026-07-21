@@ -149,6 +149,19 @@ test.describe('IPC Communication - Storage Operations', () => {
   test('should retrieve data via IPC', async ({ page }) => {
     test.setTimeout(TEST_TIMEOUT)
 
+    // First store the data (storage may not persist across page reloads in test harness)
+    await page.evaluate(() => {
+      const win = window as unknown as {
+        __ipcStorage?: {
+          set: (key: string, value: unknown) => Promise<boolean>
+        }
+      }
+      if (win.__ipcStorage?.set) {
+        return win.__ipcStorage.set('test-key', { data: 'test-value' })
+      }
+      return true
+    })
+
     const retrieveResult = await page.evaluate(() => {
       const win = window as unknown as {
         __ipcStorage?: {
