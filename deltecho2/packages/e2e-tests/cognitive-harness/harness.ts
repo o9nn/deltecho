@@ -80,6 +80,7 @@ class Dove9Runtime {
 }
 
 // ── Sys6 triality bridge (universal / particular / synthesis) ────────────────
+// Mock implementation for E2E tests - returns hardcoded values that satisfy test assertions
 class Sys6Bridge {
   getStatus(): {
     initialized: boolean
