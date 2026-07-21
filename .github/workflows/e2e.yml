@@ -54,7 +54,7 @@ jobs:
     name: E2E ${{ matrix.app }} / ${{ matrix.suite }}
     needs: discover
     runs-on: ubuntu-latest
-    timeout-minutes: 20
+    timeout-minutes: 30
     strategy:
       fail-fast: false
       max-parallel: 6
@@ -62,6 +62,7 @@ jobs:
     env:
       CI: true
       NODE_TLS_REJECT_UNAUTHORIZED: '0'
+      WEB_PASSWORD: ${{ secrets.WEB_PASSWORD || 'test-password' }}
     steps:
       - uses: actions/checkout@v4
 
@@ -78,6 +79,13 @@ jobs:
 
       - name: Install dependencies
         run: pnpm install --frozen-lockfile
+
+      # The Playwright webServer boots the app's target-browser server
+      # (`../target-browser/dist/server.js`) and serves the built frontend,
+      # so every workspace package must be built first — mirrors the
+      # `e2e-tests` merge-gate job in ci.yml.
+      - name: Build packages
+        run: pnpm run build
 
       - name: Install Playwright Chromium
         run: pnpm exec playwright install --with-deps chromium
