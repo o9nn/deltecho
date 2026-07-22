@@ -238,10 +238,16 @@ export async function loadExistingProfiles(page: Page): Promise<User[]> {
   const existingProfiles: User[] = []
   await page.waitForSelector('.main-container')
   await expect(page.locator('.main-container')).toBeVisible()
-  // TODO: the next waitFor calls are needed when loading existing profiles
-  // and skipping the createProfiles step, but will never succeed if there
-  // are no profiles yet
-  await page.waitForSelector('button.styles_module_account')
+  // the account button only appears once at least one account exists, so
+  // on a fresh environment (no persisted profiles yet) there is nothing to
+  // wait for and we can safely treat this as "no existing profiles"
+  try {
+    await page.waitForSelector('button.styles_module_account', {
+      timeout: 5_000,
+    })
+  } catch {
+    return []
+  }
   await page.waitForSelector('button.styles_module_account[aria-busy=false]')
   const accountList = page.locator('button.styles_module_account')
   const existingAccountItems = await accountList.count()
