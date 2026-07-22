@@ -3467,7 +3467,7 @@ function createLogHandler() {
 }
 import { readdir, lstat, unlink } from "fs/promises";
 async function cleanupLogFolder() {
-  const log21 = getLogger("logger/log-cleanup");
+  const log22 = getLogger("logger/log-cleanup");
   const logDir = getLogsPath();
   const logDirContent = await readdir(logDir);
   const filesWithDates = await Promise.all(
@@ -3482,9 +3482,9 @@ async function cleanupLogFolder() {
     const fileCount = await Promise.all(
       sortedFiles.map(({ filename }) => unlink(join8(logDir, filename)))
     );
-    log21.info(`Successfuly deleted ${fileCount.length} old logfiles`);
+    log22.info(`Successfuly deleted ${fileCount.length} old logfiles`);
   } else {
-    log21.debug("Nothing to do (not more than 10 logfiles to delete)");
+    log22.debug("Nothing to do (not more than 10 logfiles to delete)");
   }
 }
 function fillString(string, n) {
@@ -5247,7 +5247,7 @@ init_cjs_shim();
 
 // src/get-build-info.ts
 init_cjs_shim();
-var BuildInfo = JSON.parse('{"VERSION":"1.58.2","BUILD_TIMESTAMP":1767509940636,"GIT_REF":"vv1.0.0-alpha.1-35-g02165f7"}');
+var BuildInfo = JSON.parse('{"VERSION":"1.58.2","BUILD_TIMESTAMP":1784705149159,"GIT_REF":"acc3082"}');
 
 // src/deltachat/stdio_server.ts
 import { spawn } from "child_process";
@@ -5351,16 +5351,16 @@ import { startDeltaChat } from "@deltachat/stdio-rpc-server";
 import { existsSync as existsSync5, lstatSync } from "fs";
 import { join as join13 } from "path";
 import { mkdir, readdir as readdir4, rename, rm, rmdir as rmdir2, stat as stat3 } from "fs/promises";
-async function migrateAccountsIfNeeded(cwd, log21, treatFailedMigrationAsError = false) {
+async function migrateAccountsIfNeeded(cwd, log22, treatFailedMigrationAsError = false) {
   let tmpDC;
-  const eventLogger = (accountId, event) => log21.debug("core-event", { accountId, ...event });
+  const eventLogger = (accountId, event) => log22.debug("core-event", { accountId, ...event });
   try {
     const new_accounts_format = existsSync5(join13(cwd, "accounts.toml"));
     if (new_accounts_format) {
-      log21.debug("migration not needed: accounts.toml already exists");
+      log22.debug("migration not needed: accounts.toml already exists");
       return false;
     }
-    log21.debug("accounts.toml not found, checking if there is previous data");
+    log22.debug("accounts.toml not found, checking if there is previous data");
     const configPath = join13(cwd, "..");
     const accountFoldersFormat1 = (await readdir4(configPath)).filter(
       (folderName) => {
@@ -5369,7 +5369,7 @@ async function migrateAccountsIfNeeded(cwd, log21, treatFailedMigrationAsError =
           const db_path = join13(path4, "db.sqlite");
           return lstatSync(path4).isDirectory() && existsSync5(db_path) && lstatSync(db_path).isFile() && !lstatSync(path4).isSymbolicLink();
         } catch (error) {
-          log21.debug("error while testing if folder is account", error);
+          log22.debug("error while testing if folder is account", error);
           return false;
         }
       }
@@ -5377,13 +5377,13 @@ async function migrateAccountsIfNeeded(cwd, log21, treatFailedMigrationAsError =
     const migrateFromFormat1 = accountFoldersFormat1.length !== 0;
     const migrateFromFormat2 = existsSync5(cwd);
     if (!migrateFromFormat1 && !migrateFromFormat2) {
-      log21.info("migration not needed: nothing to migrate");
+      log22.info("migration not needed: nothing to migrate");
       return false;
     }
     const path_accounts = join13(cwd, "..", "accounts");
     const pathAccountsOld = join13(cwd, "..", "accounts_old");
     if (migrateFromFormat2) {
-      log21.info(`found old some accounts (format 2), we need to migrate...`);
+      log22.info(`found old some accounts (format 2), we need to migrate...`);
       await rename(path_accounts, pathAccountsOld);
     }
     tmpDC = await startDeltaChat(path_accounts, {
@@ -5392,11 +5392,11 @@ async function migrateAccountsIfNeeded(cwd, log21, treatFailedMigrationAsError =
     tmpDC.on("ALL", eventLogger);
     const oldFoldersToDelete = [];
     if (migrateFromFormat1) {
-      log21.info(
+      log22.info(
         `found old ${accountFoldersFormat1.length} legacy accounts (1), we need to migrate...`
       );
       for (const folder of accountFoldersFormat1) {
-        log21.debug(`migrating legacy account "${folder}"`);
+        log22.debug(`migrating legacy account "${folder}"`);
         const pathDBFile = join13(configPath, folder, "db.sqlite");
         const blobsFolder = join13(configPath, folder, "db.sqlite-blobs");
         if (!existsSync5(blobsFolder)) {
@@ -5406,7 +5406,7 @@ async function migrateAccountsIfNeeded(cwd, log21, treatFailedMigrationAsError =
           await tmpDC.rpc.migrateAccount(pathDBFile);
           oldFoldersToDelete.push(folder);
         } catch (error) {
-          log21.error(`Failed to migrate account at path "${pathDBFile}"`, error);
+          log22.error(`Failed to migrate account at path "${pathDBFile}"`, error);
           if (treatFailedMigrationAsError) {
             throw error;
           }
@@ -5417,10 +5417,10 @@ async function migrateAccountsIfNeeded(cwd, log21, treatFailedMigrationAsError =
       for (const entry of await readdir4(pathAccountsOld)) {
         const stat_result = await stat3(join13(pathAccountsOld, entry));
         if (!stat_result.isDirectory()) continue;
-        log21.debug(`migrating account "${join13(pathAccountsOld, entry)}"`);
+        log22.debug(`migrating account "${join13(pathAccountsOld, entry)}"`);
         const path_dbfile = join13(pathAccountsOld, entry, "db.sqlite");
         if (!existsSync5(path_dbfile)) {
-          log21.warn(
+          log22.warn(
             "found an old accounts folder without a db.sqlite file, skipping"
           );
           continue;
@@ -5433,7 +5433,7 @@ async function migrateAccountsIfNeeded(cwd, log21, treatFailedMigrationAsError =
           const account_id = await tmpDC.rpc.migrateAccount(path_dbfile);
           const old_sticker_folder = join13(pathAccountsOld, entry, "stickers");
           if (existsSync5(old_sticker_folder)) {
-            log21.debug("found stickers, migrating them", old_sticker_folder);
+            log22.debug("found stickers, migrating them", old_sticker_folder);
             try {
               const blobdir = await tmpDC.rpc.getBlobDir(account_id);
               if (!blobdir) {
@@ -5442,7 +5442,7 @@ async function migrateAccountsIfNeeded(cwd, log21, treatFailedMigrationAsError =
               const new_sticker_folder = join13(blobdir, "../stickers");
               await rename(old_sticker_folder, new_sticker_folder);
             } catch (error) {
-              log21.error("stickers migration failed", old_sticker_folder, error);
+              log22.error("stickers migration failed", old_sticker_folder, error);
               if (treatFailedMigrationAsError) {
                 throw error;
               }
@@ -5450,7 +5450,7 @@ async function migrateAccountsIfNeeded(cwd, log21, treatFailedMigrationAsError =
           }
           oldFoldersToDelete.push(join13(pathAccountsOld, entry));
         } catch (error) {
-          log21.error(
+          log22.error(
             `Failed to migrate account at path "${path_dbfile}":`,
             error
           );
@@ -5467,10 +5467,10 @@ async function migrateAccountsIfNeeded(cwd, log21, treatFailedMigrationAsError =
         }
         await rmdir2(oldFolder);
       } catch (error) {
-        log21.error("Failed to cleanup old folder:", oldFolder, error);
+        log22.error("Failed to cleanup old folder:", oldFolder, error);
       }
     }
-    log21.info("migration completed");
+    log22.info("migration completed");
     return true;
   } catch (err) {
     tmpDC?.off("ALL", eventLogger);
@@ -6262,10 +6262,2682 @@ async function initCognitiveStorage() {
   };
 }
 
+// src/cognitive-engine.ts
+init_cjs_shim();
+
+// ../../../dove9/dist/index.js
+init_cjs_shim();
+
+// ../../../dove9/dist/types/index.js
+init_cjs_shim();
+
+// ../../../dove9/dist/types/mail.js
+init_cjs_shim();
+var MailFlag;
+(function(MailFlag2) {
+  MailFlag2["SEEN"] = "\\Seen";
+  MailFlag2["ANSWERED"] = "\\Answered";
+  MailFlag2["FLAGGED"] = "\\Flagged";
+  MailFlag2["DELETED"] = "\\Deleted";
+  MailFlag2["DRAFT"] = "\\Draft";
+})(MailFlag || (MailFlag = {}));
+var DEFAULT_MAILBOX_MAPPING = {
+  inbox: "INBOX",
+  processing: "INBOX.Processing",
+  sent: "Sent",
+  drafts: "Drafts",
+  trash: "Trash",
+  archive: "Archive"
+};
+var MailProtocol;
+(function(MailProtocol2) {
+  MailProtocol2["IMAP"] = "IMAP";
+  MailProtocol2["SMTP"] = "SMTP";
+  MailProtocol2["LMTP"] = "LMTP";
+})(MailProtocol || (MailProtocol = {}));
+var MailOperation;
+(function(MailOperation2) {
+  MailOperation2["FETCH"] = "FETCH";
+  MailOperation2["SEND"] = "SEND";
+  MailOperation2["MOVE"] = "MOVE";
+  MailOperation2["DELETE"] = "DELETE";
+  MailOperation2["MARK"] = "MARK";
+})(MailOperation || (MailOperation = {}));
+
+// ../../../dove9/dist/types/index.js
+var CognitiveMode;
+(function(CognitiveMode2) {
+  CognitiveMode2["EXPRESSIVE"] = "expressive";
+  CognitiveMode2["REFLECTIVE"] = "reflective";
+})(CognitiveMode || (CognitiveMode = {}));
+var StreamId;
+(function(StreamId2) {
+  StreamId2[StreamId2["PRIMARY"] = 0] = "PRIMARY";
+  StreamId2[StreamId2["SECONDARY"] = 1] = "SECONDARY";
+  StreamId2[StreamId2["TERTIARY"] = 2] = "TERTIARY";
+})(StreamId || (StreamId = {}));
+var CognitiveTerm;
+(function(CognitiveTerm2) {
+  CognitiveTerm2[CognitiveTerm2["T1_PERCEPTION"] = 1] = "T1_PERCEPTION";
+  CognitiveTerm2[CognitiveTerm2["T2_IDEA_FORMATION"] = 2] = "T2_IDEA_FORMATION";
+  CognitiveTerm2[CognitiveTerm2["T4_SENSORY_INPUT"] = 4] = "T4_SENSORY_INPUT";
+  CognitiveTerm2[CognitiveTerm2["T5_ACTION_SEQUENCE"] = 5] = "T5_ACTION_SEQUENCE";
+  CognitiveTerm2[CognitiveTerm2["T7_MEMORY_ENCODING"] = 7] = "T7_MEMORY_ENCODING";
+  CognitiveTerm2[CognitiveTerm2["T8_BALANCED_RESPONSE"] = 8] = "T8_BALANCED_RESPONSE";
+})(CognitiveTerm || (CognitiveTerm = {}));
+var StepType;
+(function(StepType2) {
+  StepType2["PIVOTAL_RR"] = "pivotal_rr";
+  StepType2["EXPRESSIVE"] = "expressive";
+  StepType2["TRANSITION"] = "transition";
+  StepType2["REFLECTIVE"] = "reflective";
+})(StepType || (StepType = {}));
+var ProcessState;
+(function(ProcessState2) {
+  ProcessState2["PENDING"] = "pending";
+  ProcessState2["ACTIVE"] = "active";
+  ProcessState2["PROCESSING"] = "processing";
+  ProcessState2["WAITING"] = "waiting";
+  ProcessState2["COMPLETED"] = "completed";
+  ProcessState2["SUSPENDED"] = "suspended";
+  ProcessState2["TERMINATED"] = "terminated";
+})(ProcessState || (ProcessState = {}));
+var CouplingType;
+(function(CouplingType2) {
+  CouplingType2["PERCEPTION_MEMORY"] = "T4E_T7R";
+  CouplingType2["ASSESSMENT_PLANNING"] = "T1R_T2E";
+  CouplingType2["BALANCED_INTEGRATION"] = "T8E";
+})(CouplingType || (CouplingType = {}));
+var DEFAULT_DOVE9_CONFIG = {
+  stepDuration: 100,
+  // 100ms per step = 1.2 seconds per full cycle
+  maxConcurrentProcesses: 100,
+  maxQueueDepth: 1e3,
+  enableMilter: true,
+  enableLMTP: true,
+  enableDeltaChat: true,
+  enableParallelCognition: true,
+  defaultSalienceThreshold: 0.3
+};
+
+// ../../../dove9/dist/cognitive/triadic-engine.js
+init_cjs_shim();
+var STREAM_CONFIGS = [
+  {
+    id: StreamId.PRIMARY,
+    name: "Primary",
+    phaseOffset: 0,
+    startStep: 1
+  },
+  {
+    id: StreamId.SECONDARY,
+    name: "Secondary",
+    phaseOffset: 120,
+    startStep: 5
+  },
+  {
+    id: StreamId.TERTIARY,
+    name: "Tertiary",
+    phaseOffset: 240,
+    startStep: 9
+  }
+];
+var STEP_CONFIGS = [
+  // Time Point 0: TRIAD 1-5-9
+  {
+    stepNumber: 1,
+    streamId: StreamId.PRIMARY,
+    term: CognitiveTerm.T1_PERCEPTION,
+    mode: CognitiveMode.REFLECTIVE,
+    stepType: StepType.PIVOTAL_RR,
+    phaseDegrees: 0
+  },
+  {
+    stepNumber: 5,
+    streamId: StreamId.SECONDARY,
+    term: CognitiveTerm.T1_PERCEPTION,
+    mode: CognitiveMode.REFLECTIVE,
+    stepType: StepType.PIVOTAL_RR,
+    phaseDegrees: 120
+  },
+  {
+    stepNumber: 9,
+    streamId: StreamId.TERTIARY,
+    term: CognitiveTerm.T7_MEMORY_ENCODING,
+    mode: CognitiveMode.REFLECTIVE,
+    stepType: StepType.REFLECTIVE,
+    phaseDegrees: 240
+  },
+  // Time Point 1: TRIAD 2-6-10
+  {
+    stepNumber: 2,
+    streamId: StreamId.PRIMARY,
+    term: CognitiveTerm.T2_IDEA_FORMATION,
+    mode: CognitiveMode.EXPRESSIVE,
+    stepType: StepType.EXPRESSIVE,
+    phaseDegrees: 30
+  },
+  {
+    stepNumber: 6,
+    streamId: StreamId.SECONDARY,
+    term: CognitiveTerm.T2_IDEA_FORMATION,
+    mode: CognitiveMode.EXPRESSIVE,
+    stepType: StepType.TRANSITION,
+    phaseDegrees: 150
+  },
+  {
+    stepNumber: 10,
+    streamId: StreamId.TERTIARY,
+    term: CognitiveTerm.T5_ACTION_SEQUENCE,
+    mode: CognitiveMode.EXPRESSIVE,
+    stepType: StepType.REFLECTIVE,
+    phaseDegrees: 270
+  },
+  // Time Point 2: TRIAD 3-7-11
+  {
+    stepNumber: 3,
+    streamId: StreamId.PRIMARY,
+    term: CognitiveTerm.T4_SENSORY_INPUT,
+    mode: CognitiveMode.EXPRESSIVE,
+    stepType: StepType.EXPRESSIVE,
+    phaseDegrees: 60
+  },
+  {
+    stepNumber: 7,
+    streamId: StreamId.SECONDARY,
+    term: CognitiveTerm.T1_PERCEPTION,
+    mode: CognitiveMode.REFLECTIVE,
+    stepType: StepType.TRANSITION,
+    phaseDegrees: 180
+  },
+  {
+    stepNumber: 11,
+    streamId: StreamId.TERTIARY,
+    term: CognitiveTerm.T7_MEMORY_ENCODING,
+    mode: CognitiveMode.REFLECTIVE,
+    stepType: StepType.REFLECTIVE,
+    phaseDegrees: 300
+  },
+  // Time Point 3: TRIAD 4-8-12
+  {
+    stepNumber: 4,
+    streamId: StreamId.PRIMARY,
+    term: CognitiveTerm.T2_IDEA_FORMATION,
+    mode: CognitiveMode.EXPRESSIVE,
+    stepType: StepType.EXPRESSIVE,
+    phaseDegrees: 90
+  },
+  {
+    stepNumber: 8,
+    streamId: StreamId.SECONDARY,
+    term: CognitiveTerm.T2_IDEA_FORMATION,
+    mode: CognitiveMode.EXPRESSIVE,
+    stepType: StepType.TRANSITION,
+    phaseDegrees: 210
+  },
+  {
+    stepNumber: 12,
+    streamId: StreamId.TERTIARY,
+    term: CognitiveTerm.T5_ACTION_SEQUENCE,
+    mode: CognitiveMode.EXPRESSIVE,
+    stepType: StepType.REFLECTIVE,
+    phaseDegrees: 330
+  }
+];
+var TRIAD_POINTS = [
+  {
+    timePoint: 0,
+    steps: [1, 5, 9],
+    streams: [STREAM_CONFIGS[0], STREAM_CONFIGS[1], STREAM_CONFIGS[2]]
+  },
+  {
+    timePoint: 1,
+    steps: [2, 6, 10],
+    streams: [STREAM_CONFIGS[0], STREAM_CONFIGS[1], STREAM_CONFIGS[2]]
+  },
+  {
+    timePoint: 2,
+    steps: [3, 7, 11],
+    streams: [STREAM_CONFIGS[0], STREAM_CONFIGS[1], STREAM_CONFIGS[2]]
+  },
+  {
+    timePoint: 3,
+    steps: [4, 8, 12],
+    streams: [STREAM_CONFIGS[0], STREAM_CONFIGS[1], STREAM_CONFIGS[2]]
+  }
+];
+var TriadicCognitiveEngine = class {
+  streams = /* @__PURE__ */ new Map();
+  currentStep = 0;
+  cycleNumber = 0;
+  running = false;
+  stepDuration;
+  processor;
+  eventHandlers = [];
+  stepTimer;
+  constructor(processor, stepDuration = 100) {
+    this.processor = processor;
+    this.stepDuration = stepDuration;
+    this.initializeStreams();
+  }
+  /**
+   * Initialize all three cognitive streams
+   */
+  initializeStreams() {
+    for (const config2 of STREAM_CONFIGS) {
+      this.streams.set(config2.id, {
+        id: config2.id,
+        currentTerm: CognitiveTerm.T1_PERCEPTION,
+        mode: CognitiveMode.REFLECTIVE,
+        stepInCycle: 0,
+        isActive: false
+      });
+    }
+  }
+  /**
+   * Start the triadic engine
+   */
+  start() {
+    if (this.running)
+      return;
+    this.running = true;
+    this.stepTimer = setInterval(() => this.advanceStep(), this.stepDuration);
+    for (const stream of this.streams.values()) {
+      stream.isActive = true;
+    }
+  }
+  /**
+   * Stop the triadic engine
+   */
+  stop() {
+    if (!this.running)
+      return;
+    this.running = false;
+    if (this.stepTimer) {
+      clearInterval(this.stepTimer);
+      this.stepTimer = void 0;
+    }
+    for (const stream of this.streams.values()) {
+      stream.isActive = false;
+    }
+  }
+  /**
+   * Advance to the next step in the cognitive cycle
+   */
+  advanceStep() {
+    this.currentStep = this.currentStep % 12 + 1;
+    if (this.currentStep === 1) {
+      this.cycleNumber++;
+      this.emit({ type: "cycle_complete", cycleNumber: this.cycleNumber });
+    }
+    const triad = this.getTriadAtStep(this.currentStep);
+    if (triad) {
+      this.emit({ type: "triad_sync", triad });
+    }
+    const couplings = this.detectCouplings(this.currentStep);
+    for (const coupling of couplings) {
+      this.emit({
+        type: "coupling_active",
+        coupling: coupling.type,
+        terms: coupling.terms
+      });
+    }
+  }
+  /**
+   * Process a message through the cognitive loop
+   */
+  async processMessage(process2) {
+    let context = process2.cognitiveContext;
+    const activeSteps = this.getActiveStepsForTimePoint(this.currentStep);
+    const results = await Promise.all(activeSteps.map(async (step) => {
+      this.emit({ type: "step_start", step });
+      const startTime2 = Date.now();
+      const result = await this.executeStep(step, context);
+      const duration = Date.now() - startTime2;
+      this.emit({ type: "step_complete", step, duration });
+      return result;
+    }));
+    context = this.integrateStreamResults(context, results);
+    return context;
+  }
+  /**
+   * Execute a single cognitive step
+   */
+  async executeStep(step, context) {
+    const stream = this.streams.get(step.streamId);
+    stream.currentTerm = step.term;
+    stream.mode = step.mode;
+    stream.lastProcessed = /* @__PURE__ */ new Date();
+    switch (step.term) {
+      case CognitiveTerm.T1_PERCEPTION:
+        return this.processor.processT1Perception(context, step.mode);
+      case CognitiveTerm.T2_IDEA_FORMATION:
+        return this.processor.processT2IdeaFormation(context, step.mode);
+      case CognitiveTerm.T4_SENSORY_INPUT:
+        return this.processor.processT4SensoryInput(context, step.mode);
+      case CognitiveTerm.T5_ACTION_SEQUENCE:
+        return this.processor.processT5ActionSequence(context, step.mode);
+      case CognitiveTerm.T7_MEMORY_ENCODING:
+        return this.processor.processT7MemoryEncoding(context, step.mode);
+      case CognitiveTerm.T8_BALANCED_RESPONSE:
+        return this.processor.processT8BalancedResponse(context, step.mode);
+      default:
+        return context;
+    }
+  }
+  /**
+   * Get the triadic convergence point at a given step, if any
+   */
+  getTriadAtStep(step) {
+    for (const triad of TRIAD_POINTS) {
+      if (triad.steps.includes(step)) {
+        return triad;
+      }
+    }
+    return null;
+  }
+  /**
+   * Get active step configurations for the current time point
+   */
+  getActiveStepsForTimePoint(step) {
+    const triad = this.getTriadAtStep(step);
+    if (!triad) {
+      return STEP_CONFIGS.filter((s) => s.stepNumber === step);
+    }
+    return STEP_CONFIGS.filter((s) => triad.steps.includes(s.stepNumber));
+  }
+  /**
+   * Detect active tensional couplings at a given step
+   */
+  detectCouplings(step) {
+    const couplings = [];
+    const activeSteps = this.getActiveStepsForTimePoint(step);
+    const hasTermMode = (term, mode) => activeSteps.some((s) => s.term === term && s.mode === mode);
+    if (hasTermMode(CognitiveTerm.T4_SENSORY_INPUT, CognitiveMode.EXPRESSIVE) && hasTermMode(CognitiveTerm.T7_MEMORY_ENCODING, CognitiveMode.REFLECTIVE)) {
+      couplings.push({
+        type: CouplingType.PERCEPTION_MEMORY,
+        terms: [CognitiveTerm.T4_SENSORY_INPUT, CognitiveTerm.T7_MEMORY_ENCODING]
+      });
+    }
+    if (hasTermMode(CognitiveTerm.T1_PERCEPTION, CognitiveMode.REFLECTIVE) && hasTermMode(CognitiveTerm.T2_IDEA_FORMATION, CognitiveMode.EXPRESSIVE)) {
+      couplings.push({
+        type: CouplingType.ASSESSMENT_PLANNING,
+        terms: [CognitiveTerm.T1_PERCEPTION, CognitiveTerm.T2_IDEA_FORMATION]
+      });
+    }
+    if (hasTermMode(CognitiveTerm.T8_BALANCED_RESPONSE, CognitiveMode.EXPRESSIVE)) {
+      couplings.push({
+        type: CouplingType.BALANCED_INTEGRATION,
+        terms: [CognitiveTerm.T8_BALANCED_RESPONSE]
+      });
+    }
+    return couplings;
+  }
+  /**
+   * Integrate results from parallel stream processing
+   */
+  integrateStreamResults(baseContext, results) {
+    const integrated = {
+      ...baseContext,
+      relevantMemories: [...new Set(results.flatMap((r) => r.relevantMemories))],
+      emotionalValence: results.reduce((sum, r) => sum + r.emotionalValence, 0) / results.length,
+      emotionalArousal: results.reduce((sum, r) => sum + r.emotionalArousal, 0) / results.length,
+      salienceScore: Math.max(...results.map((r) => r.salienceScore)),
+      attentionWeight: results.reduce((sum, r) => sum + r.attentionWeight, 0) / results.length,
+      activeCouplings: [...new Set(results.flatMap((r) => r.activeCouplings))]
+    };
+    if (results.some((r) => r.perceptionData)) {
+      integrated.perceptionData = results.filter((r) => r.perceptionData).map((r) => r.perceptionData);
+    }
+    if (results.some((r) => r.thoughtData)) {
+      integrated.thoughtData = results.filter((r) => r.thoughtData).map((r) => r.thoughtData);
+    }
+    if (results.some((r) => r.actionPlan)) {
+      integrated.actionPlan = results.filter((r) => r.actionPlan).reduce((merged, r) => ({ ...merged, ...r.actionPlan }), {});
+    }
+    return integrated;
+  }
+  /**
+   * Add event handler
+   */
+  on(handler2) {
+    this.eventHandlers.push(handler2);
+  }
+  /**
+   * Emit event to all handlers
+   */
+  emit(event) {
+    for (const handler2 of this.eventHandlers) {
+      handler2(event);
+    }
+  }
+  /**
+   * Get current state
+   */
+  getState() {
+    return {
+      currentStep: this.currentStep,
+      cycleNumber: this.cycleNumber,
+      streams: new Map(this.streams),
+      running: this.running
+    };
+  }
+  /**
+   * Check if engine is running
+   */
+  isRunning() {
+    return this.running;
+  }
+  /**
+   * Get metrics
+   */
+  getMetrics() {
+    return {
+      totalCycles: this.cycleNumber,
+      currentStep: this.currentStep,
+      streamStates: Array.from(this.streams.values())
+    };
+  }
+};
+
+// ../../../dove9/dist/cognitive/deep-tree-echo-processor.js
+init_cjs_shim();
+var DEFAULT_CONFIG = {
+  enableParallelCognition: true,
+  memoryRetrievalCount: 10,
+  salienceThreshold: 0.3
+};
+var DeepTreeEchoProcessor = class {
+  llmService;
+  memoryStore;
+  personaCore;
+  config;
+  // Processing state
+  currentPerception;
+  pendingActions = [];
+  constructor(llmService, memoryStore, personaCore, config2 = {}) {
+    this.llmService = llmService;
+    this.memoryStore = memoryStore;
+    this.personaCore = personaCore;
+    this.config = { ...DEFAULT_CONFIG, ...config2 };
+  }
+  /**
+   * T1: Perception Processing
+   * Assess needs vs capacity, evaluate current cognitive state
+   */
+  async processT1Perception(context, mode) {
+    const updated = { ...context };
+    if (mode === CognitiveMode.REFLECTIVE) {
+      const emotionalState = this.personaCore.getDominantEmotion();
+      const cognitiveLoad = context.salienceScore * context.attentionWeight;
+      const hasCapacity = cognitiveLoad < 0.8;
+      updated.perceptionData = {
+        emotionalState,
+        cognitiveLoad,
+        hasCapacity,
+        mode: "reflective",
+        timestamp: Date.now()
+      };
+      updated.emotionalArousal = Math.min(1, emotionalState.intensity + cognitiveLoad * 0.2);
+    } else {
+      updated.perceptionData = {
+        ...updated.perceptionData,
+        mode: "expressive",
+        activePerception: true
+      };
+      updated.salienceScore = Math.min(1, updated.salienceScore + 0.1);
+    }
+    return updated;
+  }
+  /**
+   * T2: Idea Formation
+   * Generate new thoughts and plans
+   */
+  async processT2IdeaFormation(context, mode) {
+    const updated = { ...context };
+    const personality = this.personaCore.getPersonality();
+    if (mode === CognitiveMode.EXPRESSIVE) {
+      const recentMemories = this.memoryStore.retrieveRecentMemories(this.config.memoryRetrievalCount);
+      const thoughtPrompt = `${personality}
+
+Current context:
+- Emotional state: ${JSON.stringify(context.perceptionData?.emotionalState)}
+- Salience: ${context.salienceScore}
+
+Generate a thoughtful response or insight.`;
+      if (this.config.enableParallelCognition) {
+        const result = await this.llmService.generateParallelResponse(thoughtPrompt, recentMemories);
+        updated.thoughtData = {
+          integrated: result.integratedResponse,
+          cognitive: result.cognitiveResponse,
+          affective: result.affectiveResponse,
+          relevance: result.relevanceResponse,
+          mode: "expressive"
+        };
+      } else {
+        const response = await this.llmService.generateResponse(thoughtPrompt, recentMemories);
+        updated.thoughtData = {
+          response,
+          mode: "expressive"
+        };
+      }
+      if (!updated.activeCouplings.includes(CouplingType.ASSESSMENT_PLANNING)) {
+        updated.activeCouplings.push(CouplingType.ASSESSMENT_PLANNING);
+      }
+    } else {
+      updated.thoughtData = {
+        ...updated.thoughtData,
+        mode: "reflective",
+        simulating: true
+      };
+    }
+    return updated;
+  }
+  /**
+   * T4: Sensory Input Processing
+   * Process external and internal perceptions
+   */
+  async processT4SensoryInput(context, mode) {
+    const updated = { ...context };
+    if (mode === CognitiveMode.EXPRESSIVE) {
+      this.currentPerception = {
+        context: updated.perceptionData,
+        thoughts: updated.thoughtData,
+        timestamp: Date.now()
+      };
+      updated.perceptionData = {
+        ...updated.perceptionData,
+        sensoryProcessed: true,
+        inputTime: Date.now()
+      };
+      if (!updated.activeCouplings.includes(CouplingType.PERCEPTION_MEMORY)) {
+        updated.activeCouplings.push(CouplingType.PERCEPTION_MEMORY);
+      }
+    } else {
+      updated.perceptionData = {
+        ...updated.perceptionData,
+        internalSensing: true
+      };
+    }
+    return updated;
+  }
+  /**
+   * T5: Action Sequence Execution
+   * Execute planned actions
+   */
+  async processT5ActionSequence(context, mode) {
+    const updated = { ...context };
+    if (mode === CognitiveMode.EXPRESSIVE) {
+      if (updated.actionPlan) {
+        this.pendingActions.push({
+          plan: updated.actionPlan,
+          timestamp: Date.now(),
+          context: { ...updated }
+        });
+        updated.actionPlan = {
+          ...updated.actionPlan,
+          executed: true,
+          executionTime: Date.now()
+        };
+      }
+    } else {
+      updated.actionPlan = {
+        ...updated.actionPlan,
+        prepared: true
+      };
+    }
+    return updated;
+  }
+  /**
+   * T7: Memory Encoding
+   * Store and retrieve memories
+   */
+  async processT7MemoryEncoding(context, mode) {
+    const updated = { ...context };
+    if (mode === CognitiveMode.REFLECTIVE) {
+      const query = JSON.stringify({
+        perception: updated.perceptionData,
+        thoughts: updated.thoughtData
+      });
+      const relevantMemories = await this.memoryStore.retrieveRelevantMemories(query, this.config.memoryRetrievalCount);
+      updated.relevantMemories = [.../* @__PURE__ */ new Set([...updated.relevantMemories, ...relevantMemories])];
+      if (updated.perceptionData?.sensoryProcessed && !updated.activeCouplings.includes(CouplingType.PERCEPTION_MEMORY)) {
+        updated.activeCouplings.push(CouplingType.PERCEPTION_MEMORY);
+      }
+    } else {
+      if (updated.thoughtData?.integrated || updated.thoughtData?.response) {
+        await this.memoryStore.storeMemory({
+          chatId: 0,
+          messageId: Date.now(),
+          sender: "system",
+          text: updated.thoughtData.integrated || updated.thoughtData.response
+        });
+      }
+    }
+    return updated;
+  }
+  /**
+   * T8: Balanced Response
+   * Integrate all streams into coherent response
+   */
+  async processT8BalancedResponse(context, mode) {
+    const updated = { ...context };
+    if (mode === CognitiveMode.EXPRESSIVE) {
+      const emotionalState = this.personaCore.getDominantEmotion();
+      const integratedResponse = {
+        perception: updated.perceptionData,
+        memories: updated.relevantMemories,
+        thoughts: updated.thoughtData,
+        actions: updated.actionPlan,
+        emotional: {
+          valence: updated.emotionalValence,
+          arousal: updated.emotionalArousal,
+          dominant: emotionalState
+        },
+        timestamp: Date.now()
+      };
+      const emotionalDelta = this.calculateEmotionalDelta(updated);
+      await this.personaCore.updateEmotionalState(emotionalDelta);
+      if (!updated.activeCouplings.includes(CouplingType.BALANCED_INTEGRATION)) {
+        updated.activeCouplings.push(CouplingType.BALANCED_INTEGRATION);
+      }
+      this.pendingActions = [];
+      updated.perceptionData = integratedResponse;
+      updated.attentionWeight = this.calculateNewAttention(updated);
+    } else {
+      updated.perceptionData = {
+        ...updated.perceptionData,
+        balancePrepared: true
+      };
+    }
+    return updated;
+  }
+  /**
+   * Calculate emotional delta based on processing
+   */
+  calculateEmotionalDelta(context) {
+    const delta = {};
+    delta.interest = context.salienceScore * 0.1;
+    if (context.emotionalValence > 0) {
+      delta.joy = context.emotionalValence * 0.1;
+    } else if (context.emotionalValence < 0) {
+      delta.sadness = Math.abs(context.emotionalValence) * 0.1;
+    }
+    return delta;
+  }
+  /**
+   * Calculate new attention weight
+   */
+  calculateNewAttention(context) {
+    const decay = 0.95;
+    const salienceBoost = context.salienceScore * 0.1;
+    return Math.min(1, context.attentionWeight * decay + salienceBoost);
+  }
+  /**
+   * Get pending actions
+   */
+  getPendingActions() {
+    return [...this.pendingActions];
+  }
+  /**
+   * Get current perception
+   */
+  getCurrentPerception() {
+    return this.currentPerception;
+  }
+  /**
+   * Clear processing state
+   */
+  clearState() {
+    this.currentPerception = void 0;
+    this.pendingActions = [];
+  }
+};
+
+// ../../../dove9/dist/core/kernel.js
+init_cjs_shim();
+
+// ../../../dove9/dist/integration/mail-protocol-bridge.js
+init_cjs_shim();
+var MailProtocolBridge = class {
+  mailboxMapping;
+  defaultPriority;
+  enableThreading;
+  constructor(config2 = {}) {
+    this.mailboxMapping = {
+      ...DEFAULT_MAILBOX_MAPPING,
+      ...config2.mailboxMapping
+    };
+    this.defaultPriority = config2.defaultPriority ?? 5;
+    this.enableThreading = config2.enableThreading ?? true;
+  }
+  /**
+   * Convert MailMessage to MessageProcess
+   */
+  mailToProcess(mail) {
+    const state = this.determineProcessState(mail);
+    const priority = this.calculatePriority(mail);
+    const process2 = {
+      id: mail.messageId,
+      messageId: mail.messageId,
+      from: mail.from,
+      to: mail.to,
+      subject: mail.subject,
+      content: mail.body,
+      // Process state
+      state,
+      priority,
+      createdAt: mail.timestamp,
+      // Cognitive context
+      currentStep: 1,
+      currentStream: StreamId.PRIMARY,
+      cognitiveContext: this.createCognitiveContext(mail),
+      // Thread relationships
+      parentId: mail.inReplyTo,
+      childIds: [],
+      // Execution metadata
+      executionHistory: []
+    };
+    return process2;
+  }
+  /**
+   * Convert MessageProcess back to MailMessage for sending
+   */
+  processToMail(process2, response) {
+    const mailbox = this.determineMailbox(process2.state);
+    const flags = this.determineFlags(process2.state);
+    const mail = {
+      messageId: `<${process2.id}@dove9.local>`,
+      threadId: process2.parentId,
+      inReplyTo: process2.parentId,
+      references: process2.parentId ? [process2.parentId] : [],
+      from: process2.to[0],
+      // Echo bot's address
+      to: [process2.from],
+      subject: process2.subject.startsWith("Re: ") ? process2.subject : `Re: ${process2.subject}`,
+      body: response,
+      headers: /* @__PURE__ */ new Map([
+        ["X-Dove9-Process-Id", process2.id],
+        ["X-Dove9-State", process2.state],
+        ["X-Dove9-Priority", process2.priority.toString()],
+        ["X-Dove9-Cycle", Math.floor(process2.currentStep / 12).toString()],
+        ["X-Dove9-Step", process2.currentStep.toString()]
+      ]),
+      timestamp: /* @__PURE__ */ new Date(),
+      receivedAt: /* @__PURE__ */ new Date(),
+      flags,
+      mailbox
+    };
+    return mail;
+  }
+  /**
+   * Determine process state from mail flags and mailbox
+   */
+  determineProcessState(mail) {
+    const flags = mail.flags || [];
+    if (mail.mailbox === this.mailboxMapping.trash) {
+      return ProcessState.TERMINATED;
+    }
+    if (mail.mailbox === this.mailboxMapping.drafts) {
+      return ProcessState.SUSPENDED;
+    }
+    if (mail.mailbox === this.mailboxMapping.sent) {
+      return ProcessState.COMPLETED;
+    }
+    if (mail.mailbox === this.mailboxMapping.processing) {
+      return ProcessState.PROCESSING;
+    }
+    if (flags.includes(MailFlag.DELETED)) {
+      return ProcessState.TERMINATED;
+    }
+    if (flags.includes(MailFlag.DRAFT)) {
+      return ProcessState.SUSPENDED;
+    }
+    if (flags.includes(MailFlag.ANSWERED)) {
+      return ProcessState.COMPLETED;
+    }
+    if (flags.includes(MailFlag.FLAGGED)) {
+      return ProcessState.ACTIVE;
+    }
+    return ProcessState.PENDING;
+  }
+  /**
+   * Determine mailbox from process state
+   */
+  determineMailbox(state) {
+    switch (state) {
+      case ProcessState.PENDING:
+        return this.mailboxMapping.inbox;
+      case ProcessState.ACTIVE:
+      case ProcessState.PROCESSING:
+      case ProcessState.WAITING:
+        return this.mailboxMapping.processing;
+      case ProcessState.COMPLETED:
+        return this.mailboxMapping.sent;
+      case ProcessState.SUSPENDED:
+        return this.mailboxMapping.drafts;
+      case ProcessState.TERMINATED:
+        return this.mailboxMapping.trash;
+      default:
+        return this.mailboxMapping.inbox;
+    }
+  }
+  /**
+   * Determine mail flags from process state
+   */
+  determineFlags(state) {
+    const flags = [];
+    switch (state) {
+      case ProcessState.COMPLETED:
+        flags.push(MailFlag.SEEN, MailFlag.ANSWERED);
+        break;
+      case ProcessState.ACTIVE:
+      case ProcessState.PROCESSING:
+        flags.push(MailFlag.FLAGGED);
+        break;
+      case ProcessState.SUSPENDED:
+        flags.push(MailFlag.DRAFT);
+        break;
+      case ProcessState.TERMINATED:
+        flags.push(MailFlag.DELETED);
+        break;
+      case ProcessState.PENDING:
+        break;
+    }
+    return flags;
+  }
+  /**
+   * Calculate priority from mail metadata
+   */
+  calculatePriority(mail) {
+    let priority = this.defaultPriority;
+    if (mail.to.length === 1) {
+      priority += 2;
+    }
+    if (mail.flags?.includes(MailFlag.FLAGGED)) {
+      priority += 2;
+    }
+    if (mail.inReplyTo || mail.subject.toLowerCase().startsWith("re:")) {
+      priority += 1;
+    }
+    const urgentMarkers = ["urgent", "important", "asap", "priority", "critical"];
+    const subjectLower = mail.subject.toLowerCase();
+    if (urgentMarkers.some((marker) => subjectLower.includes(marker))) {
+      priority += 3;
+    }
+    if (mail.size && mail.size > 1e5) {
+      priority -= 1;
+    }
+    return Math.max(1, Math.min(10, priority));
+  }
+  /**
+   * Create initial cognitive context from mail
+   */
+  createCognitiveContext(mail) {
+    const subjectLength = mail.subject.length;
+    const bodyLength = mail.body.length;
+    const hasAttachments = (mail.attachments?.length || 0) > 0;
+    const isReply = !!mail.inReplyTo;
+    let salienceScore = 0.5;
+    if (subjectLength > 50)
+      salienceScore += 0.1;
+    if (bodyLength > 500)
+      salienceScore += 0.1;
+    if (hasAttachments)
+      salienceScore += 0.15;
+    if (isReply)
+      salienceScore += 0.1;
+    salienceScore = Math.min(1, salienceScore);
+    return {
+      relevantMemories: [],
+      emotionalValence: 0,
+      emotionalArousal: 0.3,
+      // Slight arousal for new messages
+      salienceScore,
+      attentionWeight: salienceScore,
+      activeCouplings: [CouplingType.PERCEPTION_MEMORY]
+      // Default coupling
+    };
+  }
+  /**
+   * Update process with mail metadata after cognitive processing
+   */
+  updateProcessFromMail(process2, mail) {
+    return {
+      ...process2,
+      state: this.determineProcessState(mail),
+      priority: this.calculatePriority(mail)
+    };
+  }
+  /**
+   * Extract thread relationships from mail
+   */
+  extractThreadRelations(mail) {
+    const parentId = mail.inReplyTo;
+    const siblingIds = mail.references?.filter((ref) => ref !== parentId) || [];
+    return { parentId, siblingIds };
+  }
+  /**
+   * Get mailbox mapping configuration
+   */
+  getMailboxMapping() {
+    return { ...this.mailboxMapping };
+  }
+};
+
+// ../../../dove9/dist/utils/logger.js
+init_cjs_shim();
+var LOG_LEVEL_PRIORITY = {
+  debug: 0,
+  info: 1,
+  warn: 2,
+  error: 3
+};
+var minLevel = process.env.LOG_LEVEL || "info";
+var enableColors = process.env.NO_COLOR !== "true";
+var COLORS = {
+  reset: "\x1B[0m",
+  debug: "\x1B[36m",
+  info: "\x1B[32m",
+  warn: "\x1B[33m",
+  error: "\x1B[31m",
+  context: "\x1B[90m"
+};
+function setLogLevel(level) {
+  minLevel = level;
+}
+var Dove9Logger = class _Dove9Logger {
+  context;
+  constructor(context) {
+    this.context = context;
+  }
+  shouldLog(level) {
+    return LOG_LEVEL_PRIORITY[level] >= LOG_LEVEL_PRIORITY[minLevel];
+  }
+  log(level, ...args) {
+    if (!this.shouldLog(level))
+      return;
+    const timestamp = (/* @__PURE__ */ new Date()).toISOString();
+    const levelStr = level.toUpperCase().padEnd(5);
+    const contextStr = `[${this.context}]`;
+    let prefix;
+    if (enableColors) {
+      prefix = `${COLORS.context}${timestamp}${COLORS.reset} ${COLORS[level]}${levelStr}${COLORS.reset} ${COLORS.context}${contextStr}${COLORS.reset}`;
+    } else {
+      prefix = `${timestamp} ${levelStr} ${contextStr}`;
+    }
+    if (level === "error") {
+      console.error(prefix, ...args);
+    } else if (level === "warn") {
+      console.warn(prefix, ...args);
+    } else {
+      console.log(prefix, ...args);
+    }
+  }
+  debug(...args) {
+    this.log("debug", ...args);
+  }
+  info(...args) {
+    this.log("info", ...args);
+  }
+  warn(...args) {
+    this.log("warn", ...args);
+  }
+  error(...args) {
+    this.log("error", ...args);
+  }
+  child(subContext) {
+    return new _Dove9Logger(`${this.context}:${subContext}`);
+  }
+};
+function getLogger2(context) {
+  return new Dove9Logger(context);
+}
+
+// ../../../dove9/dist/core/kernel.js
+import { EventEmitter as EventEmitter3 } from "events";
+var logger = getLogger2("Dove9Kernel");
+function generateProcessId() {
+  return `proc_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`;
+}
+function createInitialContext() {
+  return {
+    relevantMemories: [],
+    emotionalValence: 0,
+    emotionalArousal: 0.5,
+    salienceScore: 0.5,
+    attentionWeight: 1,
+    activeCouplings: []
+  };
+}
+var Dove9Kernel = class extends EventEmitter3 {
+  config;
+  engine;
+  processTable = /* @__PURE__ */ new Map();
+  processQueue = [];
+  activeProcesses = /* @__PURE__ */ new Set();
+  running = false;
+  metrics;
+  // Mail protocol support
+  mailBridge;
+  mailboxMapping;
+  messageToProcessMap = /* @__PURE__ */ new Map();
+  // messageId → processId
+  processToMessageMap = /* @__PURE__ */ new Map();
+  // processId → messageId
+  constructor(processor, config2 = {}) {
+    super();
+    this.config = { ...DEFAULT_DOVE9_CONFIG, ...config2 };
+    this.engine = new TriadicCognitiveEngine(processor, this.config.stepDuration);
+    this.metrics = this.initializeMetrics();
+    this.engine.on(this.handleEngineEvent.bind(this));
+  }
+  /**
+   * Initialize metrics
+   */
+  initializeMetrics() {
+    return {
+      totalSteps: 0,
+      totalCycles: 0,
+      processesCompleted: 0,
+      averageLatency: 0,
+      streamCoherence: 1,
+      cognitiveLoad: 0,
+      activeCouplings: []
+    };
+  }
+  /**
+   * Start the kernel
+   */
+  async start() {
+    if (this.running)
+      return;
+    this.running = true;
+    this.engine.start();
+    this.scheduleNextProcess();
+    this.emitEvent({ type: "step_advance", step: 0, cycle: 0 });
+  }
+  /**
+   * Stop the kernel
+   */
+  async stop() {
+    if (!this.running)
+      return;
+    this.running = false;
+    this.engine.stop();
+    for (const processId of this.activeProcesses) {
+      const process2 = this.processTable.get(processId);
+      if (process2) {
+        process2.state = ProcessState.SUSPENDED;
+      }
+    }
+  }
+  /**
+   * Create a new message process
+   */
+  createProcess(messageId, from, to, subject, content, priority = 5) {
+    const processId = generateProcessId();
+    const process2 = {
+      id: processId,
+      messageId,
+      from,
+      to,
+      subject,
+      content,
+      state: ProcessState.PENDING,
+      priority,
+      createdAt: /* @__PURE__ */ new Date(),
+      currentStep: 0,
+      currentStream: StreamId.PRIMARY,
+      cognitiveContext: createInitialContext(),
+      childIds: [],
+      executionHistory: []
+    };
+    this.processTable.set(processId, process2);
+    this.enqueueProcess(processId, priority);
+    this.emitEvent({ type: "process_created", process: process2 });
+    return process2;
+  }
+  /**
+   * Enqueue a process based on priority
+   */
+  enqueueProcess(processId, priority) {
+    let insertIndex = this.processQueue.length;
+    for (let i = 0; i < this.processQueue.length; i++) {
+      const existingProcess = this.processTable.get(this.processQueue[i]);
+      if (existingProcess && existingProcess.priority < priority) {
+        insertIndex = i;
+        break;
+      }
+    }
+    this.processQueue.splice(insertIndex, 0, processId);
+    this.metrics.cognitiveLoad = this.activeProcesses.size / this.config.maxConcurrentProcesses;
+  }
+  /**
+   * Schedule the next process for execution
+   */
+  scheduleNextProcess() {
+    if (!this.running)
+      return;
+    while (this.activeProcesses.size < this.config.maxConcurrentProcesses && this.processQueue.length > 0) {
+      const processId = this.processQueue.shift();
+      if (processId) {
+        this.activateProcess(processId);
+      }
+    }
+    setTimeout(() => this.scheduleNextProcess(), this.config.stepDuration);
+  }
+  /**
+   * Activate a process for execution
+   */
+  async activateProcess(processId) {
+    const process2 = this.processTable.get(processId);
+    if (!process2)
+      return;
+    process2.state = ProcessState.ACTIVE;
+    this.activeProcesses.add(processId);
+    try {
+      await this.executeProcess(process2);
+    } catch (error) {
+      process2.state = ProcessState.TERMINATED;
+      logger.error(`Process ${processId} failed:`, error);
+    }
+  }
+  /**
+   * Execute a process through the cognitive loop
+   */
+  async executeProcess(process2) {
+    process2.state = ProcessState.PROCESSING;
+    const startTime2 = Date.now();
+    const updatedContext = await this.engine.processMessage(process2);
+    process2.cognitiveContext = updatedContext;
+    const record = {
+      timestamp: /* @__PURE__ */ new Date(),
+      step: this.engine.getState().currentStep,
+      stream: process2.currentStream,
+      term: this.engine.getState().streams.get(process2.currentStream)?.currentTerm,
+      mode: this.engine.getState().streams.get(process2.currentStream)?.mode || CognitiveMode.EXPRESSIVE,
+      duration: Date.now() - startTime2,
+      result: "success",
+      output: updatedContext
+    };
+    process2.executionHistory.push(record);
+    this.completeProcess(process2.id, updatedContext);
+  }
+  /**
+   * Complete a process
+   */
+  completeProcess(processId, result) {
+    const process2 = this.processTable.get(processId);
+    if (!process2)
+      return;
+    process2.state = ProcessState.COMPLETED;
+    this.activeProcesses.delete(processId);
+    this.metrics.processesCompleted++;
+    const latency = Date.now() - process2.createdAt.getTime();
+    this.metrics.averageLatency = (this.metrics.averageLatency * (this.metrics.processesCompleted - 1) + latency) / this.metrics.processesCompleted;
+    this.emitEvent({ type: "process_completed", processId, result });
+  }
+  /**
+   * Handle engine events
+   */
+  handleEngineEvent(event) {
+    switch (event.type) {
+      case "step_complete":
+        this.metrics.totalSteps++;
+        break;
+      case "cycle_complete":
+        this.metrics.totalCycles = event.cycleNumber;
+        this.emitEvent({
+          type: "cycle_complete",
+          cycle: event.cycleNumber,
+          metrics: { ...this.metrics }
+        });
+        break;
+      case "triad_sync":
+        this.emitEvent({ type: "triad_convergence", triad: event.triad });
+        this.synchronizeProcesses();
+        break;
+      case "coupling_active":
+        this.metrics.activeCouplings = [
+          .../* @__PURE__ */ new Set([...this.metrics.activeCouplings, event.coupling])
+        ];
+        this.emitEvent({
+          type: "coupling_activated",
+          coupling: event.coupling
+        });
+        break;
+    }
+  }
+  /**
+   * Synchronize all active processes at triadic convergence points
+   */
+  synchronizeProcesses() {
+    const streamIds = [StreamId.PRIMARY, StreamId.SECONDARY, StreamId.TERTIARY];
+    this.emitEvent({ type: "stream_sync", streams: streamIds });
+    const engineState = this.engine.getState();
+    const activeStreamCount = Array.from(engineState.streams.values()).filter((s) => s.isActive).length;
+    this.metrics.streamCoherence = activeStreamCount / 3;
+  }
+  /**
+   * Get a process by ID
+   */
+  getProcess(processId) {
+    return this.processTable.get(processId);
+  }
+  /**
+   * Get all processes
+   */
+  getAllProcesses() {
+    return Array.from(this.processTable.values());
+  }
+  /**
+   * Get active processes
+   */
+  getActiveProcesses() {
+    return Array.from(this.activeProcesses).map((id) => this.processTable.get(id)).filter((p) => p !== void 0);
+  }
+  /**
+   * Get kernel state
+   */
+  getState() {
+    const engineState = this.engine.getState();
+    return {
+      currentStep: engineState.currentStep,
+      cycleNumber: engineState.cycleNumber,
+      streams: engineState.streams,
+      processTable: new Map(this.processTable),
+      activeProcesses: new Set(this.activeProcesses),
+      metrics: { ...this.metrics }
+    };
+  }
+  /**
+   * Get kernel metrics
+   */
+  getMetrics() {
+    return { ...this.metrics };
+  }
+  /**
+   * Check if kernel is running
+   */
+  isRunning() {
+    return this.running;
+  }
+  /**
+   * Emit a kernel event
+   */
+  emitEvent(event) {
+    this.emit("kernel_event", event);
+    this.emit(event.type, event);
+  }
+  /**
+   * Fork a process (create child process)
+   */
+  forkProcess(parentId, content, subject) {
+    const parent = this.processTable.get(parentId);
+    if (!parent)
+      return null;
+    const child = this.createProcess(`${parent.messageId}_fork_${Date.now()}`, parent.from, parent.to, subject || `Re: ${parent.subject}`, content, parent.priority);
+    child.parentId = parentId;
+    parent.childIds.push(child.id);
+    child.cognitiveContext = { ...parent.cognitiveContext };
+    return child;
+  }
+  /**
+   * Terminate a process
+   */
+  terminateProcess(processId) {
+    const process2 = this.processTable.get(processId);
+    if (!process2)
+      return false;
+    process2.state = ProcessState.TERMINATED;
+    this.activeProcesses.delete(processId);
+    const queueIndex = this.processQueue.indexOf(processId);
+    if (queueIndex > -1) {
+      this.processQueue.splice(queueIndex, 1);
+    }
+    return true;
+  }
+  /**
+   * Suspend a process
+   */
+  suspendProcess(processId) {
+    const process2 = this.processTable.get(processId);
+    if (!process2 || process2.state !== ProcessState.ACTIVE)
+      return false;
+    process2.state = ProcessState.SUSPENDED;
+    this.activeProcesses.delete(processId);
+    return true;
+  }
+  /**
+   * Resume a suspended process
+   */
+  resumeProcess(processId) {
+    const process2 = this.processTable.get(processId);
+    if (!process2 || process2.state !== ProcessState.SUSPENDED)
+      return false;
+    process2.state = ProcessState.PENDING;
+    this.enqueueProcess(processId, process2.priority);
+    return true;
+  }
+  // ============================================================
+  // Mail Protocol Integration
+  // ============================================================
+  /**
+   * Enable mail protocol bridge for native mail operations
+   */
+  enableMailProtocol(mailboxes = {}) {
+    this.mailboxMapping = { ...DEFAULT_MAILBOX_MAPPING, ...mailboxes };
+    this.mailBridge = new MailProtocolBridge({
+      mailboxMapping: this.mailboxMapping,
+      defaultPriority: 5,
+      enableThreading: true
+    });
+    logger.info("Mail protocol enabled", { mailboxes: this.mailboxMapping });
+    this.on("process_completed", (event) => {
+      if (this.mailBridge) {
+        const process2 = this.processTable.get(event.processId);
+        if (process2) {
+          const response = this.formatProcessResponse(process2, event.result);
+          const mailMessage = this.mailBridge.processToMail(process2, response);
+          this.emit("mail_message_ready", mailMessage);
+        }
+      }
+    });
+  }
+  /**
+   * Check if mail protocol is enabled
+   */
+  isMailProtocolEnabled() {
+    return this.mailBridge !== void 0;
+  }
+  /**
+   * Create a process from incoming mail message
+   */
+  createProcessFromMail(mail) {
+    if (!this.mailBridge) {
+      throw new Error("Mail protocol not enabled. Call enableMailProtocol() first.");
+    }
+    const process2 = this.mailBridge.mailToProcess(mail);
+    this.processTable.set(process2.id, process2);
+    this.messageToProcessMap.set(mail.messageId, process2.id);
+    this.processToMessageMap.set(process2.id, mail.messageId);
+    this.enqueueProcess(process2.id, process2.priority);
+    this.emitEvent({ type: "process_created", process: process2 });
+    logger.info("Created process from mail", {
+      processId: process2.id,
+      messageId: mail.messageId,
+      from: mail.from,
+      subject: mail.subject,
+      priority: process2.priority
+    });
+    return process2;
+  }
+  /**
+   * Get process by mail message ID
+   */
+  getProcessByMessageId(messageId) {
+    const processId = this.messageToProcessMap.get(messageId);
+    if (!processId)
+      return void 0;
+    return this.processTable.get(processId);
+  }
+  /**
+   * Get mail message ID for a process
+   */
+  getMessageIdForProcess(processId) {
+    return this.processToMessageMap.get(processId);
+  }
+  /**
+   * Query processes by mailbox (state mapping)
+   */
+  getProcessesByMailbox(mailbox) {
+    if (!this.mailboxMapping) {
+      return [];
+    }
+    let targetState;
+    if (mailbox === this.mailboxMapping.inbox) {
+      targetState = ProcessState.PENDING;
+    } else if (mailbox === this.mailboxMapping.processing) {
+      targetState = ProcessState.PROCESSING;
+    } else if (mailbox === this.mailboxMapping.sent) {
+      targetState = ProcessState.COMPLETED;
+    } else if (mailbox === this.mailboxMapping.drafts) {
+      targetState = ProcessState.SUSPENDED;
+    } else if (mailbox === this.mailboxMapping.trash) {
+      targetState = ProcessState.TERMINATED;
+    }
+    if (targetState === void 0) {
+      return [];
+    }
+    return Array.from(this.processTable.values()).filter((p) => p.state === targetState);
+  }
+  /**
+   * Move process to a different mailbox (change state)
+   */
+  moveProcessToMailbox(processId, targetMailbox) {
+    if (!this.mailboxMapping) {
+      return false;
+    }
+    const process2 = this.processTable.get(processId);
+    if (!process2)
+      return false;
+    let newState;
+    if (targetMailbox === this.mailboxMapping.inbox) {
+      newState = ProcessState.PENDING;
+    } else if (targetMailbox === this.mailboxMapping.processing) {
+      newState = ProcessState.PROCESSING;
+    } else if (targetMailbox === this.mailboxMapping.sent) {
+      newState = ProcessState.COMPLETED;
+    } else if (targetMailbox === this.mailboxMapping.drafts) {
+      newState = ProcessState.SUSPENDED;
+    } else if (targetMailbox === this.mailboxMapping.trash) {
+      newState = ProcessState.TERMINATED;
+    }
+    if (newState === void 0) {
+      return false;
+    }
+    const oldState = process2.state;
+    process2.state = newState;
+    if (oldState === ProcessState.ACTIVE || oldState === ProcessState.PROCESSING) {
+      this.activeProcesses.delete(processId);
+    }
+    if (newState === ProcessState.PENDING) {
+      this.enqueueProcess(processId, process2.priority);
+    }
+    logger.info("Moved process to mailbox", {
+      processId,
+      targetMailbox,
+      oldState,
+      newState
+    });
+    return true;
+  }
+  /**
+   * Get mailbox for a process based on its state
+   */
+  getMailboxForProcess(processId) {
+    if (!this.mailboxMapping || !this.mailBridge) {
+      return void 0;
+    }
+    const process2 = this.processTable.get(processId);
+    if (!process2)
+      return void 0;
+    const mapping = this.mailBridge.getMailboxMapping();
+    switch (process2.state) {
+      case ProcessState.PENDING:
+        return mapping.inbox;
+      case ProcessState.ACTIVE:
+      case ProcessState.PROCESSING:
+      case ProcessState.WAITING:
+        return mapping.processing;
+      case ProcessState.COMPLETED:
+        return mapping.sent;
+      case ProcessState.SUSPENDED:
+        return mapping.drafts;
+      case ProcessState.TERMINATED:
+        return mapping.trash;
+      default:
+        return mapping.inbox;
+    }
+  }
+  /**
+   * Update process flags from mail flags
+   */
+  updateProcessFromMailFlags(processId, flags) {
+    const process2 = this.processTable.get(processId);
+    if (!process2)
+      return false;
+    if (flags.includes(MailFlag.DELETED)) {
+      process2.state = ProcessState.TERMINATED;
+      this.activeProcesses.delete(processId);
+    } else if (flags.includes(MailFlag.DRAFT)) {
+      process2.state = ProcessState.SUSPENDED;
+      this.activeProcesses.delete(processId);
+    } else if (flags.includes(MailFlag.ANSWERED)) {
+      process2.state = ProcessState.COMPLETED;
+      this.activeProcesses.delete(processId);
+    } else if (flags.includes(MailFlag.FLAGGED)) {
+      process2.priority = Math.min(10, process2.priority + 2);
+    }
+    return true;
+  }
+  /**
+   * Get mail protocol bridge
+   */
+  getMailBridge() {
+    return this.mailBridge;
+  }
+  /**
+   * Format process response for mail output
+   */
+  formatProcessResponse(process2, result) {
+    if (typeof result === "string") {
+      return result;
+    }
+    if (result?.text) {
+      return result.text;
+    }
+    if (result?.response) {
+      return result.response;
+    }
+    const ctx = process2.cognitiveContext;
+    const lines = [
+      "[Cognitive Process Complete]",
+      `Subject: ${process2.subject}`,
+      `Priority: ${process2.priority}`,
+      `Salience: ${ctx.salienceScore.toFixed(2)}`,
+      `Emotional Valence: ${ctx.emotionalValence.toFixed(2)}`,
+      `Emotional Arousal: ${ctx.emotionalArousal.toFixed(2)}`,
+      `Active Couplings: ${ctx.activeCouplings.join(", ") || "none"}`,
+      "",
+      `Processing completed at step ${process2.currentStep} of cycle.`
+    ];
+    return lines.join("\n");
+  }
+};
+
+// ../../../dove9/dist/integration/orchestrator-bridge.js
+init_cjs_shim();
+import { EventEmitter as EventEmitter4 } from "events";
+var DEFAULT_BRIDGE_CONFIG = {
+  ...DEFAULT_DOVE9_CONFIG,
+  botEmailAddress: "echo@localhost",
+  enableAutoResponse: true,
+  responseDelay: 0
+};
+var OrchestratorBridge = class extends EventEmitter4 {
+  dove9 = null;
+  config;
+  running = false;
+  // Response queue
+  responseQueue = [];
+  constructor(config2 = {}) {
+    super();
+    this.config = { ...DEFAULT_BRIDGE_CONFIG, ...config2 };
+  }
+  /**
+   * Initialize with cognitive services
+   */
+  initialize(llmService, memoryStore, personaCore) {
+    const dove9Config = {
+      stepDuration: this.config.stepDuration ?? DEFAULT_DOVE9_CONFIG.stepDuration,
+      maxConcurrentProcesses: this.config.maxConcurrentProcesses ?? DEFAULT_DOVE9_CONFIG.maxConcurrentProcesses,
+      maxQueueDepth: this.config.maxQueueDepth ?? DEFAULT_DOVE9_CONFIG.maxQueueDepth,
+      enableMilter: this.config.enableMilter ?? DEFAULT_DOVE9_CONFIG.enableMilter,
+      enableLMTP: this.config.enableLMTP ?? DEFAULT_DOVE9_CONFIG.enableLMTP,
+      enableDeltaChat: this.config.enableDeltaChat ?? DEFAULT_DOVE9_CONFIG.enableDeltaChat,
+      enableParallelCognition: this.config.enableParallelCognition ?? DEFAULT_DOVE9_CONFIG.enableParallelCognition,
+      defaultSalienceThreshold: this.config.defaultSalienceThreshold ?? DEFAULT_DOVE9_CONFIG.defaultSalienceThreshold
+    };
+    this.dove9 = new Dove9System({
+      ...dove9Config,
+      llmService,
+      memoryStore,
+      personaCore
+    });
+    this.setupEventHandlers();
+  }
+  /**
+   * Set up event handlers for Dove9 system
+   */
+  setupEventHandlers() {
+    if (!this.dove9)
+      return;
+    this.dove9.on("response_ready", (data) => {
+      const emailResponse = {
+        to: data.originalMail.from,
+        from: this.config.botEmailAddress,
+        subject: data.response.subject,
+        body: data.response.body,
+        inReplyTo: data.originalMail.messageId
+      };
+      if (this.config.enableAutoResponse) {
+        this.queueResponse(emailResponse);
+      }
+      this.emit("response", emailResponse);
+    });
+    this.dove9.on("kernel_event", (event) => {
+      this.emit("kernel_event", event);
+    });
+    this.dove9.on("triad_sync", (triad) => {
+      this.emit("triad_sync", triad);
+    });
+    this.dove9.on("cycle_complete", (data) => {
+      this.emit("cycle_complete", data);
+    });
+  }
+  /**
+   * Start the bridge
+   */
+  async start() {
+    if (!this.dove9) {
+      throw new Error("Bridge not initialized. Call initialize() first.");
+    }
+    if (this.running)
+      return;
+    await this.dove9.start();
+    this.running = true;
+    this.emit("started");
+  }
+  /**
+   * Stop the bridge
+   */
+  async stop() {
+    if (!this.dove9 || !this.running)
+      return;
+    await this.dove9.stop();
+    this.running = false;
+    this.emit("stopped");
+  }
+  /**
+   * Process incoming email from Dovecot
+   */
+  async processEmail(email) {
+    if (!this.dove9) {
+      throw new Error("Bridge not initialized");
+    }
+    const isForBot = email.to.some((addr) => addr.toLowerCase() === this.config.botEmailAddress.toLowerCase());
+    if (!isForBot) {
+      return null;
+    }
+    const mailMessage = {
+      messageId: email.messageId || `msg_${Date.now()}`,
+      from: email.from,
+      to: email.to,
+      subject: email.subject,
+      body: email.body,
+      headers: email.headers,
+      timestamp: email.receivedAt || /* @__PURE__ */ new Date(),
+      receivedAt: email.receivedAt || /* @__PURE__ */ new Date(),
+      mailbox: "INBOX"
+      // Default mailbox for incoming messages
+    };
+    return this.dove9.processMailMessage(mailMessage);
+  }
+  /**
+   * Queue a response for sending
+   */
+  queueResponse(response) {
+    this.responseQueue.push(response);
+    if (this.config.responseDelay && this.config.responseDelay > 0) {
+      setTimeout(() => this.flushResponses(), this.config.responseDelay);
+    } else {
+      this.flushResponses();
+    }
+  }
+  /**
+   * Flush pending responses
+   */
+  flushResponses() {
+    while (this.responseQueue.length > 0) {
+      const response = this.responseQueue.shift();
+      if (response) {
+        this.emit("send_response", response);
+      }
+    }
+  }
+  /**
+   * Get metrics
+   */
+  getMetrics() {
+    return this.dove9?.getMetrics() || null;
+  }
+  /**
+   * Get active processes
+   */
+  getActiveProcesses() {
+    return this.dove9?.getActiveProcesses() || [];
+  }
+  /**
+   * Check if running
+   */
+  isRunning() {
+    return this.running;
+  }
+  /**
+   * Get the underlying Dove9 system
+   */
+  getDove9System() {
+    return this.dove9;
+  }
+};
+function createOrchestratorBridge(config2 = {}) {
+  return new OrchestratorBridge(config2);
+}
+
+// ../../../dove9/dist/integration/sys6-mail-scheduler.js
+init_cjs_shim();
+import { EventEmitter as EventEmitter5 } from "events";
+var SYS6_CYCLE_LENGTH = 30;
+var DOVE9_CYCLE_LENGTH = 12;
+var GRAND_CYCLE_LENGTH = 60;
+var SYS6_ALIGNMENT_TOLERANCE = 2;
+var DOVE9_STEPS_PER_STREAM = 4;
+var SYS6_PHASES = {
+  1: "perception-orientation",
+  2: "evaluation-generation",
+  3: "action-integration"
+};
+var DOVE9_STREAMS = {
+  1: "primary",
+  2: "secondary",
+  3: "tertiary"
+};
+var DEFAULT_CONFIG2 = {
+  enableOperadicScheduling: true,
+  maxProcessesPerGrandCycle: 30,
+  urgentPriorityBoost: 3,
+  flaggedPriorityBoost: 2,
+  replyPriorityBoost: 1,
+  baseProcessingSteps: 6
+};
+var Sys6MailScheduler = class extends EventEmitter5 {
+  config;
+  state;
+  stepTimer = null;
+  stepDuration;
+  running = false;
+  constructor(stepDuration = 100, config2 = {}) {
+    super();
+    this.config = { ...DEFAULT_CONFIG2, ...config2 };
+    this.stepDuration = stepDuration;
+    this.state = this.initializeState();
+  }
+  /**
+   * Initialize scheduler state
+   */
+  initializeState() {
+    return {
+      currentStep: 0,
+      currentGrandCycle: 0,
+      sys6Step: 0,
+      sys6Cycle: 0,
+      dove9Step: 0,
+      dove9Cycle: 0,
+      scheduledProcesses: /* @__PURE__ */ new Map(),
+      completedProcesses: /* @__PURE__ */ new Set(),
+      processQueue: []
+    };
+  }
+  /**
+   * Start the scheduler
+   */
+  start() {
+    if (this.running)
+      return;
+    this.running = true;
+    this.state = this.initializeState();
+    this.stepTimer = setInterval(() => {
+      this.advanceStep();
+    }, this.stepDuration);
+  }
+  /**
+   * Stop the scheduler
+   */
+  stop() {
+    if (!this.running)
+      return;
+    this.running = false;
+    if (this.stepTimer) {
+      clearInterval(this.stepTimer);
+      this.stepTimer = null;
+    }
+  }
+  /**
+   * Advance the scheduler by one step
+   */
+  advanceStep() {
+    this.state.currentStep++;
+    const grandStep = this.state.currentStep % GRAND_CYCLE_LENGTH;
+    this.state.sys6Step = this.state.currentStep % SYS6_CYCLE_LENGTH;
+    this.state.dove9Step = this.state.currentStep % DOVE9_CYCLE_LENGTH;
+    if (this.state.sys6Step === 0 && this.state.currentStep > 0) {
+      this.state.sys6Cycle++;
+      this.emitEvent({ type: "sys6_cycle_boundary", cycle: this.state.sys6Cycle });
+    }
+    if (this.state.dove9Step === 0 && this.state.currentStep > 0) {
+      this.state.dove9Cycle++;
+      this.emitEvent({ type: "dove9_cycle_boundary", cycle: this.state.dove9Cycle });
+    }
+    if (grandStep === 0 && this.state.currentStep > 0) {
+      this.state.currentGrandCycle++;
+      this.emitEvent({ type: "grand_cycle_boundary", grandCycle: this.state.currentGrandCycle });
+    }
+    this.checkReadyProcesses();
+  }
+  /**
+   * Check for processes scheduled to execute at current step
+   */
+  checkReadyProcesses() {
+    for (const [processId, schedule] of this.state.scheduledProcesses) {
+      if (schedule.scheduledGrandCycleStep <= this.state.currentStep) {
+        this.emitEvent({ type: "process_ready", processId, step: this.state.currentStep });
+      }
+    }
+  }
+  /**
+   * Schedule a mail message for processing
+   */
+  scheduleMailMessage(mail, process2) {
+    const activeCount = this.state.scheduledProcesses.size;
+    if (activeCount >= this.config.maxProcessesPerGrandCycle) {
+      this.emitEvent({
+        type: "capacity_warning",
+        activeCount,
+        maxCount: this.config.maxProcessesPerGrandCycle
+      });
+    }
+    let priority = process2.priority;
+    const urgentMarkers = ["urgent", "important", "asap", "priority", "critical"];
+    const subjectLower = mail.subject.toLowerCase();
+    if (urgentMarkers.some((marker) => subjectLower.includes(marker))) {
+      priority += this.config.urgentPriorityBoost;
+    }
+    if (mail.flags?.includes(MailFlag.FLAGGED)) {
+      priority += this.config.flaggedPriorityBoost;
+    }
+    if (mail.inReplyTo || subjectLower.startsWith("re:")) {
+      priority += this.config.replyPriorityBoost;
+    }
+    priority = Math.max(1, Math.min(10, priority));
+    const result = this.calculateOperadicSchedule(process2.id, mail.messageId, priority);
+    this.state.scheduledProcesses.set(process2.id, result);
+    this.state.processQueue.push(process2.id);
+    this.emitEvent({ type: "process_scheduled", result });
+    return result;
+  }
+  /**
+   * Calculate operadic schedule for a process
+   */
+  calculateOperadicSchedule(processId, messageId, priority) {
+    if (!this.config.enableOperadicScheduling) {
+      return this.createSimpleSchedule(processId, messageId, priority);
+    }
+    const sys6Phase = priority >= 8 ? 1 : priority >= 4 ? 2 : 3;
+    const phaseBaseStep = (sys6Phase - 1) * 10;
+    const priorityWithinPhase = (priority - 1) % 3 + 1;
+    const sys6Stage = Math.min(5, Math.ceil(priorityWithinPhase * (5 / 3)));
+    const sys6Step = this.hashString(processId) % 2 + 1;
+    const dove9Stream = this.hashString(messageId) % 3 + 1;
+    const dove9Triad = Math.floor(this.state.dove9Step / 3) % 4;
+    const scheduledStep = this.calculateScheduledStep(sys6Phase, sys6Stage, sys6Step, dove9Stream);
+    const estimatedCompletionStep = scheduledStep + this.config.baseProcessingSteps + (10 - priority);
+    return {
+      processId,
+      messageId,
+      scheduledStep,
+      scheduledGrandCycleStep: this.state.currentStep + scheduledStep,
+      sys6Phase,
+      sys6Stage,
+      sys6Step,
+      dove9Stream,
+      dove9Triad,
+      priority,
+      estimatedCompletionStep
+    };
+  }
+  /**
+   * Create a simple FIFO schedule
+   */
+  createSimpleSchedule(processId, messageId, priority) {
+    const scheduledStep = this.state.processQueue.length + 1;
+    return {
+      processId,
+      messageId,
+      scheduledStep,
+      scheduledGrandCycleStep: this.state.currentStep + scheduledStep,
+      sys6Phase: 1,
+      sys6Stage: 1,
+      sys6Step: 1,
+      dove9Stream: 1,
+      dove9Triad: 0,
+      priority,
+      estimatedCompletionStep: scheduledStep + this.config.baseProcessingSteps
+    };
+  }
+  /**
+   * Calculate the scheduled step based on phase/stage/step/stream
+   */
+  calculateScheduledStep(phase, stage, step, stream) {
+    const currentGrandStep = this.state.currentStep % GRAND_CYCLE_LENGTH;
+    const phaseOffset = (phase - 1) * 10;
+    const stageOffset = (stage - 1) * 2;
+    const targetSys6Step = phaseOffset + stageOffset + step;
+    const targetDove9Step = (stream - 1) * 4;
+    let stepsToTarget = 0;
+    for (let offset = 1; offset <= GRAND_CYCLE_LENGTH; offset++) {
+      const testGrandStep = (currentGrandStep + offset) % GRAND_CYCLE_LENGTH;
+      const testSys6 = testGrandStep % SYS6_CYCLE_LENGTH;
+      const testDove9 = testGrandStep % DOVE9_CYCLE_LENGTH;
+      const sys6Aligned = Math.abs(testSys6 - targetSys6Step) <= SYS6_ALIGNMENT_TOLERANCE || testSys6 >= targetSys6Step - SYS6_ALIGNMENT_TOLERANCE;
+      const dove9Aligned = Math.floor(testDove9 / DOVE9_STEPS_PER_STREAM) === stream - 1 || testDove9 >= targetDove9Step;
+      if (sys6Aligned && dove9Aligned) {
+        stepsToTarget = offset;
+        break;
+      }
+    }
+    return Math.max(1, stepsToTarget);
+  }
+  /**
+   * Mark a process as completed
+   */
+  completeProcess(processId) {
+    const schedule = this.state.scheduledProcesses.get(processId);
+    if (!schedule)
+      return;
+    const duration = this.state.currentStep - schedule.scheduledGrandCycleStep;
+    this.state.scheduledProcesses.delete(processId);
+    this.state.completedProcesses.add(processId);
+    const queueIndex = this.state.processQueue.indexOf(processId);
+    if (queueIndex !== -1) {
+      this.state.processQueue.splice(queueIndex, 1);
+    }
+    this.emitEvent({ type: "process_completed", processId, duration });
+  }
+  /**
+   * Get schedule for a process
+   */
+  getSchedule(processId) {
+    return this.state.scheduledProcesses.get(processId);
+  }
+  /**
+   * Get all scheduled processes
+   */
+  getAllSchedules() {
+    return Array.from(this.state.scheduledProcesses.values());
+  }
+  /**
+   * Get pending process count
+   */
+  getPendingCount() {
+    return this.state.scheduledProcesses.size;
+  }
+  /**
+   * Get scheduler state
+   */
+  getState() {
+    return { ...this.state };
+  }
+  /**
+   * Check if scheduler is running
+   */
+  isRunning() {
+    return this.running;
+  }
+  /**
+   * Get current cycle positions
+   */
+  getCyclePositions() {
+    return {
+      grandCycle: this.state.currentGrandCycle,
+      grandStep: this.state.currentStep % GRAND_CYCLE_LENGTH,
+      sys6Cycle: this.state.sys6Cycle,
+      sys6Step: this.state.sys6Step,
+      dove9Cycle: this.state.dove9Cycle,
+      dove9Step: this.state.dove9Step,
+      sys6Progress: this.state.sys6Step / SYS6_CYCLE_LENGTH,
+      dove9Progress: this.state.dove9Step / DOVE9_CYCLE_LENGTH,
+      grandProgress: this.state.currentStep % GRAND_CYCLE_LENGTH / GRAND_CYCLE_LENGTH
+    };
+  }
+  /**
+   * Get next optimal scheduling slot for a given priority
+   */
+  getNextSlot(priority) {
+    const phase = priority >= 8 ? 1 : priority >= 4 ? 2 : 3;
+    const stage = Math.ceil(((priority - 1) % 3 + 1) * (5 / 3));
+    const stream = this.state.currentStep % 3 + 1;
+    const step = this.calculateScheduledStep(phase, stage, 1, stream);
+    return { step, phase, stage: Math.min(5, stage), stream };
+  }
+  /**
+   * Simple string hash function
+   */
+  hashString(str) {
+    let hash = 5381;
+    for (let i = 0; i < str.length; i++) {
+      hash = hash * 33 ^ str.charCodeAt(i);
+    }
+    return Math.abs(hash);
+  }
+  /**
+   * Emit scheduler event
+   */
+  emitEvent(event) {
+    this.emit("scheduler_event", event);
+    this.emit(event.type, event);
+  }
+};
+var sys6_mail_scheduler_default = Sys6MailScheduler;
+
+// ../../../dove9/dist/integration/sys6-orchestrator-bridge.js
+init_cjs_shim();
+import { EventEmitter as EventEmitter6 } from "events";
+var DEFAULT_SYS6_BRIDGE_CONFIG = {
+  ...DEFAULT_DOVE9_CONFIG,
+  botEmailAddress: "echo@localhost",
+  enableAutoResponse: true,
+  responseDelay: 0,
+  enableSys6Scheduling: true,
+  enableCycleTelemetry: true,
+  grandCycleStepDuration: 100
+};
+var Sys6OrchestratorBridge = class extends EventEmitter6 {
+  bridge;
+  scheduler;
+  config;
+  running = false;
+  // Statistics tracking
+  stats;
+  processCompletionTimes = /* @__PURE__ */ new Map();
+  constructor(config2 = {}) {
+    super();
+    this.config = { ...DEFAULT_SYS6_BRIDGE_CONFIG, ...config2 };
+    this.bridge = new OrchestratorBridge(this.config);
+    this.scheduler = new Sys6MailScheduler(this.config.grandCycleStepDuration, this.config.schedulerConfig);
+    this.stats = this.initializeStats();
+    this.setupEventHandlers();
+  }
+  /**
+   * Initialize statistics
+   */
+  initializeStats() {
+    return {
+      grandCycles: 0,
+      sys6Cycles: 0,
+      dove9Cycles: 0,
+      totalScheduled: 0,
+      totalCompleted: 0,
+      averageProcessingSteps: 0,
+      phaseDistribution: { phase1: 0, phase2: 0, phase3: 0 },
+      streamDistribution: { stream1: 0, stream2: 0, stream3: 0 }
+    };
+  }
+  /**
+   * Set up event handlers
+   */
+  setupEventHandlers() {
+    this.bridge.on("response", (response) => {
+      this.emit("response", response);
+    });
+    this.bridge.on("kernel_event", (event) => {
+      this.emit("kernel_event", event);
+    });
+    this.bridge.on("triad_sync", (triad) => {
+      this.emit("triad_sync", triad);
+    });
+    this.bridge.on("cycle_complete", (data) => {
+      this.emit("cycle_complete", data);
+    });
+    this.bridge.on("send_response", (response) => {
+      this.emit("send_response", response);
+    });
+    this.scheduler.on("scheduler_event", (event) => {
+      this.handleSchedulerEvent(event);
+    });
+    this.scheduler.on("process_completed", (event) => {
+      this.stats.totalCompleted++;
+      this.updateAverageProcessingTime(event.duration);
+    });
+    this.scheduler.on("grand_cycle_boundary", (event) => {
+      this.stats.grandCycles = event.grandCycle;
+      this.emitSys6Event({
+        type: "grand_cycle_complete",
+        grandCycle: event.grandCycle,
+        stats: this.getStats()
+      });
+    });
+    this.scheduler.on("sys6_cycle_boundary", (event) => {
+      this.stats.sys6Cycles = event.cycle;
+    });
+    this.scheduler.on("dove9_cycle_boundary", (event) => {
+      this.stats.dove9Cycles = event.cycle;
+    });
+  }
+  /**
+   * Handle scheduler events
+   */
+  handleSchedulerEvent(event) {
+    if (event.type === "process_scheduled") {
+      this.stats.totalScheduled++;
+      const phase = event.result.sys6Phase;
+      if (phase === 1)
+        this.stats.phaseDistribution.phase1++;
+      else if (phase === 2)
+        this.stats.phaseDistribution.phase2++;
+      else
+        this.stats.phaseDistribution.phase3++;
+      const stream = event.result.dove9Stream;
+      if (stream === 1)
+        this.stats.streamDistribution.stream1++;
+      else if (stream === 2)
+        this.stats.streamDistribution.stream2++;
+      else
+        this.stats.streamDistribution.stream3++;
+      this.emitSys6Event({ type: "process_scheduled", result: event.result });
+    }
+  }
+  /**
+   * Update average processing time
+   */
+  updateAverageProcessingTime(duration) {
+    if (this.stats.totalCompleted === 0)
+      return;
+    const total = this.stats.averageProcessingSteps * (this.stats.totalCompleted - 1) + duration;
+    this.stats.averageProcessingSteps = total / this.stats.totalCompleted;
+  }
+  /**
+   * Initialize with cognitive services
+   */
+  initialize(llmService, memoryStore, personaCore) {
+    this.bridge.initialize(llmService, memoryStore, personaCore);
+  }
+  /**
+   * Start the Sys6 bridge
+   */
+  async start() {
+    if (this.running)
+      return;
+    if (this.config.enableSys6Scheduling) {
+      this.scheduler.start();
+    }
+    await this.bridge.start();
+    this.running = true;
+    this.emit("started");
+  }
+  /**
+   * Stop the Sys6 bridge
+   */
+  async stop() {
+    if (!this.running)
+      return;
+    this.scheduler.stop();
+    await this.bridge.stop();
+    this.running = false;
+    this.emit("stopped");
+  }
+  /**
+   * Process email with Sys6 scheduling
+   */
+  async processEmail(email) {
+    const process2 = await this.bridge.processEmail(email);
+    if (!process2)
+      return null;
+    if (this.config.enableSys6Scheduling) {
+      const mailMessage = {
+        messageId: email.messageId || `msg_${Date.now()}`,
+        from: email.from,
+        to: email.to,
+        subject: email.subject,
+        body: email.body,
+        headers: email.headers,
+        timestamp: email.receivedAt || /* @__PURE__ */ new Date(),
+        receivedAt: email.receivedAt || /* @__PURE__ */ new Date(),
+        mailbox: "INBOX"
+      };
+      const schedule = this.scheduler.scheduleMailMessage(mailMessage, process2);
+      this.emitSys6Event({
+        type: "optimal_slot_used",
+        processId: process2.id,
+        slot: {
+          phase: schedule.sys6Phase,
+          stage: schedule.sys6Stage,
+          stream: schedule.dove9Stream,
+          step: schedule.scheduledStep
+        }
+      });
+    }
+    return process2;
+  }
+  /**
+   * Get next optimal scheduling slot for a priority level
+   */
+  getNextOptimalSlot(priority) {
+    const slot = this.scheduler.getNextSlot(priority);
+    const positions = this.scheduler.getCyclePositions();
+    return {
+      ...slot,
+      cyclePositions: positions
+    };
+  }
+  /**
+   * Get schedule for a specific process
+   */
+  getProcessSchedule(processId) {
+    return this.scheduler.getSchedule(processId);
+  }
+  /**
+   * Get all scheduled processes
+   */
+  getAllScheduledProcesses() {
+    return this.scheduler.getAllSchedules();
+  }
+  /**
+   * Mark a process as completed
+   */
+  completeProcess(processId) {
+    this.scheduler.completeProcess(processId);
+  }
+  /**
+   * Get Sys6 integration statistics
+   */
+  getStats() {
+    return { ...this.stats };
+  }
+  /**
+   * Get current cycle positions
+   */
+  getCyclePositions() {
+    return this.scheduler.getCyclePositions();
+  }
+  /**
+   * Get pending process count
+   */
+  getPendingCount() {
+    return this.scheduler.getPendingCount();
+  }
+  /**
+   * Get kernel metrics
+   */
+  getMetrics() {
+    return this.bridge.getMetrics();
+  }
+  /**
+   * Get active processes
+   */
+  getActiveProcesses() {
+    return this.bridge.getActiveProcesses();
+  }
+  /**
+   * Check if running
+   */
+  isRunning() {
+    return this.running;
+  }
+  /**
+   * Check if Sys6 scheduling is enabled
+   */
+  isSys6Enabled() {
+    return this.config.enableSys6Scheduling;
+  }
+  /**
+   * Get the underlying orchestrator bridge
+   */
+  getBridge() {
+    return this.bridge;
+  }
+  /**
+   * Get the Sys6 mail scheduler
+   */
+  getScheduler() {
+    return this.scheduler;
+  }
+  /**
+   * Get the Dove9 system
+   */
+  getDove9System() {
+    return this.bridge.getDove9System();
+  }
+  /**
+   * Emit Sys6 bridge event
+   */
+  emitSys6Event(event) {
+    this.emit("sys6_event", event);
+    this.emit(event.type, event);
+  }
+};
+function createSys6OrchestratorBridge(config2 = {}) {
+  return new Sys6OrchestratorBridge(config2);
+}
+var sys6_orchestrator_bridge_default = Sys6OrchestratorBridge;
+
+// ../../../dove9/dist/index.js
+import { EventEmitter as EventEmitter7 } from "events";
+var Dove9System = class extends EventEmitter7 {
+  kernel;
+  processor;
+  config;
+  running = false;
+  // Mail integration
+  mailBridge;
+  pendingMail = /* @__PURE__ */ new Map();
+  processToMail = /* @__PURE__ */ new Map();
+  constructor(config2) {
+    super();
+    this.config = {
+      ...DEFAULT_DOVE9_CONFIG,
+      ...config2
+    };
+    this.mailBridge = new MailProtocolBridge({
+      defaultPriority: 5,
+      enableThreading: true
+    });
+    this.processor = new DeepTreeEchoProcessor(config2.llmService, config2.memoryStore, config2.personaCore, {
+      enableParallelCognition: config2.enableParallelCognition,
+      memoryRetrievalCount: 10,
+      salienceThreshold: config2.defaultSalienceThreshold
+    });
+    this.kernel = new Dove9Kernel(this.processor, this.config);
+    this.kernel.on("kernel_event", (event) => {
+      this.emit("kernel_event", event);
+      this.handleKernelEvent(event);
+    });
+  }
+  /**
+   * Start the Dove9 system
+   */
+  async start() {
+    if (this.running)
+      return;
+    this.running = true;
+    await this.kernel.start();
+    this.emit("started");
+  }
+  /**
+   * Stop the Dove9 system
+   */
+  async stop() {
+    if (!this.running)
+      return;
+    this.running = false;
+    await this.kernel.stop();
+    this.emit("stopped");
+  }
+  /**
+   * Process an incoming mail message using MailProtocolBridge
+   */
+  async processMailMessage(mail) {
+    this.pendingMail.set(mail.messageId, mail);
+    const process2 = this.mailBridge.mailToProcess(mail);
+    const kernelProcess = this.kernel.createProcess(mail.messageId, mail.from, mail.to, mail.subject, mail.body, process2.priority);
+    this.processToMail.set(kernelProcess.id, mail.messageId);
+    this.emit("mail_received", { mail, process: kernelProcess });
+    return kernelProcess;
+  }
+  /**
+   * Calculate priority for a mail message
+   */
+  calculatePriority(mail) {
+    let priority = 5;
+    if (mail.to.length === 1) {
+      priority += 2;
+    }
+    if (mail.subject.toLowerCase().startsWith("re:")) {
+      priority += 1;
+    }
+    const urgentMarkers = ["urgent", "important", "asap", "priority"];
+    const subjectLower = mail.subject.toLowerCase();
+    if (urgentMarkers.some((marker) => subjectLower.includes(marker))) {
+      priority += 3;
+    }
+    return Math.min(10, priority);
+  }
+  /**
+   * Handle kernel events
+   */
+  handleKernelEvent(event) {
+    switch (event.type) {
+      case "process_completed":
+        this.handleProcessCompleted(event.processId, event.result);
+        break;
+      case "triad_convergence":
+        this.emit("triad_sync", event.triad);
+        break;
+      case "cycle_complete":
+        this.emit("cycle_complete", {
+          cycle: event.cycle,
+          metrics: event.metrics
+        });
+        break;
+    }
+  }
+  /**
+   * Handle process completion
+   */
+  handleProcessCompleted(processId, result) {
+    const mailId = this.processToMail.get(processId);
+    if (!mailId)
+      return;
+    const mail = this.pendingMail.get(mailId);
+    if (!mail)
+      return;
+    const response = this.generateMailResponse(mail, result);
+    this.emit("response_ready", {
+      originalMail: mail,
+      response,
+      processId,
+      cognitiveResult: result
+    });
+    this.pendingMail.delete(mailId);
+    this.processToMail.delete(processId);
+  }
+  /**
+   * Generate a mail response from cognitive result using MailProtocolBridge
+   */
+  generateMailResponse(mail, result) {
+    const responseBody = result.thoughtData?.integrated || result.thoughtData?.response || "Thank you for your message. I have processed it.";
+    const process2 = this.mailBridge.mailToProcess(mail);
+    process2.state = "completed";
+    return this.mailBridge.processToMail(process2, responseBody);
+  }
+  /**
+   * Get kernel metrics
+   */
+  getMetrics() {
+    return this.kernel.getMetrics();
+  }
+  /**
+   * Get kernel state
+   */
+  getState() {
+    return this.kernel.getState();
+  }
+  /**
+   * Get all active processes
+   */
+  getActiveProcesses() {
+    return this.kernel.getActiveProcesses();
+  }
+  /**
+   * Check if system is running
+   */
+  isRunning() {
+    return this.running;
+  }
+  /**
+   * Get the underlying kernel
+   */
+  getKernel() {
+    return this.kernel;
+  }
+  /**
+   * Get the cognitive processor
+   */
+  getProcessor() {
+    return this.processor;
+  }
+};
+function createDove9System(llmService, memoryStore, personaCore, config2 = {}) {
+  return new Dove9System({
+    ...DEFAULT_DOVE9_CONFIG,
+    ...config2,
+    llmService,
+    memoryStore,
+    personaCore
+  });
+}
+
+// src/cognitive-engine.ts
+import { ipcMain as ipcMain9 } from "electron";
+var log20 = getLogger("main/cognitive-engine");
+var memoryPool = [];
+var MAX_MEMORIES = 500;
+var defaultMemoryStore = {
+  async storeMemory(memory) {
+    memoryPool.push({ ...memory, timestamp: Date.now() });
+    if (memoryPool.length > MAX_MEMORIES) {
+      memoryPool.splice(0, memoryPool.length - MAX_MEMORIES);
+    }
+  },
+  retrieveRecentMemories(count) {
+    return memoryPool.slice(-count).map((m) => `[${m.sender}]: ${m.text}`);
+  },
+  async retrieveRelevantMemories(query, count) {
+    const q = query.toLowerCase();
+    const scored = memoryPool.map((m) => ({
+      text: `[${m.sender}]: ${m.text}`,
+      score: m.text.toLowerCase().split(" ").filter((w) => q.includes(w)).length
+    })).sort((a, b) => b.score - a.score);
+    return scored.slice(0, count).map((s) => s.text);
+  }
+};
+var personaName = "Deep Tree Echo";
+var personaMood = "neutral";
+var defaultPersonaCore = {
+  getPersonality() {
+    return `${personaName} - a curious and helpful AI assistant with a ${personaMood} disposition.`;
+  },
+  getDominantEmotion() {
+    return { emotion: personaMood, intensity: 0.5 };
+  },
+  async updateEmotionalState(stimuli) {
+    const positiveSum = (stimuli["joy"] ?? 0) + (stimuli["trust"] ?? 0);
+    const negativeSum = (stimuli["fear"] ?? 0) + (stimuli["anger"] ?? 0);
+    if (positiveSum > negativeSum) {
+      personaMood = "positive";
+    } else if (negativeSum > positiveSum) {
+      personaMood = "reflective";
+    } else {
+      personaMood = "neutral";
+    }
+  }
+};
+var defaultLLMService = {
+  async generateResponse(prompt, context) {
+    const contextSummary = context.length > 0 ? ` (context: ${context.slice(-3).join("; ").slice(0, 120)})` : "";
+    return `[Dove9 triadic response] Processed: "${prompt.slice(
+      0,
+      80
+    )}"${contextSummary}`;
+  },
+  async generateParallelResponse(prompt, history) {
+    const base = await defaultLLMService.generateResponse(prompt, history);
+    return {
+      integratedResponse: base,
+      cognitiveResponse: `Cognitive stream: ${prompt.slice(0, 40)}`,
+      affectiveResponse: `Affective stream: processing...`,
+      relevanceResponse: `Relevance stream: ${history.length} context items`
+    };
+  }
+};
+var dove9System = null;
+async function initCognitiveEngine() {
+  log20.info("Registering cognitive engine IPC handlers");
+  ipcMain9.handle(
+    "cognitive:initialize",
+    async (_event, opts = {}) => {
+      try {
+        if (dove9System?.isRunning()) {
+          log20.info("Dove9 already running, skipping re-init");
+          return { ok: true, status: "already_running" };
+        }
+        if (opts.name) {
+          personaName = opts.name;
+        }
+        dove9System = createDove9System(
+          defaultLLMService,
+          defaultMemoryStore,
+          defaultPersonaCore,
+          { enableParallelCognition: opts.enableParallel ?? true }
+        );
+        dove9System.on("kernel_event", (event) => {
+          log20.debug("kernel_event", event);
+        });
+        await dove9System.start();
+        log20.info("Dove9 system started");
+        return { ok: true, status: "started" };
+      } catch (err) {
+        const msg = err instanceof Error ? err.message : String(err);
+        log20.error("Failed to initialize Dove9:", msg);
+        return { ok: false, error: msg };
+      }
+    }
+  );
+  ipcMain9.handle(
+    "cognitive:process",
+    async (_event, message) => {
+      try {
+        if (!dove9System?.isRunning()) {
+          return { ok: false, error: "Dove9 system not running" };
+        }
+        const mailMsg = {
+          messageId: message.id ?? `msg-${Date.now()}`,
+          from: message.sender ?? "user@local",
+          to: ["dove9@local"],
+          subject: "Message",
+          body: message.content,
+          timestamp: /* @__PURE__ */ new Date(),
+          receivedAt: /* @__PURE__ */ new Date(),
+          headers: /* @__PURE__ */ new Map(),
+          mailbox: "INBOX"
+        };
+        const process2 = await dove9System.processMailMessage(mailMsg);
+        log20.debug("cognitive:process -> process id", process2.id);
+        return {
+          ok: true,
+          processId: process2.id,
+          state: process2.state
+        };
+      } catch (err) {
+        const msg = err instanceof Error ? err.message : String(err);
+        log20.error("cognitive:process error:", msg);
+        return { ok: false, error: msg };
+      }
+    }
+  );
+  ipcMain9.handle("cognitive:status", async () => {
+    if (!dove9System) {
+      return { running: false, metrics: null };
+    }
+    return {
+      running: dove9System.isRunning(),
+      metrics: dove9System.getMetrics(),
+      activeProcesses: dove9System.getActiveProcesses().length
+    };
+  });
+  ipcMain9.handle("cognitive:shutdown", async () => {
+    try {
+      if (dove9System?.isRunning()) {
+        await dove9System.stop();
+        log20.info("Dove9 system stopped via IPC");
+      }
+      dove9System = null;
+      return { ok: true };
+    } catch (err) {
+      const msg = err instanceof Error ? err.message : String(err);
+      log20.error("cognitive:shutdown error:", msg);
+      return { ok: false, error: msg };
+    }
+  });
+  log20.info("Cognitive engine IPC handlers registered");
+  return async () => {
+    if (dove9System?.isRunning()) {
+      await dove9System.stop().catch((err) => log20.error("Error stopping Dove9 on shutdown:", err));
+    }
+    dove9System = null;
+    ipcMain9.removeHandler("cognitive:initialize");
+    ipcMain9.removeHandler("cognitive:process");
+    ipcMain9.removeHandler("cognitive:status");
+    ipcMain9.removeHandler("cognitive:shutdown");
+    log20.info("Cognitive engine IPC handlers removed");
+  };
+}
+
 // src/index.ts
 console.time("init");
 import { mkdirSync, watchFile as watchFile2 } from "fs";
-import { app as rawApp6, dialog as dialog5, ipcMain as ipcMain9, protocol as protocol2 } from "electron";
+import { app as rawApp6, dialog as dialog5, ipcMain as ipcMain10, protocol as protocol2 } from "electron";
 var hostRules = "MAP * ~NOTFOUND, EXCLUDE *.openstreetmap.org";
 rawApp6.commandLine.appendSwitch("host-resolver-rules", hostRules);
 rawApp6.commandLine.appendSwitch("host-rules", hostRules);
@@ -6322,16 +8994,16 @@ mkdirSync(getConfigPath(), { recursive: true });
 mkdirSync(getLogsPath(), { recursive: true });
 mkdirSync(getCustomThemesPath(), { recursive: true });
 var logHandler = createLogHandler();
-var log20 = getLogger("main/index");
+var log21 = getLogger("main/index");
 setLogHandler(logHandler.log, rc_default);
-log20.info(
+log21.info(
   `Deltachat Version ${BuildInfo.VERSION} ${BuildInfo.GIT_REF} ${BuildInfo.BUILD_TIMESTAMP}`
 );
 process.on("exit", logHandler.end);
 process.on("uncaughtException", (err) => {
   const error = { message: err.message, stack: err.stack };
-  if (log20) {
-    log20.error("uncaughtError", error);
+  if (log21) {
+    log21.error("uncaughtError", error);
   } else {
     console.error("uncaughtException", error);
   }
@@ -6349,7 +9021,7 @@ Promise.all([
   isWindowsStorePackage(),
   webxdcStartUpCleanup()
 ]).then(onReady).catch((error) => {
-  log20.critical("Fatal Error during init", error);
+  log21.critical("Fatal Error during init", error);
   dialog5.showErrorBox(
     "Fatal Error during init",
     `[Version: ${BuildInfo.VERSION} | ${platform11()} | ${arch2()}]]
@@ -6361,17 +9033,24 @@ Also make sure you are not trying to run multiple instances of deltachat.`
 });
 var ipc_shutdown_function = null;
 var cognitive_storage_cleanup = null;
+var cognitive_engine_cleanup = null;
 async function onReady([_appReady, _loadedState, _appx, _webxdc_cleanup]) {
   acceptThemeCLI();
   setLanguage(DesktopSettings.state.locale || app12.getLocale());
   const cwd = getAccountsPath();
-  log20.info(`cwd ${cwd}`);
+  log21.info(`cwd ${cwd}`);
   ipc_shutdown_function = await init3(cwd, logHandler);
   try {
     cognitive_storage_cleanup = await initCognitiveStorage();
-    log20.info("Cognitive storage initialized");
+    log21.info("Cognitive storage initialized");
   } catch (error) {
-    log20.error("Failed to initialize cognitive storage:", error);
+    log21.error("Failed to initialize cognitive storage:", error);
+  }
+  try {
+    cognitive_engine_cleanup = await initCognitiveEngine();
+    log21.info("Cognitive engine (Dove9) initialized");
+  } catch (error) {
+    log21.error("Failed to initialize cognitive engine:", error);
   }
   init({ hidden: app12.rc["minimized"] });
   init2(logHandler);
@@ -6383,15 +9062,15 @@ async function onReady([_appReady, _loadedState, _appx, _webxdc_cleanup]) {
       join17(getLocaleDirectoryPath(), "/_untranslated_en.json"),
       (curr, prev) => {
         if (curr.mtime !== prev.mtime) {
-          log20.info("translation-watch: File changed reloading translation data");
+          log21.info("translation-watch: File changed reloading translation data");
           chooseLanguage(getCurrentLocaleDate().locale);
-          log20.info("translation-watch: reloading translation data - done");
+          log21.info("translation-watch: reloading translation data - done");
         }
       }
     );
   }
   cleanupLogFolder().catch(
-    (err) => log20.error("Cleanup of old logfiles failed: ", err)
+    (err) => log21.error("Cleanup of old logfiles failed: ", err)
   );
   cleanupDraftTempDir();
   cleanupInternalTempDirs();
@@ -6408,20 +9087,20 @@ app12.once("ipcReady", () => {
   }
   updateTrayIcon();
   window2.on("close", (e) => {
-    log20.debug("mainWindow.window.on('close')");
+    log21.debug("mainWindow.window.on('close')");
     if (!app12.isQuitting) {
       e.preventDefault();
       if (app12.rc["minimized"] || DesktopSettings.state.minimizeToTray) {
-        log20.debug("mainWindow.window.on('close') Hiding main window");
+        log21.debug("mainWindow.window.on('close') Hiding main window");
         hideDeltaChat();
       } else {
         if (process.platform === "darwin") {
-          log20.debug(
+          log21.debug(
             "mainWindow.window.on('close') We are on mac, so lets hide the main window"
           );
           hideDeltaChat();
         } else {
-          log20.debug("mainWindow.window.on('close') Quitting deltachat");
+          log21.debug("mainWindow.window.on('close') Quitting deltachat");
           quit(e);
         }
       }
@@ -6432,43 +9111,48 @@ function quit(e) {
   if (app12.isQuitting) return;
   app12.isQuitting = true;
   e?.preventDefault();
-  log20.info("Starting app shutdown process");
+  log21.info("Starting app shutdown process");
   try {
     window2?.close();
     window2?.destroy();
   } catch (error) {
-    log20.error("failed to close window, error:", error);
+    log21.error("failed to close window, error:", error);
   }
   ipc_shutdown_function && ipc_shutdown_function();
   if (cognitive_storage_cleanup) {
     cognitive_storage_cleanup().catch(
-      (err) => log20.error("Failed to cleanup cognitive storage:", err)
+      (err) => log21.error("Failed to cleanup cognitive storage:", err)
+    );
+  }
+  if (cognitive_engine_cleanup) {
+    cognitive_engine_cleanup().catch(
+      (err) => log21.error("Failed to cleanup cognitive engine:", err)
     );
   }
   cleanupDraftTempDir();
   function doQuit() {
-    log20.info("Quitting now. Bye.");
+    log21.info("Quitting now. Bye.");
     app12.quit();
   }
   DesktopSettings.saveImmediate().then(() => {
     setTimeout(doQuit, 500);
   });
   setTimeout(() => {
-    log20.error("Saving state took too long. Quitting.");
+    log21.error("Saving state took too long. Quitting.");
     doQuit();
   }, 4e3);
 }
 app12.on("activate", () => {
-  log20.debug("app.on('activate')");
+  log21.debug("app.on('activate')");
   if (!window2) {
-    log20.warn("window not set, this is normal on startup");
+    log21.warn("window not set, this is normal on startup");
     return;
   }
   if (window2.isVisible() === false) {
-    log20.debug("app.on('activate') showing main window");
+    log21.debug("app.on('activate') showing main window");
     showDeltaChat();
   } else {
-    log20.debug("app.on('activate') mainWindow is visible, no need to show it");
+    log21.debug("app.on('activate') mainWindow is visible, no need to show it");
   }
 });
 app12.on("before-quit", (e) => quit(e));
@@ -6508,7 +9192,7 @@ app12.on("web-contents-created", (_ev, contents) => {
     });
   } else {
     contents.on("will-navigate", (e, navigationUrl) => {
-      log20.warn("blocked navigation attempt to", navigationUrl);
+      log21.warn("blocked navigation attempt to", navigationUrl);
       e.preventDefault();
     });
     contents.setWindowOpenHandler((_details) => {
@@ -6523,7 +9207,7 @@ electron_context_menu_default();
 import { join as join17 } from "path";
 import { arch as arch2, platform as platform11 } from "os";
 openUrlsAndFilesFromArgv(process.argv);
-ipcMain9.handle("restart_app", async (_ev) => {
+ipcMain10.handle("restart_app", async (_ev) => {
   app12.relaunch();
   app12.quit();
 });
