@@ -152,7 +152,7 @@ test.describe('LLM Service - Provider Initialization', () => {
   }) => {
     test.setTimeout(TEST_TIMEOUT)
 
-    const _ollamaConfig = await page.evaluate(() => {
+    const ollamaConfig = await page.evaluate(() => {
       const win = window as unknown as {
         __llmService?: {
           getProviderConfig: (provider: string) => Promise<{
@@ -174,7 +174,7 @@ test.describe('LLM Service - Provider Initialization', () => {
       }
     })
 
-    expect(anthropicConfig.supported).toBe(true)
+    expect(ollamaConfig.supported).toBe(true)
   })
 })
 

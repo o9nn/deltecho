@@ -1,3 +1,6 @@
 # Playwright run artifacts
 test-results/
 playwright-report/
+
+# Cognitive harness build output
+cognitive-harness/dist/
