@@ -1,9 +1,9 @@
 # E2E Test Series — latest run
 
-- **Run:** 30244560926 (`de0c5cd4`)
-- **When:** 2026-07-27T07:11:06Z
-- **Suites:** 8/20 passed
-- **Tests:** 142 passed, 12 failed, 50 skipped, 0 flaky
+- **Run:** 30335981600 (`5ee3be14`)
+- **When:** 2026-07-28T07:18:11Z
+- **Suites:** 8/19 passed
+- **Tests:** 137 passed, 11 failed, 40 skipped, 0 flaky
 
 | Result | App | Suite | Passed | Failed | Skipped | Flaky | Did not run |
 | ------ | --- | ----- | ------ | ------ | ------- | ----- | ----------- |
@@ -17,7 +17,6 @@
 | ❌ | `deltecho2` | `basic-tests` | 0 | 1 | 0 | 0 | 8 |
 | ✅ | `deltecho2` | `cognitive-integration` | 16 | 0 | 0 | 0 | 0 |
 | ✅ | `deltecho2` | `cognitive-memory` | 3 | 0 | 9 | 0 | 0 |
-| ❌ | `deltecho2` | `deep-tree-echo` | 5 | 1 | 10 | 0 | 1 |
 | ❌ | `deltecho2` | `group-tests` | 0 | 1 | 0 | 0 | 1 |
 | ✅ | `deltecho2` | `ipc-electron` | 26 | 0 | 0 | 0 | 0 |
 | ✅ | `deltecho2` | `llm-service` | 22 | 0 | 0 | 0 | 0 |
