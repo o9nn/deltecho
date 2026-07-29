@@ -1,7 +1,7 @@
 # E2E Test Series — latest run
 
-- **Run:** 30335981600 (`5ee3be14`)
-- **When:** 2026-07-28T07:18:11Z
+- **Run:** 30429397273 (`fecbf69c`)
+- **When:** 2026-07-29T07:26:06Z
 - **Suites:** 8/19 passed
 - **Tests:** 137 passed, 11 failed, 40 skipped, 0 flaky
 
@@ -10,13 +10,13 @@
 | ❌ | `delta-echo-desk` | `basic-tests` | 0 | 1 | 0 | 0 | 8 |
 | ❌ | `delta-echo-desk` | `cognitive-integration` | 0 | 1 | 0 | 0 | 16 |
 | ✅ | `delta-echo-desk` | `cognitive-memory` | 3 | 0 | 9 | 0 | 0 |
-| ❌ | `delta-echo-desk` | `deep-tree-echo` | 5 | 1 | 10 | 0 | 1 |
 | ❌ | `delta-echo-desk` | `group-tests` | 0 | 1 | 0 | 0 | 1 |
 | ❌ | `delta-echo-desk` | `orchestrator-integration` | 1 | 1 | 0 | 0 | 11 |
 | ❌ | `delta-echo-desk` | `qrcode-tests` | 0 | 1 | 6 | 0 | 1 |
 | ❌ | `deltecho2` | `basic-tests` | 0 | 1 | 0 | 0 | 8 |
 | ✅ | `deltecho2` | `cognitive-integration` | 16 | 0 | 0 | 0 | 0 |
 | ✅ | `deltecho2` | `cognitive-memory` | 3 | 0 | 9 | 0 | 0 |
+| ❌ | `deltecho2` | `deep-tree-echo` | 5 | 1 | 10 | 0 | 1 |
 | ❌ | `deltecho2` | `group-tests` | 0 | 1 | 0 | 0 | 1 |
 | ✅ | `deltecho2` | `ipc-electron` | 26 | 0 | 0 | 0 | 0 |
 | ✅ | `deltecho2` | `llm-service` | 22 | 0 | 0 | 0 | 0 |
