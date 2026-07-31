@@ -1,7 +1,7 @@
 # E2E Test Series — latest run
 
-- **Run:** 30520689335 (`45bd6638`)
-- **When:** 2026-07-30T06:58:01Z
+- **Run:** 30611005047 (`443a2347`)
+- **When:** 2026-07-31T07:04:34Z
 - **Suites:** 8/20 passed
 - **Tests:** 142 passed, 12 failed, 50 skipped, 0 flaky
 
