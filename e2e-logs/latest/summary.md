@@ -1,15 +1,14 @@
 # E2E Test Series — latest run
 
-- **Run:** 31464338450 (`85826ba8`)
-- **When:** 2026-08-11T06:25:01Z
-- **Suites:** 8/20 passed
-- **Tests:** 142 passed, 12 failed, 50 skipped, 0 flaky
+- **Run:** 31569883170 (`10d8bf8b`)
+- **When:** 2026-08-12T07:00:35Z
+- **Suites:** 7/19 passed
+- **Tests:** 139 passed, 12 failed, 41 skipped, 0 flaky
 
 | Result | App | Suite | Passed | Failed | Skipped | Flaky | Did not run |
 | ------ | --- | ----- | ------ | ------ | ------- | ----- | ----------- |
 | ❌ | `delta-echo-desk` | `basic-tests` | 0 | 1 | 0 | 0 | 8 |
 | ❌ | `delta-echo-desk` | `cognitive-integration` | 0 | 1 | 0 | 0 | 16 |
-| ✅ | `delta-echo-desk` | `cognitive-memory` | 3 | 0 | 9 | 0 | 0 |
 | ❌ | `delta-echo-desk` | `deep-tree-echo` | 5 | 1 | 10 | 0 | 1 |
 | ❌ | `delta-echo-desk` | `group-tests` | 0 | 1 | 0 | 0 | 1 |
 | ❌ | `delta-echo-desk` | `orchestrator-integration` | 1 | 1 | 0 | 0 | 11 |
