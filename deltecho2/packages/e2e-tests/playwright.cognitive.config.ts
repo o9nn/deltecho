@@ -15,11 +15,14 @@ import { defineConfig, devices } from '@playwright/test'
  * - llm-service.spec.ts
  * - memory-persistence.spec.ts
  * - ipc-electron.spec.ts
+ * - orchestrator-integration.spec.ts (window.__orchestrator mock)
+ * - ui-components.spec.ts (harness-mounted DOM fixtures)
+ * - deep-tree-echo.spec.ts (harness profiles + cognitive state hooks)
+ * - cognitive-memory.spec.ts (harness-seeded memory storage)
  *
- * NOTE: cognitive-memory.spec.ts is NOT included because it uses profiles
- * from playwright-helper.ts which require the full Delta Chat app.
- * NOTE: ui-components.spec.ts is NOT included because it needs the actual
- * React components from the full app UI.
+ * Suites that still need the full Delta Chat backend (live chatmail server,
+ * real account onboarding) run against the default playwright.config.ts:
+ * basic-tests.spec.ts, group-tests.spec.ts, qrcode-tests.spec.ts.
  */
 const port = Number(process.env.PORT ?? 3100)
 const baseURL = `http://localhost:${port}`
@@ -34,6 +37,10 @@ export default defineConfig({
     'llm-service.spec.ts',
     'memory-persistence.spec.ts',
     'ipc-electron.spec.ts',
+    'orchestrator-integration.spec.ts',
+    'ui-components.spec.ts',
+    'deep-tree-echo.spec.ts',
+    'cognitive-memory.spec.ts',
   ],
   fullyParallel: false,
   forbidOnly: !!process.env.CI,

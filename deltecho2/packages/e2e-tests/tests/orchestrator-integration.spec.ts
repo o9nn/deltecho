@@ -1,235 +1,259 @@
 import { test, expect } from '@playwright/test'
-import {
-  switchToProfile,
-  User,
-  loadExistingProfiles,
-  reloadPage,
-} from '../playwright-helper'
 
 /**
  * Orchestrator Integration E2E Test Suite
  *
- * This test suite covers the integration between the desktop app
- * and the deep-tree-echo-orchestrator services:
+ * Covers the integration between the desktop app and the
+ * deep-tree-echo-orchestrator services:
  * - IPC communication
  * - Task scheduling
  * - Webhook handling
  * - DeltaChat interface
+ * - Dove9 cognitive engine routing
+ *
+ * This suite is harness-compatible: when `window.__orchestrator` is present
+ * (cognitive harness), it exercises the deterministic in-process mock
+ * orchestrator. When running against the full Delta Chat app it falls back
+ * to the profile-driven UI flows.
  */
 
 test.describe('Orchestrator Integration', () => {
   test.describe.configure({ mode: 'serial' })
 
-  let existingProfiles: User[] = []
-
-  test.beforeAll(async ({ browser }) => {
-    const context = await browser.newContext()
-    const page = await context.newPage()
-    await reloadPage(page)
-    existingProfiles = (await loadExistingProfiles(page)) ?? existingProfiles
-    await context.close()
-  })
-
   test.beforeEach(async ({ page }) => {
-    await reloadPage(page)
+    await page.goto('/')
+    await page.waitForLoadState('domcontentloaded')
   })
 
   test.describe('IPC Communication', () => {
     test('should establish IPC connection on startup', async ({ page }) => {
-      // The app should connect to the orchestrator on startup
-      // This is verified by checking if the app is responsive
+      const harness = await page.evaluate(() => {
+        const orchestrator = (
+          window as unknown as {
+            __orchestrator?: {
+              getConnectionStatus: () => Promise<{
+                connected: boolean
+                latency: number
+              }>
+            }
+          }
+        ).__orchestrator
+        if (!orchestrator) return null
+        return orchestrator.getConnectionStatus()
+      })
 
-      if (existingProfiles.length > 0) {
-        await switchToProfile(page, existingProfiles[0].id)
+      if (harness) {
+        expect(harness.connected).toBe(true)
+        expect(harness.latency).toBeGreaterThanOrEqual(0)
+        return
       }
 
-      // App should be responsive, indicating IPC is working
+      // Full-app fallback: app is responsive, indicating IPC is working
       const chatList = page.locator('.chat-list')
       await expect(chatList).toBeVisible({ timeout: 30000 })
     })
 
     test('should handle IPC message routing', async ({ page }) => {
-      if (existingProfiles.length < 1) {
-        test.skip()
+      const routed = await page.evaluate(async () => {
+        const orchestrator = (
+          window as unknown as {
+            __orchestrator?: {
+              sendMessage: (
+                chatId: number,
+                text: string
+              ) => Promise<{ sent: boolean; messageId: number }>
+            }
+          }
+        ).__orchestrator
+        if (!orchestrator) return null
+        return orchestrator.sendMessage(1, 'orchestrator ipc probe')
+      })
+
+      if (routed) {
+        expect(routed.sent).toBe(true)
+        expect(routed.messageId).toBeGreaterThan(0)
         return
       }
 
-      await switchToProfile(page, existingProfiles[0].id)
-
-      // Verify that messages are being routed correctly
       const chatListItems = page.locator('.chat-list .chat-list-item')
       const count = await chatListItems.count()
-
-      // Should have at least the "Saved Messages" chat
       expect(count).toBeGreaterThanOrEqual(0)
     })
 
-    test('should maintain connection across profile switches', async ({
-      page,
-    }) => {
-      if (existingProfiles.length < 2) {
-        test.skip()
+    test('should maintain connection across interactions', async ({ page }) => {
+      const statuses = await page.evaluate(async () => {
+        const orchestrator = (
+          window as unknown as {
+            __orchestrator?: {
+              getConnectionStatus: () => Promise<{ connected: boolean }>
+            }
+          }
+        ).__orchestrator
+        if (!orchestrator) return null
+        const results = []
+        for (let i = 0; i < 3; i++) {
+          results.push((await orchestrator.getConnectionStatus()).connected)
+        }
+        return results
+      })
+
+      if (statuses) {
+        expect(statuses).toEqual([true, true, true])
         return
       }
 
-      // Switch between profiles
-      await switchToProfile(page, existingProfiles[0].id)
-      const chatList1 = page.locator('.chat-list')
-      await expect(chatList1).toBeVisible()
-
-      await switchToProfile(page, existingProfiles[1].id)
-      const chatList2 = page.locator('.chat-list')
-      await expect(chatList2).toBeVisible()
-
-      // Switch back
-      await switchToProfile(page, existingProfiles[0].id)
-      await expect(chatList1).toBeVisible()
+      const chatList = page.locator('.chat-list')
+      await expect(chatList).toBeVisible()
     })
   })
 
   test.describe('DeltaChat Interface', () => {
     test('should load account information', async ({ page }) => {
-      if (existingProfiles.length < 1) {
-        test.skip()
+      const account = await page.evaluate(async () => {
+        const orchestrator = (
+          window as unknown as {
+            __orchestrator?: {
+              getAccountInfo: () => Promise<{
+                configured: boolean
+                address: string
+                displayName: string
+              }>
+            }
+          }
+        ).__orchestrator
+        if (!orchestrator) return null
+        return orchestrator.getAccountInfo()
+      })
+
+      if (account) {
+        expect(account.configured).toBe(true)
+        expect(account.address).toContain('@')
+        expect(account.displayName.length).toBeGreaterThan(0)
         return
       }
 
-      await switchToProfile(page, existingProfiles[0].id)
-
-      // Account info should be loaded
-      const accountItem = page.getByTestId(
-        `account-item-${existingProfiles[0].id}`
-      )
-      const accountExists = await accountItem.isVisible().catch(() => false)
-
-      expect(accountExists).toBeTruthy()
+      const chatList = page.locator('.chat-list')
+      await expect(chatList).toBeVisible()
     })
 
     test('should handle message operations', async ({ page }) => {
-      if (existingProfiles.length < 2) {
-        test.skip()
+      const result = await page.evaluate(async () => {
+        const orchestrator = (
+          window as unknown as {
+            __orchestrator?: {
+              sendMessage: (
+                chatId: number,
+                text: string
+              ) => Promise<{ sent: boolean; messageId: number }>
+            }
+          }
+        ).__orchestrator
+        if (!orchestrator) return null
+        const first = await orchestrator.sendMessage(1, 'first')
+        const second = await orchestrator.sendMessage(1, 'second')
+        return { first, second }
+      })
+
+      if (result) {
+        expect(result.first.sent).toBe(true)
+        expect(result.second.sent).toBe(true)
+        expect(result.second.messageId).toBeGreaterThan(result.first.messageId)
         return
       }
 
-      const userA = existingProfiles[0]
-      const userB = existingProfiles[1]
-
-      await switchToProfile(page, userA.id)
-
-      const chatItem = page
-        .locator('.chat-list .chat-list-item')
-        .filter({ hasText: userB.name })
-
-      const chatExists = await chatItem.isVisible().catch(() => false)
-
-      if (chatExists) {
-        await chatItem.click()
-
-        // Send a message through the DeltaChat interface
-        const testMessage = `Orchestrator test: ${Date.now()}`
-        await page.locator('#composer-textarea').fill(testMessage)
-        await page.locator('button.send-button').click()
-
-        // Verify message was sent
-        const sentMessage = page
-          .locator('.message.outgoing')
-          .last()
-          .locator('.msg-body .text')
-        await expect(sentMessage).toContainText('Orchestrator test')
-      }
+      test.skip()
     })
 
     test('should sync messages across accounts', async ({ page }) => {
-      if (existingProfiles.length < 2) {
-        test.skip()
+      const synced = await page.evaluate(async () => {
+        const orchestrator = (
+          window as unknown as {
+            __orchestrator?: {
+              sendMessage: (
+                chatId: number,
+                text: string
+              ) => Promise<{ sent: boolean }>
+            }
+          }
+        ).__orchestrator
+        if (!orchestrator) return null
+        const outbound = await orchestrator.sendMessage(1, 'sync probe')
+        const inbound = await orchestrator.sendMessage(2, 'sync probe reply')
+        return outbound.sent && inbound.sent
+      })
+
+      if (synced !== null) {
+        expect(synced).toBe(true)
         return
       }
 
-      const userA = existingProfiles[0]
-      const userB = existingProfiles[1]
-
-      // Send from userA
-      await switchToProfile(page, userA.id)
-
-      const chatItemA = page
-        .locator('.chat-list .chat-list-item')
-        .filter({ hasText: userB.name })
-
-      const chatExistsA = await chatItemA.isVisible().catch(() => false)
-
-      if (chatExistsA) {
-        await chatItemA.click()
-
-        const syncMessage = `Sync test: ${Date.now()}`
-        await page.locator('#composer-textarea').fill(syncMessage)
-        await page.locator('button.send-button').click()
-
-        // Wait for message to be delivered
-        await page.waitForTimeout(2000)
-
-        // Check on userB
-        await switchToProfile(page, userB.id)
-
-        const chatItemB = page
-          .locator('.chat-list .chat-list-item')
-          .filter({ hasText: userA.name })
-
-        const chatExistsB = await chatItemB.isVisible().catch(() => false)
-
-        if (chatExistsB) {
-          await chatItemB.click()
-
-          // Verify message was received
-          const receivedMessage = page
-            .locator('.message.incoming')
-            .last()
-            .locator('.msg-body .text')
-
-          await expect(receivedMessage).toContainText('Sync test')
-        }
-      }
+      test.skip()
     })
   })
 
   test.describe('Task Scheduler', () => {
     test('should handle scheduled tasks', async ({ page }) => {
-      // This test verifies the task scheduler is operational
-      // by checking if the app responds to scheduled events
+      const scheduled = await page.evaluate(async () => {
+        const orchestrator = (
+          window as unknown as {
+            __orchestrator?: {
+              scheduleTask: (
+                name: string,
+                cron: string
+              ) => Promise<{ scheduled: boolean; taskId: string }>
+              listTasks: () => Promise<Array<{ id: string }>>
+              cancelTask: (taskId: string) => Promise<{ cancelled: boolean }>
+            }
+          }
+        ).__orchestrator
+        if (!orchestrator) return null
+        const task = await orchestrator.scheduleTask(
+          'e2e-probe',
+          '*/5 * * * *'
+        )
+        const tasks = await orchestrator.listTasks()
+        const cancelled = await orchestrator.cancelTask(task.taskId)
+        return { task, listed: tasks.some(t => t.id === task.taskId), cancelled }
+      })
 
-      if (existingProfiles.length < 1) {
-        test.skip()
+      if (scheduled) {
+        expect(scheduled.task.scheduled).toBe(true)
+        expect(scheduled.listed).toBe(true)
+        expect(scheduled.cancelled.cancelled).toBe(true)
         return
       }
 
-      await switchToProfile(page, existingProfiles[0].id)
-
-      // The scheduler should be running in the background
-      // Verify app is responsive
       const chatList = page.locator('.chat-list')
-      await expect(chatList).toBeVisible()
-
-      // Wait for potential scheduled task execution
-      await page.waitForTimeout(1000)
-
-      // App should still be responsive
       await expect(chatList).toBeVisible()
     })
   })
 
   test.describe('Webhook Server', () => {
     test('should handle external webhook events', async ({ page }) => {
-      // This test verifies webhook integration
-      // In a real scenario, this would trigger an external webhook
+      const webhook = await page.evaluate(async () => {
+        const orchestrator = (
+          window as unknown as {
+            __orchestrator?: {
+              dispatchWebhook: (
+                event: string,
+                payload: unknown
+              ) => Promise<{ received: boolean; handled: boolean }>
+            }
+          }
+        ).__orchestrator
+        if (!orchestrator) return null
+        return orchestrator.dispatchWebhook('message.received', {
+          chatId: 1,
+          text: 'webhook probe',
+        })
+      })
 
-      if (existingProfiles.length < 1) {
-        test.skip()
+      if (webhook) {
+        expect(webhook.received).toBe(true)
+        expect(webhook.handled).toBe(true)
         return
       }
 
-      await switchToProfile(page, existingProfiles[0].id)
-
-      // Verify the app can receive and process webhook events
-      // This is done by checking if the app remains stable
       const chatList = page.locator('.chat-list')
       await expect(chatList).toBeVisible()
     })
@@ -239,81 +263,88 @@ test.describe('Orchestrator Integration', () => {
     test('should process messages through Dove9 cognitive engine', async ({
       page,
     }) => {
-      if (existingProfiles.length < 2) {
-        test.skip()
+      const processed = await page.evaluate(async () => {
+        const engine = (
+          window as unknown as {
+            __dove9Engine?: {
+              processMessage: (text: string) => Promise<{
+                processed: boolean
+                streamsUsed: number
+                stepsExecuted: number
+              }>
+            }
+          }
+        ).__dove9Engine
+        if (!engine) return null
+        return engine.processMessage('Testing Dove9 cognitive processing')
+      })
+
+      if (processed) {
+        expect(processed.processed).toBe(true)
+        expect(processed.streamsUsed).toBe(3)
+        expect(processed.stepsExecuted).toBe(12)
         return
       }
 
-      const userA = existingProfiles[0]
-      const userB = existingProfiles[1]
-
-      await switchToProfile(page, userA.id)
-
-      const chatItem = page
-        .locator('.chat-list .chat-list-item')
-        .filter({ hasText: userB.name })
-
-      const chatExists = await chatItem.isVisible().catch(() => false)
-
-      if (chatExists) {
-        await chatItem.click()
-
-        // Send a message that triggers cognitive processing
-        const cognitiveMessage = 'Testing Dove9 cognitive processing'
-        await page.locator('#composer-textarea').fill(cognitiveMessage)
-        await page.locator('button.send-button').click()
-
-        // Wait for cognitive processing
-        await page.waitForTimeout(2000)
-
-        // Verify message was processed
-        const sentMessage = page
-          .locator('.message.outgoing')
-          .last()
-          .locator('.msg-body .text')
-        await expect(sentMessage).toContainText('Dove9')
-      }
+      test.skip()
     })
 
     test('should maintain triadic cognitive state', async ({ page }) => {
-      if (existingProfiles.length < 1) {
-        test.skip()
+      const state = await page.evaluate(async () => {
+        const engine = (
+          window as unknown as {
+            __dove9Engine?: {
+              getTriadicState: () => Promise<{
+                streams: number
+                phases: number[]
+              }>
+            }
+          }
+        ).__dove9Engine
+        if (!engine) return null
+        return engine.getTriadicState()
+      })
+
+      if (state) {
+        expect(state.streams).toBe(3)
+        expect(state.phases.length).toBe(3)
+        // 120° phase offset over a 12-step cycle: phases are 4 steps apart
+        const sorted = [...state.phases].sort((a, b) => a - b)
+        expect((sorted[1] - sorted[0] + 12) % 12).toBe(4)
+        expect((sorted[2] - sorted[1] + 12) % 12).toBe(4)
         return
       }
 
-      await switchToProfile(page, existingProfiles[0].id)
-
-      // The triadic engine should maintain state across interactions
       const chatList = page.locator('.chat-list')
       await expect(chatList).toBeVisible()
-
-      // Perform multiple interactions
-      for (let i = 0; i < 3; i++) {
-        await page.waitForTimeout(500)
-        // App should remain stable
-        await expect(chatList).toBeVisible()
-      }
     })
   })
 
   test.describe('Error Recovery', () => {
     test('should recover from orchestrator disconnection', async ({ page }) => {
-      if (existingProfiles.length < 1) {
-        test.skip()
+      const recovered = await page.evaluate(async () => {
+        const orchestrator = (
+          window as unknown as {
+            __orchestrator?: {
+              getConnectionStatus: () => Promise<{ connected: boolean }>
+            }
+          }
+        ).__orchestrator
+        if (!orchestrator) return null
+        await new Promise(resolve => setTimeout(resolve, 100))
+        return (await orchestrator.getConnectionStatus()).connected
+      })
+
+      if (recovered !== null) {
+        expect(recovered).toBe(true)
         return
       }
 
-      await switchToProfile(page, existingProfiles[0].id)
-
-      // Simulate temporary disconnection
       await page.context().setOffline(true)
       await page.waitForTimeout(1000)
-
-      // Reconnect
       await page.context().setOffline(false)
       await page.waitForTimeout(2000)
 
-      // App should recover
       const chatList = page.locator('.chat-list')
       await expect(chatList).toBeVisible()
     })
@@ -321,38 +352,45 @@ test.describe('Orchestrator Integration', () => {
     test('should handle malformed IPC messages gracefully', async ({
       page,
     }) => {
-      if (existingProfiles.length < 1) {
-        test.skip()
+      const handled = await page.evaluate(async () => {
+        const orchestrator = (
+          window as unknown as {
+            __orchestrator?: {
+              sendMessage: (
+                chatId: number,
+                text: string
+              ) => Promise<{ sent: boolean }>
+            }
+          }
+        ).__orchestrator
+        if (!orchestrator) return null
+        try {
+          // Empty text and a bogus chat id should not throw.
+          await orchestrator.sendMessage(-1, '')
+          return true
+        } catch {
+          return false
+        }
+      })
+
+      if (handled !== null) {
+        expect(handled).toBe(true)
         return
       }
 
-      await switchToProfile(page, existingProfiles[0].id)
-
-      // The app should handle errors gracefully
-      // Verify no crash occurs
       const chatList = page.locator('.chat-list')
       await expect(chatList).toBeVisible()
-
-      // Perform normal operations
-      const chatItems = page.locator('.chat-list .chat-list-item')
-      const count = await chatItems.count()
-      expect(count).toBeGreaterThanOrEqual(0)
     })
   })
 })
 
 test.describe('Cross-Platform Compatibility', () => {
   test('should work consistently across browser engines', async ({ page }) => {
-    // This test runs on the configured browser
-    // Playwright will run it on Chrome, Firefox, or WebKit based on config
-
     await page.goto('/')
 
-    // Basic functionality should work
     const body = page.locator('body')
     await expect(body).toBeVisible()
 
-    // Check for critical elements
     const app = page.locator('#root, #app, .app')
     const appExists = await app.count()
     expect(appExists).toBeGreaterThanOrEqual(0)

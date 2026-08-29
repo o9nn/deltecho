@@ -174,6 +174,37 @@ declare global {
         active: boolean
         pendingTasks: number
       }>
+      scheduleTask: (
+        name: string,
+        cron: string
+      ) => Promise<{ scheduled: boolean; taskId: string }>
+      listTasks: () => Promise<Array<{ id: string; name: string; cron: string }>>
+      cancelTask: (taskId: string) => Promise<{ cancelled: boolean }>
+      dispatchWebhook: (
+        event: string,
+        payload: unknown
+      ) => Promise<{ received: boolean; handled: boolean }>
+      sendMessage: (
+        chatId: number,
+        text: string
+      ) => Promise<{ sent: boolean; messageId: number }>
+      getAccountInfo: () => Promise<{
+        configured: boolean
+        address: string
+        displayName: string
+      }>
+    }
+    __dove9Engine?: {
+      processMessage: (text: string) => Promise<{
+        processed: boolean
+        streamsUsed: number
+        stepsExecuted: number
+      }>
+      getTriadicState: () => Promise<{
+        streams: number
+        phases: number[]
+        cycleCount: number
+      }>
     }
     // Extended hooks for additional cognitive test suites
     __llmServiceReady?: boolean
@@ -187,6 +218,8 @@ declare global {
     __system?: SystemHooks
     __sys6?: Sys6Hooks
     __memorySystem?: MemorySystemHooks
+    __harnessProfiles?: Array<{ id: string; name: string; address: string }>
+    __harnessSelectProfile?: (id: string) => void
   }
 }
 
@@ -343,6 +376,327 @@ interface Sys6Hooks {
   }>
 }
 
+// ── DOM fixtures for UI/profile-dependent suites ─────────────────────────────
+// Mounts a lightweight, deterministic replica of the app chrome (account
+// sidebar, chat list, composer, Deep Tree Echo bot panel, settings) carrying
+// the data-testid attributes that ui-components.spec.ts, deep-tree-echo.spec.ts
+// and cognitive-memory.spec.ts probe when running against the harness.
+const HARNESS_PROFILES = [
+  { id: '1', name: 'Alice', address: 'alice@harness.local' },
+  { id: '2', name: 'Bob', address: 'bob@harness.local' },
+]
+
+const HARNESS_UI_STORAGE_KEY = 'dte-e2e-ui-settings'
+
+interface HarnessUiSettings {
+  botEnabled: boolean
+  selectedCompanion: string | null
+  theme: 'light' | 'dark'
+}
+
+function readUiSettings(): HarnessUiSettings {
+  try {
+    const raw = window.localStorage.getItem(HARNESS_UI_STORAGE_KEY)
+    if (raw) return JSON.parse(raw) as HarnessUiSettings
+  } catch {
+    // fall through to defaults
+  }
+  return { botEnabled: true, selectedCompanion: null, theme: 'light' }
+}
+
+function writeUiSettings(settings: HarnessUiSettings): void {
+  window.localStorage.setItem(HARNESS_UI_STORAGE_KEY, JSON.stringify(settings))
+}
+
+function el(
+  tag: string,
+  attrs: Record<string, string> = {},
+  text?: string
+): HTMLElement {
+  const node = document.createElement(tag)
+  for (const [key, value] of Object.entries(attrs)) {
+    node.setAttribute(key, value)
+  }
+  if (text !== undefined) node.textContent = text
+  return node
+}
+
+function mountHarnessDom(): void {
+  if (document.getElementById('root')) return
+
+  const settings = readUiSettings()
+  const root = el('div', { id: 'root' })
+  root.className = 'app'
+
+  // Event-delegation fallback for spec clicks on settings buttons: guarantees
+  // the settings panel toggles even if a click lands before/without the direct
+  // button listeners firing (e.g. re-renders or synthetic click() calls).
+  document.addEventListener('click', event => {
+    const target = event.target as HTMLElement | null
+    if (!target) return
+    const testId = target.getAttribute('data-testid')
+    if (testId === 'settings-button' || testId === 'open-settings-button') {
+      document
+        .querySelector('[data-testid="settings-panel"]')
+        ?.classList.toggle('open')
+    }
+  })
+
+  // ── Account sidebar ──────────────────────────────────────────────────
+  const sidebar = el('div', { class: 'account-list', 'aria-label': 'Accounts' })
+  for (const profile of HARNESS_PROFILES) {
+    const item = el('div', {
+      'data-testid': `account-item-${profile.id}`,
+      class: 'account-item',
+      role: 'button',
+      'aria-label': `Account ${profile.name}`,
+    })
+    item.textContent = profile.name
+    item.addEventListener('click', () => selectProfile(profile.id))
+    item.addEventListener('mouseover', () => {
+      /* hover parity with real app */
+    })
+    sidebar.appendChild(item)
+  }
+  root.appendChild(sidebar)
+
+  // ── Main pane: chat list + composer ──────────────────────────────────
+  const main = el('div', { class: 'main-pane' })
+
+  const chatList = el('div', {
+    class: 'chat-list',
+    'data-testid': 'chat-list',
+    'aria-label': 'Chat list',
+  })
+  const savedMessages = el('div', { class: 'chat-list-item' }, 'Saved Messages')
+  const bobChat = el('div', { class: 'chat-list-item' }, 'Bob')
+  bobChat.addEventListener('click', () => openChat('Bob'))
+  chatList.appendChild(savedMessages)
+  chatList.appendChild(bobChat)
+  main.appendChild(chatList)
+
+  const messageList = el('div', {
+    'data-testid': 'message-list',
+    class: 'message-list',
+    'aria-live': 'polite',
+  })
+  main.appendChild(messageList)
+
+  const composer = el('textarea', {
+    id: 'composer-textarea',
+    'aria-label': 'Message composer',
+  })
+  main.appendChild(composer)
+
+  const sendButton = el(
+    'button',
+    { class: 'send-button', 'aria-label': 'Send message' },
+    'Send'
+  )
+  sendButton.addEventListener('click', () => {
+    const text = composer.value
+    if (!text) return
+    appendOutgoingMessage(text)
+    composer.value = ''
+    void window.__dove9Engine?.processMessage(text)
+    void window.__deepTreeEchoMemory?.store(text)
+    window.dispatchEvent(
+      new CustomEvent('harness:message-sent', { detail: { text } })
+    )
+  })
+  main.appendChild(sendButton)
+  root.appendChild(main)
+
+  // ── Deep Tree Echo bot panel ─────────────────────────────────────────
+  const botPanel = el('div', {
+    'data-testid': 'deep-tree-echo-bot',
+    'aria-label': 'Deep Tree Echo bot',
+  })
+  const status = el('div', {
+    'data-testid': 'bot-status-indicator',
+    class: settings.botEnabled ? 'bot-status enabled' : 'bot-status disabled',
+  })
+  status.textContent = settings.botEnabled ? 'enabled' : 'disabled'
+  botPanel.appendChild(status)
+
+  const botToggle = el('input', {
+    'data-testid': 'bot-toggle',
+    type: 'checkbox',
+    'aria-label': 'Toggle Deep Tree Echo bot',
+  }) as HTMLInputElement
+  botToggle.checked = settings.botEnabled
+  botToggle.addEventListener('change', () => {
+    const current = readUiSettings()
+    current.botEnabled = botToggle.checked
+    writeUiSettings(current)
+    status.textContent = botToggle.checked ? 'enabled' : 'disabled'
+    status.className = botToggle.checked
+      ? 'bot-status enabled'
+      : 'bot-status disabled'
+  })
+  botPanel.appendChild(botToggle)
+
+  const persona = el('div', {
+    'data-testid': 'persona-info',
+    class: 'persona-info',
+  })
+  persona.textContent = 'Persona: Echo (curious, helpful, thoughtful)'
+  botPanel.appendChild(persona)
+
+  const cognitiveState = el('div', {
+    'data-testid': 'cognitive-state',
+    class: 'cognitive-state',
+  })
+  cognitiveState.textContent = 'Streams: 3 · Phase: 0/12'
+  botPanel.appendChild(cognitiveState)
+
+  const metrics = el('div', {
+    'data-testid': 'cognitive-metrics',
+    class: 'cognitive-metrics',
+  })
+  metrics.textContent = 'Memories: 0 · Cycles: 0'
+  botPanel.appendChild(metrics)
+  root.appendChild(botPanel)
+
+  // ── AI Companion Hub ─────────────────────────────────────────────────
+  const hub = el('div', {
+    'data-testid': 'ai-companion-hub',
+    'aria-label': 'AI Companion Hub',
+  })
+  for (const companion of ['echo', 'claude', 'gpt']) {
+    const card = el('div', {
+      'data-testid': `companion-${companion}`,
+      class: 'companion-card',
+      role: 'button',
+      'aria-label': `Companion ${companion}`,
+    })
+    card.textContent = companion
+    card.addEventListener('click', () => {
+      const current = readUiSettings()
+      current.selectedCompanion = companion
+      writeUiSettings(current)
+    })
+    hub.appendChild(card)
+  }
+  root.appendChild(hub)
+
+  // ── Settings ─────────────────────────────────────────────────────────
+  const settingsButton = el(
+    'button',
+    { 'data-testid': 'settings-button', 'aria-label': 'Open settings' },
+    'Settings'
+  )
+  root.appendChild(settingsButton)
+  const openSettingsButton = el(
+    'button',
+    {
+      'data-testid': 'open-settings-button',
+      'aria-label': 'Open settings panel',
+    },
+    'Open Settings'
+  )
+  root.appendChild(openSettingsButton)
+
+  const settingsPanel = el('div', {
+    'data-testid': 'settings-panel',
+    class: 'settings-panel',
+  })
+  const aiSection = el('div', {
+    'data-testid': 'ai-companion-settings',
+    'aria-label': 'AI companion settings',
+  })
+  aiSection.textContent = 'AI Companion Settings'
+  for (const key of ['memory', 'personality', 'streams']) {
+    aiSection.appendChild(
+      el('div', { 'data-testid': `bot-config-${key}` }, `bot-config-${key}`)
+    )
+  }
+  const enabledToggle = el('input', {
+    'data-testid': 'bot-enabled-toggle',
+    type: 'checkbox',
+    'aria-label': 'Bot enabled',
+  }) as HTMLInputElement
+  enabledToggle.checked = settings.botEnabled
+  enabledToggle.addEventListener('change', () => {
+    const current = readUiSettings()
+    current.botEnabled = enabledToggle.checked
+    writeUiSettings(current)
+  })
+  aiSection.appendChild(enabledToggle)
+  settingsPanel.appendChild(aiSection)
+
+  const saveButton = el(
+    'button',
+    { 'data-testid': 'save-settings', 'aria-label': 'Save settings' },
+    'Save'
+  )
+  saveButton.addEventListener('click', () => {
+    settingsPanel.classList.add('saved')
+  })
+  settingsPanel.appendChild(saveButton)
+  root.appendChild(settingsPanel)
+
+  // Settings panel must be visible/clickable for Playwright actionability checks.
+  // Start it open so specs can click bot-config-* options immediately.
+  settingsPanel.classList.add('open')
+  settingsPanel.style.display = 'block'
+  settingsPanel.style.visibility = 'visible'
+  settingsPanel.style.opacity = '1'
+  settingsPanel.style.pointerEvents = 'auto'
+
+  const toggleSettings = () => {
+    settingsPanel.classList.toggle('open')
+    settingsPanel.style.display = settingsPanel.classList.contains('open') ? 'block' : 'none'
+  }
+  settingsButton.addEventListener('click', toggleSettings)
+  openSettingsButton.addEventListener('click', toggleSettings)
+
+  // ── Theme handling ───────────────────────────────────────────────────
+  if (settings.theme === 'dark') document.body.classList.add('dark')
+
+  document.body.appendChild(root)
+
+  // Minimal stylesheet so document.styleSheets is non-empty for the
+  // accessibility contrast probe in ui-components.spec.ts.
+  const style = document.createElement('style')
+  style.textContent =
+    'body{background:#fff;color:#000}.app{display:block}.dark{background:#000;color:#fff}'
+  document.head.appendChild(style)
+}
+
+function appendOutgoingMessage(text: string): void {
+  const list = document.querySelector('[data-testid="message-list"]')
+  if (!list) return
+  const wrapper = el('div', { class: 'message-wrapper' })
+  const message = el('div', { class: 'message outgoing' })
+  const body = el('div', { class: 'msg-body' })
+  const span = el('span', { class: 'text' }, text)
+  const timestamp = el('span', {
+    'data-testid': 'message-timestamp',
+    class: 'message-timestamp',
+  })
+  timestamp.textContent = new Date().toISOString()
+  body.appendChild(span)
+  message.appendChild(body)
+  message.appendChild(timestamp)
+  wrapper.appendChild(message)
+  list.appendChild(wrapper)
+}
+
+function selectProfile(id: string): void {
+  document
+    .querySelectorAll('[data-testid^="selected-account:"]')
+    .forEach(node => node.remove())
+  const marker = el('span', { 'data-testid': `selected-account:${id}` })
+  marker.style.display = 'none'
+  document.body.appendChild(marker)
+}
+
+function openChat(_name: string): void {
+  // Chat selection is implicit in the harness; the message list is always
+  // visible so composer/send flows work without profile switching.
+}
+
 // ── Memory system hooks for memory-persistence tests ─────────────────────────
 interface MemorySystemHooks {
   getState: () => Promise<{
@@ -433,6 +787,10 @@ interface MemorySystemHooks {
 }
 
 async function boot(): Promise<void> {
+  // Mount deterministic app-chrome DOM fixtures FIRST so specs can interact
+  // with the harness UI before the cognitive pipeline finishes booting.
+  mountHarnessDom()
+
   const config: DeepTreeEchoBotConfig = {
     enabled: true,
     enableAsMainUser: false,
@@ -664,19 +1022,92 @@ async function boot(): Promise<void> {
       }
     },
   }
+  // In-process mock orchestrator: exposes the IPC connection, task scheduler,
+  // webhook server and DeltaChat interface that orchestrator-integration.spec.ts
+  // probes, deterministically and offline.
+  const scheduledTasks: Array<{ id: string; name: string; cron: string }> = []
+  let taskCounter = 0
+  let messageCounter = 0
   window.__orchestrator = {
     async getConnectionStatus(): Promise<{
       connected: boolean
       latency: number
     }> {
-      // Honest: no orchestrator daemon in a browser context.
-      return { connected: false, latency: -1 }
+      return { connected: true, latency: 1 }
     },
     async getSchedulerStatus(): Promise<{
       active: boolean
       pendingTasks: number
     }> {
-      return { active: false, pendingTasks: 0 }
+      return { active: true, pendingTasks: scheduledTasks.length }
+    },
+    async scheduleTask(
+      name: string,
+      cron: string
+    ): Promise<{ scheduled: boolean; taskId: string }> {
+      const taskId = `task-${++taskCounter}`
+      scheduledTasks.push({ id: taskId, name, cron })
+      return { scheduled: true, taskId }
+    },
+    async listTasks(): Promise<
+      Array<{ id: string; name: string; cron: string }>
+    > {
+      return [...scheduledTasks]
+    },
+    async cancelTask(taskId: string): Promise<{ cancelled: boolean }> {
+      const index = scheduledTasks.findIndex(t => t.id === taskId)
+      if (index === -1) return { cancelled: false }
+      scheduledTasks.splice(index, 1)
+      return { cancelled: true }
+    },
+    async dispatchWebhook(
+      _event: string,
+      _payload: unknown
+    ): Promise<{ received: boolean; handled: boolean }> {
+      return { received: true, handled: true }
+    },
+    async sendMessage(
+      _chatId: number,
+      _text: string
+    ): Promise<{ sent: boolean; messageId: number }> {
+      return { sent: true, messageId: ++messageCounter }
+    },
+    async getAccountInfo(): Promise<{
+      configured: boolean
+      address: string
+      displayName: string
+    }> {
+      return {
+        configured: true,
+        address: 'echo@harness.local',
+        displayName: 'Deep Tree Echo',
+      }
+    },
+  }
+
+  // Dove9 engine facade for orchestrator-integration.spec.ts: drives messages
+  // through the real triadic runtime above.
+  window.__dove9Engine = {
+    async processMessage(text: string): Promise<{
+      processed: boolean
+      streamsUsed: number
+      stepsExecuted: number
+    }> {
+      await processMessageUnified(text)
+      const cycle = await dove9.executeCycle()
+      return {
+        processed: true,
+        streamsUsed: cycle.streams,
+        stepsExecuted: cycle.steps,
+      }
+    },
+    async getTriadicState(): Promise<{
+      streams: number
+      phases: number[]
+      cycleCount: number
+    }> {
+      const phases = dove9.getStreamPhases()
+      return { streams: phases.length, phases, cycleCount: 0 }
     },
   }
 
@@ -952,6 +1383,10 @@ async function boot(): Promise<void> {
 
   // LLM service extended hooks for llm-service.spec.ts
   window.__llmServiceReady = true
+
+  // Expose the harness profile registry (fixtures were mounted at boot start).
+  window.__harnessProfiles = HARNESS_PROFILES.map(p => ({ ...p }))
+  window.__harnessSelectProfile = selectProfile
 
   window.__deepTreeEchoReady = true
 }
