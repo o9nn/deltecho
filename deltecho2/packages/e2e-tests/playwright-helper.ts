@@ -1,6 +1,15 @@
 import { BrowserContext, expect, Page } from '@playwright/test'
 
-export const chatmailServer = 'https://ci-chatmail.testrun.org'
+// Chatmail server used for account onboarding.
+//
+// - Default (CI and local): the in-repo mock chatmail server
+//   (`bin/mock-chatmail.mjs`), started by playwright.config.ts alongside the
+//   app server, so onboarding works offline and deterministically.
+// - Opt-in live mode: set `E2E_LIVE_CHATMAIL=1` to target the real
+//   ci-chatmail.testrun.org service (used by the nightly tracking series).
+export const chatmailServer = process.env.E2E_LIVE_CHATMAIL
+  ? 'https://ci-chatmail.testrun.org'
+  : `http://localhost:${process.env.MOCK_CHATMAIL_PORT ?? 4650}`
 
 export const userNames = ['Alice', 'Bob', 'Chris', 'Denis', 'Eve']
 
