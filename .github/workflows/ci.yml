@@ -298,6 +298,8 @@ jobs:
     name: Jest E2E (packages)
     runs-on: ubuntu-latest
     timeout-minutes: 15
+    permissions:
+      contents: read
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
