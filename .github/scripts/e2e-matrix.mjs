@@ -40,8 +40,9 @@ const COGNITIVE_HARNESS_SUITES = new Set([
   'cognitive-memory',
 ])
 
-// Only deltecho2 has harness-compatible test files
-const HARNESS_ENABLED_APPS = new Set(['deltecho2'])
+// Both desktop apps ship the cognitive harness; the presence of
+// playwright.cognitive.config.ts in the app dir is the source of truth.
+const HARNESS_ENABLED_APPS = new Set(['deltecho2', 'delta-echo-desk'])
 
 const include = []
 
