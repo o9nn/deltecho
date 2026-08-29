@@ -74,3 +74,7 @@ node_modules/
 
 # Native libraries (large binaries)
 native-libs/**/*.so
+
+# E2E generated artifacts
+**/packages/e2e-tests/test-results/
+**/packages/e2e-tests/playwright-report/

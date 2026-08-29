@@ -124,18 +124,17 @@ test.describe('Triadic Cognitive Loop - Core Architecture', () => {
       if (win.__dove9?.executeFullCycle) {
         return win.__dove9.executeFullCycle()
       }
-      return {
-        stepsExecuted: 12,
-        streamsActive: 3,
-        cycleCompleted: true,
-        duration: 0,
-      }
+      return null
     })
 
-    if (cycleResult.cycleCompleted) {
-      expect(cycleResult.stepsExecuted).toBe(12)
-      expect(cycleResult.streamsActive).toBe(3)
+    if (!cycleResult) {
+      test.skip(true, 'window.__dove9 hook not present (run via cognitive harness)')
+      return
     }
+
+    expect(cycleResult.cycleCompleted).toBe(true)
+    expect(cycleResult.stepsExecuted).toBe(12)
+    expect(cycleResult.streamsActive).toBe(3)
   })
 
   test('should process step triads correctly ({1,5,9}, {2,6,10}, {3,7,11}, {4,8,12})', async ({

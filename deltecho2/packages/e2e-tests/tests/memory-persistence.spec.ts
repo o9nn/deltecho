@@ -31,29 +31,6 @@ async function waitForMemorySystem(page: Page, timeout = MEMORY_LOAD_TIMEOUT) {
     })
 }
 
-// Helper to get memory system state
-async function _getMemorySystemState(page: Page) {
-  return page.evaluate(() => {
-    const win = window as unknown as {
-      __memorySystem?: {
-        getState: () => Promise<{
-          initialized: boolean
-          memoryCount: number
-          storageType: string
-        }>
-      }
-    }
-    if (win.__memorySystem?.getState) {
-      return win.__memorySystem.getState()
-    }
-    return {
-      initialized: false,
-      memoryCount: 0,
-      storageType: 'indexeddb',
-    }
-  })
-}
-
 test.describe('Memory Persistence - Storage Operations', () => {
   test.beforeEach(async ({ page }) => {
     await page.goto('/')

@@ -30,31 +30,6 @@ async function waitForSys6System(page: Page, timeout = SYS6_LOAD_TIMEOUT) {
     })
 }
 
-// Helper to get Sys6 state
-async function _getSys6State(page: Page) {
-  return page.evaluate(() => {
-    const win = window as unknown as {
-      __sys6?: {
-        getState: () => Promise<{
-          initialized: boolean
-          currentStep: number
-          cycleCount: number
-          tetradicUnits: number
-        }>
-      }
-    }
-    if (win.__sys6?.getState) {
-      return win.__sys6.getState()
-    }
-    return {
-      initialized: false,
-      currentStep: 0,
-      cycleCount: 0,
-      tetradicUnits: 4,
-    }
-  })
-}
-
 test.describe('Sys6 Triality - Core Architecture', () => {
   test.beforeEach(async ({ page }) => {
     await page.goto('/')
