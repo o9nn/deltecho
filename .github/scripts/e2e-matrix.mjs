@@ -24,10 +24,9 @@ const APPS = [
 
 // Suites that run against the cognitive harness (window.__* hooks).
 // These do NOT require the full Delta Chat backend.
-// NOTE: Only applies to deltecho2 - delta-echo-desk's test files have different
-// content that depends on UI elements not present in the harness.
-// NOTE: cognitive-memory uses profiles from playwright-helper.ts which need the full app
-// NOTE: ui-components tests React components that need the full app UI
+// NOTE: Only applies to apps that ship a playwright.cognitive.config.ts —
+// delta-echo-desk's test files differ in content unless the harness has been
+// ported there (presence of the config file is the source of truth).
 const COGNITIVE_HARNESS_SUITES = new Set([
   'cognitive-integration',
   'triadic-cognitive-loop',
@@ -35,10 +34,15 @@ const COGNITIVE_HARNESS_SUITES = new Set([
   'llm-service',
   'memory-persistence',
   'ipc-electron',
+  'orchestrator-integration',
+  'ui-components',
+  'deep-tree-echo',
+  'cognitive-memory',
 ])
 
-// Only deltecho2 has harness-compatible test files
-const HARNESS_ENABLED_APPS = new Set(['deltecho2'])
+// Both desktop apps ship the cognitive harness; the presence of
+// playwright.cognitive.config.ts in the app dir is the source of truth.
+const HARNESS_ENABLED_APPS = new Set(['deltecho2', 'delta-echo-desk'])
 
 const include = []
 

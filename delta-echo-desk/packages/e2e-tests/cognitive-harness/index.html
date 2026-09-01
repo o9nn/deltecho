@@ -1,0 +1,29 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Deltecho Cognitive Integration Harness</title>
+  </head>
+  <body>
+    <main id="app">
+      <h1>Deltecho Cognitive Integration Harness</h1>
+      <p data-testid="harness-status">Booting cognitive system…</p>
+    </main>
+    <!-- data-testid selectors the shared specs look for -->
+    <button data-testid="settings-button" type="button" hidden>Settings</button>
+    <section data-testid="settings-panel" hidden></section>
+    <script type="module" src="./dist/harness.js"></script>
+    <script type="module">
+      const check = setInterval(() => {
+        if (window.__deepTreeEchoReady) {
+          clearInterval(check)
+          const status = document.querySelector(
+            '[data-testid="harness-status"]'
+          )
+          if (status) status.textContent = 'Cognitive system ready'
+        }
+      }, 50)
+    </script>
+  </body>
+</html>

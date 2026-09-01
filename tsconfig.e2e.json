@@ -1,0 +1,43 @@
+{
+  "compilerOptions": {
+    "target": "ES2022",
+    "module": "ES2022",
+    "moduleResolution": "Bundler",
+    "lib": ["ES2022"],
+    "outDir": "./dist-test",
+    "rootDir": ".",
+    "declaration": false,
+    "sourceMap": true,
+    "strict": true,
+    "esModuleInterop": true,
+    "skipLibCheck": true,
+    "forceConsistentCasingInFileNames": true,
+    "resolveJsonModule": true,
+    "allowSyntheticDefaultImports": true,
+    "isolatedModules": true,
+    "noEmit": true,
+    "types": ["jest", "node"],
+    "paths": {
+      "@deltecho/membrane-transport": ["./packages/membrane-transport/src"],
+      "@deltecho/gesture-glyph": ["./packages/gesture-glyph/src"],
+      "@deltecho/cognitive": ["./packages/cognitive/index.ts"],
+      "@deltecho/reasoning": ["./packages/reasoning/index.ts"],
+      "@deltecho/shared": ["./packages/shared/index.ts"],
+      "@deltecho/sys6-triality": ["./packages/sys6-triality/src/index.ts"],
+      "deep-tree-echo-core": ["./deep-tree-echo-core/src/index.ts"],
+      "dove9": ["./dove9/src/index.ts"]
+    }
+  },
+  "include": [
+    "test/**/*.ts",
+    "test/**/*.tsx",
+    "tests/**/*.ts",
+    "tests/**/*.tsx"
+  ],
+  "exclude": [
+    "node_modules",
+    "dist",
+    "**/node_modules",
+    "**/dist"
+  ]
+}

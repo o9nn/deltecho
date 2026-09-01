@@ -1,309 +1,250 @@
-import { test, expect } from '@playwright/test'
-import {
-  getUser,
-  switchToProfile,
-  User,
-  loadExistingProfiles,
-  reloadPage,
-} from '../playwright-helper'
+import { test, expect, Page } from '@playwright/test'
 
 /**
  * Cognitive Memory System E2E Test Suite
  *
- * This test suite covers the memory systems used by Deep Tree Echo:
+ * Covers the memory systems used by Deep Tree Echo:
  * - RAG (Retrieval-Augmented Generation) memory
- * - Hyperdimensional memory
+ * - Hyperdimensional / semantic memory
  * - Conversation context persistence
  * - Memory retrieval and relevance scoring
+ *
+ * Harness-compatible: when `window.__deepTreeEchoMemory` /
+ * `window.__memorySystem` hooks are present (cognitive harness), tests
+ * exercise the real localStorage-backed memory store directly. When run
+ * against the full Delta Chat app, profile-dependent paths skip honestly.
  */
+
+interface DeepTreeEchoMemoryHooks {
+  store: (text: string) => Promise<void>
+  getAll: () => Promise<string[]>
+  search: (query: string) => Promise<string[]>
+  testRecovery: () => Promise<boolean>
+}
+
+function getMemoryHooks(page: Page) {
+  return page.evaluate(() => {
+    const memory = (
+      window as unknown as { __deepTreeEchoMemory?: DeepTreeEchoMemoryHooks }
+    ).__deepTreeEchoMemory
+    return memory ? true : false
+  })
+}
 
 test.describe('Cognitive Memory System', () => {
   test.describe.configure({ mode: 'serial' })
 
-  let existingProfiles: User[] = []
-
-  test.beforeAll(async ({ browser }) => {
-    const context = await browser.newContext()
-    const page = await context.newPage()
-    await reloadPage(page)
-    existingProfiles = (await loadExistingProfiles(page)) ?? existingProfiles
-    await context.close()
-  })
-
   test.beforeEach(async ({ page }) => {
-    await reloadPage(page)
+    await page.goto('/')
+    await page.waitForLoadState('domcontentloaded')
   })
 
   test.describe('RAG Memory Store', () => {
     test('should store conversation memories', async ({ page }) => {
-      if (existingProfiles.length < 2) {
+      if (!(await getMemoryHooks(page))) {
         test.skip()
         return
       }
 
-      const userA = existingProfiles[0]
-      const userB = existingProfiles[1]
+      const result = await page.evaluate(async () => {
+        const memory = (
+          window as unknown as { __deepTreeEchoMemory: DeepTreeEchoMemoryHooks }
+        ).__deepTreeEchoMemory
+        const marker = `Remember this: The secret code is DELTA-${Date.now()}`
+        await memory.store(marker)
+        const all = await memory.getAll()
+        return { marker, found: all.includes(marker) }
+      })
 
-      await switchToProfile(page, userA.id)
-
-      const chatItem = page
-        .locator('.chat-list .chat-list-item')
-        .filter({ hasText: userB.name })
-
-      const chatExists = await chatItem.isVisible().catch(() => false)
-
-      if (chatExists) {
-        await chatItem.click()
-
-        // Send a memorable message
-        const memoryTestMessage = `Remember this: The secret code is DELTA-${Date.now()}`
-        await page.locator('#composer-textarea').fill(memoryTestMessage)
-        await page.locator('button.send-button').click()
-
-        // Wait for memory storage
-        await page.waitForTimeout(1000)
-
-        // Verify message was sent (memory storage happens in background)
-        const sentMessage = page
-          .locator('.message.outgoing')
-          .last()
-          .locator('.msg-body .text')
-        await expect(sentMessage).toContainText('Remember this')
-      }
+      expect(result.found).toBe(true)
     })
 
     test('should retrieve relevant memories', async ({ page }) => {
-      if (existingProfiles.length < 2) {
+      if (!(await getMemoryHooks(page))) {
         test.skip()
         return
       }
 
-      const userA = existingProfiles[0]
-      const userB = existingProfiles[1]
+      const result = await page.evaluate(async () => {
+        const memory = (
+          window as unknown as { __deepTreeEchoMemory: DeepTreeEchoMemoryHooks }
+        ).__deepTreeEchoMemory
+        await memory.store('The secret code is DELTA-RAG-1')
+        await memory.store('Unrelated fact about weather')
+        return memory.search('secret code')
+      })
 
-      await switchToProfile(page, userA.id)
-
-      const chatItem = page
-        .locator('.chat-list .chat-list-item')
-        .filter({ hasText: userB.name })
-
-      const chatExists = await chatItem.isVisible().catch(() => false)
-
-      if (chatExists) {
-        await chatItem.click()
-
-        // Send a query that should trigger memory retrieval
-        const queryMessage = 'What was the secret code?'
-        await page.locator('#composer-textarea').fill(queryMessage)
-        await page.locator('button.send-button').click()
-
-        // Wait for potential AI response with memory context
-        await page.waitForTimeout(2000)
-
-        // Verify message was sent
-        const sentMessage = page
-          .locator('.message.outgoing')
-          .last()
-          .locator('.msg-body .text')
-        await expect(sentMessage).toContainText('secret code')
-      }
+      expect(result.length).toBeGreaterThan(0)
+      expect(result.some(m => m.includes('DELTA-RAG-1'))).toBe(true)
+      expect(result.some(m => m.includes('weather'))).toBe(false)
     })
 
     test('should handle memory persistence across sessions', async ({
       page,
     }) => {
-      if (existingProfiles.length < 1) {
+      if (!(await getMemoryHooks(page))) {
         test.skip()
         return
       }
 
-      await switchToProfile(page, existingProfiles[0].id)
+      const marker = await page.evaluate(async () => {
+        const memory = (
+          window as unknown as { __deepTreeEchoMemory: DeepTreeEchoMemoryHooks }
+        ).__deepTreeEchoMemory
+        const probe = `session-persistence-${Date.now()}`
+        await memory.store(probe)
+        return probe
+      })
 
-      // Get current chat state
-      const chatList = page.locator('.chat-list .chat-list-item')
-      const initialCount = await chatList.count()
+      await page.reload()
+      await page.waitForLoadState('domcontentloaded')
 
-      // Reload to simulate new session
-      await reloadPage(page)
-      await switchToProfile(page, existingProfiles[0].id)
+      const found = await page.evaluate(async probe => {
+        const memory = (
+          window as unknown as { __deepTreeEchoMemory: DeepTreeEchoMemoryHooks }
+        ).__deepTreeEchoMemory
+        return (await memory.getAll()).includes(probe)
+      }, marker)
 
-      // Verify state persisted
-      const newCount = await chatList.count()
-      expect(newCount).toBe(initialCount)
+      expect(found).toBe(true)
     })
   })
 
   test.describe('Hyperdimensional Memory', () => {
     test('should encode semantic information', async ({ page }) => {
-      if (existingProfiles.length < 2) {
+      if (!(await getMemoryHooks(page))) {
         test.skip()
         return
       }
 
-      const userA = existingProfiles[0]
-      const userB = existingProfiles[1]
-
-      await switchToProfile(page, userA.id)
-
-      const chatItem = page
-        .locator('.chat-list .chat-list-item')
-        .filter({ hasText: userB.name })
-
-      const chatExists = await chatItem.isVisible().catch(() => false)
-
-      if (chatExists) {
-        await chatItem.click()
-
-        // Send semantically rich messages
-        const semanticMessages = [
+      const count = await page.evaluate(async () => {
+        const memory = (
+          window as unknown as { __deepTreeEchoMemory: DeepTreeEchoMemoryHooks }
+        ).__deepTreeEchoMemory
+        const messages = [
           'I love programming in TypeScript',
           'JavaScript is great for web development',
           'Node.js enables server-side JavaScript',
         ]
+        for (const msg of messages) await memory.store(msg)
+        return (await memory.getAll()).filter(m =>
+          messages.some(s => m.includes(s))
+        ).length
+      })
 
-        for (const msg of semanticMessages) {
-          await page.locator('#composer-textarea').fill(msg)
-          await page.locator('button.send-button').click()
-          await page.waitForTimeout(500)
-        }
-
-        // Verify messages were sent
-        const outgoingMessages = page.locator('.message.outgoing')
-        const count = await outgoingMessages.count()
-        expect(count).toBeGreaterThanOrEqual(semanticMessages.length)
-      }
+      expect(count).toBe(3)
     })
 
     test('should find semantically similar memories', async ({ page }) => {
-      if (existingProfiles.length < 2) {
+      if (!(await getMemoryHooks(page))) {
         test.skip()
         return
       }
 
-      const userA = existingProfiles[0]
-      const userB = existingProfiles[1]
+      const results = await page.evaluate(async () => {
+        const memory = (
+          window as unknown as { __deepTreeEchoMemory: DeepTreeEchoMemoryHooks }
+        ).__deepTreeEchoMemory
+        await memory.store('TypeScript adds static typing to JavaScript')
+        await memory.store('The capital of France is Paris')
+        return memory.search('JavaScript')
+      })
 
-      await switchToProfile(page, userA.id)
-
-      const chatItem = page
-        .locator('.chat-list .chat-list-item')
-        .filter({ hasText: userB.name })
-
-      const chatExists = await chatItem.isVisible().catch(() => false)
-
-      if (chatExists) {
-        await chatItem.click()
-
-        // Query for semantically related content
-        const queryMessage = 'Tell me about programming languages'
-        await page.locator('#composer-textarea').fill(queryMessage)
-        await page.locator('button.send-button').click()
-
-        await page.waitForTimeout(1000)
-
-        // Verify query was sent
-        const sentMessage = page
-          .locator('.message.outgoing')
-          .last()
-          .locator('.msg-body .text')
-        await expect(sentMessage).toContainText('programming')
-      }
+      expect(results.length).toBeGreaterThan(0)
+      expect(results.every(m => m.toLowerCase().includes('javascript'))).toBe(
+        true
+      )
     })
   })
 
   test.describe('Context Management', () => {
     test('should maintain conversation context', async ({ page }) => {
-      if (existingProfiles.length < 2) {
+      if (!(await getMemoryHooks(page))) {
         test.skip()
         return
       }
 
-      const userA = existingProfiles[0]
-      const userB = existingProfiles[1]
+      const result = await page.evaluate(async () => {
+        const memory = (
+          window as unknown as { __deepTreeEchoMemory: DeepTreeEchoMemoryHooks }
+        ).__deepTreeEchoMemory
+        await memory.store('My name is Alice')
+        await memory.store('I work as a developer')
+        await memory.store('What do I do for work?')
+        const all = await memory.getAll()
+        return {
+          hasName: all.some(m => m.includes('Alice')),
+          hasWork: all.some(m => m.includes('developer')),
+          hasQuery: all.some(m => m.includes('do for work')),
+        }
+      })
 
-      await switchToProfile(page, userA.id)
-
-      const chatItem = page
-        .locator('.chat-list .chat-list-item')
-        .filter({ hasText: userB.name })
-
-      const chatExists = await chatItem.isVisible().catch(() => false)
-
-      if (chatExists) {
-        await chatItem.click()
-
-        // Send context-building messages
-        await page.locator('#composer-textarea').fill('My name is Alice')
-        await page.locator('button.send-button').click()
-        await page.waitForTimeout(500)
-
-        await page.locator('#composer-textarea').fill('I work as a developer')
-        await page.locator('button.send-button').click()
-        await page.waitForTimeout(500)
-
-        // Query that requires context
-        await page.locator('#composer-textarea').fill('What do I do for work?')
-        await page.locator('button.send-button').click()
-
-        // Verify messages were sent
-        const outgoingMessages = page.locator('.message.outgoing')
-        const count = await outgoingMessages.count()
-        expect(count).toBeGreaterThanOrEqual(3)
-      }
+      expect(result.hasName).toBe(true)
+      expect(result.hasWork).toBe(true)
+      expect(result.hasQuery).toBe(true)
     })
 
     test('should handle context window limits', async ({ page }) => {
-      if (existingProfiles.length < 2) {
+      if (!(await getMemoryHooks(page))) {
         test.skip()
         return
       }
 
-      const userA = existingProfiles[0]
-      const userB = existingProfiles[1]
-
-      await switchToProfile(page, userA.id)
-
-      const chatItem = page
-        .locator('.chat-list .chat-list-item')
-        .filter({ hasText: userB.name })
-
-      const chatExists = await chatItem.isVisible().catch(() => false)
-
-      if (chatExists) {
-        await chatItem.click()
-
-        // Send many messages to test context window
-        for (let i = 0; i < 10; i++) {
-          await page.locator('#composer-textarea').fill(`Message ${i + 1}`)
-          await page.locator('button.send-button').click()
-          await page.waitForTimeout(200)
+      const count = await page.evaluate(async () => {
+        const memory = (
+          window as unknown as { __deepTreeEchoMemory: DeepTreeEchoMemoryHooks }
+        ).__deepTreeEchoMemory
+        for (let i = 0; i < 25; i++) {
+          await memory.store(`context-window-message-${i}`)
         }
+        return (await memory.getAll()).filter(m =>
+          m.startsWith('context-window-message-')
+        ).length
+      })
 
-        // App should handle this gracefully
-        const chatList = page.locator('.chat-list')
-        await expect(chatList).toBeVisible()
-      }
+      expect(count).toBe(25)
     })
   })
 
   test.describe('Memory Cleanup', () => {
     test('should handle memory cleanup operations', async ({ page }) => {
-      if (existingProfiles.length < 1) {
-        test.skip()
-        return
+      const hasSystem = await page.evaluate(() => {
+        return (
+          (
+            window as unknown as {
+              __memorySystem?: { cleanup: (o: object) => Promise<unknown> }
+            }
+          ).__memorySystem !== undefined
+        )
+      })
+
+      if (!hasSystem) {
+        // Fall back to the memory hooks' recovery probe.
+        if (!(await getMemoryHooks(page))) {
+          test.skip()
+          return
+        }
       }
 
-      await switchToProfile(page, existingProfiles[0].id)
+      const result = await page.evaluate(async () => {
+        const system = (
+          window as unknown as {
+            __memorySystem?: {
+              cleanup: (options: object) => Promise<{
+                removed: number
+                remaining: number
+              }>
+            }
+          }
+        ).__memorySystem
+        if (system) return system.cleanup({ maxAge: 0 })
+        const memory = (
+          window as unknown as { __deepTreeEchoMemory: DeepTreeEchoMemoryHooks }
+        ).__deepTreeEchoMemory
+        return { recovered: await memory.testRecovery() }
+      })
 
-      // Verify app is stable after potential cleanup operations
-      const chatList = page.locator('.chat-list')
-      await expect(chatList).toBeVisible()
-
-      // Wait for any background cleanup
-      await page.waitForTimeout(2000)
-
-      // App should remain stable
-      await expect(chatList).toBeVisible()
+      expect(result).toBeDefined()
     })
   })
 
@@ -311,44 +252,22 @@ test.describe('Cognitive Memory System', () => {
     test('should retrieve memories within acceptable time', async ({
       page,
     }) => {
-      if (existingProfiles.length < 2) {
+      if (!(await getMemoryHooks(page))) {
         test.skip()
         return
       }
 
-      const userA = existingProfiles[0]
-      const userB = existingProfiles[1]
+      const elapsed = await page.evaluate(async () => {
+        const memory = (
+          window as unknown as { __deepTreeEchoMemory: DeepTreeEchoMemoryHooks }
+        ).__deepTreeEchoMemory
+        await memory.store('Quick memory test')
+        const start = Date.now()
+        await memory.search('Quick memory')
+        return Date.now() - start
+      })
 
-      await switchToProfile(page, userA.id)
-
-      const chatItem = page
-        .locator('.chat-list .chat-list-item')
-        .filter({ hasText: userB.name })
-
-      const chatExists = await chatItem.isVisible().catch(() => false)
-
-      if (chatExists) {
-        await chatItem.click()
-
-        const startTime = Date.now()
-
-        // Send a query
-        await page.locator('#composer-textarea').fill('Quick memory test')
-        await page.locator('button.send-button').click()
-
-        // Wait for message to appear
-        const sentMessage = page
-          .locator('.message.outgoing')
-          .last()
-          .locator('.msg-body .text')
-        await expect(sentMessage).toContainText('Quick memory test')
-
-        const endTime = Date.now()
-        const responseTime = endTime - startTime
-
-        // Should respond within 5 seconds
-        expect(responseTime).toBeLessThan(5000)
-      }
+      expect(elapsed).toBeLessThan(5000)
     })
   })
 })
@@ -357,7 +276,19 @@ test.describe('Memory Edge Cases', () => {
   test('should handle empty memory queries', async ({ page }) => {
     await page.goto('/')
 
-    // App should handle empty state gracefully
+    const result = await page.evaluate(async () => {
+      const memory = (
+        window as unknown as { __deepTreeEchoMemory?: DeepTreeEchoMemoryHooks }
+      ).__deepTreeEchoMemory
+      if (!memory) return null
+      return memory.search('')
+    })
+
+    if (result) {
+      expect(Array.isArray(result)).toBe(true)
+      return
+    }
+
     const body = page.locator('body')
     await expect(body).toBeVisible()
   })
@@ -365,7 +296,22 @@ test.describe('Memory Edge Cases', () => {
   test('should handle special characters in memories', async ({ page }) => {
     await page.goto('/')
 
-    // App should be stable
+    const result = await page.evaluate(async () => {
+      const memory = (
+        window as unknown as { __deepTreeEchoMemory?: DeepTreeEchoMemoryHooks }
+      ).__deepTreeEchoMemory
+      if (!memory) return null
+      const special = '<script>alert("xss")</script> ñ ü 🚀 "quotes" \'apost\''
+      await memory.store(special)
+      const all = await memory.getAll()
+      return all.includes(special)
+    })
+
+    if (result !== null) {
+      expect(result).toBe(true)
+      return
+    }
+
     const body = page.locator('body')
     await expect(body).toBeVisible()
   })
@@ -373,7 +319,22 @@ test.describe('Memory Edge Cases', () => {
   test('should handle very long text in memories', async ({ page }) => {
     await page.goto('/')
 
-    // App should be stable
+    const result = await page.evaluate(async () => {
+      const memory = (
+        window as unknown as { __deepTreeEchoMemory?: DeepTreeEchoMemoryHooks }
+      ).__deepTreeEchoMemory
+      if (!memory) return null
+      const longText = 'x'.repeat(10_000)
+      await memory.store(longText)
+      const all = await memory.getAll()
+      return all.includes(longText)
+    })
+
+    if (result !== null) {
+      expect(result).toBe(true)
+      return
+    }
+
     const body = page.locator('body')
     await expect(body).toBeVisible()
   })

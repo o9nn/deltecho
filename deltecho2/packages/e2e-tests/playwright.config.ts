@@ -86,22 +86,43 @@ export default defineConfig({
     // },
   ],
 
-  /* Run your local dev server before starting the tests */
-  webServer: {
-    command: `node ${
-      process.env.CI ? '--env-file /dev/null' : '--env-file .env'
-    } ../target-browser/dist/server.js`,
-    env: {
-      ...process.env,
-      NODE_TLS_REJECT_UNAUTHORIZED: '0',
-      HTTPS_ENABLED: process.env.CI ? 'false' : 'true',
-      NODE_ENV: process.env.CI ? 'test' : process.env.NODE_ENV || 'development',
+  /* Run your local dev server before starting the tests.
+     Alongside the app server we boot the in-repo mock chatmail service so
+     onboarding flows work offline; set E2E_LIVE_CHATMAIL=1 to opt into the
+     real ci-chatmail.testrun.org backend instead. */
+  webServer: [
+    {
+      command: `node ${
+        process.env.CI ? '--env-file /dev/null' : '--env-file .env'
+      } ../target-browser/dist/server.js`,
+      env: {
+        ...process.env,
+        NODE_TLS_REJECT_UNAUTHORIZED: '0',
+        HTTPS_ENABLED: process.env.CI ? 'false' : 'true',
+        NODE_ENV: process.env.CI ? 'test' : process.env.NODE_ENV || 'development',
+      },
+      url: baseURL,
+      timeout: 120 * 1000,
+      ignoreHTTPSErrors: true,
+      reuseExistingServer: !process.env.CI,
+      stdout: 'pipe',
+      stderr: 'pipe',
     },
-    url: baseURL,
-    timeout: 120 * 1000,
-    ignoreHTTPSErrors: true,
-    reuseExistingServer: !process.env.CI,
-    stdout: 'pipe',
-    stderr: 'pipe',
-  },
+    ...(process.env.E2E_LIVE_CHATMAIL
+      ? []
+      : [
+          {
+            command: 'node bin/mock-chatmail.mjs',
+            env: {
+              ...process.env,
+              MOCK_CHATMAIL_PORT: process.env.MOCK_CHATMAIL_PORT ?? '4650',
+            },
+            url: `http://localhost:${process.env.MOCK_CHATMAIL_PORT ?? 4650}/health`,
+            timeout: 30 * 1000,
+            reuseExistingServer: !process.env.CI,
+            stdout: 'pipe' as const,
+            stderr: 'pipe' as const,
+          },
+        ]),
+  ],
 })

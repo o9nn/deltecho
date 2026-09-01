@@ -290,6 +290,38 @@ jobs:
           retention-days: 7
 
   # ============================================
+  # Root Jest E2E (hard gate, runs on PRs AND push)
+  # ============================================
+  # Package-level E2E suites under tests/e2e/ (membrane transport, gesture
+  # glyph, trajectory distribution). Self-contained: no browser, no backend.
+  jest-e2e:
+    name: Jest E2E (packages)
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    permissions:
+      contents: read
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Setup pnpm
+        uses: pnpm/action-setup@v5
+        with:
+          version: ${{ env.PNPM_VERSION }}
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          cache: 'pnpm'
+
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile
+
+      - name: Run Jest E2E suite
+        run: pnpm run test:e2e
+
+  # ============================================
   # Cognitive Integration E2E (hard gate, runs on PRs AND push)
   # ============================================
   # Runs against a self-contained harness that boots the real browser-safe
@@ -324,9 +356,17 @@ jobs:
         run: pnpm exec playwright install --with-deps chromium
         working-directory: deltecho2/packages/e2e-tests
 
+      - name: Install Playwright Chromium (delta-echo-desk)
+        run: pnpm exec playwright install --with-deps chromium
+        working-directory: delta-echo-desk/packages/e2e-tests
+
       - name: Run Cognitive Integration E2E (real gate)
         run: pnpm run e2e:cognitive:real
         working-directory: deltecho2/packages/e2e-tests
+
+      - name: Run Cognitive Integration E2E (delta-echo-desk)
+        run: pnpm run e2e:cognitive:real
+        working-directory: delta-echo-desk/packages/e2e-tests
 
   # ============================================
   # E2E Tests (Linux only for speed)
@@ -336,7 +376,12 @@ jobs:
     runs-on: ubuntu-latest
     needs: build-core
     timeout-minutes: 30
-    if: github.event_name == 'push' && github.ref == 'refs/heads/main'
+    # Harness-backed suites are hard-gated in `cognitive-e2e` on every PR;
+    # this job additionally runs the full-app suites against the in-repo mock
+    # chatmail backend on PRs and main pushes.
+    if: >-
+      github.event_name == 'pull_request' ||
+      (github.event_name == 'push' && github.ref == 'refs/heads/main')
     env:
       CI: true
       NODE_TLS_REJECT_UNAUTHORIZED: '0'
@@ -371,40 +416,22 @@ jobs:
         run: pnpm run build
 
       # Delta Echo Desk E2E Tests
+      # Harness-backed suites (deterministic, hard gates). These run against
+      # the self-contained cognitive harness via playwright.cognitive.config.ts
+      # and must not fail.
+      - name: Run E2E tests - Harness suites (delta-echo-desk)
+        run: pnpm run e2e:cognitive:real
+        working-directory: delta-echo-desk/packages/e2e-tests
+        env:
+          CI: true
+          NODE_TLS_REJECT_UNAUTHORIZED: '0'
+
+      # Full-app suites. Onboarding now uses the in-repo mock chatmail server
+      # (bin/mock-chatmail.mjs) started by playwright.config.ts. Suites that
+      # still require live message transport (group invite, qr secure-join)
+      # keep their warning fallback until the mock implements IMAP/SMTP.
       - name: Run E2E tests - Basic (delta-echo-desk)
-        run: pnpm exec playwright test basic-tests.spec.ts || echo "::warning::Basic E2E tests not fully configured"
-        working-directory: delta-echo-desk/packages/e2e-tests
-        env:
-          WEB_PASSWORD: ${{ secrets.WEB_PASSWORD || 'test-password' }}
-          CI: true
-          NODE_TLS_REJECT_UNAUTHORIZED: '0'
-
-      - name: Run E2E tests - Deep Tree Echo (delta-echo-desk)
-        run: pnpm exec playwright test deep-tree-echo.spec.ts || echo "::warning::Deep Tree Echo E2E tests not fully configured"
-        working-directory: delta-echo-desk/packages/e2e-tests
-        env:
-          WEB_PASSWORD: ${{ secrets.WEB_PASSWORD || 'test-password' }}
-          CI: true
-          NODE_TLS_REJECT_UNAUTHORIZED: '0'
-
-      - name: Run E2E tests - Cognitive Integration (delta-echo-desk)
-        run: pnpm exec playwright test cognitive-integration.spec.ts || echo "::warning::Cognitive Integration E2E tests not fully configured"
-        working-directory: delta-echo-desk/packages/e2e-tests
-        env:
-          WEB_PASSWORD: ${{ secrets.WEB_PASSWORD || 'test-password' }}
-          CI: true
-          NODE_TLS_REJECT_UNAUTHORIZED: '0'
-
-      - name: Run E2E tests - Orchestrator Integration (delta-echo-desk)
-        run: pnpm exec playwright test orchestrator-integration.spec.ts || echo "::warning::Orchestrator E2E tests not fully configured"
-        working-directory: delta-echo-desk/packages/e2e-tests
-        env:
-          WEB_PASSWORD: ${{ secrets.WEB_PASSWORD || 'test-password' }}
-          CI: true
-          NODE_TLS_REJECT_UNAUTHORIZED: '0'
-
-      - name: Run E2E tests - Cognitive Memory (delta-echo-desk)
-        run: pnpm exec playwright test cognitive-memory.spec.ts || echo "::warning::Cognitive Memory E2E tests not fully configured"
+        run: pnpm exec playwright test basic-tests.spec.ts || echo "::warning::Basic E2E tests need live chatmail transport (set E2E_LIVE_CHATMAIL=1)"
         working-directory: delta-echo-desk/packages/e2e-tests
         env:
           WEB_PASSWORD: ${{ secrets.WEB_PASSWORD || 'test-password' }}
@@ -412,60 +439,36 @@ jobs:
           NODE_TLS_REJECT_UNAUTHORIZED: '0'
 
       # Deltecho2 E2E Tests
+      # Harness-backed suites (deterministic, hard gate) — all 10 cognitive
+      # suites run in the `cognitive-e2e` job above; this step re-runs them
+      # here so a main-branch push surfaces regressions in the tracking
+      # context too.
+      - name: Run E2E tests - Harness suites (deltecho2)
+        run: pnpm run e2e:cognitive:real
+        working-directory: deltecho2/packages/e2e-tests
+        env:
+          CI: true
+          NODE_TLS_REJECT_UNAUTHORIZED: '0'
+
+      # Full-app suites against the mock chatmail backend.
       - name: Run E2E tests - Basic (deltecho2)
-        run: pnpm exec playwright test basic-tests.spec.ts || echo "::warning::Basic E2E tests not fully configured"
+        run: pnpm exec playwright test basic-tests.spec.ts || echo "::warning::Basic E2E tests need live chatmail transport (set E2E_LIVE_CHATMAIL=1)"
         working-directory: deltecho2/packages/e2e-tests
         env:
           WEB_PASSWORD: ${{ secrets.WEB_PASSWORD || 'test-password' }}
           CI: true
           NODE_TLS_REJECT_UNAUTHORIZED: '0'
 
-      # NOTE: Cognitive Integration is a HARD gate and runs in its own
-      # `cognitive-e2e` job (on pull_request AND push) so it can block PRs.
-      # This job is push/main-only, so it cannot gate PRs on its own.
-
-      - name: Run E2E tests - Triadic Cognitive Loop (deltecho2)
-        run: pnpm exec playwright test triadic-cognitive-loop.spec.ts || echo "::warning::Triadic Cognitive Loop E2E tests not fully configured"
+      - name: Run E2E tests - Group (deltecho2)
+        run: pnpm exec playwright test group-tests.spec.ts || echo "::warning::Group E2E tests need live chatmail transport (set E2E_LIVE_CHATMAIL=1)"
         working-directory: deltecho2/packages/e2e-tests
         env:
           WEB_PASSWORD: ${{ secrets.WEB_PASSWORD || 'test-password' }}
           CI: true
           NODE_TLS_REJECT_UNAUTHORIZED: '0'
 
-      - name: Run E2E tests - Sys6 Triality (deltecho2)
-        run: pnpm exec playwright test sys6-triality.spec.ts || echo "::warning::Sys6 Triality E2E tests not fully configured"
-        working-directory: deltecho2/packages/e2e-tests
-        env:
-          WEB_PASSWORD: ${{ secrets.WEB_PASSWORD || 'test-password' }}
-          CI: true
-          NODE_TLS_REJECT_UNAUTHORIZED: '0'
-
-      - name: Run E2E tests - LLM Service (deltecho2)
-        run: pnpm exec playwright test llm-service.spec.ts || echo "::warning::LLM Service E2E tests not fully configured"
-        working-directory: deltecho2/packages/e2e-tests
-        env:
-          WEB_PASSWORD: ${{ secrets.WEB_PASSWORD || 'test-password' }}
-          CI: true
-          NODE_TLS_REJECT_UNAUTHORIZED: '0'
-
-      - name: Run E2E tests - Memory Persistence (deltecho2)
-        run: pnpm exec playwright test memory-persistence.spec.ts || echo "::warning::Memory Persistence E2E tests not fully configured"
-        working-directory: deltecho2/packages/e2e-tests
-        env:
-          WEB_PASSWORD: ${{ secrets.WEB_PASSWORD || 'test-password' }}
-          CI: true
-          NODE_TLS_REJECT_UNAUTHORIZED: '0'
-
-      - name: Run E2E tests - UI Components (deltecho2)
-        run: pnpm exec playwright test ui-components.spec.ts || echo "::warning::UI Components E2E tests not fully configured"
-        working-directory: deltecho2/packages/e2e-tests
-        env:
-          WEB_PASSWORD: ${{ secrets.WEB_PASSWORD || 'test-password' }}
-          CI: true
-          NODE_TLS_REJECT_UNAUTHORIZED: '0'
-
-      - name: Run E2E tests - IPC Electron (deltecho2)
-        run: pnpm exec playwright test ipc-electron.spec.ts || echo "::warning::IPC Electron E2E tests not fully configured"
+      - name: Run E2E tests - QR Code (deltecho2)
+        run: pnpm exec playwright test qrcode-tests.spec.ts || echo "::warning::QR-code E2E tests need live chatmail transport (set E2E_LIVE_CHATMAIL=1)"
         working-directory: deltecho2/packages/e2e-tests
         env:
           WEB_PASSWORD: ${{ secrets.WEB_PASSWORD || 'test-password' }}

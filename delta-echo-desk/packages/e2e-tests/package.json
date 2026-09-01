@@ -5,10 +5,13 @@
   "license": "GPL-3.0-or-later",
   "devDependencies": {
     "@playwright/test": "^1.57.0",
-    "@types/node": "^20.19.27"
+    "@types/node": "^20.19.27",
+    "esbuild": "^0.25.0"
   },
   "scripts": {
     "e2e": "pnpm exec playwright test",
-    "e2e:report": "pnpm exec playwright show-report"
+    "e2e:report": "pnpm exec playwright show-report",
+    "build:cognitive-harness": "node bin/build-cognitive-harness.mjs",
+    "e2e:cognitive:real": "pnpm run build:cognitive-harness && pnpm exec playwright test --config playwright.cognitive.config.ts"
   }
 }
