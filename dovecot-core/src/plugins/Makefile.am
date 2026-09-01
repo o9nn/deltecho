@@ -24,6 +24,7 @@ SUBDIRS = \
 	notify \
 	notify-status \
 	push-notification \
+	dove9-cognitive \
 	mail-log \
 	$(MAIL_LUA) \
 	quota \

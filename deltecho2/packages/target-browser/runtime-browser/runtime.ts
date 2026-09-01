@@ -33,9 +33,12 @@ const { WebsocketTransport } = yerpc
 
 let logJsonrpcConnection = false
 
+const baseWsUrl = new URL(location.href)
+baseWsUrl.protocol = location.protocol === 'http:' ? 'ws:' : 'wss:'
+
 class BrowserTransport extends WebsocketTransport {
   constructor(private callCounterFunction: (label: string) => void) {
-    super('wss://localhost:3000/ws/dc')
+    super(new URL('ws/dc', baseWsUrl).href)
   }
 
   protected _onmessage(message: yerpc.Message): void {
@@ -82,7 +85,7 @@ class BrowserRuntime implements Runtime {
   socket: WebSocket
   private rc_config: RC_Config | null = null
   constructor() {
-    this.socket = new WebSocket('wss://localhost:3000/ws/backend')
+    this.socket = new WebSocket(new URL('ws/backend', baseWsUrl).href)
 
     this.socket.addEventListener('open', () => {
       /* ignore-console-log */

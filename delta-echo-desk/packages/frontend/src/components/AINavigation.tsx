@@ -12,6 +12,12 @@ const AINavigation: React.FC<AINavigationProps> = ({
   currentScreen,
   changeScreen,
 }) => {
+  // MainScreen already exposes AI Neighborhood in its navigation bar. Keeping
+  // the floating duplicate there obscures message actions near the composer.
+  if (currentScreen === Screens.Main) {
+    return null
+  }
+
   const isActive = currentScreen === Screens.AINeighborhood
 
   return (
