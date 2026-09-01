@@ -180,9 +180,12 @@ jobs:
             --without-zstd
 
       - name: Build Dovecot and Dove9 plugin
-        # Build only the mail-server source tree. The top-level `all` target
-        # downloads versioned docs from doc.dovecot.org and is not an ABI test.
-        run: make --directory dovecot-core/build-dove9/src --jobs 4
+        # Generate the version header, then build only the mail-server source
+        # tree. The top-level `all` target downloads versioned docs from
+        # doc.dovecot.org and is not an ABI test.
+        run: |
+          make --directory dovecot-core/build-dove9 dovecot-version.h
+          make --directory dovecot-core/build-dove9/src --jobs 4
 
       - name: Verify loadable plugin artifact
         run: test -s dovecot-core/build-dove9/src/plugins/dove9-cognitive/.libs/lib25_dove9_cognitive_plugin.so
