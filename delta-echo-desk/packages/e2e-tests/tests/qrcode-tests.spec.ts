@@ -19,13 +19,14 @@ import {
  * TODO: see fixme at bottom
  */
 
-test.describe.configure({ mode: 'serial' })
+test.describe.configure({ mode: 'serial', timeout: 120_000 })
 
 let existingProfiles: User[] = []
 
 const numberOfProfiles = 2
 
 test.beforeAll(async ({ browser }) => {
+  test.setTimeout(120_000)
   const context = await browser.newContext()
   const page = await context.newPage()
 
@@ -49,9 +50,14 @@ test.beforeEach(async ({ page }) => {
 })
 
 test.afterAll(async ({ browser }) => {
+  test.setTimeout(120_000)
   const context = await browser.newContext()
   const page = await context.newPage()
   await reloadPage(page)
+  for (let i = 0; i < 5; i++) {
+    await page.keyboard.press('Escape')
+  }
+  existingProfiles = await loadExistingProfiles(page)
   await deleteAllProfiles(page, existingProfiles)
   await context.close()
 })
@@ -65,7 +71,7 @@ test('instant onboarding with contact invite link', async ({
     await context.grantPermissions(['clipboard-read', 'clipboard-write'])
   }
   const userA = getUser(0, existingProfiles)
-  const userNameC = userNames[1]
+  const userNameC = userNames[2]
   await switchToProfile(page, userA.id)
   // copy invite link from user A
   await clickThroughTestIds(page, [
@@ -96,10 +102,44 @@ test('instant onboarding with contact invite link', async ({
 
   await nameInput.fill(userNameC)
 
-  await page.getByTestId('login-button').click()
+  const onboardingDialog = page.getByTestId('onboarding-dialog')
+  const transientTransportError = page
+    .getByRole('dialog')
+    .filter({ hasText: /tls handshake eof|network.*error|timed? out/i })
+
+  let configured = false
+  for (let attempt = 1; attempt <= 3 && !configured; attempt++) {
+    await page.getByTestId('login-button').click()
+    configured = await Promise.race([
+      onboardingDialog
+        .waitFor({ state: 'hidden', timeout: 45_000 })
+        .then(() => true),
+      transientTransportError
+        .waitFor({ state: 'visible', timeout: 45_000 })
+        .then(() => false),
+    ])
+
+    if (!configured) {
+      const transportError = await transientTransportError
+        .locator('p')
+        .innerText()
+      await transientTransportError.getByRole('button', { name: 'OK' }).click()
+      if (attempt === 3) {
+        throw new Error(
+          `Chatmail instant onboarding failed after ${attempt} attempts: ${transportError}`
+        )
+      }
+      await page.waitForTimeout(attempt * 1_000)
+    }
+  }
+
   await expect(
     page.locator('.chat-list .chat-list-item').filter({ hasText: userA.name })
-  ).toHaveCount(1)
+  ).toHaveCount(1, { timeout: 90_000 })
+
+  // Instant onboarding adds a profile outside createProfiles(); retain it so
+  // the serial suite and afterAll cleanup operate on the real account set.
+  existingProfiles = await loadExistingProfiles(page)
 })
 
 /**

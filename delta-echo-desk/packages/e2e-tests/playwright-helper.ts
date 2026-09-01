@@ -1,15 +1,18 @@
 import { BrowserContext, expect, Page } from '@playwright/test'
 
-// Chatmail server used for account onboarding.
+// Chatmail account URI used for profile onboarding.
 //
-// - Default (CI and local): the in-repo mock chatmail server
-//   (`bin/mock-chatmail.mjs`), started by playwright.config.ts alongside the
-//   app server, so onboarding works offline and deterministically.
-// - Opt-in live mode: set `E2E_LIVE_CHATMAIL=1` to target the real
-//   ci-chatmail.testrun.org service (used by the nightly tracking series).
-export const chatmailServer = process.env.E2E_LIVE_CHATMAIL
-  ? 'https://ci-chatmail.testrun.org'
-  : `http://localhost:${process.env.MOCK_CHATMAIL_PORT ?? 4650}`
+// The pinned Delta Chat core (v1.159.x) requires the relay's HTTPS `/new`
+// endpoint in a DCACCOUNT URI. Newer cores also accept `dcaccount:<domain>`,
+// but that form is deliberately avoided until the bundled core is upgraded.
+// The local HTTP form remains available only for explicit harness tests.
+const useLiveChatmail = process.env.E2E_LIVE_CHATMAIL === '1'
+const liveChatmailDomain =
+  process.env.DC_CHATMAIL_DOMAIN ?? 'ci-chatmail.testrun.org'
+
+export const chatmailAccountUri = useLiveChatmail
+  ? `dcaccount:https://${liveChatmailDomain}/new`
+  : `dcaccount:http://localhost:${process.env.MOCK_CHATMAIL_PORT ?? 4650}/new`
 
 export const userNames = ['Alice', 'Bob', 'Chris', 'Denis', 'Eve']
 
@@ -90,18 +93,23 @@ export async function createNewProfile(
   name: string,
   isFirstOnboarding: boolean
 ): Promise<User> {
-  await page.waitForSelector('.styles_module_account')
   const accountList = page.locator('.styles_module_account')
 
+  // On a fresh launch startup creates an unconfigured account and opens the
+  // onboarding dialog directly; there is no account item to wait for. Only
+  // subsequent profiles need the sidebar Add Profile action.
   if (!isFirstOnboarding) {
-    // add account to show onboarding screen
+    await expect(accountList.last()).toBeVisible()
     await page.getByTestId('add-account-button').click()
   }
-  // create a new account
-  await page.getByTestId('create-account-button').click()
+
+  const createAccountButton = page.getByTestId('create-account-button')
+  await expect(createAccountButton).toBeVisible()
+  await createAccountButton.click()
 
   await page.evaluate(
-    `navigator.clipboard.writeText('dcaccount:${chatmailServer}/new')`
+    accountUri => navigator.clipboard.writeText(accountUri),
+    chatmailAccountUri
   )
   await clickThroughTestIds(page, [
     'other-login-button',

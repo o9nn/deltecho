@@ -63,6 +63,8 @@ jobs:
       CI: true
       NODE_TLS_REJECT_UNAUTHORIZED: '0'
       WEB_PASSWORD: ${{ secrets.WEB_PASSWORD || 'test-password' }}
+      E2E_LIVE_CHATMAIL: '1'
+      DC_CHATMAIL_DOMAIN: ci-chatmail.testrun.org
     steps:
       - uses: actions/checkout@v4
 

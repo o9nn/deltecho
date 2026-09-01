@@ -63,6 +63,7 @@ test('create profiles', async ({ page, context, browserName }) => {
 })
 
 test('start chat with user', async ({ page, context, browserName }) => {
+  test.setTimeout(120_000)
   if (browserName.toLowerCase().indexOf('chrom') > -1) {
     await context.grantPermissions(['clipboard-read', 'clipboard-write'])
   }
@@ -86,8 +87,17 @@ test('start chat with user', async ({ page, context, browserName }) => {
   await expect(
     page.locator('.chat-list .chat-list-item').filter({ hasText: userA.name })
   ).toHaveCount(1)
+
+  // The joiner's local chat appears before the relay has delivered the
+  // secure-join handshake back to the inviter. Wait for that remote state so
+  // the following transport tests do not race a live Chatmail round trip.
+  await switchToProfile(page, userA.id)
+  await expect(
+    page.locator('.chat-list .chat-list-item').filter({ hasText: userB.name })
+  ).toBeVisible({ timeout: 90_000 })
+
   /* ignore-console-log */
-  console.log(`Chat with ${userA.name} created!`)
+  console.log(`Secure chat between ${userA.name} and ${userB.name} created!`)
 })
 
 /**
@@ -133,7 +143,7 @@ test('send message', async ({ page }) => {
   await switchToProfile(page, userB.id)
   const chatListItem = page
     .locator('.chat-list .chat-list-item')
-    .filter({ hasText: userB.name })
+    .filter({ hasText: userA.name })
   await expect(
     chatListItem.locator('.chat-list-item-message .text')
   ).toHaveText(messageText + ' 2')
@@ -250,6 +260,7 @@ test('edit message', async ({ page }) => {
 })
 
 test('add app from picker to chat', async ({ page }) => {
+  test.setTimeout(120_000)
   const userA = existingProfiles[0]
   const userB = existingProfiles[1]
   await switchToProfile(page, userA.id)
@@ -260,7 +271,7 @@ test('add app from picker to chat', async ({ page }) => {
   await page.getByTestId('open-attachment-menu').click()
   await page.getByTestId('open-app-picker').click()
   const apps = page.locator('.styles_module_appPickerList button').first()
-  await apps.waitFor({ state: 'visible' })
+  await apps.waitFor({ state: 'visible', timeout: 90_000 })
   const appsCount = await page
     .locator('.styles_module_appPickerList')
     .locator('button')

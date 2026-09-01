@@ -1,0 +1,31 @@
+# Valgrind suppression file for dove9 test suite
+# Use with: valgrind --suppressions=dove9.supp ./test-dove9-*
+
+# Suppress dlopen-related leaks from shared library loading
+{
+   dl_open_leak
+   Memcheck:Leak
+   match-leak-kinds: reachable
+   fun:malloc
+   ...
+   fun:_dl_open
+}
+
+# Suppress glibc locale-related allocations
+{
+   glibc_locale_leak
+   Memcheck:Leak
+   match-leak-kinds: reachable
+   fun:malloc
+   ...
+   fun:setlocale
+}
+
+# Suppress known libc stdio initialization leaks
+{
+   stdio_init_leak
+   Memcheck:Leak
+   match-leak-kinds: reachable
+   fun:malloc
+   fun:__fopen_internal
+}

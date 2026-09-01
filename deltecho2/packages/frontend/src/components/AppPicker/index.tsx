@@ -90,7 +90,10 @@ export function AppPicker({ onAppSelected }: Props) {
           AppStoreUrl + 'xdcget-lock.json'
         )
         const apps = getJsonFromBase64(response.blob) as AppInfo[]
-        if (apps === null) return
+        if (apps === null) {
+          setIsOffline(true)
+          return
+        }
         apps.sort((a: AppInfo, b: AppInfo) => {
           const dateA = new Date(a.date)
           const dateB = new Date(b.date)
@@ -104,7 +107,9 @@ export function AppPicker({ onAppSelected }: Props) {
           app.date = moment(app.date).format('LL')
         }
         setApps(apps)
+        setIsOffline(false)
       } catch (error) {
+        setIsOffline(true)
         log.error('Failed to fetch apps:', error)
       }
     }
@@ -121,6 +126,10 @@ export function AppPicker({ onAppSelected }: Props) {
           return
         }
       }
+      // Connectivity may be transiently unavailable when this effect first
+      // runs. A populated catalog proves the request recovered, so never retain
+      // the stale Offline flag while valid apps and icons are being hydrated.
+      setIsOffline(false)
       const newIcons: { [key: string]: string } = {}
       for (const app of apps) {
         newIcons[app.app_id] = `./images/icons/image_outline.svg`
@@ -144,7 +153,7 @@ export function AppPicker({ onAppSelected }: Props) {
       }
     }
     loadIcons()
-  }, [apps, isOffline])
+  }, [apps])
 
   const filteredApps = useMemo(() => {
     const lowerCaseQuery = searchQuery.toLowerCase()

@@ -29,7 +29,7 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v4
         with:
-          fetch-depth: 0  # Full history for proper versioning
+          fetch-depth: 0 # Full history for proper versioning
 
       - name: Setup pnpm
         uses: pnpm/action-setup@v5
@@ -125,6 +125,69 @@ jobs:
           flags: unittests
           name: deltecho-coverage
           fail_ci_if_error: false
+
+  dove9-native:
+    name: Dove9 C11 Library
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Configure strict native build
+        run: cmake --preset ci -S dovecot-core/src/dove9
+
+      - name: Build native library and tests
+        run: cmake --build dovecot-core/src/dove9/build-ci --parallel 4
+
+      - name: Run native CTest suite
+        run: ctest --test-dir dovecot-core/src/dove9/build-ci --output-on-failure
+
+  dove9-dovecot-plugin:
+    name: Dove9 Dovecot ABI Plugin
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Install Dovecot build prerequisites
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y \
+            autoconf automake bison flex gettext libssl-dev libtool libtool-bin pkg-config
+
+      - name: Regenerate Dovecot build system
+        working-directory: dovecot-core
+        run: |
+          install -m 0644 /usr/share/gettext/config.rpath build-aux/config.rpath
+          autoreconf -fi
+
+      - name: Configure minimal Dovecot build
+        run: |
+          cmake -E make_directory dovecot-core/build-dove9
+          cd dovecot-core/build-dove9
+          ../configure \
+            --without-pam \
+            --without-ldap \
+            --without-lua \
+            --without-solr \
+            --without-libunwind \
+            --without-libcap \
+            --without-systemd \
+            --without-pgsql \
+            --without-mysql \
+            --without-sqlite \
+            --without-icu \
+            --without-lz4 \
+            --without-zstd
+
+      - name: Build Dovecot and Dove9 plugin
+        # Build only the mail-server source tree. The top-level `all` target
+        # downloads versioned docs from doc.dovecot.org and is not an ABI test.
+        run: make --directory dovecot-core/build-dove9/src --jobs 4
+
+      - name: Verify loadable plugin artifact
+        run: test -s dovecot-core/build-dove9/src/plugins/dove9-cognitive/.libs/lib25_dove9_cognitive_plugin.so
 
   # ============================================
   # Security Scanning
@@ -377,8 +440,8 @@ jobs:
     needs: build-core
     timeout-minutes: 30
     # Harness-backed suites are hard-gated in `cognitive-e2e` on every PR;
-    # this job additionally runs the full-app suites against the in-repo mock
-    # chatmail backend on PRs and main pushes.
+    # this job additionally runs the full-app suites against a real Chatmail
+    # relay on PRs and main pushes.
     if: >-
       github.event_name == 'pull_request' ||
       (github.event_name == 'push' && github.ref == 'refs/heads/main')
@@ -426,17 +489,17 @@ jobs:
           CI: true
           NODE_TLS_REJECT_UNAUTHORIZED: '0'
 
-      # Full-app suites. Onboarding now uses the in-repo mock chatmail server
-      # (bin/mock-chatmail.mjs) started by playwright.config.ts. Suites that
-      # still require live message transport (group invite, qr secure-join)
-      # keep their warning fallback until the mock implements IMAP/SMTP.
+      # Full-app suites use a real Chatmail relay. Failures are hard gates;
+      # the in-repo HTTP mock does not implement IMAP/SMTP transport.
       - name: Run E2E tests - Basic (delta-echo-desk)
-        run: pnpm exec playwright test basic-tests.spec.ts || echo "::warning::Basic E2E tests need live chatmail transport (set E2E_LIVE_CHATMAIL=1)"
+        run: pnpm exec playwright test basic-tests.spec.ts
         working-directory: delta-echo-desk/packages/e2e-tests
         env:
           WEB_PASSWORD: ${{ secrets.WEB_PASSWORD || 'test-password' }}
           CI: true
           NODE_TLS_REJECT_UNAUTHORIZED: '0'
+          E2E_LIVE_CHATMAIL: '1'
+          DC_CHATMAIL_DOMAIN: ci-chatmail.testrun.org
 
       # Deltecho2 E2E Tests
       # Harness-backed suites (deterministic, hard gate) — all 10 cognitive
@@ -450,30 +513,36 @@ jobs:
           CI: true
           NODE_TLS_REJECT_UNAUTHORIZED: '0'
 
-      # Full-app suites against the mock chatmail backend.
+      # Full-app suites against the live Chatmail relay.
       - name: Run E2E tests - Basic (deltecho2)
-        run: pnpm exec playwright test basic-tests.spec.ts || echo "::warning::Basic E2E tests need live chatmail transport (set E2E_LIVE_CHATMAIL=1)"
+        run: pnpm exec playwright test basic-tests.spec.ts
         working-directory: deltecho2/packages/e2e-tests
         env:
           WEB_PASSWORD: ${{ secrets.WEB_PASSWORD || 'test-password' }}
           CI: true
           NODE_TLS_REJECT_UNAUTHORIZED: '0'
+          E2E_LIVE_CHATMAIL: '1'
+          DC_CHATMAIL_DOMAIN: ci-chatmail.testrun.org
 
       - name: Run E2E tests - Group (deltecho2)
-        run: pnpm exec playwright test group-tests.spec.ts || echo "::warning::Group E2E tests need live chatmail transport (set E2E_LIVE_CHATMAIL=1)"
+        run: pnpm exec playwright test group-tests.spec.ts
         working-directory: deltecho2/packages/e2e-tests
         env:
           WEB_PASSWORD: ${{ secrets.WEB_PASSWORD || 'test-password' }}
           CI: true
           NODE_TLS_REJECT_UNAUTHORIZED: '0'
+          E2E_LIVE_CHATMAIL: '1'
+          DC_CHATMAIL_DOMAIN: ci-chatmail.testrun.org
 
       - name: Run E2E tests - QR Code (deltecho2)
-        run: pnpm exec playwright test qrcode-tests.spec.ts || echo "::warning::QR-code E2E tests need live chatmail transport (set E2E_LIVE_CHATMAIL=1)"
+        run: pnpm exec playwright test qrcode-tests.spec.ts
         working-directory: deltecho2/packages/e2e-tests
         env:
           WEB_PASSWORD: ${{ secrets.WEB_PASSWORD || 'test-password' }}
           CI: true
           NODE_TLS_REJECT_UNAUTHORIZED: '0'
+          E2E_LIVE_CHATMAIL: '1'
+          DC_CHATMAIL_DOMAIN: ci-chatmail.testrun.org
 
       - name: Upload E2E test results
         if: always()
@@ -506,7 +575,7 @@ jobs:
           path: artifacts
 
       - name: Create Release
-        uses: softprops/action-gh-release@v1
+        uses: softprops/action-gh-release@v2
         with:
           draft: true
           generate_release_notes: true
