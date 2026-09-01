@@ -110,8 +110,9 @@ const server = createServer(async (req, res) => {
     res.writeHead(404, { 'Content-Type': 'application/json' })
     res.end(JSON.stringify({ error: 'not found' }))
   } catch (err) {
+    console.error('Mock chatmail request handling failed:', err?.stack ?? err)
     res.writeHead(500, { 'Content-Type': 'application/json' })
-    res.end(JSON.stringify({ error: String(err) }))
+    res.end(JSON.stringify({ error: 'internal server error' }))
   }
 })
 
