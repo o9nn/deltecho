@@ -26,7 +26,17 @@ const port = Number(process.env.MOCK_CHATMAIL_PORT ?? process.env.PORT ?? 4650)
 const host = process.env.MOCK_CHATMAIL_HOST ?? 'localhost'
 const origin = `http://${host}:${port}`
 
+function escapeXml(value) {
+  return String(value)
+    .replaceAll('&', '&amp;')
+    .replaceAll('<', '&lt;')
+    .replaceAll('>', '&gt;')
+    .replaceAll('"', '&quot;')
+    .replaceAll("'", '&apos;')
+}
+
 function autoconfigXml(email) {
+  const safeEmail = escapeXml(email)
   return `<?xml version="1.0" encoding="UTF-8"?>
 <clientConfig version="1.1">
   <emailProvider id="mock-chatmail">
@@ -48,7 +58,7 @@ function autoconfigXml(email) {
     </outgoingServer>
   </emailProvider>
   <emailAccount>
-    <emailAddress>${email}</emailAddress>
+    <emailAddress>${safeEmail}</emailAddress>
   </emailAccount>
 </clientConfig>`
 }
