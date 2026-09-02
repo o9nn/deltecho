@@ -55,6 +55,12 @@ cd deltecho2/packages/e2e-tests        # or delta-echo-desk/packages/e2e-tests
 pnpm run e2e:cognitive:real            # builds harness + runs all 10 suites
 pnpm exec playwright test ui-components.spec.ts --config playwright.cognitive.config.ts
 
+# Per-suite shortcuts (identical in both apps)
+pnpm run e2e:sys6                      # sys6-triality.spec.ts
+pnpm run e2e:ipc                       # ipc-electron.spec.ts
+pnpm run e2e:orchestrator              # orchestrator-integration.spec.ts
+pnpm run test:ci                       # full run, GitHub reporter
+
 # Full-app suites (mock chatmail starts automatically)
 pnpm run build                         # workspace packages must be built first
 cd deltecho2/packages/e2e-tests
