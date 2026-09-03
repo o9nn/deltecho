@@ -14,6 +14,10 @@ export default {
   extensionsToTreatAsEsm: ['.ts'],
   roots: ['<rootDir>/tests/e2e'],
   testMatch: ['**/*.e2e.test.ts'],
+  // Load shared test utilities, custom matchers, and cognitive fixtures after
+  // the test framework is installed so `expect.extend` and the global hooks in
+  // the setup file bind to the real Jest globals.
+  setupFilesAfterEnv: ['<rootDir>/test/utils/jest.setup.ts'],
   testPathIgnorePatterns: [
     '/node_modules/',
     '/dist/',
