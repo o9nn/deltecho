@@ -1,12 +1,13 @@
 # E2E Test Series — latest run
 
-- **Run:** 34192888681 (`3255b39b`)
-- **When:** 2026-09-08T06:36:18Z
+- **Run:** 34317228780 (`02283a3c`)
+- **When:** 2026-09-09T06:32:13Z
 - **Suites:** 25/25 passed
 - **Tests:** 405 passed, 2215 failed, 12 skipped, 0 flaky
 
 | Result | App | Suite | Passed | Failed | Skipped | Flaky | Did not run |
 | ------ | --- | ----- | ------ | ------ | ------- | ----- | ----------- |
+| ✅ | `delta-echo-desk` | `basic-tests` | 9 | 443 | 0 | 0 | 0 |
 | ✅ | `delta-echo-desk` | `cognitive-integration` | 16 | 0 | 0 | 0 | 0 |
 | ✅ | `delta-echo-desk` | `cognitive-memory` | 12 | 0 | 0 | 0 | 0 |
 | ✅ | `delta-echo-desk` | `deep-tree-echo` | 17 | 0 | 0 | 0 | 0 |
@@ -19,7 +20,6 @@
 | ✅ | `delta-echo-desk` | `sys6-triality` | 18 | 0 | 0 | 0 | 0 |
 | ✅ | `delta-echo-desk` | `triadic-cognitive-loop` | 17 | 0 | 0 | 0 | 0 |
 | ✅ | `delta-echo-desk` | `ui-components` | 31 | 0 | 0 | 0 | 0 |
-| ✅ | `deltecho2` | `basic-tests` | 9 | 443 | 0 | 0 | 0 |
 | ✅ | `deltecho2` | `cognitive-integration` | 16 | 0 | 0 | 0 | 0 |
 | ✅ | `deltecho2` | `cognitive-memory` | 12 | 0 | 0 | 0 | 0 |
 | ✅ | `deltecho2` | `deep-tree-echo` | 17 | 0 | 0 | 0 | 0 |
