@@ -1,9 +1,9 @@
 # E2E Test Series — latest run
 
-- **Run:** 34741721231 (`0931a7b2`)
-- **When:** 2026-09-13T06:39:36Z
-- **Suites:** 25/25 passed
-- **Tests:** 396 passed, 2658 failed, 12 skipped, 0 flaky
+- **Run:** 34811744976 (`4e0f6beb`)
+- **When:** 2026-09-14T06:12:00Z
+- **Suites:** 26/26 passed
+- **Tests:** 414 passed, 2658 failed, 12 skipped, 0 flaky
 
 | Result | App | Suite | Passed | Failed | Skipped | Flaky | Did not run |
 | ------ | --- | ----- | ------ | ------ | ------- | ----- | ----------- |
@@ -17,6 +17,7 @@
 | ✅ | `delta-echo-desk` | `memory-persistence` | 22 | 0 | 0 | 0 | 0 |
 | ✅ | `delta-echo-desk` | `orchestrator-integration` | 13 | 0 | 0 | 0 | 0 |
 | ✅ | `delta-echo-desk` | `qrcode-tests` | 2 | 443 | 6 | 0 | 0 |
+| ✅ | `delta-echo-desk` | `sys6-triality` | 18 | 0 | 0 | 0 | 0 |
 | ✅ | `delta-echo-desk` | `triadic-cognitive-loop` | 17 | 0 | 0 | 0 | 0 |
 | ✅ | `delta-echo-desk` | `ui-components` | 31 | 0 | 0 | 0 | 0 |
 | ✅ | `deltecho2` | `basic-tests` | 9 | 443 | 0 | 0 | 0 |
