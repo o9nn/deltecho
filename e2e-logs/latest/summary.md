@@ -1,9 +1,9 @@
 # E2E Test Series — latest run
 
-- **Run:** 35692992550 (`866cdd37`)
-- **When:** 2026-09-22T06:31:59Z
+- **Run:** 35824822161 (`43540d9f`)
+- **When:** 2026-09-23T06:31:49Z
 - **Suites:** 25/25 passed
-- **Tests:** 397 passed, 2658 failed, 12 skipped, 0 flaky
+- **Tests:** 388 passed, 2658 failed, 12 skipped, 0 flaky
 
 | Result | App | Suite | Passed | Failed | Skipped | Flaky | Did not run |
 | ------ | --- | ----- | ------ | ------ | ------- | ----- | ----------- |
@@ -23,8 +23,8 @@
 | ✅ | `deltecho2` | `basic-tests` | 9 | 443 | 0 | 0 | 0 |
 | ✅ | `deltecho2` | `cognitive-integration` | 16 | 0 | 0 | 0 | 0 |
 | ✅ | `deltecho2` | `cognitive-memory` | 12 | 0 | 0 | 0 | 0 |
+| ✅ | `deltecho2` | `deep-tree-echo` | 17 | 0 | 0 | 0 | 0 |
 | ✅ | `deltecho2` | `group-tests` | 2 | 443 | 0 | 0 | 0 |
-| ✅ | `deltecho2` | `ipc-electron` | 26 | 0 | 0 | 0 | 0 |
 | ✅ | `deltecho2` | `llm-service` | 22 | 0 | 0 | 0 | 0 |
 | ✅ | `deltecho2` | `memory-persistence` | 22 | 0 | 0 | 0 | 0 |
 | ✅ | `deltecho2` | `orchestrator-integration` | 13 | 0 | 0 | 0 | 0 |
