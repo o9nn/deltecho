@@ -1,9 +1,9 @@
 # E2E Test Series — latest run
 
-- **Run:** 36100997628 (`24d5d100`)
-- **When:** 2026-09-25T06:12:16Z
-- **Suites:** 26/26 passed
-- **Tests:** 414 passed, 2658 failed, 12 skipped, 0 flaky
+- **Run:** 36222484262 (`1d1af774`)
+- **When:** 2026-09-26T06:34:58Z
+- **Suites:** 25/25 passed
+- **Tests:** 397 passed, 2658 failed, 12 skipped, 0 flaky
 
 | Result | App | Suite | Passed | Failed | Skipped | Flaky | Did not run |
 | ------ | --- | ----- | ------ | ------ | ------- | ----- | ----------- |
@@ -31,7 +31,6 @@
 | ✅ | `deltecho2` | `orchestrator-integration` | 13 | 0 | 0 | 0 | 0 |
 | ✅ | `deltecho2` | `qrcode-tests` | 2 | 443 | 6 | 0 | 0 |
 | ✅ | `deltecho2` | `sys6-triality` | 18 | 0 | 0 | 0 | 0 |
-| ✅ | `deltecho2` | `triadic-cognitive-loop` | 17 | 0 | 0 | 0 | 0 |
 | ✅ | `deltecho2` | `ui-components` | 31 | 0 | 0 | 0 | 0 |
 
 > Full per-suite logs are in [`e2e-logs/latest/`](.). Progress over time is
