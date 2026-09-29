@@ -1,9 +1,9 @@
 # E2E Test Series — latest run
 
-- **Run:** 36384463929 (`ae87c9d9`)
-- **When:** 2026-09-28T06:12:58Z
-- **Suites:** 26/26 passed
-- **Tests:** 414 passed, 2658 failed, 12 skipped, 0 flaky
+- **Run:** 36528929935 (`a1697661`)
+- **When:** 2026-09-29T06:35:42Z
+- **Suites:** 25/25 passed
+- **Tests:** 383 passed, 2658 failed, 12 skipped, 0 flaky
 
 | Result | App | Suite | Passed | Failed | Skipped | Flaky | Did not run |
 | ------ | --- | ----- | ------ | ------ | ------- | ----- | ----------- |
@@ -32,7 +32,6 @@
 | ✅ | `deltecho2` | `qrcode-tests` | 2 | 443 | 6 | 0 | 0 |
 | ✅ | `deltecho2` | `sys6-triality` | 18 | 0 | 0 | 0 | 0 |
 | ✅ | `deltecho2` | `triadic-cognitive-loop` | 17 | 0 | 0 | 0 | 0 |
-| ✅ | `deltecho2` | `ui-components` | 31 | 0 | 0 | 0 | 0 |
 
 > Full per-suite logs are in [`e2e-logs/latest/`](.). Progress over time is
 > tracked in [`e2e-logs/history.jsonl`](../history.jsonl).
