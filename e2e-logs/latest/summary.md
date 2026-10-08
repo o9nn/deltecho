@@ -1,9 +1,9 @@
 # E2E Test Series — latest run
 
-- **Run:** 37579211158 (`29dc8dab`)
-- **When:** 2026-10-07T06:12:28Z
-- **Suites:** 26/26 passed
-- **Tests:** 414 passed, 2658 failed, 12 skipped, 0 flaky
+- **Run:** 37735319902 (`09890d9f`)
+- **When:** 2026-10-08T06:38:30Z
+- **Suites:** 24/24 passed
+- **Tests:** 400 passed, 2215 failed, 12 skipped, 0 flaky
 
 | Result | App | Suite | Passed | Failed | Skipped | Flaky | Did not run |
 | ------ | --- | ----- | ------ | ------ | ------- | ----- | ----------- |
@@ -11,7 +11,6 @@
 | ✅ | `delta-echo-desk` | `cognitive-integration` | 16 | 0 | 0 | 0 | 0 |
 | ✅ | `delta-echo-desk` | `cognitive-memory` | 12 | 0 | 0 | 0 | 0 |
 | ✅ | `delta-echo-desk` | `deep-tree-echo` | 17 | 0 | 0 | 0 | 0 |
-| ✅ | `delta-echo-desk` | `group-tests` | 2 | 443 | 0 | 0 | 0 |
 | ✅ | `delta-echo-desk` | `ipc-electron` | 26 | 0 | 0 | 0 | 0 |
 | ✅ | `delta-echo-desk` | `llm-service` | 22 | 0 | 0 | 0 | 0 |
 | ✅ | `delta-echo-desk` | `memory-persistence` | 22 | 0 | 0 | 0 | 0 |
@@ -22,7 +21,6 @@
 | ✅ | `delta-echo-desk` | `ui-components` | 31 | 0 | 0 | 0 | 0 |
 | ✅ | `deltecho2` | `basic-tests` | 9 | 443 | 0 | 0 | 0 |
 | ✅ | `deltecho2` | `cognitive-integration` | 16 | 0 | 0 | 0 | 0 |
-| ✅ | `deltecho2` | `cognitive-memory` | 12 | 0 | 0 | 0 | 0 |
 | ✅ | `deltecho2` | `deep-tree-echo` | 17 | 0 | 0 | 0 | 0 |
 | ✅ | `deltecho2` | `group-tests` | 2 | 443 | 0 | 0 | 0 |
 | ✅ | `deltecho2` | `ipc-electron` | 26 | 0 | 0 | 0 | 0 |
