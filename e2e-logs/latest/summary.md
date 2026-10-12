@@ -1,9 +1,9 @@
 # E2E Test Series — latest run
 
-- **Run:** 38116663025 (`0f4ea4b0`)
-- **When:** 2026-10-11T06:37:51Z
-- **Suites:** 25/25 passed
-- **Tests:** 392 passed, 2658 failed, 12 skipped, 0 flaky
+- **Run:** 38210779943 (`16f5270d`)
+- **When:** 2026-10-12T06:15:06Z
+- **Suites:** 26/26 passed
+- **Tests:** 414 passed, 2658 failed, 12 skipped, 0 flaky
 
 | Result | App | Suite | Passed | Failed | Skipped | Flaky | Did not run |
 | ------ | --- | ----- | ------ | ------ | ------- | ----- | ----------- |
@@ -13,6 +13,7 @@
 | ✅ | `delta-echo-desk` | `deep-tree-echo` | 17 | 0 | 0 | 0 | 0 |
 | ✅ | `delta-echo-desk` | `group-tests` | 2 | 443 | 0 | 0 | 0 |
 | ✅ | `delta-echo-desk` | `ipc-electron` | 26 | 0 | 0 | 0 | 0 |
+| ✅ | `delta-echo-desk` | `llm-service` | 22 | 0 | 0 | 0 | 0 |
 | ✅ | `delta-echo-desk` | `memory-persistence` | 22 | 0 | 0 | 0 | 0 |
 | ✅ | `delta-echo-desk` | `orchestrator-integration` | 13 | 0 | 0 | 0 | 0 |
 | ✅ | `delta-echo-desk` | `qrcode-tests` | 2 | 443 | 6 | 0 | 0 |
