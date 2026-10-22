@@ -1,9 +1,9 @@
 # E2E Test Series — latest run
 
-- **Run:** 39552835752 (`51167137`)
-- **When:** 2026-10-21T06:31:49Z
+- **Run:** 39731387723 (`456eaa39`)
+- **When:** 2026-10-22T06:34:19Z
 - **Suites:** 25/25 passed
-- **Tests:** 412 passed, 2215 failed, 12 skipped, 0 flaky
+- **Tests:** 392 passed, 2658 failed, 12 skipped, 0 flaky
 
 | Result | App | Suite | Passed | Failed | Skipped | Flaky | Did not run |
 | ------ | --- | ----- | ------ | ------ | ------- | ----- | ----------- |
@@ -24,9 +24,9 @@
 | ✅ | `deltecho2` | `cognitive-integration` | 16 | 0 | 0 | 0 | 0 |
 | ✅ | `deltecho2` | `cognitive-memory` | 12 | 0 | 0 | 0 | 0 |
 | ✅ | `deltecho2` | `deep-tree-echo` | 17 | 0 | 0 | 0 | 0 |
+| ✅ | `deltecho2` | `group-tests` | 2 | 443 | 0 | 0 | 0 |
 | ✅ | `deltecho2` | `ipc-electron` | 26 | 0 | 0 | 0 | 0 |
 | ✅ | `deltecho2` | `llm-service` | 22 | 0 | 0 | 0 | 0 |
-| ✅ | `deltecho2` | `memory-persistence` | 22 | 0 | 0 | 0 | 0 |
 | ✅ | `deltecho2` | `orchestrator-integration` | 13 | 0 | 0 | 0 | 0 |
 | ✅ | `deltecho2` | `qrcode-tests` | 2 | 443 | 6 | 0 | 0 |
 | ✅ | `deltecho2` | `sys6-triality` | 18 | 0 | 0 | 0 | 0 |
