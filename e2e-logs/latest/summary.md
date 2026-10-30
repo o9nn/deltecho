@@ -1,9 +1,9 @@
 # E2E Test Series — latest run
 
-- **Run:** 40826667184 (`d50ef663`)
-- **When:** 2026-10-29T06:31:47Z
+- **Run:** 41011626904 (`e59c6151`)
+- **When:** 2026-10-30T06:38:46Z
 - **Suites:** 25/25 passed
-- **Tests:** 398 passed, 2658 failed, 12 skipped, 0 flaky
+- **Tests:** 412 passed, 2215 failed, 6 skipped, 0 flaky
 
 | Result | App | Suite | Passed | Failed | Skipped | Flaky | Did not run |
 | ------ | --- | ----- | ------ | ------ | ------- | ----- | ----------- |
@@ -16,11 +16,11 @@
 | ✅ | `delta-echo-desk` | `llm-service` | 22 | 0 | 0 | 0 | 0 |
 | ✅ | `delta-echo-desk` | `memory-persistence` | 22 | 0 | 0 | 0 | 0 |
 | ✅ | `delta-echo-desk` | `orchestrator-integration` | 13 | 0 | 0 | 0 | 0 |
-| ✅ | `delta-echo-desk` | `qrcode-tests` | 2 | 443 | 6 | 0 | 0 |
 | ✅ | `delta-echo-desk` | `sys6-triality` | 18 | 0 | 0 | 0 | 0 |
 | ✅ | `delta-echo-desk` | `triadic-cognitive-loop` | 17 | 0 | 0 | 0 | 0 |
 | ✅ | `delta-echo-desk` | `ui-components` | 31 | 0 | 0 | 0 | 0 |
 | ✅ | `deltecho2` | `basic-tests` | 9 | 443 | 0 | 0 | 0 |
+| ✅ | `deltecho2` | `cognitive-integration` | 16 | 0 | 0 | 0 | 0 |
 | ✅ | `deltecho2` | `cognitive-memory` | 12 | 0 | 0 | 0 | 0 |
 | ✅ | `deltecho2` | `deep-tree-echo` | 17 | 0 | 0 | 0 | 0 |
 | ✅ | `deltecho2` | `group-tests` | 2 | 443 | 0 | 0 | 0 |
