@@ -1,9 +1,9 @@
 # E2E Test Series — latest run
 
-- **Run:** 42452995267 (`b6c74f0b`)
-- **When:** 2026-11-08T06:34:00Z
+- **Run:** 42570562815 (`4a5def20`)
+- **When:** 2026-11-09T06:35:52Z
 - **Suites:** 25/25 passed
-- **Tests:** 412 passed, 2215 failed, 6 skipped, 0 flaky
+- **Tests:** 383 passed, 2658 failed, 12 skipped, 0 flaky
 
 | Result | App | Suite | Passed | Failed | Skipped | Flaky | Did not run |
 | ------ | --- | ----- | ------ | ------ | ------- | ----- | ----------- |
@@ -29,9 +29,9 @@
 | ✅ | `deltecho2` | `llm-service` | 22 | 0 | 0 | 0 | 0 |
 | ✅ | `deltecho2` | `memory-persistence` | 22 | 0 | 0 | 0 | 0 |
 | ✅ | `deltecho2` | `orchestrator-integration` | 13 | 0 | 0 | 0 | 0 |
+| ✅ | `deltecho2` | `qrcode-tests` | 2 | 443 | 6 | 0 | 0 |
 | ✅ | `deltecho2` | `sys6-triality` | 18 | 0 | 0 | 0 | 0 |
 | ✅ | `deltecho2` | `triadic-cognitive-loop` | 17 | 0 | 0 | 0 | 0 |
-| ✅ | `deltecho2` | `ui-components` | 31 | 0 | 0 | 0 | 0 |
 
 > Full per-suite logs are in [`e2e-logs/latest/`](.). Progress over time is
 > tracked in [`e2e-logs/history.jsonl`](../history.jsonl).
